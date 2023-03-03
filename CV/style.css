@@ -45,8 +45,10 @@
 .servicesText:hover {
     border: 1px solid #008000;
 }
-
-
+/* External Links */
+.extLink {
+    margin: 10px
+}
 
 
 
