@@ -49,6 +49,14 @@
 .extLink {
     margin: 10px
 }
-
+/* RedStrikeThrough */
+.RedStrike:hover {
+    color:red;
+    text-decoration:line-through;
+  }
+.RedStrike {
+    color: black;
+    text-decoration:line-through;
+}
 
 
