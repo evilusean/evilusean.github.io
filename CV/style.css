@@ -1,6 +1,6 @@
 /* display background color black on navbar scroll */
-.navbarScroll.navbarDark {
-    background-color: black;
+.navbar {
+    background-color: #000000; opacity: 0.5; filter: alpha(opacity=50);
 }
 /* hero background image */
 .bgimage {
