@@ -1,1 +1,16 @@
-test
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Chad Chat App</title>
+        <link 
+        rel="stylesheet" 
+        href="{{url_for('static', filename='css/style.css')}}"
+        />
+        <!-- {{}} double curly braces used in flask represents a variable in jenga template engine,
+         url_for generates a dynamic URL from static directory for static\css\styles.css -->
+    </head>
+</html>
+
+<!--in flask, base.html acts as a base template, generic style for entire website, home and room will reuse parts of the code-->
+
