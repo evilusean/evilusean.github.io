@@ -12,5 +12,11 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "abcde12345"
 socketio = SocketIO(app)
 
+#set up a route with decorater syntax "@app" to the home page with methods, posting and getting 
+#renders a template file for home.html
+@app.route("/", methods=["POST", "GET"])
+def home():
+    return render_template("home.html")
+
 if __name__ == "__main__":
     socketio.run(app, debug=True)
