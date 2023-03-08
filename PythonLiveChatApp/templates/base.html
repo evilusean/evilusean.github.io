@@ -12,14 +12,10 @@
          integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
          crossorigin="anonymous"
         ></script>
-        <!-- {{}} double curly braces used in flask represents a variable in jenga template engine,
-         url_for generates a dynamic URL from static directory for static\css\styles.css -->
     </head>
     <body>
         <div class="content">{% block content %} {% endblock %}</div>
-        <!-- Block is a reusable part of code that can be overwritten, can be inherited by childs templates-->
     </body>
 </html>
 
-<!--in flask, base.html acts as a base template, generic style for entire website, home and room will reuse parts of the code-->
 
