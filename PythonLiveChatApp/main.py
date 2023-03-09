@@ -12,7 +12,7 @@ rooms = {}
 def generate_unique_code(Length):
     while True:
         code = ""
-        for _ in range(length):
+        for _ in range(Length):
             code += random.choice(ascii_uppercase)
 
         if code not in rooms:
@@ -30,17 +30,17 @@ def home():
         create = request.form.get("create", False)
 
         if not name:
-            return render_template("home.html", error="Please Enter a Name." code=code, name=name)
+            return render_template("home.html", error="Please Enter a Name.", code=code, name=name)
         
         if join != False and not code:
-            return render_template("home.html", error="Please Enter a Room Code." code=code, name=name)
+            return render_template("home.html", error="Please Enter a Room Code.", code=code, name=name)
         
         room = code 
         if create != False:
             room = generate_unique_code(4)
             rooms[room] = {"members": 0, "messages": []}
         elif code not in rooms:
-            return render_template("home.html", error="Room does not exist." code=code, name=name)
+            return render_template("home.html", error="Room does not exist.", code=code, name=name)
 
         session["room"] = room
         session["name"] = name
@@ -50,6 +50,10 @@ def home():
 
 @app.route("/room")
 def room():
+    room = session.get("room")
+    if room is None or session.get("name") is None or room not in rooms:
+        return redirect(url_for("home"))
+
     return render_template("room.html")
 
 if __name__ == "__main__":
