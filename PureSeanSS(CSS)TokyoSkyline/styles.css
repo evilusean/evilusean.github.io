@@ -1,0 +1,813 @@
+:root {
+    --building-color1: #aa80ff;
+    --building-color2: #66cc99;
+    --building-color3: #cc6699;
+    --building-color4: #538cc6;
+    --window-color1: #bb99ff;
+    --window-color2: #8cd9b3;
+    --window-color3: #d98cb3;
+    --window-color4: #8cb3d9;
+    --window-color5: #4a4b4b;
+    --tower_color1: #ebf5ff;
+    --tower_color1_dark: #ffffff;
+    --tower_color2: #f90707;
+    --tower_color2_dark: #9c0c0c;
+    --background: #bbeeff;
+  }
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  
+  .background-buildings, .foreground-buildings {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-evenly;
+    position: absolute;
+    top: 0;
+    z-index: 2;
+  }
+  
+  .building-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .window-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+  }
+  
+  .sky {
+    z-index: -10;
+    background: radial-gradient(
+        closest-corner circle at 15% 15%,
+        #ffcf33,
+        #ffcf33 20%,
+        #ffff66 21%,
+        #bbeeff 100%
+        
+      );
+  }
+  
+  /* BACKGROUND BUILDINGS - "bb" stands for "background building" */
+  .bb1 {
+    z-index: 1;
+    width: 10%;
+    height: 70%;
+  }
+  
+  .bb1a {
+    width: 70%;
+  }
+    
+  .bb1b {
+    width: 80%;
+  }
+    
+  .bb1c {
+    width: 90%;
+  }
+  
+  .bb1d {
+    width: 100%;
+    height: 70%;
+    background: linear-gradient(
+        var(--building-color1) 50%,
+        var(--window-color1)
+      );
+  }
+  
+  .bb1-window {
+    height: 10%;
+    background: linear-gradient(
+        var(--building-color1),
+        var(--window-color1)
+      );
+  }
+  
+  .bb2 {
+    width: 10%;
+    height: 50%;
+    z-index: 1;
+  }
+  
+  .bb2a {
+    border-bottom: 5vh solid var(--building-color2);
+    border-left: 5vw solid transparent;
+    border-right: 5vw solid transparent;
+  }
+  
+  .bb2b {
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        var(--building-color2),
+        var(--building-color2) 6%,
+        var(--window-color2) 6%,
+        var(--window-color2) 9%
+      );
+  }
+  
+  .bb3 {
+    z-index: 2;
+    width: 10%;
+    height: 55%;
+    background: repeating-linear-gradient(
+        90deg,
+        var(--building-color3),
+        var(--building-color3),
+        var(--window-color3) 15%
+      );
+  }
+  
+  .bb4 {
+    z-index: 2;
+    width: 11%;
+    height: 58%;
+  }
+  
+  .bb4a {
+    width: 3%;
+    height: 10%;
+    background-color: var(--building-color4);
+  }
+  
+  .bb4b {
+    width: 80%;
+    height: 5%;
+    background-color: var(--building-color4);
+  }
+    
+  .bb4c {
+    width: 100%;
+    height: 85%;
+    background-color: var(--building-color4);
+  }
+  
+  .bb4-window {
+    width: 18%;
+    height: 90%;
+    background-color: var(--window-color4);
+  }
+  
+  /* FOREGROUND BUILDINGS - "fb" stands for "foreground building" */
+  .fb1 {
+    width: 10%;
+    height: 60%;
+    z-index: 5;
+  }
+  
+  .fb1a {
+    border-bottom: 7vh solid var(--building-color4);
+    border-left: 2vw solid transparent;
+    border-right: 2vw solid transparent;
+    z-index: 6;
+  }
+  
+  .fb1b {
+    width: 60%;
+    height: 10%;
+    background-color: var(--building-color4);
+  }
+    
+  .fb1c {
+    width: 100%;
+    height: 80%;
+    background: repeating-linear-gradient(
+        90deg,
+        var(--building-color4),
+        var(--building-color4) 10%,
+        transparent 10%,
+        transparent 15%
+      ),
+      repeating-linear-gradient(
+        var(--building-color4),
+        var(--building-color4) 10%,
+        var(--window-color4) 10%,
+        var(--window-color4) 90%
+      );
+  }
+  
+  .fb2 {
+    width: 10%;
+    height: 40%;
+  }
+  
+  .fb2a {
+    width: 100%;
+    border-bottom: 10vh solid var(--building-color3);
+    border-left: 1vw solid transparent;
+    border-right: 1vw solid transparent;
+  }
+  
+  .fb2b {
+    width: 100%;
+    height: 75%;
+    background-color: var(--building-color3);
+  }
+  
+  .fb2-window {
+    width: 22%;
+    height: 100%;
+    background-color: var(--window-color3);
+  }
+  
+  .fb3 {
+    width: 10%;
+    height: 35%;
+  }
+    
+  .fb3a {
+    width: 80%;
+    height: 15%;
+    background-color: var(--building-color1);
+  }
+    
+  .fb3b {
+    width: 100%;
+    height: 35%;
+    background-color: var(--building-color1);
+  }
+  
+  .fb3-window {
+    width: 25%;
+    height: 80%;
+    background-color: var(--window-color1);
+  }
+  
+  .fb4 {
+    width: 8%;
+    height: 45%;
+    position: relative;
+    left: 10%;
+  }
+  
+  .fb4a {
+    border-top: 5vh solid transparent;
+    border-left: 8vw solid var(--building-color1);
+  }
+  
+  .fb4b {
+    width: 100%;
+    height: 89%;
+    background-color: var(--building-color1);
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .fb4-window {
+    width: 30%;
+    height: 10%;
+    border-radius: 50%;
+    background-color: var(--window-color1);
+    margin: 10%;
+  }
+  
+  .fb5 {
+    width: 10%;
+    height: 33%;
+    position: relative;
+    right: 10%;
+    background: repeating-linear-gradient(
+        var(--building-color2),
+        var(--building-color2) 5%,
+        transparent 5%,
+        transparent 10%
+      ),
+      repeating-linear-gradient(
+        90deg,
+        var(--building-color2),
+        var(--building-color2) 12%,
+        var(--window-color2) 12%,
+        var(--window-color2) 44%
+      );
+  }
+  
+  .fb6 {
+    width: 9%;
+    height: 38%;
+    background: repeating-linear-gradient(
+        90deg,
+        var(--building-color3),
+        var(--building-color3) 10%,
+        transparent 10%,
+        transparent 30%
+      ),
+      repeating-linear-gradient(
+        var(--building-color3),
+        var(--building-color3) 10%,
+        var(--window-color3) 10%,
+        var(--window-color3) 30%
+      );
+  }
+  
+  @media (max-width: 1000px) {
+    :root {
+      --building-color1: #000;
+      --building-color2: #000;
+      --building-color3: #000;
+      --building-color4: #000;
+      --background: #223;
+    }
+  
+    .sky {
+        z-index: -10;
+      background: radial-gradient(
+          closest-corner circle at 30% 15%,
+          #fb0303,
+          #a71d1d 20%,
+          #445 21%,
+          #223 100%
+        );
+    }
+  }
+/* Change @media query to change when sun emoji is clicked  
+
+/* TORI GATE : */
+.tori-shrine {
+    z-index: 5;
+}
+.torishrine > div{
+    z-index: 6
+}
+.upper p {
+    font-size: 10px;
+    text-align: center;
+}
+.container {
+    display: flex;
+    justify-content: bottom;
+    align-items: center;
+    flex-direction: column;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 5;
+}
+.gate {
+    position: relative;
+    width: 250px;
+    height: 140px;
+}
+.upper, .pillar, .red, .red-two, .side-gate, .side-gate-two, .lantern, .desc {
+    position: absolute;
+}
+.upper {
+    z-index: 20;
+    width: 48vmin;
+    height: 5vmin;
+    background: #493e44;
+    border-radius: 1vmin 1vmin 10vmin 10vmin;
+}
+.red {
+    border-radius: 1vmin 1vmin 10vmin 10vmin;
+    z-index: 15;
+    background: #e04e4c;
+    width: 39vmin;
+    height: 5vmin;
+    top: 3vmin;
+    left: 4.5vmin;
+    box-shadow: inset 0 -0.5vmin 0 rgba(0, 0, 0, 0.1);
+}
+.red-two {
+    width: 45vmin;
+    height: 5vmin;
+    background: #e04e4c;
+    top: 11vmin;
+    left: 0.5vmin;
+    border-radius: 0.5vmin;
+    box-shadow: inset 0 -1vmin 0 rgba(0, 0, 0, 0.1);
+}
+.red-two:before {
+    z-index: 99;
+    position: absolute;
+    content: '';
+    background: #e04e4c;
+    width: 2vmin;
+    height: 4vmin;
+    top: -4vmin;
+    left: 22vmin;
+}
+.lantern {
+    background: #f25c54;
+    width: 7vmin;
+    height: 8vmin;
+    border-radius: 40%;
+    top: 17vmin;
+    left: 19.6vmin;
+}
+.lantern:before, .lantern:after {
+    position: absolute;
+    content: '';
+}
+.lantern:before {
+    z-index: -1;
+    width: 3vmin;
+    height: 3vmin;
+    border-radius: 100%;
+    background: #493e44;
+    top: -1vmin;
+    left: 2vmin;
+}
+.lantern:after {
+    z-index: -1;
+    background: #493e44;
+    width: 3vmin;
+    height: 2vmin;
+    top: 7vmin;
+    left: 2vmin;
+}
+.pillar {
+    z-index: 3;
+    width: 5vmin;
+    height: 36vmin;
+    background: #e04e4c;
+    left: 7vmin;
+    box-shadow: inset -0.5vmin 0 0 rgba(0, 0, 0, 0.1);
+}
+.pillar:before {
+    position: absolute;
+    content: '';
+    width: 7vmin;
+    height: 6vmin;
+    background: #493e44;
+    bottom: 0;
+    left: -1vmin;
+    border-radius: 1vmin;
+}
+.left {
+    left: 34vmin;
+}
+.side-gate, .side-gate-two {
+    z-index: 1;
+    width: 11vmin;
+    height: 2vmin;
+    background: #e04e4c;
+    left: -2vmin;
+    top: 23vmin;
+    border-radius: 0.5vmin;
+    box-shadow: inset 0 -0.5vmin 0 rgba(0, 0, 0, 0.1);
+}
+.side-gate:before, .side-gate-two:before, .side-gate:after, .side-gate-two:after {
+    position: absolute;
+    content: '';
+    border-radius: 0.5vmin;
+}
+.side-gate:before, .side-gate-two:before {
+    z-index: -1;
+    background: #e04e4c;
+    width: 2vmin;
+    height: 12vmin;
+    left: 3vmin;
+}
+.side-gate:after, .side-gate-two:after {
+    width: 9vmin;
+    height: 2vmin;
+    background: #493e44;
+    top: 11vmin;
+    left: 0.5vmin;
+}
+.side-gate-two {
+    left: 38vmin;
+}
+.side-gate-two:before {
+    left: 4vmin;
+}
+.side-gate-two:after {
+    left: 0;
+}
+.upper p {
+    font-size: 15px;
+    color: white;
+    text-align: center;
+}
+.red-two {
+    font-size: 15px;
+    color: white;
+    text-align: center;
+}
+
+/* TOKYO TOWER : */
+.tower {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column-reverse;
+    align-items: center;
+    /*border: 1px solid black;*/
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: -8;
+    transform: scale(0.6);
+    transform-origin: bottom right;
+}
+
+.base, .middle, .top {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    position: relative;
+}
+
+.base {
+    column-gap: 180px;
+    position: relative;
+    z-index: -7;
+}
+
+.base_side {
+    width: 60px;
+    height: 140px;
+    border: 7px solid var(--tower_color2_dark);
+    border-top: 0;
+    --offset1: 5px;
+    --offset2: 32px;
+    --skew_offset: 24deg;
+    /*background: var(--color);*/
+    background: repeating-linear-gradient(45deg, var(--tower_color2) 0px, var(--tower_color2) var(--offset1), transparent var(--offset1), transparent var(--offset2)),
+    repeating-linear-gradient(-45deg, var(--tower_color2) 0px, var(--tower_color2) var(--offset1), transparent var(--offset1), transparent var(--offset2)),
+    linear-gradient(90deg, transparent 44%, var(--tower_color2) 44%, var(--tower_color2) 56%, transparent 56%),
+    repeating-linear-gradient(180deg, var(--tower_color2) 0px, var(--tower_color2) calc(var(--offset1) / 1.41421356237), transparent calc(var(--offset1) / 1.41421356237), transparent calc(var(--offset2) / 1.41421356237));
+    background-position: 0, 0, 0, 0px -6px;
+    transform: skewX(calc(0deg - var(--skew_offset)));
+    /*filter: drop-shadow(1px 1px 5px black);*/
+    z-index: -7;
+}
+
+.base_side.right {
+    transform: skewX(var(--skew_offset));
+    z-index: -7;
+}
+
+.lower_post {
+    width: 237px;
+    height: 50px;
+    /*background: var(--color);*/
+    transform-origin: 50% 100%;
+    transform: perspective(100px) rotateX(15deg);
+    border: 6px solid var(--tower_color2_dark);
+    top: -2px;
+    --offset1: 7px;
+    --offset2: 29px;
+    --skew_offset: 24deg;
+    background: repeating-linear-gradient(45deg, var(--tower_color2) 0px, var(--tower_color2) var(--offset1), transparent var(--offset1), transparent var(--offset2)),
+    repeating-linear-gradient(-45deg, var(--tower_color2) 0px, var(--tower_color2) var(--offset1), transparent var(--offset1), transparent var(--offset2)),
+    repeating-linear-gradient(90deg, var(--tower_color2) 0px, var(--tower_color2) calc(var(--offset1) / 1.41421356237), transparent calc(var(--offset1) / 1.41421356237), transparent calc(var(--offset2) / 1.41421356237)),
+    repeating-linear-gradient(180deg, var(--tower_color2) 0px, var(--tower_color2) calc(var(--offset1) / 1.41421356237), transparent calc(var(--offset1) / 1.41421356237), transparent calc(var(--offset2) / 1.41421356237));
+    background-position: 0, 0, -12px -4px, 0px 0px;
+    z-index: -7;
+}
+
+
+.base_arc {
+    position: absolute;
+    align-self: flex-end;
+    width: 260px;
+    aspect-ratio: 1/1;
+    /*border: 15px solid #CFA678;*/
+    background: radial-gradient(transparent 62%, var(--tower_color2_dark) 62%, var(--tower_color2_dark) 64%, var(--tower_color2) 64%, var(--tower_color2) 69%, var(--tower_color2_dark) 69%);
+    transform: translateY(50%);
+    clip-path: polygon(25% 0%, 75% 0%, 92% 40%, 8% 40%);
+    border-radius: 50%;
+    z-index: -7;
+}
+
+.middle {
+    position: relative;
+    column-gap: 74px;
+    z-index: -7;
+}
+
+.middle:before, .middle:after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 210px;
+    height: 5px;
+    background: var(--tower_color2);
+    border: 5px solid var(--tower_color2_dark);
+    z-index: -7;
+    bottom: 0;
+    transform: translateY(100%);
+    border-radius: 10px;
+}
+
+.middle:after {
+    bottom: 20px;
+    z-index: -6;
+}
+
+.middle_side {
+    width: 50px;
+    height: 100px;
+    --offset1: 5px;
+    --offset2: 33px;
+    --skew_offset: 24deg;
+    background: repeating-linear-gradient(45deg, var(--tower_color2) 0px, var(--tower_color2) var(--offset1), transparent var(--offset1), transparent var(--offset2)),
+    repeating-linear-gradient(-45deg, var(--tower_color2) 0px, var(--tower_color2) var(--offset1), transparent var(--offset1), transparent var(--offset2)),
+    repeating-linear-gradient(180deg, var(--tower_color2) 0px, var(--tower_color2) calc(var(--offset1) / 1.41421356237), transparent calc(var(--offset1) / 1.41421356237), transparent calc(var(--offset2) / 1.41421356237)),
+    linear-gradient(90deg, transparent 42%, var(--tower_color2) 42%, var(--tower_color2) 58%, transparent 58%);
+    background-position: 0, 0, 0 -3px;
+    border: 6px solid var(--tower_color2_dark);
+    border-bottom: 0;
+    border-top: 0;
+    transform: skewX(-12deg);
+    z-index: -7;
+}
+
+.middle_side.right {
+    transform: skewX(12deg);
+}
+
+.higher_post {
+    width: 160px;
+    height: 80px;
+    background: var(--tower_color1);
+    transform-origin: 50% 100%;
+    transform: perspective(100px) rotateX(10deg);
+    border: 6px solid var(--tower_color1_dark);
+    top: -2px;
+    --offset1: 5px;
+    --offset2: 16px;
+    --skew_offset: 24deg;
+    background: repeating-linear-gradient(
+        -90deg,
+        var(--tower_color1) 0 5px,
+        var(--window-color5) 7.5px 10px
+      );
+    /* background: repeating-linear-gradient(45deg, var(--color) 0px, var(--color) var(--offset1), transparent var(--offset1), transparent var(--offset2)),
+    repeating-linear-gradient(-45deg, var(--color) 0px, var(--color) var(--offset1), transparent var(--offset1), transparent var(--offset2));
+    */
+    background-position: 0, 0, 0;
+}
+
+.top {
+    column-gap: 0px;
+    filter: drop-shadow(5px 0px var(--tower_color1_dark)) drop-shadow(-5px 0px var(--tower_color1_dark));
+}
+
+.top:before, .top:after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 150px;
+    height: 5px;
+    background: var(--tower_color1);
+    border: solid var(--tower_color1_dark);
+    border-width: 5px 0px;
+    z-index: 0;
+    bottom: 0;
+    transform: translateY(100%);
+    border-radius: 10px;
+}
+
+.top_side {
+    width: 120px;
+    height: 280px;
+    background: var(--background);
+    border-bottom: 0;
+    border-top: 0;
+    transform: skewX(calc(0deg - var(--skew_offset)));
+    clip-path: polygon(35% 0%, 65% 0%, 100% 100%, 70% 100%, 50% 35%, 30% 100%, 0% 100%);
+    display: flex;
+}
+
+.top_side:before, .top_side:after {
+    flex: 1;
+    --offset1: 5px;
+    --offset2: 33px;
+    --skew_offset: 24deg;
+    /*background: red;*/
+    background: repeating-linear-gradient(45deg, var(--tower_color1) 0px, var(--tower_color1) var(--offset1), transparent var(--offset1), transparent var(--offset2)),
+    repeating-linear-gradient(-45deg, var(--tower_color1) 0px, var(--tower_color1) var(--offset1), transparent var(--offset1), transparent var(--offset2)),
+    repeating-linear-gradient(180deg, var(--tower_color1) 0px, var(--tower_color1) calc(var(--offset1) / 1.41421356237), transparent calc(var(--offset1) / 1.41421356237), transparent calc(var(--offset2) / 1.41421356237)),
+    linear-gradient(90deg, transparent 45%, var(--tower_color1) 45%, var(--tower_color1) 55%, transparent 55%);
+    background-position: 0, 0, 0;
+    content: "";
+    display: block;
+    transform: skewX(-8deg) translateX(7px);
+    clip-path: polygon(0% 0%, 56% 0%, 100% 66.5%, 100% 100%, 0% 100%);
+}
+
+.top_side:after {
+    /*background: blue;*/
+    transform: scale(-1, 1) skewX(-8deg) translateX(7px);
+}
+
+.peak {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: center;
+    align-items: center;
+}
+
+.peak_lower {
+    width: 46px;
+    background: var(--tower_color2);
+    border: 5px solid var(--tower_color2_dark);
+    border-bottom: 0;
+    border-top: 0;
+    height: 25px;
+}
+
+.peak_middle {
+    width: 100px;
+    aspect-ratio: 2/1.1;
+    border-radius: 40px;
+    background: repeating-linear-gradient(
+        90deg,
+        var(--tower_color2) 0 9px,
+        var(--window-color5) 10px 11px,
+        var(--tower_color2) 12px 15px,
+        var(--window-color5) 15px 16px,
+        var(--tower_color2) 17px 20px,
+        var(--window-color5) 21px 22px,
+        var(--tower_color2) 23px 27px,
+        var(--window-color5) 28px 29px,
+        var(--tower_color1) 30px 33px,
+        var(--window-color5) 34px 35px,
+        var(--tower_color1) 36px 39px,
+        var(--window-color5) 40px 41px,
+        var(--tower_color1) 42px 45px,
+        var(--window-color5) 46px 47px,
+        var(--tower_color1) 48px 51px,
+        var(--window-color5) 52px 53px,
+        var(--tower_color1) 54px 57px,
+        var(--window-color5) 58px 59px,
+        var(--tower_color1) 60px 63px,
+        var(--window-color5) 64px 65px,
+        var(--tower_color1) 66px 100px
+      );
+      border: 5px solid var repeating-linear-gradient(
+        90deg,
+        var(--tower_color2_dark) 0 9px,
+        var(--window-color5) 10px 11px,
+        var(--tower_color2_dark) 12px 15px,
+        var(--window-color5) 15px 16px,
+        var(--tower_color2_dark) 17px 20px,
+        var(--window-color5) 21px 23px,
+        var(--tower_color2_dark) 24px 27px,
+        var(--window-color5) 28px 29px,
+        var(--tower_color1_dark) 30px 33px,
+        var(--window-color5) 34px 35px,
+        var(--tower_color1_dark) 36px 39px,
+        var(--window-color5) 40px 41px,
+        var(--tower_color1_dark) 42px 45px,
+        var(--window-color5) 46px 47px,
+        var(--tower_color1_dark) 48px 51px,
+        var(--window-color5) 52px 53px,
+        var(--tower_color1_dark) 54px 57px,
+        var(--window-color5) 58px 59px,
+        var(--tower_color1)_dark 60px 63px,
+        var(--window-color5) 64px 65px,
+        var(--tower_color1_dark) 66px 100px
+      );
+    /* background: var(--tower_color2);
+    border: 5px solid var(--tower_color2_dark); */
+    position: relative;
+    transform: rotate(90deg);
+    top: -10px;
+    z-index: 2;
+}
+
+.peak_top {
+    width: 15px;
+    height: 80px;
+    background: repeating-linear-gradient(
+        var(--tower_color2) 0 20px,
+        var(--tower_color1) 21px 55px,
+        var(--tower_color2) 56px 80px
+      );
+      border: 5px solid var repeating-linear-gradient(
+        var(--tower_color2_dark) 0 20px,
+        var(--tower_color1_dark) 21px 55px,
+        var(--tower_color2_dark) 56px 80px
+      );
+    border-radius: 10px;
+    /* border: 5px solid var(--tower_color2); */
+    /* border-radius: 10px; */
+    position: relative;
+    top: -20px;
+}
+
+.rod {
+    top: -19px;
+    position: relative;
+    width: 5px;
+    height: 60px;
+    background: var(--tower_color2)
+}
