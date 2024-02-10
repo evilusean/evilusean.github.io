@@ -5,4 +5,4 @@ Created a pure CSS with Tokyo Tower, Tori Gate, Moon/Sun, Foreground and Backgro
 Responsive Mode changes on 1000 pixels from dark to day. </br>
 
 Links: </br>
-[evilusean.github.io/PureSeanSS(CSS)TokyoSkyline](https://evilusean.github.io/PureSeanSS(CSS)TokyoSkyline/)https://evilusean.github.io/PureSeanSS(CSS)TokyoSkyline/
+[evilusean.github.io/PureSeanSS(CSS)TokyoSkyline](https://evilusean.github.io/PureSeanSS(CSS)TokyoSkyline/)
