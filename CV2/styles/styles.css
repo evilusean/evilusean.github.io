@@ -2,5 +2,16 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  list-style: none;
-}/*# sourceMappingURL=styles.css.map */
+  text-decoration: none;
+  border: none;
+  outline: none;
+  scroll-behavior: none;
+  outline: none;
+  font-family: "Poppins", sans-serif;
+}
+:root {
+  --bg-color: #080808;
+  --second-bg-color: #1b0000;
+  --text-color: white;
+  --main-color: #f6060b;
+}
