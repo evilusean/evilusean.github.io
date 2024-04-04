@@ -34,6 +34,7 @@ body {
   justify-content: space-between;
   align-items: center;
   z-index: 100;
+  width: 100%;
 }
 .logo {
   font-size: 3rem;
@@ -43,12 +44,12 @@ body {
   transition: 0.3s ease;
 }
 .logo:hover {
-  transform: scale(1, 1);
+  transform: scale(1.1);
 }
 .logo span {
   text-shadow: 0 0 25px var(--main-color);
 }
-.nav a {
+.navbar a {
   font-size: 1.8rem;
   color: var(--text-color);
   margin-left: 4rem;
