@@ -96,7 +96,7 @@ span {
   font-size: 3.5rem;
 }
 /* PROBLEM HERE, H1 IS STUCK IN NAVBAR, GOING TO MOVE ON, WASTED TOO MUCH TIME, FIX LATER 10:00 , MARGIN, BORDER AND GAP NOT WORKING, 
-Just duplicated it, works but not what I want, */
+Just duplicated it, works but not what I want, could just put a blank div or h1 there to placeholde/push down, looks fine for now with the blur */
 .home-content h1 {
   font-size: 7rem;
   font-weight: 700;
