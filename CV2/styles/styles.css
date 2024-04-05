@@ -267,7 +267,23 @@ now, the image is suuuper tiny, fixed with a min-width+margin-top, looks terribl
 .about-img {
   border-radius: 50%;
 }
-/* Image is still too small, added a min width, will need to figure this out later, looks garbage on small screens with min-width */
+/* Image is still too small, added a min width, will need to figure this out later, looks garbage on small screens with min-width 
+Added a max-width: 32vw and a min-width: auto to fix image size
+Asked ChatGPT how to fix:
+To increase the image size without destroying your responsive design with a "min-width" property, you can follow these steps:
+Use 'max-width' instead of 'width': Set the image's width to 100% and use 'max-width' instead of 'width'. This will allow the image 
+  to grow larger than its original size but still maintain responsiveness.
+Set 'min-width' to 'auto': By setting the 'min-width' property to 'auto', you allow the image to shrink back to its original
+   size if the container becomes too small. This ensures that the image will not be distorted on smaller screens.
+Here's an example of how you can achieve this using CSS:
+css
+img {
+  max-width: 100%;
+  height: auto;
+  min-width: auto;
+}
+By following these steps, you can increase the image size without compromising the responsive design of your website.
+*/
 .about-img img {
   position: relative;
   width: 32vw;
@@ -276,7 +292,8 @@ now, the image is suuuper tiny, fixed with a min-width+margin-top, looks terribl
   top: 1rem;
   cursor: pointer;
   transition: 0.4s ease-in-out;
-  min-width: 32vw;
+  max-width: 32vw;
+  min-width: auto;
 }
 .about-img img:hover {
   box-shadow: 0 0 25px var(--main-color), 0 0 50px var(--main-color),
