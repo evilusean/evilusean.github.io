@@ -267,6 +267,7 @@ now, the image is suuuper tiny, fixed with a min-width+margin-top, looks terribl
 .about-img {
   border-radius: 50%;
 }
+/* Image is still too small, added a min width, will need to figure this out later, looks garbage on small screens with min-width */
 .about-img img {
   position: relative;
   width: 32vw;
@@ -275,6 +276,7 @@ now, the image is suuuper tiny, fixed with a min-width+margin-top, looks terribl
   top: 1rem;
   cursor: pointer;
   transition: 0.4s ease-in-out;
+  min-width: 32vw;
 }
 .about-img img:hover {
   box-shadow: 0 0 25px var(--main-color), 0 0 50px var(--main-color),
@@ -298,4 +300,19 @@ now, the image is suuuper tiny, fixed with a min-width+margin-top, looks terribl
 }
 .about .heading {
   margin: 0;
+}
+.about-content .text-animation span::before {
+  content: "Web Developer";
+  color: var(--main-color);
+  animation: words 20s infinite;
+}
+.about-content .text-animation span::after {
+  content: "";
+  background-color: var(--second-bg-color);
+  position: absolute;
+  width: calc(100% + 8px);
+  height: 100%;
+  border-left: 3px solid var(--bg-color);
+  right: -8px;
+  animation: cursor 0.6s infinite, typing 20s steps(14) infinite;
 }
