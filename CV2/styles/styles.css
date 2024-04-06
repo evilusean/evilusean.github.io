@@ -382,3 +382,16 @@ now, the image is suuuper tiny, fixed with a min-width+margin-top, looks terribl
 .service info i {
   font-size: 8rem;
 }
+/* PROJECTS 29:30 */
+.projects {
+  background: url(background.jpg) center no reapeat;
+  background-size: cover;
+}
+.projects-box {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  place-items: center;
+  margin: 5rem 0;
+  gap: 3rem;
+  row-gap: 5rem;
+}
