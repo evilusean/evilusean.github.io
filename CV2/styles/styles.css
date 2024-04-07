@@ -447,6 +447,7 @@ now, the image is suuuper tiny, fixed with a min-width+margin-top, looks terribl
   width: 100%;
   padding: 2.5rem;
   font-size: 1.8rem;
+  color: var(--text-color);
   background: var(--bg-color);
   border-radius: 2rem;
   border: 2px solid var(--main-color);
