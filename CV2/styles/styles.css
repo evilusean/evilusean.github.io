@@ -515,6 +515,7 @@ now, the image is suuuper tiny, fixed with a min-width+margin-top, looks terribl
   font-size: 16px;
   color: var(--text-color);
 }
+/* RESPONSIVE MEDIA QUERIES 40:00 */
 @media (max-width: 1285px) {
   html {
     font-size: 55%;
@@ -562,6 +563,9 @@ now, the image is suuuper tiny, fixed with a min-width+margin-top, looks terribl
     border-left: 2px solid var(--main-color);
     display: none;
   }
+  .navbar .active {
+    display: block;
+  }
   .navbar a {
     display: block;
     font-size: 2rem;
@@ -585,6 +589,7 @@ now, the image is suuuper tiny, fixed with a min-width+margin-top, looks terribl
   }
   .home-content h1 {
     font-size: 8rem;
+    margin-top: 3rem;
   }
   .home-content p {
     max-width: 600px;
