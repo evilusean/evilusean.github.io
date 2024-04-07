@@ -464,6 +464,11 @@ now, the image is suuuper tiny, fixed with a min-width+margin-top, looks terribl
   padding: 40px 0;
   background-color: var(--second-bg-color);
 }
+.footer .social {
+  text-align: center;
+  padding-bottom: 25px;
+  color: var(--main-color);
+}
 .footer .social a {
   font-size: 25px;
   color: var(--main-color);
