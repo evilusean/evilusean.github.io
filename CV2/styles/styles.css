@@ -18,6 +18,7 @@
 html {
   font-size: 60%;
   overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 body {
   background: var(--bg-color);
