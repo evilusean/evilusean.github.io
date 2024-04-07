@@ -539,8 +539,7 @@ now, the image is suuuper tiny, fixed with a min-width+margin-top, looks terribl
   section {
     padding: 10rem 3% 2rem;
   }
-  ,
-  contact form {
+  .contact form {
     flex-direction: column;
   }
   .footer {
@@ -602,8 +601,8 @@ now, the image is suuuper tiny, fixed with a min-width+margin-top, looks terribl
   .about .heading {
     margin: 3rem 0;
   }
-  ,
-  about img {
+
+  .about img {
     width: 50vw;
   }
   .services h2 {
