@@ -343,13 +343,13 @@ body {
   text-align: center;
 }
 .container {
-  display: flex;
+  /*display: flex;
   justify-content: bottom;
   align-items: center;
-  flex-direction: column;
-  position: relative;
-  bottom: -250px;
-  left: -250px;
+  flex-direction: column; */
+  position: fixed;
+  bottom: 250px;
+  left: 140px;
   z-index: 5;
 }
 .gate {
