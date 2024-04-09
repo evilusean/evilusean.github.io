@@ -630,3 +630,9 @@ now, the image is suuuper tiny, fixed with a min-width+margin-top, looks terribl
     min-width: 42rem;
   }
 }
+
+.matrixIcons {
+  z-index: 1;
+  position: top;
+  color: var(--main-color);
+}
