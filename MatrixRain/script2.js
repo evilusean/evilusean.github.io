@@ -102,6 +102,12 @@ window.addEventListener("resize", function () {
   effect.resize(canvas.width, canvas.height);
 });
 
+const clearCanvasButton = document.getElementById("clearCanvas");
+
+clearCanvasButton.addEventListener("click", function () {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  isAnimating = false; // Pause the animation when the button is clicked
+});
 /*
 TODO: THE TEXT BUTTON WORKS AND CLEARS, BUT THE TEXT STREAMING IS GONE, FUTURE SEAN PROBLEM, FIX TOMMORROW
 function animate(timeStamp) {
