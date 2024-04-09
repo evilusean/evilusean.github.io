@@ -5,6 +5,8 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 let gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+//CIRCLE GRADIENT, CHANGE THE '100' or '200' TO CHANGE CIRCLE DIAMETER
+//let gradient = ctx.createLinearGradient(canvas.width/2, canvas.height/2, 100, canvas.width/2, canvas.height/2,200);
 
 //COMMENT BELOW CODE AND FILL STYLE LINE # 77 , AND UNCOMMENT LINE # 76 TO REMOVE COLOR GRADIENT
 gradient.addColorStop(0, "red");
