@@ -4,6 +4,8 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+let gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+
 class Symbol {
   constructor(x, y, fontSize, canvasHeight) {
     this.characters =
@@ -41,11 +43,18 @@ class Effect {
       this.symbols[i] = new Symbol(i, 0, this.fontSize, this.canvasHeight);
     }
   }
+  resize() {
+    this.canvasWidth = width;
+    this.canvasHeight = height;
+    this.columns = this.canvasWidth / this.fontSize;
+    this.symbols = [];
+    this.#initialize();
+  }
 }
 
 const effect = new Effect(canvas.width, canvas.height);
 let lastTime = 0;
-const fps = 60; //Change this to speed up or slow down
+const fps = 30; //Change this to speed up or slow down
 const nextFrame = 1000 / fps;
 let timer = 0;
 
@@ -69,4 +78,6 @@ animate(0);
 
 window.addEventListener("resize", function () {
   canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  effect.resize(canvas.width, canvas.height);
 });
