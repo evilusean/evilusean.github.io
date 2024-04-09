@@ -29,7 +29,7 @@ class Effect {
     this.fontSize = 25;
     this.columns = this.canvasWidth / this.fontSize;
     this.symbols = [];
-    this.text = "おねがい 私 を やとって ください ";
+    this.text = " おねがい 私 を やとって ください ";
     this.textIndex = 0;
     this.#initialize();
   }
@@ -58,7 +58,7 @@ class Effect {
 
 const effect = new Effect(canvas.width, canvas.height);
 let lastTime = 0;
-const fps = 10; //Change this to speed up or slow down
+const fps = 5; //Change this to speed up or slow down
 const nextFrame = 1000 / fps;
 let timer = 0;
 
