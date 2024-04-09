@@ -29,7 +29,7 @@ class Effect {
     this.fontSize = 25;
     this.columns = this.canvasWidth / this.fontSize;
     this.symbols = [];
-    this.text = "ONEGAI おねがい 私 を やとって ください";
+    this.text = "おねがい 私 を やとって ください ";
     this.textIndex = 0;
     this.#initialize();
   }
