@@ -648,7 +648,20 @@ now, the image is suuuper tiny, fixed with a min-width+margin-top, looks terribl
   transition: 0.3s ease;
   font-size: 25px;
 }
+.matrixIcons .btn:hover {
+  transform: scale(1.2) translateY(-10px);
+  background-color: var(--main-color);
+  color: black;
+  box-shadow: 0 0 50px var(--main-color);
+}
+
 #makeItRainButton {
+  color: white;
+}
+#makeItRainButton:hover {
+  color: black;
+}
+#clearCanvas:hover {
   color: white;
 }
 /*
