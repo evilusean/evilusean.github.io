@@ -108,29 +108,3 @@ clearCanvasButton.addEventListener("click", function () {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   isAnimating = false; // Pause the animation when the button is clicked
 });
-/*
-TODO: THE TEXT BUTTON WORKS AND CLEARS, BUT THE TEXT STREAMING IS GONE, FUTURE SEAN PROBLEM, FIX TOMMORROW
-function animate(timeStamp) {
-  if (!isAnimating) {
-    return; // Stop animation if the flag is set to false
-  }
-
-  const deltaTime = timeStamp - lastTime;
-  lastTime = timeStamp;
-
-  if (timer > nextFrame) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#0aff0a";
-    ctx.font = effect.fontSize + "px monospace";
-    effect.updateText();
-    effect.symbols.forEach((symbol) => symbol.draw(ctx));
-    timer = 0;
-  } else {
-    timer += deltaTime;
-  }
-
-  requestAnimationFrame(animate);
-}
-*/
