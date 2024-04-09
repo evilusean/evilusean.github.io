@@ -644,7 +644,7 @@ now, the image is suuuper tiny, fixed with a min-width+margin-top, looks terribl
   color: black;
   display: inline-block;
   border: 2px solid var(--main-color);
-  margin: 0 10px;
+  margin: 0 25px;
   transition: 0.3s ease;
   font-size: 25px;
 }
