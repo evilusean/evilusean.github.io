@@ -104,10 +104,7 @@ span {
   margin-top: 1rem;
   font-size: 3.5rem;
 }
-/* PROBLEM HERE, H1 IS STUCK IN NAVBAR, GOING TO MOVE ON, WASTED TOO MUCH TIME, FIX LATER 10:00 , MARGIN, BORDER AND GAP NOT WORKING, 
-Just duplicated it, works but not what I want, could just put a blank div or h1 there to placeholde/push down, looks fine for now with the blur 
-Removed second h1, added margin-top to .home-content of 120px, fixed it on my monitor, now the image is messed up, also adding it there
-now, the image is suuuper tiny, fixed with a min-width+margin-top, looks terrible on small screens though, will need to come back to this later*/
+/* Former problem Image- too small on small screens*/
 .home-content h1 {
   font-size: 7rem;
   font-weight: 700;
