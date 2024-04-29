@@ -1,0 +1,29 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* height: 100vh; */
+}
+
+.template-image {
+  background-image: url(trade-offer-template.png);
+  background-size: cover;
+  background-position: center;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding-top: 100px;
+}
+
+.giveDiv,
+.takeDiv {
+  width: 50%;
+  height: 50%;
+  padding: 20px;
+  padding-top: 50px;
+  text-align: center;
+  font-size: 24px;
+  color: white;
+}
