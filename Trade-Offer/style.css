@@ -6,7 +6,7 @@
 }
 
 .template-image {
-  background-image: url(trade-offer-template.png);
+  background-image: url(/assets/TradeOfferTemplate.jpg);
   background-size: cover;
   background-position: center;
   width: 100%;
