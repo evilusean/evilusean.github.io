@@ -34,6 +34,7 @@
  This will ensure that the text divs do not overflow outside of the image. 
  Maybe seperate with another div? it's not aligning properly, need to do some reading/thinking
  Maybe need to justify content center, with a max width on the text fields, and peg them to either take to right, take to left, 
+ https://stackoverflow.com/questions/38000159/two-50-divs-with-white-spacenowrap-elements-inside-a-flex-container
  */
 .textDiv {
   position: absolute;
