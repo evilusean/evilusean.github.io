@@ -32,7 +32,9 @@
 
 /* This will set the maximum width and height of the textDiv class to be 40px less than the width and height of the image.
  This will ensure that the text divs do not overflow outside of the image. 
- Maybe seperate with another div? it's not aligning properly, need to do some reading/thinking*/
+ Maybe seperate with another div? it's not aligning properly, need to do some reading/thinking
+ Maybe need to justify content center, with a max width on the text fields, and peg them to either take to right, take to left, 
+ */
 .textDiv {
   position: absolute;
   display: flex;
