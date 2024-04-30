@@ -6,15 +6,16 @@
 }
 
 .template-image {
-  /* background-image: url(https://github.com/evilusean/evilusean.github.io/blob/main/Trade-Offer/Assets/TradeOfferTemplate.jpg?raw=true); */
-  background-size: contain;
-  background-position: center;
+  /* First attempt : Tried to make it a background image, it was easier just to use an <img> tag 
+  background-image: url(https://github.com/evilusean/evilusean.github.io/blob/main/Trade-Offer/Assets/TradeOfferTemplate.jpg?raw=true); */
+  /*background-size: contain;
+  background-position: center; */
   /* width: 100%; */
   /* height: 100%; */
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding-top: 100px;
+  padding-top: 20px;
 }
 
 .giveDiv,
