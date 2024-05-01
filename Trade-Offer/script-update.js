@@ -17,6 +17,6 @@ const submitButton = document.querySelector("button");
 submitButton.addEventListener("click", () => {
   const giveValue = giveInput.value;
   const takeValue = takeInput.value;
-  const url = `evilusean.github.io/Trade-Offer/Give=${giveValue}&Take=${takeValue}`;
+  const url = `evilusean.github.io/Trade-Offer/?Give=${giveValue}&Take=${takeValue}`;
   window.location.href = url;
 });
