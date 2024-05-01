@@ -40,13 +40,15 @@
 .giveDiv {
   position: absolute;
   top: 250;
-  left: 0;
-  width: 30%;
+  left: 30vh;
+  max-width: 30%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   color: white;
   font-size: 24px;
-  text-align: center;
+  text-align: right;
+  align-items: right;
+  justify-content: flex-end;
   padding: 10px;
   overflow: auto;
 }
