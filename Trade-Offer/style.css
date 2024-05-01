@@ -22,6 +22,43 @@
   padding-top: 20px;
 }
 
+.template-image {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-image: url("https://github.com/evilusean/evilusean.github.io/blob/main/Trade-Offer/Assets/TradeOfferTemplate.jpg?raw=true");
+  background-size: cover;
+  background-position: center;
+}
+
+.giveDiv {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 24px;
+  text-align: center;
+  padding: 10px;
+  overflow: auto;
+}
+
+.takeDiv {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 24px;
+  text-align: center;
+  padding: 10px;
+  overflow: auto;
+}
+
 .giveDiv,
 .takeDiv {
   width: 50%;
@@ -40,6 +77,8 @@
  Maybe need to justify content center, with a max width on the text fields, and peg them to either take to right, take to left, 
  https://stackoverflow.com/questions/38000159/two-50-divs-with-white-spacenowrap-elements-inside-a-flex-container
  */
+
+/* OLD CSS: Experimenting with new things before I duplicate another site:
 .textDiv {
   position: absolute;
   display: flex;
@@ -65,3 +104,4 @@
   flex-grow: 1;
   min-width: 100%;
 }
+*/
