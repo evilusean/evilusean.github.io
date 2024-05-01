@@ -1,5 +1,6 @@
 .container {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   /* height: 100vh; */
@@ -31,17 +32,12 @@
   background-position: center;
 }
 
-.textDiv {
-  padding-top: calc(100vh / 3);
-  border-top: calc(100vh / 3);
-  margin: 250;
-}
-
 .giveDiv {
   position: absolute;
   top: 250;
   left: 30vh;
-  max-width: 30%;
+  min-width: auto;
+  max-width: calc(100vh / 2);
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   color: white;
@@ -56,13 +52,16 @@
 .takeDiv {
   position: absolute;
   top: 250;
-  right: 0;
-  width: 50%;
+  right: 30vh;
+  min-width: auto;
+  max-width: calc(100vh / 2);
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   color: white;
   font-size: 24px;
-  text-align: center;
+  text-align: left;
+  align-items: left;
+  justify-content: flex-start;
   padding: 10px;
   overflow: auto;
 }
@@ -73,9 +72,11 @@
   height: 50%;
   padding: 20px;
   padding-top: 50px;
+  margin: auto;
   text-align: center;
   font-size: 24px;
   color: white;
+  line-height: 2em;
   z-index: 1;
 }
 
