@@ -81,16 +81,14 @@
 
 .give-input,
 .take-input {
-  display: flex;
-  justify-content: space-between;
-  width: 30%;
-  height: 50vh;
+  width: 49%;
+  height: 25vh;
   margin-top: 20px;
 }
 
 button {
   width: 100%;
-  height: 50vh;
+  height: 15vh;
 }
 .give-input,
 .take-input,
@@ -103,10 +101,10 @@ button {
   padding-top: 175px;
 }
 
-.break-div {
-  display: block;
-  margin: 200;
-  padding-top: 175px;
+.give-container,
+.take-container {
+  display: inline-block;
+  width: 49%;
 }
 
 h1 {
