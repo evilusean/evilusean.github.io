@@ -6,23 +6,19 @@
   height: 75vh;
   width: 75vh;
   margin: auto;
-  /* height: 100vh; */
+}
+
+body {
+  background: linear-gradient(to bottom left, #851bb3, #f37272);
 }
 
 .template-image {
-  /* First attempt : Tried to make it a background image, it was easier just to use an <img> tag 
-  background-image: url(https://github.com/evilusean/evilusean.github.io/blob/main/Trade-Offer/Assets/TradeOfferTemplate.jpg?raw=true); */
-  /*background-size: contain;
-  background-position: center; */
-  /* width: 100%; */
-  /* height: 100%; */
   display: inline-flex;
   flex-basis: 0;
   flex-grow: 1;
   min-width: 100%;
   justify-content: center;
   align-items: center;
-  /*padding-top: 20px; */
 }
 
 .template-image {
@@ -38,7 +34,6 @@
   min-width: auto;
   max-width: 35vh;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
   color: white;
   font-size: 22px;
   font-weight: bold;
@@ -56,7 +51,6 @@
   min-width: auto;
   max-width: 35vh;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
   color: white;
   font-size: 22px;
   font-weight: bold;
@@ -83,12 +77,12 @@
 .take-input {
   width: 100%;
   height: 25vh;
-  margin-top: 20px;
 }
 
 button {
-  width: 100%;
-  height: 15vh;
+  justify-content: center;
+  width: 99%;
+  height: 10vh;
 }
 .give-input,
 .take-input,
