@@ -3,6 +3,8 @@
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
+  height: 75vh;
+  width: 75vh;
   /* height: 100vh; */
 }
 
@@ -35,9 +37,9 @@
 .giveDiv {
   position: absolute;
   top: 250;
-  left: 30vh;
+  left: 0;
   min-width: auto;
-  max-width: calc(100vh / 2);
+  max-width: calc(100vh / 3);
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   color: white;
@@ -52,7 +54,7 @@
 .takeDiv {
   position: absolute;
   top: 250;
-  right: 30vh;
+  right: 0;
   min-width: auto;
   max-width: calc(100vh / 2);
   height: 100%;
