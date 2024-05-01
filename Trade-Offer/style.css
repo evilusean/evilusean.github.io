@@ -31,6 +31,10 @@
   background-position: center;
 }
 
+#textDiv {
+  padding-top: 100px;
+}
+
 .giveDiv {
   position: absolute;
   top: 0;
