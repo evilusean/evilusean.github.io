@@ -81,7 +81,7 @@
 
 .give-input,
 .take-input {
-  width: 50%;
+  width: 49%;
   height: 50vh;
   margin-top: 20px;
 }
@@ -102,6 +102,7 @@ button {
 
 .break-div {
   display: block;
+  margin: 200;
 }
 
 h1 {
