@@ -65,6 +65,9 @@
     Ah, so it takes the URI, changes the characters, and gives new one without funky chars, this might not work since we are
       targeting 'Give' and 'Take'
     Just checked without URI, gives 'null' - will need to add default values - first need to make decoder method
+    now since we have 5x inputs, we can just put each one in a <h2> element and use:
+      <div class="giveDiv textDiv"> as a container, update from the URL, still wouldn't fix the decoder problem
+      still need to decode spaces - wait, just checked - that happens already - maybe this might work
     Test URLS(need to make, lost last ones when refreshed - save here next time):
       https://evilusean.github.io/Trade-Offer/?Give=Money%0ACertificate%20of%20Eligibility%20(COE)&Take=Web%20Developer
       
