@@ -1,8 +1,10 @@
+//THIS CAN PROBABLY GO TOO, KEEPING FOR NOW, NEW SELECTORS SHOULD WORK
 const giveInput = document.querySelector(".give-input");
 const takeInput = document.querySelector(".take-input");
 const giveDiv = document.querySelector(".give");
 const takeDiv = document.querySelector(".take");
 
+/* REMOVE THIS, WE ARE NO LONGER CHANGING CHARACTER SIZE BASED ON CHARACTER AMOUNT
 giveInput.addEventListener("input", () => {
   giveDiv.textContent = giveInput.value;
   giveDiv.style.fontSize = `${100 - giveInput.value.length / 2}%`;
@@ -12,6 +14,7 @@ takeInput.addEventListener("input", () => {
   takeDiv.textContent = takeInput.value;
   takeDiv.style.fontSize = `${100 - takeInput.value.length / 2}%`;
 });
+*/
 
 const submitButton = document.querySelector("button");
 submitButton.addEventListener("click", () => {
