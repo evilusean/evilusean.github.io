@@ -1,6 +1,6 @@
 //selects divs
-const giveDiv = document.querySelector(".give");
-const takeDiv = document.querySelector(".take");
+const giveDiv = document.querySelector(".giveDiv");
+const takeDiv = document.querySelector(".takeDiv");
 
 //gets url params
 const urlParams = new URLSearchParams(window.location.search);
