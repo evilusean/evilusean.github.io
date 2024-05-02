@@ -49,6 +49,10 @@
       'Leftline1' + %0A + 'Leftline2' + %0A + 'LeftLine3'... etc, cap it at 5 for soft overflow control
     Might need to add an encoder for newline/space to post to new URL and a decoder to read new URL and post to divs
       Just Tested with %0A newline from URL, doesn't work, might need to add a decoder.
+    Apparently there is an encode URI method... what about decode?:
+    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI
+    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI
+    Just checked without URI, gives 'null' - will need to add default values - first need to make decoder method
     Test URLS(need to make, lost last ones when refreshed - save here next time):
       https://evilusean.github.io/Trade-Offer/?Give=Money%0ACertificate%20of%20Eligibility%20(COE)&Take=Web%20Developer
       
