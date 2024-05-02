@@ -44,13 +44,12 @@
     need to fix JS, URL variables aren't working, 'Trade-Offer' must be in caps?(I thought caps didn't matter for URLS)
       It's a little too high up in browser, might need to fix placement(again), future sean problem
       left side could also be moved to the right, will need to work on it again tommorrow, havn't even started JS/URL testing yet
-    Might need to rewrite JS, read URL for give/take variables at start and submit will give a new URL with updated variables 
     https://www.sitepoint.com/get-url-parameters-with-javascript/
-      Maybe instead of one text area block, we can use multiple single inputs and add a script that automatically inputs newline
-      (IF the textarea doesn't add newline correctly, still havn't gotten a succesful test, YET. soon..)
+    Maybe instead of one text area block, we can use multiple single inputs and add a script that automatically inputs newline
       'Leftline1' + %0A + 'Leftline2' + %0A + 'LeftLine3'... etc, cap it at 5 for soft overflow control
     Might need to add an encoder for newline/space to post to new URL and a decoder to read new URL and post to divs
+      Just Tested with %0A newline from URL, doesn't work, might need to add a decoder.
     Test URLS(need to make, lost last ones when refreshed - save here next time):
-      https://evilusean.github.io/Trade-Offer/?Give=Money&Take=WebDeveloper
+      https://evilusean.github.io/Trade-Offer/?Give=Money%0ACertificate%20of%20Eligibility%20(COE)&Take=Web%20Developer
       
 -->
