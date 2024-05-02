@@ -5,7 +5,6 @@
     <title>!TRADE OFFER!</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <link rel="stylesheet" href="style.css" />
-    <!-- <script src="script.js"></script> -->
   </head>
   <body>
     <!-- <h1>! TRADE OFFER !</h1> -->
@@ -30,17 +29,12 @@
   </div>
     <button>Submit/Update URL</button>
   </div>
-  <script src="script.js"></script>
+    <script src="script.js"></script>
     <script src="script-update.js"></script>
   </body>
 </html>
 <!--
     TODO: Get Image template for trade offer, add yes chad, if feeling ambitious add wo/soijacks, maybe gimp edit
-    Might need to move <script> tag so it reads the JS variables from URL before rendering the template
-    make it a url link so it can look something like this, and be mailable through email:
-    evilusean.github.io/trade-offer/Give=Money&Take=WebDeveloper
-    Maybe download button? Idk if that will work with a background image and 2 text divs, sendable link more convenient
-    Can we use capital letters in URL? 'Give' 'Take'? can't test yet, 
     link to both portfolios
     <br> to add a new line, I wonder if the textarea will auto do this, will it post to URL? do we need a custom char?
     Ok, next hurdle, how do we get the <br> in a new line? do we need to add a script to add a line, and add <br> automatically?
@@ -56,7 +50,6 @@
       (IF the textarea doesn't add newline correctly, still havn't gotten a succesful test, YET. soon..)
       'Leftline1' + %0A + 'Leftline2' + %0A + 'LeftLine3'... etc, cap it at 5 for soft overflow control
     Might need to add an encoder for newline/space to post to new URL and a decoder to read new URL and post to divs
-    Just tested, need the '?' or won't work, for some reason my JS isn't updating the text div
     Test URLS(need to make, lost last ones when refreshed - save here next time):
       https://evilusean.github.io/Trade-Offer/?Give=Money&Take=WebDeveloper
       
