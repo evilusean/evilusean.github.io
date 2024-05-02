@@ -4,8 +4,8 @@ const takeDiv = document.querySelector(".takeDiv");
 
 //gets url params
 const urlParams = new URLSearchParams(window.location.search);
-const giveURL = urlParams.get("Give");
-const takeURL = urlParams.get("Take");
+const giveURL = urlParams.get("Give"); //new function should work without these 2
+const takeURL = urlParams.get("Take"); // maybe remove, test first
 
 const giveValue = decodeURLParameter(urlParams.get("Give"));
 const takeValue = decodeURLParameter(urlParams.get("Take"));
