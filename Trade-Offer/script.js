@@ -11,8 +11,12 @@ const takeURL = urlParams.get("Take"); // maybe remove, test first
 //const takeValue = decodeURLParameter(urlParams.get("Take"));
 
 // Decode the URL parameters
-const giveValue = decodeURI(giveURL);
-const takeValue = decodeURI(takeURL);
+const giveValue =
+  decodeURI(giveURL) ||
+  "Certificate of Eligibility (COE) <br> $ for Flight <br> $ for Rent <br> Salary";
+const takeValue =
+  decodeURI(takeURL) ||
+  "Jr. Web Developer <br> Jr. Data Analyst <br> Jr. Software Engineer <br> IT Specialist <br> Native English Speaker ";
 
 //updates div values on index.html
 giveDiv.textContent = giveValue;

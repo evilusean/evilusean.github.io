@@ -52,6 +52,8 @@
     Apparently there is an encode URI method... what about decode?:
     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI
     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI
+    Ah, so it takes the URI, changes the characters, and gives new one without funky chars, this might not work since we are
+      targeting 'Give' and 'Take'
     Just checked without URI, gives 'null' - will need to add default values - first need to make decoder method
     Test URLS(need to make, lost last ones when refreshed - save here next time):
       https://evilusean.github.io/Trade-Offer/?Give=Money%0ACertificate%20of%20Eligibility%20(COE)&Take=Web%20Developer
