@@ -39,6 +39,7 @@ const takeH2s = document.querySelectorAll(
   ".take-1, .take-2, .take-3, .take-4, .take-5"
 );
 
+// Submit Button:
 // Add an event listener for the submit button
 document.getElementById("submit-button").addEventListener("click", () => {
   // Get the values from the give and take inputs
@@ -64,4 +65,38 @@ document.getElementById("submit-button").addEventListener("click", () => {
   // Update the URL output
   const newURL = `https://evilusean.github.io/Trade-Offer/?G1=${giveValues[0]}&G2=${giveValues[1]}&G3=${giveValues[2]}&G4=${giveValues[3]}&G5=${giveValues[4]}&T1=${takeValues[0]}&T2=${takeValues[1]}&T3=${takeValues[2]}&T4=${takeValues[3]}&T5=${takeValues[4]}`;
   urlOutput.value = newURL;
+});
+
+//Clear Button:
+// Add an event listener for the clear button
+document.getElementById("clear-button").addEventListener("click", () => {
+  // Clear the give and take inputs
+  const giveInputs = document.querySelectorAll(".give-input");
+  for (let i = 0; i < giveInputs.length; i++) {
+    giveInputs[i].value = "";
+  }
+
+  const takeInputs = document.querySelectorAll(".take-input");
+  for (let i = 0; i < takeInputs.length; i++) {
+    takeInputs[i].value = "";
+  }
+
+  // Clear the URL output
+  const urlOutput = document.getElementById("url-output");
+  urlOutput.value = "";
+
+  // Clear the give and take h2 elements
+  const giveH2s = document.querySelectorAll(
+    ".give-1, .give-2, .give-3, .give-4, .give-5"
+  );
+  for (let i = 0; i < giveH2s.length; i++) {
+    giveH2s[i].textContent = "";
+  }
+
+  const takeH2s = document.querySelectorAll(
+    ".take-1, .take-2, .take-3, .take-4, .take-5"
+  );
+  for (let i = 0; i < takeH2s.length; i++) {
+    takeH2s[i].textContent = "";
+  }
 });
