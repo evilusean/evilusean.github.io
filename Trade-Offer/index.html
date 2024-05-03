@@ -56,7 +56,7 @@
   <div class="button-container">
     <button class="clear-button" id="clear-button">Clear</button>"
     <button class="submit-button" id="submit-button">Submit/Update URL</button>
-    <input type="text" class="url-input" id="url-input" placeholder="URL" />"
+    <input type="text" class="url-output" id="url-output" placeholder="URL" />"
   </div>
   </div>
     <script src="script.js"></script>
@@ -71,12 +71,8 @@
       It's a little too high up in browser, might need to fix placement(again), future sean problem
       left side could also be moved to the right, will need to work on it again tommorrow, havn't even started JS/URL testing yet
     https://www.sitepoint.com/get-url-parameters-with-javascript/
-    Maybe instead of one text area block, we can use multiple single inputs and add a script that automatically inputs newline
-      'Leftline1' + %0A + 'Leftline2' + %0A + 'LeftLine3'... etc, cap it at 5 for soft overflow control
-    Just checked without URI, gives 'null' - will need to add default values - first need to make decoder method
     now since we have 5x inputs, we can just put each one in a <h2> element and use:
       <div class="giveDiv textDiv"> as a container, update from the URL, still wouldn't fix the decoder problem
-      still need to decode spaces - wait, just checked - that happens already - maybe this might work
     '\n' seems to be the problem, trying a <br /> tag, waiting for github to update site
       if this doesn't work, going to make 5 <h2> tags and just space them apart and use the <div class="textDiv"> as a container
       just tested, still didn't work, also looks like something broke, getting default values, 
@@ -84,6 +80,7 @@
     I can already tell <h2> will be too big for text size, will work on CSS fiddling after we can get it to work properly
     Change the size of input texts, so the user knows where the overflow is(it goes outside the image if you type outside the box)
     Add a 'Clear' Button. which should just set all values to ' ', add a new spot for URL to update when submitted, 
+    Add new default values so that when I send as a link with 'https://evilusean.github.io/Trade-Offer/' it will be there shorter
     Test URLS(need to make, lost last ones when refreshed - save here next time):
       https://evilusean.github.io/Trade-Offer/?G1=Money&G2=Certificate%20of%20Eligibility%20(COE)&G3=&G4=&G5=&T1=Web%20Developer&T2=&T3=&T4=&T5=
     
