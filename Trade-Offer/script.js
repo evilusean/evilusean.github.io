@@ -14,6 +14,8 @@ const takeValue = decodeURLParameter(urlParams.get("Take"));
 giveDiv.textContent = giveValue;
 takeDiv.textContent = takeValue;
 
+/* REMOVING THIS FOR NOW, SEEING IF IT WORKS WITHOUT AN ENCODER, IF %20 IS AUTO OR IF FUNCTION IS DOING IT, 
+    BUILDING AN ENTIRELY NEW SET OF <h2> AND WILL ATTACH 'G1=X' 'G2=Y' ETC TO EACH HEADER INSTEAD OF TRYING TO MAKE IT WORK IN 1 GO
 function decodeURLParameter(param) {
   // Decode the URL parameter
   const decodedParam = decodeURIComponent(param);
@@ -27,3 +29,4 @@ function decodeURLParameter(param) {
   // Return the decoded and formatted parameter
   return withNewlines;
 }
+*/
