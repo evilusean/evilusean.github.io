@@ -68,6 +68,10 @@
     now since we have 5x inputs, we can just put each one in a <h2> element and use:
       <div class="giveDiv textDiv"> as a container, update from the URL, still wouldn't fix the decoder problem
       still need to decode spaces - wait, just checked - that happens already - maybe this might work
+    '\n' seems to be the problem, trying a <br /> tag, waiting for github to update site
+      if this doesn't work, going to make 5 <h2> tags and just space them apart and use the <div class="textDiv"> as a container
+      just tested, still didn't work, also looks like something broke, getting default values, 
+      looks like I need to manually create 5 <h2>, and pull from 5 URL variables, will need to shorten URL 'G1' to 'G5' vs 'Give1' etc
     Change the size of input texts, so the user knows where the overflow is(it goes outside the image if you type outside the box)
     Test URLS(need to make, lost last ones when refreshed - save here next time):
       https://evilusean.github.io/Trade-Offer/?Give=Money%0ACertificate%20of%20Eligibility%20(COE)&Take=Web%20Developer
