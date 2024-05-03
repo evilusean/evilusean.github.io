@@ -1,9 +1,11 @@
 //selects divs
+//CHANGE HERE FOR NEW SELECTORS 'give-1' 'give-2' etc for headers
 const giveDiv = document.querySelector(".giveDiv");
 const takeDiv = document.querySelector(".takeDiv");
 
 //gets url params
 const urlParams = new URLSearchParams(window.location.search);
+//CHANGE HERE FOR 'G1' 'G2' etc
 const giveURL = urlParams.get("Give"); //new function should work without these 2
 const takeURL = urlParams.get("Take"); // maybe remove, test first
 
@@ -11,6 +13,7 @@ const giveValue = decodeURLParameter(urlParams.get("Give"));
 const takeValue = decodeURLParameter(urlParams.get("Take"));
 
 //updates div values on index.html
+//CHANGE HERE FOR NEW VALUES FROM SELECTORS TO VARIABLES
 giveDiv.textContent = giveValue;
 takeDiv.textContent = takeValue;
 
