@@ -1,38 +1,41 @@
-//THIS CAN PROBABLY GO TOO, KEEPING FOR NOW, NEW SELECTORS SHOULD WORK
-const giveInput = document.querySelector(".give-input");
-const takeInput = document.querySelector(".take-input");
-const giveDiv = document.querySelector(".give");
-const takeDiv = document.querySelector(".take");
+// Get the give and take inputs
+const giveInputs = document.querySelectorAll(".give-input");
+const takeInputs = document.querySelectorAll(".take-input");
 
-/* REMOVE THIS, WE ARE NO LONGER CHANGING CHARACTER SIZE BASED ON CHARACTER AMOUNT
-giveInput.addEventListener("input", () => {
-  giveDiv.textContent = giveInput.value;
-  giveDiv.style.fontSize = `${100 - giveInput.value.length / 2}%`;
+// Get the URL output
+const urlOutput = document.getElementById("url-output");
+
+// Get the give and take h2 elements
+const giveH2s = document.querySelectorAll(
+  ".give-1, .give-2, .give-3, .give-4, .give-5"
+);
+const takeH2s = document.querySelectorAll(
+  ".take-1, .take-2, .take-3, .take-4, .take-5"
+);
+
+// Add an event listener for the submit button
+document.getElementById("submit-button").addEventListener("click", () => {
+  // Get the values from the give and take inputs
+  const giveValues = [];
+  for (let i = 0; i < giveInputs.length; i++) {
+    giveValues.push(giveInputs[i].value);
+  }
+
+  const takeValues = [];
+  for (let i = 0; i < takeInputs.length; i++) {
+    takeValues.push(takeInputs[i].value);
+  }
+
+  // Update the give and take h2 elements
+  for (let i = 0; i < giveH2s.length; i++) {
+    giveH2s[i].textContent = giveValues[i];
+  }
+
+  for (let i = 0; i < takeH2s.length; i++) {
+    takeH2s[i].textContent = takeValues[i];
+  }
+
+  // Update the URL output
+  const newURL = `https://evilusean.github.io/Trade-Offer/?G1=${giveValues[0]}&G2=${giveValues[1]}&G3=${giveValues[2]}&G4=${giveValues[3]}&G5=${giveValues[4]}&T1=${takeValues[0]}&T2=${takeValues[1]}&T3=${takeValues[2]}&T4=${takeValues[3]}&T5=${takeValues[4]}`;
+  urlOutput.value = newURL;
 });
-
-takeInput.addEventListener("input", () => {
-  takeDiv.textContent = takeInput.value;
-  takeDiv.style.fontSize = `${100 - takeInput.value.length / 2}%`;
-});
-*/
-
-const submitButton = document.querySelector("button");
-submitButton.addEventListener("click", () => {
-  const giveValue = giveInput.value;
-  const takeValue = takeInput.value;
-  const url = `evilusean.github.io/Trade-Offer/?Give=${giveValue}&Take=${takeValue}`;
-  window.location.href = url;
-});
-
-/* NEW ENCODER FOR URL, WILL TAKE 5 INPUTS AND UPDATE THE URL WITH NEW LINES, STILL NEED TO ENCODE SPACES
-// Get the values from the 5 inputs
-const giveInput1 = document.getElementById("give-input-1").value;
-const giveInput2 = document.getElementById("give-input-2").value;
-const giveInput3 = document.getElementById("give-input-3").value;
-const giveInput4 = document.getElementById("give-input-4").value;
-const giveInput5 = document.getElementById("give-input-5").value;
-
-// Update the URL with the new values
-const newURL = `https://evilusean.github.io/Trade-Offer/?Give=${giveInput1}%0A${giveInput2}%0A${giveInput3}%0A${giveInput4}%0A${giveInput5}&Take=${takeValue}`;
-window.location.href = newURL;
-*/
