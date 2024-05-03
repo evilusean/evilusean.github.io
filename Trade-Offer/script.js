@@ -22,7 +22,7 @@ function decodeURLParameter(param) {
   const withSpaces = decodedParam.replace(/%20/g, " ");
 
   // Replace all %0A with newlines
-  const withNewlines = withSpaces.replace(/%0A/g, "\n");
+  const withNewlines = withSpaces.replace(/%0A/g, "<br>");
 
   // Return the decoded and formatted parameter
   return withNewlines;
