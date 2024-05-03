@@ -53,7 +53,11 @@
   <input type="text" class="take-input" id="take-input-4" placeholder="Take 4" />
   <input type="text" class="take-input" id="take-input-5" placeholder="Take 5" />
   </div>
-    <button>Submit/Update URL</button>
+  <div class="button-container">
+    <button class="clear-button" id="clear-button">Clear</button>"
+    <button class="submit-button" id="submit-button">Submit/Update URL</button>
+    <input type="text" class="url-input" id="url-input" placeholder="URL" />"
+  </div>
   </div>
     <script src="script.js"></script>
     <script src="script-update.js"></script>
@@ -61,10 +65,9 @@
 </html>
 <!--
     TODO: Get Image template for trade offer, add yes chad, if feeling ambitious add wo/soijacks, maybe gimp edit
+    Add character selectSean - do you want to trade offer as chad or tiktok dood - need to edit first for this, can add soijack
+      I receive 'soi', 'funkopops', 'new marvel slop', 'current thing' - you receive 'soiface'
     link to both portfolios
-    <br> to add a new line, I wonder if the textarea will auto do this, will it post to URL? do we need a custom char?
-    %20 = space
-    %0A = newline
       It's a little too high up in browser, might need to fix placement(again), future sean problem
       left side could also be moved to the right, will need to work on it again tommorrow, havn't even started JS/URL testing yet
     https://www.sitepoint.com/get-url-parameters-with-javascript/
@@ -80,6 +83,7 @@
       looks like I need to manually create 5 <h2>, and pull from 5 URL variables, will need to shorten URL 'G1' to 'G5' vs 'Give1' etc
     I can already tell <h2> will be too big for text size, will work on CSS fiddling after we can get it to work properly
     Change the size of input texts, so the user knows where the overflow is(it goes outside the image if you type outside the box)
+    Add a 'Clear' Button. which should just set all values to ' ', add a new spot for URL to update when submitted, 
     Test URLS(need to make, lost last ones when refreshed - save here next time):
       https://evilusean.github.io/Trade-Offer/?G1=Money&G2=Certificate%20of%20Eligibility%20(COE)&G3=&G4=&G5=&T1=Web%20Developer&T2=&T3=&T4=&T5=
     
