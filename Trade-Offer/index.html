@@ -63,23 +63,13 @@
     TODO: Get Image template for trade offer, add yes chad, if feeling ambitious add wo/soijacks, maybe gimp edit
     link to both portfolios
     <br> to add a new line, I wonder if the textarea will auto do this, will it post to URL? do we need a custom char?
-    Ok, next hurdle, how do we get the <br> in a new line? do we need to add a script to add a line, and add <br> automatically?
     %20 = space
     %0A = newline
-    Downloaded and installed VSCode extension 'serve', will allow me to test locally the code, github takes a while to update
-    need to fix JS, URL variables aren't working, 'Trade-Offer' must be in caps?(I thought caps didn't matter for URLS)
       It's a little too high up in browser, might need to fix placement(again), future sean problem
       left side could also be moved to the right, will need to work on it again tommorrow, havn't even started JS/URL testing yet
     https://www.sitepoint.com/get-url-parameters-with-javascript/
     Maybe instead of one text area block, we can use multiple single inputs and add a script that automatically inputs newline
       'Leftline1' + %0A + 'Leftline2' + %0A + 'LeftLine3'... etc, cap it at 5 for soft overflow control
-    Might need to add an encoder for newline/space to post to new URL and a decoder to read new URL and post to divs
-      Just Tested with %0A newline from URL, doesn't work, might need to add a decoder.
-    Apparently there is an encode URI method... what about decode?:
-    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI
-    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI
-    Ah, so it takes the URI, changes the characters, and gives new one without funky chars, this might not work since we are
-      targeting 'Give' and 'Take' - unless we grep, seems like alot of work to do - could be simpler
     Just checked without URI, gives 'null' - will need to add default values - first need to make decoder method
     now since we have 5x inputs, we can just put each one in a <h2> element and use:
       <div class="giveDiv textDiv"> as a container, update from the URL, still wouldn't fix the decoder problem
@@ -92,5 +82,5 @@
     Change the size of input texts, so the user knows where the overflow is(it goes outside the image if you type outside the box)
     Test URLS(need to make, lost last ones when refreshed - save here next time):
       https://evilusean.github.io/Trade-Offer/?Give=Money%0ACertificate%20of%20Eligibility%20(COE)&Take=Web%20Developer
-      
+    
 -->
