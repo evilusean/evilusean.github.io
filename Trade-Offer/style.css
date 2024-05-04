@@ -111,6 +111,7 @@ h1 {
   justify-content: space-between;
   align-items: center;
   width: 95%;
+  padding: 5px;
 }
 
 .clear-button {
