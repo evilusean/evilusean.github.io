@@ -1,3 +1,9 @@
+:root {
+  --main-color: #f6060b;
+  --second-color: #ffffff;
+  --third-color: #65068d;
+}
+
 .container {
   display: flex;
   flex-wrap: wrap;
@@ -163,21 +169,13 @@ h2 {
   text-decoration: none;
 }
 
+/* PORTFOLIO SECTIONS: */
 .webdev-img {
   border-radius: 50%;
-}
-.webdev-img img {
-  position: relative;
-  width: 32vw;
-  border-radius: 50%;
-  box-shadow: 0 0 25px red;
-  top: 1rem;
-  cursor: pointer;
-  transition: 0.4s ease-in-out;
-  max-width: 32vw;
-  min-width: auto;
+  box-shadow: 0 0 25px var(--main-color);
 }
 
-.webdev-img img:hover {
-  box-shadow: 0 0 25px red, 0 0 50px red, 0 0 100px red;
+.webdev-img:hover {
+  box-shadow: 0 0 25px var(--main-color), 0 0 50px var(--main-color),
+    0 0 100px var(--main-color);
 }
