@@ -1,7 +1,7 @@
 :root {
   --main-color: #f6060b;
   --second-color: #ffffff;
-  --third-color: #65068d;
+  --third-color: #007bff;
 }
 
 .container {
@@ -178,4 +178,16 @@ h2 {
 .webdev-img:hover {
   box-shadow: 0 0 25px var(--main-color), 0 0 50px var(--main-color),
     0 0 100px var(--main-color);
+}
+
+.python-img {
+  border-radius: 50%;
+  box-shadow: 0 0 25px var(--third-color);
+  width: 32vw;
+  height: 32vw;
+}
+
+.python-img:hover {
+  box-shadow: 0 0 25px var(--third-color), 0 0 50px var(--third-color),
+    0 0 100px var(--third-color);
 }
