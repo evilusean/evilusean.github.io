@@ -162,3 +162,7 @@ h2 {
   color: black;
   text-decoration: none;
 }
+
+.webdev-img {
+  border-radius: 50%;
+}
