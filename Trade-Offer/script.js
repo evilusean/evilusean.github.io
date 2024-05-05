@@ -1,16 +1,16 @@
 //gets url params
 const urlParams = new URLSearchParams(window.location.search);
 //selects URL Variables
-const give1 = urlParams.get("G1") || "Give 1";
-const give2 = urlParams.get("G2") || "Give 2";
-const give3 = urlParams.get("G3") || "Give 3";
-const give4 = urlParams.get("G4") || "Give 4";
-const give5 = urlParams.get("G5") || "Give 5";
-const take1 = urlParams.get("T1") || "Take 1";
-const take2 = urlParams.get("T2") || "Take 2";
-const take3 = urlParams.get("T3") || "Take 3";
-const take4 = urlParams.get("T4") || "Take 4";
-const take5 = urlParams.get("T5") || "Take 5";
+const give1 = urlParams.get("G1") || "Certificate of Eligibility (COE)";
+const give2 = urlParams.get("G2") || "$ for Flight/Travel";
+const give3 = urlParams.get("G3") || "$ for Rent";
+const give4 = urlParams.get("G4") || "Competitive Salary";
+const give5 = urlParams.get("G5") || "Help Setting up Banking Account";
+const take1 = urlParams.get("T1") || "Jr. Web Developer";
+const take2 = urlParams.get("T2") || "Jr. Data Analyst";
+const take3 = urlParams.get("T3") || "Jr. Software Engineer";
+const take4 = urlParams.get("T4") || "IT Specialist";
+const take5 = urlParams.get("T5") || "Native English Speaker";
 
 //Updates our <h2> tags with URL variables
 document.querySelector(".give-1").textContent = give1;
