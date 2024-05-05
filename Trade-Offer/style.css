@@ -191,3 +191,16 @@ h2 {
   box-shadow: 0 0 25px var(--third-color), 0 0 50px var(--third-color),
     0 0 100px var(--third-color);
 }
+.github-img {
+  border-radius: 50%;
+  box-shadow: 0 0 25px var(--second-color);
+  width: 32vw;
+  height: 32vw;
+  object-fit: cover;
+  object-position: center;
+}
+
+.github-img:hover {
+  box-shadow: 0 0 25px var(--second-color), 0 0 50px var(--second-color),
+    0 0 100px var(--second-color);
+}
