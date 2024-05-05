@@ -204,3 +204,15 @@ h2 {
   box-shadow: 0 0 25px var(--second-color), 0 0 50px var(--second-color),
     0 0 100px var(--second-color);
 }
+
+.webdev-header:hover {
+  color: var(--main-color);
+}
+
+.python-header:hover {
+  color: var(--third-color);
+}
+
+.github-header:hover {
+  color: var(--second-color);
+}
