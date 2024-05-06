@@ -82,6 +82,8 @@ body {
 .give-input,
 .take-input {
   width: 90%;
+  padding: 10px;
+  border-radius: 5px;
 }
 
 /*
