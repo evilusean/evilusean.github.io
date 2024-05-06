@@ -149,6 +149,8 @@ h1 {
 
 h2 {
   font-size: 90%;
+  text-shadow: 0 0 5px black;
+  color: white;
 }
 
 .portfolio-container {
