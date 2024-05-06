@@ -185,6 +185,8 @@ h2 {
   box-shadow: 0 0 25px var(--third-color);
   width: 32vw;
   height: 32vw;
+  object-fit: cover;
+  object-position: center;
 }
 
 .python-img:hover {
@@ -196,8 +198,6 @@ h2 {
   box-shadow: 0 0 25px var(--second-color);
   width: 32vw;
   height: 32vw;
-  object-fit: cover;
-  object-position: center;
 }
 
 .github-img:hover {
