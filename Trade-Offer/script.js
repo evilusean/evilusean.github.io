@@ -3,7 +3,7 @@ const urlParams = new URLSearchParams(window.location.search);
 //selects URL Variables
 const give1 = urlParams.get("G1") || "Certificate of Eligibility (COE)";
 const give2 = urlParams.get("G2") || "$ for Flight/Travel";
-const give3 = urlParams.get("G3") || "$ for Rent";
+const give3 = urlParams.get("G3") || "¥ for First Month of Rent";
 const give4 = urlParams.get("G4") || "Competitive Salary";
 const give5 = urlParams.get("G5") || "Help Setting up Banking";
 const take1 = urlParams.get("T1") || "Jr. Web Developer";
