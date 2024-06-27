@@ -7,22 +7,25 @@ import { getFresnelMat } from "./src/getFresnelMat.js";
 /*
 TO DO:
 Fix variable names (I don't want to be on this planet anymore - 2 DA MOON!)
-Add Red Aura
-Add Red lighting
-Add Stars
+Add Red Aura - Test, added to 'getFresnelMat.js'
+Add Red lighting - change 'scene.add(sunLight);' 
+Add Stars - change 'getStarfield.js'
 Change to Moon Texture/Topography
-Add Zoom in + Rotate AnimASeans
+Add Zoom in + Rotate AnimASeans - we don't rotate on the moon 
 Add the wiremesh
 Shrink the wiremesh - hollow moon
 Remove the spin - moon doesn't spin 'dark side' and is the perfect size/distance to cover the sun perfectly during eclipse, totally not sus at all
 Remove 'earthGroup.add(lightsMesh);' this mesh - no lights on the moon 
 Remove 'earthGroup.add(cloudsMesh);' no atmo on moon, no atmoon 
+Maybe remove function handleWindowResize () - should be a set size canvas?
 Add to CV2 Canvas - should be able to reference with a ../../3ThreeJS/2DaMoon/
     If can't reference, just create a new script and reference the assets here (we used a different method for renderer)
     document.body.appendChild(renderer.domElement); #this might not work on a canvas - will need to check
 Add as CV2 default canvas animasean, make sure 'matrix rain' still works, clear canvas still works
 Create a CV2 button to reload if canvas cleared
 Fix Lighting for moon phases(dark side) - lights will have to move, while the moon is stationary - maybe buttons? idk - this seems tedious
+Add Earth - already have all assets/code downloaded - just get it to work on a canvas and add a button
+The Eye of the Moon Plan (月の眼計画, Tsuki no Me Keikaku) - Infinite Tsukuyomi - Click -> Look at earth - see all the brainwashed sleeping earthlings 
 */
 
 //ThreeJS BoilerPlate - Sets up the scene
@@ -74,7 +77,7 @@ const lightsMat = new THREE.MeshBasicMaterial({
   cloudsMesh.scale.setScalar(1.003);
   earthGroup.add(cloudsMesh);
   
-  const fresnelMat = getFresnelMat();
+  const fresnelMat = getFresnelMat(); //This is the Aura - change color
   const glowMesh = new THREE.Mesh(geometry, fresnelMat);
   glowMesh.scale.setScalar(1.01);
   earthGroup.add(glowMesh);
@@ -82,17 +85,17 @@ const lightsMat = new THREE.MeshBasicMaterial({
   const stars = getStarfield({numStars: 2000});
   scene.add(stars);
   
-  const sunLight = new THREE.DirectionalLight(0xffffff, 2.0);
+  const sunLight = new THREE.DirectionalLight(0xffffff, 2.0); //SunLight -change color
   sunLight.position.set(-2, 0.5, 1.5);
   scene.add(sunLight);
   
   function animate() {
     requestAnimationFrame(animate);
-  
+    //mesh.scale.setScalar(Math.cos(t * 0.001) + 1.0) //Will cause the orb to shrink and expand over and over again 2DaMoon
     earthMesh.rotation.y += 0.002; //Starts the earth rotation
     lightsMesh.rotation.y += 0.002;
     cloudsMesh.rotation.y += 0.0023;
-    glowMesh.rotation.y += 0.002;
+    glowMesh.rotation.y += 0.002;//RIP Terry. They glow in the dark. You can see em if your driving. 
     stars.rotation.y -= 0.0002;
     renderer.render(scene, camera);
   }
