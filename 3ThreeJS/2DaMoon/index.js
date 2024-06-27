@@ -4,6 +4,22 @@ import { OrbitControls } from 'jsm/controls/OrbitControls.js';
 import getStarfield from "./src/getStarfield.js";
 import { getFresnelMat } from "./src/getFresnelMat.js";
 
+/*
+TO DO:
+Fix variable names (I don't want to be on this planet anymore - 2 DA MOON!)
+Add Red Aura
+Add Red lighting
+Add Stars
+Change to Moon Texture/Topography
+Add Zoom in + Rotate AnimASeans
+Shrink the wiremesh - hollow moon
+Add to CV2 Canvas - should be able to reference with a ../../3ThreeJS/2DaMoon/
+    If can't reference, just create a new script and reference the assets here (we used a different method for renderer)
+    document.body.appendChild(renderer.domElement); #this might not work on a canvas - will need to check
+Add as CV2 default canvas animasean, make sure 'matrix rain' still works, clear canvas still works
+Create a CV2 button to reload if canvas cleared
+*/
+
 //ThreeJS BoilerPlate - Sets up the scene
 const w = window.innerWidth;
 const h = window.innerHeight;
