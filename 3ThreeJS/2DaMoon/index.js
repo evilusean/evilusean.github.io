@@ -12,12 +12,17 @@ Add Red lighting
 Add Stars
 Change to Moon Texture/Topography
 Add Zoom in + Rotate AnimASeans
+Add the wiremesh
 Shrink the wiremesh - hollow moon
+Remove the spin - moon doesn't spin 'dark side' and is the perfect size/distance to cover the sun perfectly during eclipse, totally not sus at all
+Remove 'earthGroup.add(lightsMesh);' this mesh - no lights on the moon 
+Remove 'earthGroup.add(cloudsMesh);' no atmo on moon, no atmoon 
 Add to CV2 Canvas - should be able to reference with a ../../3ThreeJS/2DaMoon/
     If can't reference, just create a new script and reference the assets here (we used a different method for renderer)
     document.body.appendChild(renderer.domElement); #this might not work on a canvas - will need to check
 Add as CV2 default canvas animasean, make sure 'matrix rain' still works, clear canvas still works
 Create a CV2 button to reload if canvas cleared
+Fix Lighting for moon phases(dark side) - lights will have to move, while the moon is stationary - maybe buttons? idk - this seems tedious
 */
 
 //ThreeJS BoilerPlate - Sets up the scene
