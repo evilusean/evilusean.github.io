@@ -26,6 +26,7 @@ Create a CV2 button to reload if canvas cleared
 Fix Lighting for moon phases(dark side) - lights will have to move, while the moon is stationary - maybe buttons? idk - this seems tedious
 Add Earth - already have all assets/code downloaded - just get it to work on a canvas and add a button
 The Eye of the Moon Plan (月の眼計画, Tsuki no Me Keikaku) - Infinite Tsukuyomi - Click -> Look at earth - see all the brainwashed sleeping earthlings 
+Add Elon Musk cherry red tesla roadster with soy face doods
 */
 
 //ThreeJS BoilerPlate - Sets up the scene
