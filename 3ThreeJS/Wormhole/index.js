@@ -6,6 +6,16 @@ import { RenderPass } from "jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "jsm/postprocessing/UnrealBloomPass.js";
 
 //The core of this is to create a tube, and then attaching a camera that follows a path inside of that tube
+/* TO DO:
+New Spline File
+Create a custom spline to make it my own, you made this? we made this? I made this.
+Add 2D memes instead of cubes - this will take some work in blender, which I currently don't have the time for - DoNut have the time
+Add to CV2 canvas, with a button, might need to change 'document.body.appendChild(renderer.domElement);' and resize
+could add a raytrace to hit the cubes for a game - getting a bit ambitious - out of scope
+Color the vertices (where the lines intersect)
+maybe use different geometries/models/animASeans inside of cube 
+maybe use different shaders
+*/
 
 //BoilerPlate JS
 const w = window.innerWidth;
