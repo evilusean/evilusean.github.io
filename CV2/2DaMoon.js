@@ -1,9 +1,8 @@
 import * as THREE from "three";
 import { OrbitControls } from 'jsm/controls/OrbitControls.js';
 
-import getStarfield from "../3ThreeJS/2DaMoon/src/getStarfield.js";
-import { getFresnelMat } from "../3ThreeJS/2DaMoon/src/getFresnelMat.js";
-
+import getStarfield from "./src/getStarfield.js";
+import { getFresnelMat } from "./src/getFresnelMat.js";
 /*
 TO DO:
 Maybe remove function handleWindowResize () - should be a set size canvas?
@@ -26,12 +25,7 @@ const camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000);
 camera.position.z = 5;
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(w, h);
-
-// Get the canvas element
-const canvas = document.getElementById('canvas1');
-
-// Set the renderer's canvas to the canvas element
-renderer.domElement = canvas;
+document.body.appendChild(renderer.domElement);
 // THREE.ColorManagement.enabled = true;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
@@ -44,8 +38,8 @@ const detail = 12; //change this to change how round the ico geo is, less detail
 const loader = new THREE.TextureLoader(); //In order to use a texture(picture) we need to create a loader
 const geometry = new THREE.IcosahedronGeometry(1, detail); //1 unit, with a detail of 12
 const material = new THREE.MeshPhongMaterial({
-    map: loader.load("../../3ThreeJS/2DaMoon/textures/moonmap4k.jpg"),
-    bumpMap: loader.load("../../3ThreeJS/2DaMoon/textures/moonbump4k.jpg"),
+  map: loader.load("https://github.com/evilusean/evilusean.github.io/blob/main/3ThreeJS/2DaMoon/textures/moonmap4k.jpg?raw=true"), //will load the earth textures we downloaded
+  bumpMap: loader.load("https://github.com/evilusean/evilusean.github.io/blob/main/3ThreeJS/2DaMoon/textures/moonbump4k.jpg?raw=true"),
   bumpScale: 0.04,
   // color: new THREE.Color(0xff0000), // Add a reddish hue
   // color: new THREE.Color(0xffffff), // white hue, added red sunlight instead this is unnecasary, keeping though
