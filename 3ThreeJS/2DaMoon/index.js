@@ -9,12 +9,15 @@ TO DO:
 Fix variable names (I don't want to be on this planet anymore - 2 DA MOON!)
 Add Red Aura - Test, added to 'getFresnelMat.js'
 Add Red lighting - change 'scene.add(sunLight);' 
+Add Red Hue to material
+Red WireFrame
 Add Stars - change 'getStarfield.js'
 Change to Moon Texture/Topography
 Add Zoom in + Rotate AnimASeans - we don't rotate on the moon 
 Add the wiremesh
 Shrink the wiremesh - hollow moon
 Remove the spin - moon doesn't spin 'dark side' and is the perfect size/distance to cover the sun perfectly during eclipse, totally not sus at all
+  Even though technically, the moon doesn't rotate, I'm not really going for realism here, and it looks way better when it moves ~!
 Remove 'earthGroup.add(lightsMesh);' this mesh - no lights on the moon 
 Remove 'earthGroup.add(cloudsMesh);' no atmo on moon, no atmoon 
 Maybe remove function handleWindowResize () - should be a set size canvas?
@@ -50,33 +53,33 @@ const detail = 12; //change this to change how round the ico geo is, less detail
 const loader = new THREE.TextureLoader(); //In order to use a texture(picture) we need to create a loader
 const geometry = new THREE.IcosahedronGeometry(1, detail); //1 unit, with a detail of 12
 const material = new THREE.MeshPhongMaterial({
-  map: loader.load("./textures/00_earthmap1k.jpg"), //will load the earth textures we downloaded
-  specularMap: loader.load("./textures/02_earthspec1k.jpg"), //uses the loader we previously created 
-  bumpMap: loader.load("./textures/01_earthbump1k.jpg"),
+  map: loader.load("./textures/moonmap4k.jpg"), //will load the earth textures we downloaded
+  //specularMap: loader.load("./textures/02_earthspec1k.jpg"), //uses the loader we previously created 
+  bumpMap: loader.load("./textures/moonbump4k.jpg"),
   bumpScale: 0.04,
 });
 // material.map.colorSpace = THREE.SRGBColorSpace;
 const earthMesh = new THREE.Mesh(geometry, material);
 earthGroup.add(earthMesh);
 
-const lightsMat = new THREE.MeshBasicMaterial({
-    map: loader.load("./textures/03_earthlights1k.jpg"),
-    blending: THREE.AdditiveBlending,
-  });
-  const lightsMesh = new THREE.Mesh(geometry, lightsMat);
-  earthGroup.add(lightsMesh);
+// const lightsMat = new THREE.MeshBasicMaterial({
+//     map: loader.load("./textures/03_earthlights1k.jpg"),
+//     blending: THREE.AdditiveBlending,
+//   });
+//   const lightsMesh = new THREE.Mesh(geometry, lightsMat);
+//   earthGroup.add(lightsMesh);
   
-  const cloudsMat = new THREE.MeshStandardMaterial({
-    map: loader.load("./textures/04_earthcloudmap.jpg"),
-    transparent: true,
-    opacity: 0.8,
-    blending: THREE.AdditiveBlending,
-    alphaMap: loader.load('./textures/05_earthcloudmaptrans.jpg'),
-    // alphaTest: 0.3,
-  });
-  const cloudsMesh = new THREE.Mesh(geometry, cloudsMat);
-  cloudsMesh.scale.setScalar(1.003);
-  earthGroup.add(cloudsMesh);
+  // const cloudsMat = new THREE.MeshStandardMaterial({
+  //   map: loader.load("./textures/04_earthcloudmap.jpg"),
+  //   transparent: true,
+  //   opacity: 0.8,
+  //   blending: THREE.AdditiveBlending,
+  //   alphaMap: loader.load('./textures/05_earthcloudmaptrans.jpg'),
+  //   // alphaTest: 0.3,
+  // });
+  // const cloudsMesh = new THREE.Mesh(geometry, cloudsMat);
+  // cloudsMesh.scale.setScalar(1.003);
+  // earthGroup.add(cloudsMesh);
   
   const fresnelMat = getFresnelMat(); //This is the Aura - change color
   const glowMesh = new THREE.Mesh(geometry, fresnelMat);
@@ -94,8 +97,8 @@ const lightsMat = new THREE.MeshBasicMaterial({
     requestAnimationFrame(animate);
     //mesh.scale.setScalar(Math.cos(t * 0.001) + 1.0) //Will cause the orb to shrink and expand over and over again 2DaMoon
     earthMesh.rotation.y += 0.002; //Starts the earth rotation
-    lightsMesh.rotation.y += 0.002;
-    cloudsMesh.rotation.y += 0.0023;
+    //lightsMesh.rotation.y += 0.002;
+    // cloudsMesh.rotation.y += 0.0023;
     glowMesh.rotation.y += 0.002;//RIP Terry. They glow in the dark. You can see em if your driving. 
     stars.rotation.y -= 0.0002;
     renderer.render(scene, camera);
