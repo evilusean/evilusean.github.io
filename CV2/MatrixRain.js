@@ -74,8 +74,10 @@ function handleScroll() {
     rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
     rect.right <= (window.innerWidth || document.documentElement.clientWidth)
   ) {
-    isAnimating = true; // Start animation if canvas is in viewport
-    animate(performance.now()); // Start the animation loop
+    if (!isAnimating) { // Only start animation if it's not already running
+      isAnimating = true; // Start animation if canvas is in viewport
+      animate(performance.now()); // Start the animation loop
+    }
   }
 }
 

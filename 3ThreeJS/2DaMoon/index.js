@@ -48,6 +48,24 @@ const material = new THREE.MeshPhongMaterial({
 // material.map.colorSpace = THREE.SRGBColorSpace;
 const moonMesh = new THREE.Mesh(geometry, material);
 moonGroup.add(moonMesh);
+
+// ADDED WIREFRAME MATERIAL - STILL VISIBLE FROM OUTSIDE - MAKES MOON LOOK UGLY - STAYING WITH ORIGINAL FOR NOW
+// Create a wireframe material
+// const wireframeMaterial = new THREE.MeshBasicMaterial({
+//   color: 0xff0000, // Set the wireframe color to red
+//   wireframe: true, // Enable wireframe mode
+//   side: THREE.BackSide // Render only the back side of the wireframe
+// });
+
+// // Create a wireframe mesh using the same geometry
+// const wireframeMesh = new THREE.Mesh(geometry, wireframeMaterial);
+
+// // Scale the wireframe mesh slightly smaller than the moon mesh
+// wireframeMesh.scale.setScalar(0.);
+
+// // Add the wireframe mesh to the moonGroup
+// moonGroup.add(wireframeMesh);
+
   
   const fresnelMat = getFresnelMat(); //This is the Aura - change color
   const glowMesh = new THREE.Mesh(geometry, fresnelMat);
@@ -71,6 +89,8 @@ moonGroup.add(moonMesh);
     moonMesh.rotation.y += 0.002; //Starts the earth rotation
     glowMesh.scale.setScalar(Math.cos(t * 0.001) + 2.0)
     glowMesh.rotation.y += 0.002;//RIP Terry. They glow in the dark. You can see em if your driving. 
+    // wireframeMesh.scale.setScalar(Math.cos(t * 0.001) + 2.0)
+    // wireframeMesh.rotation.y += 0.002;
     stars.rotation.y -= 0.0002;
     renderer.render(scene, camera);
   }
@@ -83,4 +103,6 @@ moonGroup.add(moonMesh);
     renderer.setSize(window.innerWidth, window.innerHeight);
   }
   window.addEventListener('resize', handleWindowResize, false);
+  
+
   
