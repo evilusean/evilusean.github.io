@@ -45,9 +45,9 @@ document.body.appendChild(renderer.domElement);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 
-const earthGroup = new THREE.Group(); //instead of adding to the scene, add to the earthgroup, so you can change all with one 
-earthGroup.rotation.z = -23.4 * Math.PI / 180; //Earth Tilt
-scene.add(earthGroup); //add the earthgroup to the scene
+const moonGroup = new THREE.Group(); //instead of adding to the scene, add to the earthgroup, so you can change all with one 
+moonGroup.rotation.z = -23.4 * Math.PI / 180; //Earth Tilt
+scene.add(moonGroup); //add the earthgroup to the scene
 new OrbitControls(camera, renderer.domElement); // allows you to move around the scene
 const detail = 12; //change this to change how round the ico geo is, less detail = less round/fewer faces
 const loader = new THREE.TextureLoader(); //In order to use a texture(picture) we need to create a loader
@@ -57,10 +57,12 @@ const material = new THREE.MeshPhongMaterial({
   //specularMap: loader.load("./textures/02_earthspec1k.jpg"), //uses the loader we previously created 
   bumpMap: loader.load("./textures/moonbump4k.jpg"),
   bumpScale: 0.04,
+  color: new THREE.Color(0xff0000), // Add a reddish hue
+  
 });
 // material.map.colorSpace = THREE.SRGBColorSpace;
-const earthMesh = new THREE.Mesh(geometry, material);
-earthGroup.add(earthMesh);
+const moonMesh = new THREE.Mesh(geometry, material);
+moonGroup.add(moonMesh);
 
 // const lightsMat = new THREE.MeshBasicMaterial({
 //     map: loader.load("./textures/03_earthlights1k.jpg"),
@@ -84,7 +86,7 @@ earthGroup.add(earthMesh);
   const fresnelMat = getFresnelMat(); //This is the Aura - change color
   const glowMesh = new THREE.Mesh(geometry, fresnelMat);
   glowMesh.scale.setScalar(1.01);
-  earthGroup.add(glowMesh);
+  moonGroup.add(glowMesh);
   
   const stars = getStarfield({numStars: 2000});
   scene.add(stars);
@@ -93,10 +95,14 @@ earthGroup.add(earthMesh);
   sunLight.position.set(-2, 0.5, 1.5);
   scene.add(sunLight);
   
-  function animate() {
+  let t = 0
+
+  function animate(t = 0) {
     requestAnimationFrame(animate);
-    //mesh.scale.setScalar(Math.cos(t * 0.001) + 1.0) //Will cause the orb to shrink and expand over and over again 2DaMoon
-    earthMesh.rotation.y += 0.002; //Starts the earth rotation
+    t += 0.01;
+    moonMesh.scale.setScalar(Math.cos(t * 0.001) + 2.0) //Will cause the orb to shrink and expand over and over again 2DaMoon
+    moonMesh.rotation.y += 0.002; //Starts the earth rotation
+    glowMesh.scale.setScalar(Math.cos(t * 0.001) + 2.0)
     //lightsMesh.rotation.y += 0.002;
     // cloudsMesh.rotation.y += 0.0023;
     glowMesh.rotation.y += 0.002;//RIP Terry. They glow in the dark. You can see em if your driving. 
