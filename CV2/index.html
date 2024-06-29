@@ -11,6 +11,14 @@
       rel="stylesheet"
     />
     <link rel="icon" type="image/x-icon" href="./extras/favicon.ico">
+    <script type="importmap">
+			{
+				"imports": {
+					"three": "https://cdn.jsdelivr.net/npm/three@0.161/build/three.module.js",
+          "jsm/": "https://cdn.jsdelivr.net/npm/three@0.161/examples/jsm/"
+        }
+			}
+		</script>
     <!-- TODO:
   -->
   <!--Forgot about old TODOs
@@ -230,7 +238,7 @@
 </div>
 <canvas id="canvas1">
 </canvas>
-<script defer src="./2DaMoon.js"></script>
+<script src="2DaMoon.js" type="module"></script>
 <canvas id="canvas2" class="container-fluid h-100 w-100 p-0" style="background-color: white; z-index: -1"> </canvas>
 </canvas>
 <footer class="footer">

@@ -3,6 +3,7 @@ import { OrbitControls } from 'jsm/controls/OrbitControls.js';
 
 import getStarfield from "./src/getStarfield.js";
 import { getFresnelMat } from "./src/getFresnelMat.js";
+
 /*
 TO DO:
 Maybe remove function handleWindowResize () - should be a set size canvas?
@@ -38,8 +39,8 @@ const detail = 12; //change this to change how round the ico geo is, less detail
 const loader = new THREE.TextureLoader(); //In order to use a texture(picture) we need to create a loader
 const geometry = new THREE.IcosahedronGeometry(1, detail); //1 unit, with a detail of 12
 const material = new THREE.MeshPhongMaterial({
-  map: loader.load("https://github.com/evilusean/evilusean.github.io/blob/main/3ThreeJS/2DaMoon/textures/moonmap4k.jpg?raw=true"), //will load the earth textures we downloaded
-  bumpMap: loader.load("https://github.com/evilusean/evilusean.github.io/blob/main/3ThreeJS/2DaMoon/textures/moonbump4k.jpg?raw=true"),
+  map: loader.load("./textures/moonmap4k.jpg"), //will load the earth textures we downloaded
+  bumpMap: loader.load("./textures/moonbump4k.jpg"),
   bumpScale: 0.04,
   // color: new THREE.Color(0xff0000), // Add a reddish hue
   // color: new THREE.Color(0xffffff), // white hue, added red sunlight instead this is unnecasary, keeping though
@@ -82,3 +83,4 @@ moonGroup.add(moonMesh);
     renderer.setSize(window.innerWidth, window.innerHeight);
   }
   window.addEventListener('resize', handleWindowResize, false);
+  
