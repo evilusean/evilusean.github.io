@@ -62,15 +62,45 @@ const fps = 5; //Change this to speed up or slow down
 const nextFrame = 1000 / fps;
 let timer = 0;
 
-const toggleButton = document.getElementById("makeItRainButton");
-let isAnimating = true;
+let isAnimating = false; // Start with animation off
 
-toggleButton.addEventListener("click", function () {
-  isAnimating = !isAnimating;
-  if (isAnimating) {
-    requestAnimationFrame(animate);
+// Function to handle scroll events
+function handleScroll() {
+  // Check if the canvas is in the viewport
+  const rect = canvas.getBoundingClientRect();
+  if (
+    rect.top >= 0 &&
+    rect.left >= 0 &&
+    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+  ) {
+    isAnimating = true; // Start animation if canvas is in viewport
+    animate(performance.now()); // Start the animation loop
   }
-});
+}
+
+// Add event listener for scroll events
+window.addEventListener("scroll", handleScroll);
+
+// Function to clear the canvas
+function clearCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  isAnimating = false; // Pause the animation when the button is clicked
+}
+
+// Add event listener for clear canvas button
+const clearCanvasButton = document.getElementById("clearCanvas");
+clearCanvasButton.addEventListener("click", clearCanvas);
+
+// Function to start the animation
+function startAnimation() {
+  isAnimating = true; // Start animation when the button is clicked
+  animate(performance.now()); // Start the animation loop
+}
+
+// Add event listener for start animation button
+const startAnimationButton = document.getElementById("makeItRainButton");
+startAnimationButton.addEventListener("click", startAnimation);
 
 function animate(timeStamp) {
   if (!isAnimating) {
@@ -100,11 +130,4 @@ window.addEventListener("resize", function () {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   effect.resize(canvas.width, canvas.height);
-});
-
-const clearCanvasButton = document.getElementById("clearCanvas");
-
-clearCanvasButton.addEventListener("click", function () {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  isAnimating = false; // Pause the animation when the button is clicked
 });
