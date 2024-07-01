@@ -4,6 +4,7 @@
 // Initialize Three.js scene, camera, and renderer
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.z = 5; // Move the camera back
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
@@ -13,6 +14,7 @@ const circleGeometry = new THREE.CircleGeometry(0.1, 32);
 const circleMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 const circle = new THREE.Mesh(circleGeometry, circleMaterial);
 scene.add(circle);
+
 
 // Function to update the circle's position based on mouse coordinates
 function updateCirclePosition(event) {
@@ -47,6 +49,7 @@ function spawnSquare() {
     // Create a new square
     const square = new THREE.Mesh(squareGeometry, squareMaterial);
     square.position.copy(randomCorner);
+    square.position.z = 0.5;
     squares.push(square);
     scene.add(square);
 }
