@@ -34,7 +34,6 @@ import { Switch } from "@/components/ui/switch"
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
-import { Toast } from "@/components/ui/toast"
 import { Toggle } from "@/components/ui/toggle"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { ArrowUpRight } from 'lucide-react'
@@ -416,7 +415,7 @@ export default function Component() {
             Finally, he decided to set a trap. He put a whoopee cushion under his throne
             and waited. When the jester sat down, the king jumped out from behind a
             curtain and shouted, "You're under arrest!" But the jester just looked up and
-            said, "I guess you caught me sitting down on the job."
+            said, "I guess you caught me sitting down on the job."nisl dolor fermentum justo, vel interdum mauris mi vel nibh. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Donec a dui et ligula.
           </ScrollArea>
         )
       case 'Select':
@@ -513,15 +512,7 @@ export default function Component() {
         return (
           <Textarea placeholder="Type your message here." />
         )
-      case 'Toast':
-        return (
-          <Toast>
-            <div className="grid gap-1">
-              <div className="font-medium">Scheduled: Catch up</div>
-              <div className="text-sm text-muted-foreground">Friday, February 10, 2023 at 5:57 PM</div>
-            </div>
-          </Toast>
-        )
+ 
       case 'Toggle':
         return (
           <Toggle aria-label="Toggle italic" disabled={customization.disabled}>
