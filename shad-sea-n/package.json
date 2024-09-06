@@ -1,8 +1,8 @@
 {
   "name": "shad-sea-n",
   "version": "0.1.0",
-  "private": true,
-  "homepage": "evilusean.github.io/shad-sea-n",
+  "private": false,
+  "homepage": "https://evilusean.github.io/shad-sea-n",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
