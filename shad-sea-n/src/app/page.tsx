@@ -1,5 +1,9 @@
 'use client'
-
+//Already put a few hours trying to get this to run as a static page on github pages
+//messed with 'package.json' 'next.config.json' and 'out' directory, got 404's and finally worked then was bad formatting
+//worked by moving 'out' files to 'root' 
+//rather than put another few hours into getting it to work, simply 'npm run dev' from below repo
+//https://github.com/evilusean/JavaScriptsean/tree/main/UI-ShadCN-Daisy-Tailwind/shad-sea-n
 import { useState } from 'react'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
