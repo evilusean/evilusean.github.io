@@ -2,7 +2,7 @@ const minNumberInput = document.getElementById('minNumber');
 const maxNumberInput = document.getElementById('maxNumber');
 const stepInput = document.getElementById('step');
 const generateButton = document.getElementById('generateNumber');
-const numberDisplay = document.getElementById('numberDisplay');
+const numberInput = document.getElementById('numberInput');
 const revealButton = document.getElementById('revealAnswer');
 const answerDisplay = document.getElementById('answerDisplay');
 
@@ -50,29 +50,26 @@ function getSlovakNumber(number) {
     return slovak.trim();
   }
 
-// Function to generate a random number
-function generateRandomNumber() {
+  function generateRandomNumber() {
     const min = parseInt(minNumberInput.value);
     const max = parseInt(maxNumberInput.value);
     const step = parseInt(stepInput.value);
   
     const adjustedMax = max - (max % step);
-    const adjustedMin = min + ((step - (min % step)) % step); 
-    currentNumber = Math.floor(Math.random() * ((adjustedMax - adjustedMin) / step + 1)) * step + adjustedMin;
-    numberDisplay.textContent = currentNumber;
-    answerDisplay.textContent = ''; // Clear previous answer
+    const adjustedMin = min + ((step - (min % step)) % step);
+    const randomNumber = Math.floor(Math.random() * ((adjustedMax - adjustedMin) / step + 1)) * step + adjustedMin;
+  
+    numberInput.value = randomNumber; // Display the random number in the input field
   }
   
-  // Function to display the Slovak number
   function displayAnswer() {
-    if (currentNumber !== null) {
-      answerDisplay.textContent = getSlovakNumber(currentNumber);
+    const number = parseInt(numberInput.value);
+    if (!isNaN(number)) {
+      answerDisplay.textContent = getSlovakNumber(number);
+    } else {
+      answerDisplay.textContent = "Invalid input";
     }
   }
   
-  // Event listeners for the buttons
   generateButton.addEventListener('click', generateRandomNumber);
   revealButton.addEventListener('click', displayAnswer);
-  
-  // Generate an initial number on page load (optional)
-  generateRandomNumber(); 

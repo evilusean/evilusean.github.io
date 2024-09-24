@@ -8,20 +8,24 @@
 </head>
 <body>
     <h1>Slovak Number Test</h1>
+
     <div>
         <label for="minNumber">Min Number:</label> 
         <input type="number" id="minNumber" value="1" min="1">
     </div>
     <div>
         <label for="maxNumber">Max Number (up to 1 Billion):</label>
-        <input type="number" id="maxNumber" value="100" min="1" max="1000000">
+        <input type="number" id="maxNumber" value="100" min="1" max="1000000000">
     </div>
     <div>
         <label for="step">Step:</label>
         <input type="number" id="step" value="1" min="1">
     </div>
     <button id="generateNumber">Generate Number</button>
-    <div id="numberDisplay"></div>
+    <div>
+        <label for="numberInput">Number:</label>
+        <input type="number" id="numberInput"> 
+    </div>
     <button id="revealAnswer">Reveal Answer</button>
     <div id="answerDisplay"></div>
 
