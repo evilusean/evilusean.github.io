@@ -38,7 +38,8 @@ body {
   }
   
   #numberDisplay,
-  #answerDisplay {
+  #answerDisplay,
+  #answerDisplay2 {
     font-size: 20px;
     margin-top: 20px;
     padding: 10px;
