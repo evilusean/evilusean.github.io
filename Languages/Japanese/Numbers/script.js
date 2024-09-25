@@ -90,6 +90,11 @@ function toRomaji(number) {
       "chō": 12
     };
   
+    // Handle single-digit numbers directly (base case)
+    if (number < 10) {
+      return units[number]; // Return the corresponding romaji unit
+    }
+  
     let romaji = "";
     let i = 12; // Start from the highest myriad value
   
@@ -102,8 +107,7 @@ function toRomaji(number) {
         if (i >= 4 && i % 4 === 0) {
           romaji += " " + Object.keys(myriadValues).find(key => myriadValues[key] === i) + " ";
         } else if (i < 4) {
-          // Correct the logic for units and place values:
-          romaji += units[myriadPart] + " " + placeValues[i] + " "; 
+          romaji += units[myriadPart] + " " + placeValues[i] + " ";
         }
   
         number %= myriadValue; // Update number to prevent infinite recursion
