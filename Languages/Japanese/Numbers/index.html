@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
     <!-- TODO: Just Tested, logic is different for Japanese, doesn't work will need to fix
+     Removed the duplicate numbers, this is taking me 10x longer than slovak, and
+     I'm still having issues, works well for 1-100 but need to fix logic for big numbers like 
+     1,000 is 'issen' but it gets put down as 'ichi sen' and 
+     800 is 'happyaku' but gets put down as 'hachi hyaku'
+     it kind of defeats the purpose to practice big numbers - if it is doing it wrong
+     now when it does duplicate numbers it will mess up the second part for example:
+     33 = 'san ju san' with the new logic it is now 'san ju' - which is wrong, 
+     I've avoided the duplicate number issue and brought in another problem, 
+     shelving this for now, need to get back to slovak, so I can escape canada
      Add responsiveness, put 'min/max/step number' on same line for big screens seperate for small
      Add event listener for when enter is pressed, when cursor is in 'number' translate to slovak
         when cursor is in min/max/step go to next line when enter pressed
