@@ -51,24 +51,32 @@ function toJapaneseNumerals(number) {
     "兆": 12
   };
 
-  // Handle single-digit numbers directly (base case)
   if (number < 10) {
     return units[number];
   }
 
   let japanese = "";
-  let i = 12; // Start from the highest myriad value
+  let i = 12;
 
   while (i >= 0) {
     const myriadValue = Math.pow(10, i);
     if (number >= myriadValue) {
       const myriadPart = Math.floor(number / myriadValue);
-      japanese += toJapaneseNumerals(myriadPart); // Recursive call for the myriad part
+
+      // Only add units for the most significant digit in each group
+      if (i % 4 === 0 || myriadPart > 1) {
+        japanese += toJapaneseNumerals(myriadPart);
+
+        // Add the unit only if it's not the ones place (i === 0)
+        if (i > 0) {
+          japanese += units[myriadPart];
+        }
+      }
 
       if (i >= 4 && i % 4 === 0) {
         japanese += Object.keys(myriadValues).find(key => myriadValues[key] === i);
       } else if (i < 4) {
-        japanese += units[Math.floor(number / myriadValue)] + placeValues[i % 4];
+        japanese += placeValues[i];
       }
 
       number %= myriadValue;
@@ -80,46 +88,51 @@ function toJapaneseNumerals(number) {
 }
 
 function toRomaji(number) {
-    if (number === 0) return "rei";
-  
-    const units = ["", "ichi", "ni", "san", "yon", "go", "roku", "nana", "hachi", "kyū"];
-    const placeValues = ["", "jū", "hyaku", "sen"];
-    const myriadValues = {
-      "man": 4,
-      "oku": 8,
-      "chō": 12
-    };
-  
-    // Handle single-digit numbers directly (base case)
-    if (number < 10) {
-      return units[number]; // Return the corresponding romaji unit
-    }
-  
-    let romaji = "";
-    let i = 12; // Start from the highest myriad value
-  
-    while (i >= 0) {
-      const myriadValue = Math.pow(10, i);
-      if (number >= myriadValue) {
-        const myriadPart = Math.floor(number / myriadValue);
-        romaji += toRomaji(myriadPart); // Recursive call for the myriad part
-  
-        if (i >= 4 && i % 4 === 0) {
-          romaji += " " + Object.keys(myriadValues).find(key => myriadValues[key] === i) + " ";
-        } else if (i < 4) {
-          romaji += units[myriadPart] + " " + placeValues[i] + " ";
-        }
-  
-        number %= myriadValue; // Update number to prevent infinite recursion
-      }
-      i--;
-    }
-  
-    return romaji.trim();
+  if (number === 0) return "rei";
+
+  const units = ["", "ichi", "ni", "san", "yon", "go", "roku", "nana", "hachi", "kyū"];
+  const placeValues = ["", "jū", "hyaku", "sen"];
+  const myriadValues = {
+    "man": 4,
+    "oku": 8,
+    "chō": 12
+  };
+
+  if (number < 10) {
+    return units[number];
   }
-  
-  
-  
+
+  let romaji = "";
+  let i = 12;
+
+  while (i >= 0) {
+    const myriadValue = Math.pow(10, i);
+    if (number >= myriadValue) {
+      const myriadPart = Math.floor(number / myriadValue);
+
+      // Only add units for the most significant digit in each group
+      if (i % 4 === 0 || myriadPart > 1) {
+        romaji += toRomaji(myriadPart) + " ";
+
+        // Add the unit only if it's not the ones place (i === 0)
+        if (i > 0) {
+          romaji += units[myriadPart] + " ";
+        }
+      }
+
+      if (i >= 4 && i % 4 === 0) {
+        romaji += Object.keys(myriadValues).find(key => myriadValues[key] === i) + " ";
+      } else if (i < 4) {
+        romaji += placeValues[i] + " ";
+      }
+
+      number %= myriadValue;
+    }
+    i--;
+  }
+
+  return romaji.trim();
+}
 
 generateButton.addEventListener('click', generateRandomNumber);
 revealButton.addEventListener('click', displayAnswer);
