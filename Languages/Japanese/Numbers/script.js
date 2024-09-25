@@ -9,10 +9,10 @@ const answerDisplay = document.getElementById('answerDisplay');
 let currentNumber = null;
 
 function getJapaneseNumber(number) {
-  if (number === 0) return "零";
+  if (number === 0) return "零 (rei)"; // Include romaji for 0
 
-  const units = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
-  const placeValues = ["", "十", "百", "千", "万", "億", "兆"]; // Add more for larger numbers
+  const units = ["", "一 (ichi)", "二 (ni)", "三 (san)", "四 (yon)", "五 (go)", "六 (roku)", "七 (nana)", "八 (hachi)", "九 (kyū)"];
+  const placeValues = ["", "十 (jū)", "百 (hyaku)", "千 (sen)", "万 (man)", "億 (oku)", "兆 (chō)"]; 
 
   if (number < 10) return units[number];
 
@@ -25,7 +25,7 @@ function getJapaneseNumber(number) {
       japanese = units[currentDigit] + placeValues[placeValueIndex] + japanese;
     }
     number = Math.floor(number / 10);
-    placeValueIndex = (placeValueIndex + 1) % placeValues.length; // Cycle through place values
+    placeValueIndex = (placeValueIndex + 1) % placeValues.length; 
   }
 
   return japanese;
