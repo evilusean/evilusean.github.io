@@ -106,16 +106,49 @@ function toRomaji(number) {
     if (number >= myriadValue) {
       const myriadPart = Math.floor(number / myriadValue);
 
-      // Add the unit only if it's not 1 or if it's the ones place
-      if (myriadPart !== 1 || i === 0) {
-        romaji += units[myriadPart] + " ";
+      // Handle exceptions for hundreds
+      if (i === 2) {
+        if (myriadPart === 3) {
+          romaji += "sanbyaku ";
+        } else if (myriadPart === 6) {
+          romaji += "roppyaku ";
+        } else if (myriadPart === 8) {
+          romaji += "happyaku ";
+        } else {
+          // Add the unit only if it's not 1 or if it's the ones place
+          if (myriadPart !== 1 || i === 0) {
+            romaji += units[myriadPart] + " ";
+          }
+          romaji += placeValues[i] + " ";
+        }
       }
+      // Handle exceptions for thousands
+      else if (i === 3) {
+        if (myriadPart === 3) {
+          romaji += "sanzen ";
+        } else if (myriadPart === 8) {
+          romaji += "hassen ";
+        } else {
+          // Add the unit only if it's not 1 or if it's the ones place
+          if (myriadPart !== 1 || i === 0) {
+            romaji += units[myriadPart] + " ";
+          }
+          romaji += placeValues[i] + " ";
+        }
+      }
+      // Handle other cases
+      else {
+        // Add the unit only if it's not 1 or if it's the ones place
+        if (myriadPart !== 1 || i === 0) {
+          romaji += units[myriadPart] + " ";
+        }
 
-      // Add the place value or myriad character
-      if (i >= 4 && i % 4 === 0) {
-        romaji += Object.keys(myriadValues).find(key => myriadValues[key] === i) + " ";
-      } else if (i < 4) {
-        romaji += placeValues[i] + " ";
+        // Add the place value or myriad character
+        if (i >= 4 && i % 4 === 0) {
+          romaji += Object.keys(myriadValues).find(key => myriadValues[key] === i) + " ";
+        } else if (i < 4) {
+          romaji += placeValues[i] + " ";
+        }
       }
 
       number %= myriadValue;
