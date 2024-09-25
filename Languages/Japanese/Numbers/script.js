@@ -51,21 +51,27 @@ function toJapaneseNumerals(number) {
       "兆": 12
     };
   
+    if (number < 10) {
+      return units[number];
+    }
+  
     let japanese = "";
     let i = 12;
-    let lastDigit = null; // Keep track of the last added digit
   
     while (i >= 0) {
       const myriadValue = Math.pow(10, i);
       if (number >= myriadValue) {
         const myriadPart = Math.floor(number / myriadValue);
   
-        // Add the unit only if it's different from the last added digit
-        if (myriadPart !== lastDigit) {
-          japanese += units[myriadPart];
-          lastDigit = myriadPart;
+        // Add the unit only if it's the most significant digit in the group OR if it's not 1
+        if (i % 4 === 0 || myriadPart > 1) {
+          japanese += toJapaneseNumerals(myriadPart);
+          if (i > 0) { // Add the unit only if it's not the ones place
+            japanese += units[myriadPart];
+          }
         }
   
+        // Add the place value or myriad character
         if (i >= 4 && i % 4 === 0) {
           japanese += Object.keys(myriadValues).find(key => myriadValues[key] === i);
         } else if (i < 4) {
@@ -73,8 +79,6 @@ function toJapaneseNumerals(number) {
         }
   
         number %= myriadValue;
-      } else {
-        lastDigit = null; // Reset lastDigit if the current myriadValue is not used
       }
       i--;
     }
@@ -93,21 +97,27 @@ function toJapaneseNumerals(number) {
       "chō": 12
     };
   
+    if (number < 10) {
+      return units[number];
+    }
+  
     let romaji = "";
     let i = 12;
-    let lastDigit = null; // Keep track of the last added digit
   
     while (i >= 0) {
       const myriadValue = Math.pow(10, i);
       if (number >= myriadValue) {
         const myriadPart = Math.floor(number / myriadValue);
   
-        // Add unit only if it's different from the last added unit
-        if (myriadPart !== lastDigit) {
-          romaji += units[myriadPart] + " ";
-          lastDigit = myriadPart;
+        // Add the unit only if it's the most significant digit in the group OR if it's not 1
+        if (i % 4 === 0 || myriadPart > 1) {
+          romaji += toRomaji(myriadPart) + " ";
+          if (i > 0) { // Add the unit only if it's not the ones place
+            romaji += units[myriadPart] + " ";
+          }
         }
   
+        // Add the place value or myriad character
         if (i >= 4 && i % 4 === 0) {
           romaji += Object.keys(myriadValues).find(key => myriadValues[key] === i) + " ";
         } else if (i < 4) {
@@ -115,16 +125,13 @@ function toJapaneseNumerals(number) {
         }
   
         number %= myriadValue;
-      } else {
-        lastDigit = null; // Reset lastDigit if the current myriadValue is not used
       }
       i--;
     }
   
     return romaji.trim();
   }
-
-generateButton.addEventListener('click', generateRandomNumber);
-revealButton.addEventListener('click', displayAnswer);
-
+  
+  generateButton.addEventListener('click', generateRandomNumber);
+  revealButton.addEventListener('click', displayAnswer);
 
