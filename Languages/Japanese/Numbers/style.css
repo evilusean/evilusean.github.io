@@ -1,0 +1,52 @@
+body {
+    font-family: sans-serif;
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  div {
+    margin-bottom: 10px;
+  }
+  
+  label {
+    display: inline-block;
+    width: 300px; /* Adjust as needed */
+    text-align: right;
+    margin-right: 10px;
+  }
+  
+  button {
+    padding: 10px 20px; /* Adjust padding as needed */
+    margin: 10px 0; /* Adjust margin as needed */
+    background-color: #ea0b0b; /* Red */
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px; /* Add rounded corners */
+    margin-left: 250px; /* Add padding left */
+  }
+  
+  button:hover {
+    background-color: #45a049; /* Darker green on hover */
+  }
+  
+  #numberDisplay,
+  #answerDisplay {
+    font-size: 20px;
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-left: 250px;
+    margin-right: auto;
+  }
+  #maxNumber {
+    width: 100px; /* Adjust the width as needed */
+  }
