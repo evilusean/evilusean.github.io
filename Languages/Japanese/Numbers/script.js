@@ -41,96 +41,91 @@ function displayAnswer() {
 }
 
 function toJapaneseNumerals(number) {
-    if (number === 0) return "零";
-  
-    const units = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
-    const placeValues = ["", "十", "百", "千"];
-    const myriadValues = {
-      "万": 4,
-      "億": 8,
-      "兆": 12
-    };
-  
-    if (number < 10) {
-      return units[number];
-    }
-  
-    let japanese = "";
-    let i = 12;
-  
-    while (i >= 0) {
-      const myriadValue = Math.pow(10, i);
-      if (number >= myriadValue) {
-        const myriadPart = Math.floor(number / myriadValue);
-  
-        // Add the unit only if it's the most significant digit in the group OR if it's not 1
-        if (i % 4 === 0 || myriadPart > 1) {
-          japanese += toJapaneseNumerals(myriadPart);
-          if (i > 0) { // Add the unit only if it's not the ones place
-            japanese += units[myriadPart];
-          }
-        }
-  
-        // Add the place value or myriad character
-        if (i >= 4 && i % 4 === 0) {
-          japanese += Object.keys(myriadValues).find(key => myriadValues[key] === i);
-        } else if (i < 4) {
-          japanese += placeValues[i];
-        }
-  
-        number %= myriadValue;
-      }
-      i--;
-    }
-  
-    return japanese;
+  if (number === 0) return "零";
+
+  const units = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
+  const placeValues = ["", "十", "百", "千"];
+  const myriadValues = {
+    "万": 4,
+    "億": 8,
+    "兆": 12
+  };
+
+  if (number < 10) {
+    return units[number];
   }
-  
-  function toRomaji(number) {
-    if (number === 0) return "rei";
-  
-    const units = ["", "ichi", "ni", "san", "yon", "go", "roku", "nana", "hachi", "kyū"];
-    const placeValues = ["", "jū", "hyaku", "sen"];
-    const myriadValues = {
-      "man": 4,
-      "oku": 8,
-      "chō": 12
-    };
-  
-    if (number < 10) {
-      return units[number];
-    }
-  
-    let romaji = "";
-    let i = 12;
-  
-    while (i >= 0) {
-      const myriadValue = Math.pow(10, i);
-      if (number >= myriadValue) {
-        const myriadPart = Math.floor(number / myriadValue);
-  
-        // Add the unit only if it's the most significant digit in the group OR if it's not 1
-        if (i % 4 === 0 || myriadPart > 1) {
-          romaji += toRomaji(myriadPart) + " ";
-          if (i > 0) { // Add the unit only if it's not the ones place
-            romaji += units[myriadPart] + " ";
-          }
-        }
-  
-        // Add the place value or myriad character
-        if (i >= 4 && i % 4 === 0) {
-          romaji += Object.keys(myriadValues).find(key => myriadValues[key] === i) + " ";
-        } else if (i < 4) {
-          romaji += placeValues[i] + " ";
-        }
-  
-        number %= myriadValue;
+
+  let japanese = "";
+  let i = 12;
+
+  while (i >= 0) {
+    const myriadValue = Math.pow(10, i);
+    if (number >= myriadValue) {
+      const myriadPart = Math.floor(number / myriadValue);
+
+      // Add the unit only if it's not 1 or if it's the ones place
+      if (myriadPart !== 1 || i === 0) {
+        japanese += units[myriadPart];
       }
-      i--;
+
+      // Add the place value or myriad character
+      if (i >= 4 && i % 4 === 0) {
+        japanese += Object.keys(myriadValues).find(key => myriadValues[key] === i);
+      } else if (i < 4) {
+        japanese += placeValues[i];
+      }
+
+      number %= myriadValue;
     }
-  
-    return romaji.trim();
+    i--;
   }
+
+  return japanese;
+}
+
+function toRomaji(number) {
+  if (number === 0) return "rei";
+
+  const units = ["", "ichi", "ni", "san", "yon", "go", "roku", "nana", "hachi", "kyū"];
+  const placeValues = ["", "jū", "hyaku", "sen"];
+  const myriadValues = {
+    "man": 4,
+    "oku": 8,
+    "chō": 12
+  };
+
+  if (number < 10) {
+    return units[number];
+  }
+
+  let romaji = "";
+  let i = 12;
+
+  while (i >= 0) {
+    const myriadValue = Math.pow(10, i);
+    if (number >= myriadValue) {
+      const myriadPart = Math.floor(number / myriadValue);
+
+      // Add the unit only if it's not 1 or if it's the ones place
+      if (myriadPart !== 1 || i === 0) {
+        romaji += units[myriadPart] + " ";
+      }
+
+      // Add the place value or myriad character
+      if (i >= 4 && i % 4 === 0) {
+        romaji += Object.keys(myriadValues).find(key => myriadValues[key] === i) + " ";
+      } else if (i < 4) {
+        romaji += placeValues[i] + " ";
+      }
+
+      number %= myriadValue;
+    }
+    i--;
+  }
+
+  return romaji.trim();
+}
+
   
   generateButton.addEventListener('click', generateRandomNumber);
   revealButton.addEventListener('click', displayAnswer);
