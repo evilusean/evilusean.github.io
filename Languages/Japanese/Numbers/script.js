@@ -62,20 +62,15 @@ function toJapaneseNumerals(number) {
     const myriadValue = Math.pow(10, i);
     if (number >= myriadValue) {
       const myriadPart = Math.floor(number / myriadValue);
-
-      // Only add units for the most significant digit in each group
-      if (i % 4 === 0 || myriadPart > 1) {
-        japanese += toJapaneseNumerals(myriadPart);
-
-        // Add the unit only if it's not the ones place (i === 0)
-        if (i > 0) {
-          japanese += units[myriadPart];
-        }
-      }
+      japanese += toJapaneseNumerals(myriadPart);
 
       if (i >= 4 && i % 4 === 0) {
         japanese += Object.keys(myriadValues).find(key => myriadValues[key] === i);
       } else if (i < 4) {
+        // Only add the unit if it's not 1 or it's the most significant digit in the group
+        if (myriadPart !== 1 || i % 4 === 0) {
+          japanese += units[myriadPart];
+        }
         japanese += placeValues[i];
       }
 
@@ -84,7 +79,7 @@ function toJapaneseNumerals(number) {
     i--;
   }
 
-  return japanese;
+  return removeDuplicateCharacters(japanese); // Remove duplicate characters
 }
 
 function toRomaji(number) {
@@ -109,20 +104,15 @@ function toRomaji(number) {
     const myriadValue = Math.pow(10, i);
     if (number >= myriadValue) {
       const myriadPart = Math.floor(number / myriadValue);
-
-      // Only add units for the most significant digit in each group
-      if (i % 4 === 0 || myriadPart > 1) {
-        romaji += toRomaji(myriadPart) + " ";
-
-        // Add the unit only if it's not the ones place (i === 0)
-        if (i > 0) {
-          romaji += units[myriadPart] + " ";
-        }
-      }
+      romaji += toRomaji(myriadPart);
 
       if (i >= 4 && i % 4 === 0) {
-        romaji += Object.keys(myriadValues).find(key => myriadValues[key] === i) + " ";
+        romaji += " " + Object.keys(myriadValues).find(key => myriadValues[key] === i) + " ";
       } else if (i < 4) {
+        // Only add the unit if it's not 1 or it's the most significant digit in the group
+        if (myriadPart !== 1 || i % 4 === 0) {
+          romaji += units[myriadPart] + " ";
+        }
         romaji += placeValues[i] + " ";
       }
 
@@ -131,8 +121,20 @@ function toRomaji(number) {
     i--;
   }
 
-  return romaji.trim();
+  return removeDuplicateCharacters(romaji.trim()); // Remove duplicate characters
+}
+
+// Function to remove consecutive duplicate characters from a string
+function removeDuplicateCharacters(str) {
+  let result = "";
+  for (let i = 0; i < str.length; i++) {
+    if (i === 0 || str[i] !== str[i - 1]) {
+      result += str[i];
+    }
+  }
+  return result;
 }
 
 generateButton.addEventListener('click', generateRandomNumber);
 revealButton.addEventListener('click', displayAnswer);
+
