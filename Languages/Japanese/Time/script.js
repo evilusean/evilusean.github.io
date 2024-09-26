@@ -47,6 +47,11 @@ function showCurrentTime() {
     timeInput.value = currentTime.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
 }
 
+function getMinuteReading(number) {
+    const punReadings = ['pun', 'pun', 'fun', 'pun', 'fun', 'fun', 'pun', 'fun', 'pun', 'pun'];
+    return punReadings[number % 10];
+}
+
 function showJapaneseTime() {
     const hours = currentTime.getHours();
     const minutes = currentTime.getMinutes();
@@ -80,20 +85,17 @@ function showJapaneseTime() {
         japaneseTimeKanji += '半';
         japaneseTimeRomaji += ' han';
     } else {
+        japaneseTimeKanji += minutes + '分';
         if (minutes <= 20) {
-            japaneseTimeKanji += japaneseMinutes[minutes] + '分';
-            japaneseTimeRomaji += ' ' + japaneseMinutesRomaji[minutes] + ' fun';
+            japaneseTimeRomaji += ' ' + japaneseMinutesRomaji[minutes] + ' ' + getMinuteReading(minutes);
         } else {
             const tens = Math.floor(minutes / 10) - 2;
             const ones = minutes % 10;
-            japaneseTimeKanji += japaneseTens[tens];
             japaneseTimeRomaji += ' ' + japaneseTensRomaji[tens];
             if (ones > 0) {
-                japaneseTimeKanji += japaneseMinutes[ones];
                 japaneseTimeRomaji += ' ' + japaneseMinutesRomaji[ones];
             }
-            japaneseTimeKanji += '分';
-            japaneseTimeRomaji += ' fun';
+            japaneseTimeRomaji += ' ' + getMinuteReading(minutes);
         }
     }
 
