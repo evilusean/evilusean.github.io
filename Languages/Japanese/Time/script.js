@@ -4,8 +4,9 @@ const timeInput = document.getElementById('time-input');
 const setTimeBtn = document.getElementById('set-time');
 const generateTimeBtn = document.getElementById('generate-time');
 const showCurrentTimeBtn = document.getElementById('show-current-time');
-const showSlovakTimeBtn = document.getElementById('show-slovak-time');
-const slovakTimeDisplay = document.getElementById('slovak-time');
+const showJapaneseTimeBtn = document.getElementById('show-japanese-time');
+const japaneseTimeKanjiDisplay = document.getElementById('japanese-time-kanji');
+const japaneseTimeRomajiDisplay = document.getElementById('japanese-time-romaji');
 
 let currentTime = new Date();
 
@@ -21,7 +22,7 @@ function updateClocks() {
     analogClock.querySelector('.minute-hand').style.transform = `rotate(${minuteDeg}deg)`;
 
     // Update digital clock
-    digitalClock.textContent = currentTime.toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' });
+    digitalClock.textContent = currentTime.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
 }
 
 function setTime() {
@@ -43,60 +44,67 @@ function generateRandomTime() {
 function showCurrentTime() {
     currentTime = new Date();
     updateClocks();
-    timeInput.value = currentTime.toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' });
+    timeInput.value = currentTime.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
 }
 
-function showSlovakTime() {
+function showJapaneseTime() {
     const hours = currentTime.getHours();
     const minutes = currentTime.getMinutes();
 
-    const slovakHours = [
-        'dvanásť', 'jedna', 'dve', 'tri', 'štyri', 'päť', 'šesť', 'sedem', 'osem', 'deväť', 'desať', 'jedenásť'
+    const japaneseHours = [
+        '十二時', '一時', '二時', '三時', '四時', '五時', '六時', '七時', '八時', '九時', '十時', '十一時'
+    ];
+    const japaneseHoursRomaji = [
+        'juu ni', 'ichi', 'ni', 'san', 'yo', 'go', 'roku', 'shichi', 'hachi', 'ku', 'juu', 'juu ichi'
     ];
 
-    const slovakMinutes = [
-        'nula', 'jedna', 'dve', 'tri', 'štyri', 'päť', 'šesť', 'sedem', 'osem', 'deväť', 'desať',
-        'jedenásť', 'dvanásť', 'trinásť', 'štrnásť', 'pätnásť', 'šestnásť', 'sedemnásť', 'osemnásť', 'devätnásť'
+    const japaneseMinutes = [
+        '零', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十',
+        '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九'
+    ];
+    const japaneseMinutesRomaji = [
+        'rei', 'ichi', 'ni', 'san', 'yon', 'go', 'roku', 'nana', 'hachi', 'kyuu', 'juu',
+        'juu ichi', 'juu ni', 'juu san', 'juu yon', 'juu go', 'juu roku', 'juu nana', 'juu hachi', 'juu kyuu'
     ];
 
-    const slovakTens = ['dvadsať', 'tridsať', 'štyridsať', 'päťdesiat'];
+    const japaneseTens = ['二十', '三十', '四十', '五十'];
+    const japaneseTensRomaji = ['ni juu', 'san juu', 'yon juu', 'go juu'];
 
-    let slovakTime = '';
+    let japaneseTimeKanji = japaneseHours[hours % 12];
+    let japaneseTimeRomaji = japaneseHoursRomaji[hours % 12] + ' ji';
 
-    // Handle special cases
     if (minutes === 0) {
-        slovakTime = `${slovakHours[hours % 12]} hodín`;
-    } else if (minutes === 15) {
-        slovakTime = `štvrť na ${slovakHours[(hours % 12 + 1) % 12]}`;
+        japaneseTimeKanji += 'ちょうど';
+        japaneseTimeRomaji += ' choudo';
     } else if (minutes === 30) {
-        slovakTime = `pol ${slovakHours[(hours % 12 + 1) % 12]}`;
-    } else if (minutes === 45) {
-        slovakTime = `trištvrte na ${slovakHours[(hours % 12 + 1) % 12]}`;
+        japaneseTimeKanji += '半';
+        japaneseTimeRomaji += ' han';
     } else {
-        // General case
-        slovakTime = `${slovakHours[hours % 12]} hodín a `;
-
         if (minutes <= 20) {
-            slovakTime += slovakMinutes[minutes];
+            japaneseTimeKanji += japaneseMinutes[minutes] + '分';
+            japaneseTimeRomaji += ' ' + japaneseMinutesRomaji[minutes] + ' fun';
         } else {
             const tens = Math.floor(minutes / 10) - 2;
             const ones = minutes % 10;
-            slovakTime += slovakTens[tens];
+            japaneseTimeKanji += japaneseTens[tens];
+            japaneseTimeRomaji += ' ' + japaneseTensRomaji[tens];
             if (ones > 0) {
-                slovakTime += slovakMinutes[ones];
+                japaneseTimeKanji += japaneseMinutes[ones];
+                japaneseTimeRomaji += ' ' + japaneseMinutesRomaji[ones];
             }
+            japaneseTimeKanji += '分';
+            japaneseTimeRomaji += ' fun';
         }
-
-        slovakTime += ' minút';
     }
 
-    slovakTimeDisplay.textContent = slovakTime;
+    japaneseTimeKanjiDisplay.textContent = japaneseTimeKanji;
+    japaneseTimeRomajiDisplay.textContent = japaneseTimeRomaji;
 }
 
 setTimeBtn.addEventListener('click', setTime);
 generateTimeBtn.addEventListener('click', generateRandomTime);
 showCurrentTimeBtn.addEventListener('click', showCurrentTime);
-showSlovakTimeBtn.addEventListener('click', showSlovakTime);
+showJapaneseTimeBtn.addEventListener('click', showJapaneseTime);
 
 // Update clocks every second
 setInterval(updateClocks, 1000);
