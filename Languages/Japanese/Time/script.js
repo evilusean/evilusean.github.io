@@ -56,27 +56,19 @@ function showJapaneseTime() {
     const hours = currentTime.getHours();
     const minutes = currentTime.getMinutes();
 
-    const japaneseHours = [
-        '十二時', '一時', '二時', '三時', '四時', '五時', '六時', '七時', '八時', '九時', '十時', '十一時'
-    ];
     const japaneseHoursRomaji = [
         'juu ni', 'ichi', 'ni', 'san', 'yo', 'go', 'roku', 'shichi', 'hachi', 'ku', 'juu', 'juu ichi'
     ];
 
-    const japaneseMinutes = [
-        '零', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十',
-        '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九'
-    ];
     const japaneseMinutesRomaji = [
         'rei', 'ichi', 'ni', 'san', 'yon', 'go', 'roku', 'nana', 'hachi', 'kyuu', 'juu',
         'juu ichi', 'juu ni', 'juu san', 'juu yon', 'juu go', 'juu roku', 'juu nana', 'juu hachi', 'juu kyuu'
     ];
 
-    const japaneseTens = ['二十', '三十', '四十', '五十'];
     const japaneseTensRomaji = ['ni juu', 'san juu', 'yon juu', 'go juu'];
 
-    let japaneseTimeKanji = japaneseHours[hours % 12];
-    let japaneseTimeRomaji = japaneseHoursRomaji[hours % 12] + ' ji';
+    let japaneseTimeKanji = `${hours}時`;
+    let japaneseTimeRomaji = `${japaneseHoursRomaji[hours % 12]} ji`;
 
     if (minutes === 0) {
         japaneseTimeKanji += 'ちょうど';
@@ -85,17 +77,17 @@ function showJapaneseTime() {
         japaneseTimeKanji += '半';
         japaneseTimeRomaji += ' han';
     } else {
-        japaneseTimeKanji += minutes + '分';
+        japaneseTimeKanji += `${minutes}分`;
         if (minutes <= 20) {
-            japaneseTimeRomaji += ' ' + japaneseMinutesRomaji[minutes] + ' ' + getMinuteReading(minutes);
+            japaneseTimeRomaji += ` ${japaneseMinutesRomaji[minutes]} ${getMinuteReading(minutes)}`;
         } else {
             const tens = Math.floor(minutes / 10) - 2;
             const ones = minutes % 10;
-            japaneseTimeRomaji += ' ' + japaneseTensRomaji[tens];
+            japaneseTimeRomaji += ` ${japaneseTensRomaji[tens]}`;
             if (ones > 0) {
-                japaneseTimeRomaji += ' ' + japaneseMinutesRomaji[ones];
+                japaneseTimeRomaji += ` ${japaneseMinutesRomaji[ones]}`;
             }
-            japaneseTimeRomaji += ' ' + getMinuteReading(minutes);
+            japaneseTimeRomaji += ` ${getMinuteReading(minutes)}`;
         }
     }
 
