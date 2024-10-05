@@ -4,12 +4,12 @@ const months = [
 ];
 
 const slovakMonths = [
-    'január', 'február', 'marec', 'apríl', 'máj', 'jún',
-    'júl', 'august', 'september', 'október', 'november', 'december'
+    'Január', 'Február', 'Marec', 'Apríl', 'Máj', 'Jún',
+    'Júl', 'August', 'September', 'Október', 'November', 'December'
 ];
 
-const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-const slovakDaysOfWeek = ['Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne'];
+const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const slovakDaysOfWeek = ['Nedeľa', 'Pondelok', 'Utorok', 'Streda', 'Štvrtok', 'Piatok', 'Sobota'];
 
 const ordinalNumbers = [
     'prvý', 'druhý', 'tretí', 'štvrtý', 'piaty', 'šiesty', 'siedmy', 'ôsmy', 'deviaty', 'desiaty',
@@ -17,9 +17,10 @@ const ordinalNumbers = [
     'dvadsiaty prvý', 'dvadsiaty druhý', 'dvadsiaty tretí', 'dvadsiaty štvrtý', 'dvadsiaty piaty', 'dvadsiaty šiesty', 'dvadsiaty siedmy', 'dvadsiaty ôsmy', 'dvadsiaty deviaty', 'tridsiaty', 'tridsiaty prvý'
 ];
 
-let currentMonth = new Date().getMonth();
-let currentYear = new Date().getFullYear();
-let selectedDay = null;
+let currentDate = new Date();
+let currentMonth = currentDate.getMonth();
+let currentYear = currentDate.getFullYear();
+let selectedDay = currentDate.getDate();
 let isShowingAnswer = false;
 
 function createCalendar(month, year) {
@@ -31,8 +32,8 @@ function createCalendar(month, year) {
     const daysInMonth = lastDay.getDate();
 
     // Add day of week headers
-    const currentDaysOfWeek = isShowingAnswer ? slovakDaysOfWeek : daysOfWeek;
-    currentDaysOfWeek.forEach(day => {
+    const headerDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    headerDays.forEach(day => {
         const dayElement = document.createElement('div');
         dayElement.textContent = day;
         dayElement.classList.add('day', 'header');
@@ -40,7 +41,7 @@ function createCalendar(month, year) {
     });
 
     // Add empty cells for days before the first day of the month
-    for (let i = 0; i < firstDay.getDay(); i++) {
+    for (let i = 0; i < (firstDay.getDay() + 6) % 7; i++) {
         const emptyDay = document.createElement('div');
         emptyDay.classList.add('day', 'empty');
         calendarElement.appendChild(emptyDay);
@@ -51,6 +52,9 @@ function createCalendar(month, year) {
         const dayElement = document.createElement('div');
         dayElement.textContent = i;
         dayElement.classList.add('day');
+        if (i === selectedDay) {
+            dayElement.classList.add('selected');
+        }
         dayElement.addEventListener('click', () => selectDay(i));
         calendarElement.appendChild(dayElement);
     }
@@ -62,6 +66,7 @@ function createCalendar(month, year) {
 
 function selectDay(day) {
     selectedDay = day;
+    currentDate = new Date(currentYear, currentMonth, day);
     updateCalendarSelection();
     generateQuestion();
 }
@@ -83,12 +88,24 @@ function generateQuestion() {
     const questionElement = document.getElementById('question');
     const answerElement = document.getElementById('answer');
 
+    const dayOfWeek = daysOfWeek[currentDate.getDay()];
+    const slovakDayOfWeek = slovakDaysOfWeek[currentDate.getDay()];
     const slovakDate = `${ordinalNumbers[selectedDay - 1]} ${slovakMonths[currentMonth]}`;
-    const englishDate = `${selectedDay} ${months[currentMonth]}`;
+    const englishDate = `${selectedDay}${getOrdinalSuffix(selectedDay)} of ${months[currentMonth]}`;
 
-    questionElement.textContent = `How do you say "${englishDate}" in Slovak?`;
-    answerElement.textContent = `Dnes je ${slovakDate}`;
+    questionElement.textContent = `How do you say "Today is ${dayOfWeek}. Today is the ${englishDate}" in Slovak?`;
+    answerElement.textContent = `Dnes je ${slovakDayOfWeek}. Dnes je ${slovakDate}`;
     answerElement.style.display = 'none';
+}
+
+function getOrdinalSuffix(day) {
+    if (day > 3 && day < 21) return 'th';
+    switch (day % 10) {
+        case 1:  return "st";
+        case 2:  return "nd";
+        case 3:  return "rd";
+        default: return "th";
+    }
 }
 
 function showAnswer() {
@@ -103,6 +120,7 @@ function selectRandomDay() {
     currentMonth = Math.floor(Math.random() * 12);
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
     selectedDay = Math.floor(Math.random() * daysInMonth) + 1;
+    currentDate = new Date(currentYear, currentMonth, selectedDay);
     createCalendar(currentMonth, currentYear);
     updateCalendarSelection();
     generateQuestion();
@@ -111,6 +129,8 @@ function selectRandomDay() {
 // Initialize the calendar
 document.addEventListener('DOMContentLoaded', () => {
     createCalendar(currentMonth, currentYear);
+    updateCalendarSelection();
+    generateQuestion();
 
     // Event listeners
     document.getElementById('randomDay').addEventListener('click', selectRandomDay);

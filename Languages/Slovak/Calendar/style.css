@@ -13,10 +13,15 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 350px; /* Set a fixed width */
 }
 
 h1, h2 {
     text-align: center;
+}
+
+h1 {
+    color: #4CAF50;
 }
 
 #calendar {
@@ -31,6 +36,7 @@ h1, h2 {
     text-align: center;
     background-color: #e0e0e0;
     cursor: pointer;
+    min-height: 20px; /* Set a minimum height */
 }
 
 .day:hover {
