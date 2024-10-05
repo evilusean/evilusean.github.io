@@ -13,14 +13,11 @@ body {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 350px; /* Set a fixed width */
-}
-
-h1, h2 {
-    text-align: center;
+    width: 350px;
 }
 
 h1 {
+    text-align: center;
     color: #4CAF50;
 }
 
@@ -36,7 +33,7 @@ h1 {
     text-align: center;
     background-color: #e0e0e0;
     cursor: pointer;
-    min-height: 20px; /* Set a minimum height */
+    min-height: 20px;
 }
 
 .day:hover {
@@ -69,19 +66,12 @@ button {
     color: #4CAF50;
 }
 
-#monthContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-#currentMonth {
-    margin: 0;
-    margin-right: 10px;
-}
-
 #monthDropdown {
-    padding: 5px;
-    font-size: 16px;
+    display: block;
+    margin: 0 auto 10px;
+    padding: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    width: 80%;
+    text-align: center;
 }

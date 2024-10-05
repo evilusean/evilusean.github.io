@@ -8,8 +8,11 @@ const slovakMonths = [
     'Júl', 'August', 'September', 'Október', 'November', 'December'
 ];
 
-const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-const slovakDaysOfWeek = ['Nedeľa', 'Pondelok', 'Utorok', 'Streda', 'Štvrtok', 'Piatok', 'Sobota'];
+const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const slovakDaysOfWeek = ['Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne'];
+
+const fullDaysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const fullSlovakDaysOfWeek = ['Nedeľa', 'Pondelok', 'Utorok', 'Streda', 'Štvrtok', 'Piatok', 'Sobota'];
 
 const ordinalNumbers = [
     'prvý', 'druhý', 'tretí', 'štvrtý', 'piaty', 'šiesty', 'siedmy', 'ôsmy', 'deviaty', 'desiaty',
@@ -32,8 +35,8 @@ function createCalendar(month, year) {
     const daysInMonth = lastDay.getDate();
 
     // Add day of week headers
-    const headerDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    headerDays.forEach(day => {
+    const currentDaysOfWeek = isShowingAnswer ? slovakDaysOfWeek : daysOfWeek;
+    currentDaysOfWeek.forEach(day => {
         const dayElement = document.createElement('div');
         dayElement.textContent = day;
         dayElement.classList.add('day', 'header');
@@ -59,13 +62,23 @@ function createCalendar(month, year) {
         calendarElement.appendChild(dayElement);
     }
 
-    // Update current month display
-    const currentMonthElement = document.getElementById('currentMonth');
-    currentMonthElement.textContent = isShowingAnswer ? slovakMonths[month] : months[month];
-
     // Update month dropdown
+    updateMonthDropdown();
+}
+
+function updateMonthDropdown() {
     const monthDropdown = document.getElementById('monthDropdown');
-    monthDropdown.value = month;
+    monthDropdown.innerHTML = '';
+    const currentMonths = isShowingAnswer ? slovakMonths : months;
+    currentMonths.forEach((month, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = month;
+        if (index === currentMonth) {
+            option.selected = true;
+        }
+        monthDropdown.appendChild(option);
+    });
 }
 
 function selectDay(day) {
@@ -92,8 +105,8 @@ function generateQuestion() {
     const questionElement = document.getElementById('question');
     const answerElement = document.getElementById('answer');
 
-    const dayOfWeek = daysOfWeek[currentDate.getDay()];
-    const slovakDayOfWeek = slovakDaysOfWeek[currentDate.getDay()];
+    const dayOfWeek = fullDaysOfWeek[currentDate.getDay()];
+    const slovakDayOfWeek = fullSlovakDaysOfWeek[currentDate.getDay()];
     const slovakDate = `${ordinalNumbers[selectedDay - 1]} ${slovakMonths[currentMonth]}`;
     const englishDate = `${selectedDay}${getOrdinalSuffix(selectedDay)} of ${months[currentMonth]}`;
 
@@ -117,6 +130,7 @@ function showAnswer() {
     answerElement.style.display = 'block';
     isShowingAnswer = true;
     createCalendar(currentMonth, currentYear);
+    updateMonthDropdown();
 }
 
 function selectRandomDay() {
@@ -139,30 +153,14 @@ function changeMonth(event) {
 
 // Initialize the calendar
 document.addEventListener('DOMContentLoaded', () => {
-    // Create month container
-    const monthContainer = document.createElement('div');
-    monthContainer.id = 'monthContainer';
-
-    // Create current month display
-    const currentMonthElement = document.createElement('h2');
-    currentMonthElement.id = 'currentMonth';
-    monthContainer.appendChild(currentMonthElement);
-
     // Create month dropdown
     const monthDropdown = document.createElement('select');
     monthDropdown.id = 'monthDropdown';
-    months.forEach((month, index) => {
-        const option = document.createElement('option');
-        option.value = index;
-        option.textContent = month;
-        monthDropdown.appendChild(option);
-    });
     monthDropdown.addEventListener('change', changeMonth);
-    monthContainer.appendChild(monthDropdown);
 
-    // Insert month container before the calendar
+    // Insert month dropdown before the calendar
     const calendarElement = document.getElementById('calendar');
-    calendarElement.parentNode.insertBefore(monthContainer, calendarElement);
+    calendarElement.parentNode.insertBefore(monthDropdown, calendarElement);
 
     createCalendar(currentMonth, currentYear);
     updateCalendarSelection();
