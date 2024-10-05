@@ -1,24 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Slovak Calendar</title>
+    <title>Slovak Calendar Quiz</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>Slovak Calendar</h1>
-    </header>
-    
-    <main>
-        <!-- Your calendar content will go here -->
-    </main>
-    
-    <footer>
-        <p>&copy; 2024 Sean Teams</p>
-    </footer>
-
+    <div class="container">
+        <h1>Slovak Calendar Quiz</h1>
+        <h2 id="currentMonth"></h2>
+        <div id="calendar"></div>
+        <div class="controls">
+            <button id="randomDay">Random Day</button>
+            <button id="showAnswer">Show Answer</button>
+        </div>
+        <div id="quiz">
+            <p id="question"></p>
+            <p id="answer"></p>
+        </div>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
