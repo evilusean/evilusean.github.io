@@ -1,0 +1,77 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+}
+
+.container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 350px;
+}
+
+h1 {
+    text-align: center;
+    color: #4CAF50;
+}
+
+#calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-bottom: 20px;
+}
+
+.day {
+    padding: 10px;
+    text-align: center;
+    background-color: #e0e0e0;
+    cursor: pointer;
+    min-height: 20px;
+}
+
+.day:hover {
+    background-color: #d0d0d0;
+}
+
+.day.selected {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#quiz {
+    text-align: center;
+}
+
+#answer {
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+#monthDropdown {
+    display: block;
+    margin: 0 auto 10px;
+    padding: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    width: 80%;
+    text-align: center;
+}
