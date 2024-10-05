@@ -62,6 +62,10 @@ function createCalendar(month, year) {
     // Update current month display
     const currentMonthElement = document.getElementById('currentMonth');
     currentMonthElement.textContent = isShowingAnswer ? slovakMonths[month] : months[month];
+
+    // Update month dropdown
+    const monthDropdown = document.getElementById('monthDropdown');
+    monthDropdown.value = month;
 }
 
 function selectDay(day) {
@@ -126,8 +130,40 @@ function selectRandomDay() {
     generateQuestion();
 }
 
+function changeMonth(event) {
+    currentMonth = parseInt(event.target.value);
+    createCalendar(currentMonth, currentYear);
+    updateCalendarSelection();
+    generateQuestion();
+}
+
 // Initialize the calendar
 document.addEventListener('DOMContentLoaded', () => {
+    // Create month container
+    const monthContainer = document.createElement('div');
+    monthContainer.id = 'monthContainer';
+
+    // Create current month display
+    const currentMonthElement = document.createElement('h2');
+    currentMonthElement.id = 'currentMonth';
+    monthContainer.appendChild(currentMonthElement);
+
+    // Create month dropdown
+    const monthDropdown = document.createElement('select');
+    monthDropdown.id = 'monthDropdown';
+    months.forEach((month, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = month;
+        monthDropdown.appendChild(option);
+    });
+    monthDropdown.addEventListener('change', changeMonth);
+    monthContainer.appendChild(monthDropdown);
+
+    // Insert month container before the calendar
+    const calendarElement = document.getElementById('calendar');
+    calendarElement.parentNode.insertBefore(monthContainer, calendarElement);
+
     createCalendar(currentMonth, currentYear);
     updateCalendarSelection();
     generateQuestion();
