@@ -3,21 +3,33 @@ const months = [
     'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
-const slovakMonths = [
-    'Január', 'Február', 'Marec', 'Apríl', 'Máj', 'Jún',
-    'Júl', 'August', 'September', 'Október', 'November', 'December'
+const japaneseMonths = [
+    '1月', '2月', '3月', '4月', '5月', '6月',
+    '7月', '8月', '9月', '10月', '11月', '12月'
 ];
 
-const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-const slovakDaysOfWeek = ['Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne'];
+const japaneseMonthsRomaji = [
+    'Ichigatsu', 'Nigatsu', 'Sangatsu', 'Shigatsu', 'Gogatsu', 'Rokugatsu',
+    'Shichigatsu', 'Hachigatsu', 'Kugatsu', 'Jūgatsu', 'Jūichigatsu', 'Jūnigatsu'
+];
+
+const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const japaneseDaysOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
 
 const fullDaysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-const fullSlovakDaysOfWeek = ['Nedeľa', 'Pondelok', 'Utorok', 'Streda', 'Štvrtok', 'Piatok', 'Sobota'];
+const fullJapaneseDaysOfWeek = ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'];
+const fullJapaneseDaysOfWeekRomaji = ['Nichiyōbi', 'Getsuyōbi', 'Kayōbi', 'Suiyōbi', 'Mokuyōbi', 'Kinyōbi', 'Doyōbi'];
 
-const ordinalNumbers = [
-    'prvý', 'druhý', 'tretí', 'štvrtý', 'piaty', 'šiesty', 'siedmy', 'ôsmy', 'deviaty', 'desiaty',
-    'jedenásty', 'dvanásty', 'trinásty', 'štrnásty', 'pätnásty', 'šestnásty', 'sedemnásty', 'osemnásty', 'devätnásty', 'dvadsiaty',
-    'dvadsiaty prvý', 'dvadsiaty druhý', 'dvadsiaty tretí', 'dvadsiaty štvrtý', 'dvadsiaty piaty', 'dvadsiaty šiesty', 'dvadsiaty siedmy', 'dvadsiaty ôsmy', 'dvadsiaty deviaty', 'tridsiaty', 'tridsiaty prvý'
+const japaneseNumbers = [
+    '一', '二', '三', '四', '五', '六', '七', '八', '九', '十',
+    '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九', '二十',
+    '二十一', '二十二', '二十三', '二十四', '二十五', '二十六', '二十七', '二十八', '二十九', '三十', '三十一'
+];
+
+const japaneseNumbersRomaji = [
+    'ichi', 'ni', 'san', 'yon', 'go', 'roku', 'nana', 'hachi', 'kyū', 'jū',
+    'jūichi', 'jūni', 'jūsan', 'jūyon', 'jūgo', 'jūroku', 'jūnana', 'jūhachi', 'jūkyū', 'nijū',
+    'nijūichi', 'nijūni', 'nijūsan', 'nijūyon', 'nijūgo', 'nijūroku', 'nijūnana', 'nijūhachi', 'nijūkyū', 'sanjū', 'sanjūichi'
 ];
 
 let currentDate = new Date();
@@ -35,7 +47,7 @@ function createCalendar(month, year) {
     const daysInMonth = lastDay.getDate();
 
     // Add day of week headers
-    const currentDaysOfWeek = isShowingAnswer ? slovakDaysOfWeek : daysOfWeek;
+    const currentDaysOfWeek = isShowingAnswer ? japaneseDaysOfWeek : daysOfWeek;
     currentDaysOfWeek.forEach(day => {
         const dayElement = document.createElement('div');
         dayElement.textContent = day;
@@ -44,7 +56,7 @@ function createCalendar(month, year) {
     });
 
     // Add empty cells for days before the first day of the month
-    for (let i = 0; i < (firstDay.getDay() + 6) % 7; i++) {
+    for (let i = 0; i < firstDay.getDay(); i++) {
         const emptyDay = document.createElement('div');
         emptyDay.classList.add('day', 'empty');
         calendarElement.appendChild(emptyDay);
@@ -69,7 +81,7 @@ function createCalendar(month, year) {
 function updateMonthDropdown() {
     const monthDropdown = document.getElementById('monthDropdown');
     monthDropdown.innerHTML = '';
-    const currentMonths = isShowingAnswer ? slovakMonths : months;
+    const currentMonths = isShowingAnswer ? japaneseMonths : months;
     currentMonths.forEach((month, index) => {
         const option = document.createElement('option');
         option.value = index;
@@ -106,12 +118,15 @@ function generateQuestion() {
     const answerElement = document.getElementById('answer');
 
     const dayOfWeek = fullDaysOfWeek[currentDate.getDay()];
-    const slovakDayOfWeek = fullSlovakDaysOfWeek[currentDate.getDay()];
-    const slovakDate = `${ordinalNumbers[selectedDay - 1]} ${slovakMonths[currentMonth]}`;
+    const japaneseDayOfWeek = fullJapaneseDaysOfWeek[currentDate.getDay()];
+    const japaneseDayOfWeekRomaji = fullJapaneseDaysOfWeekRomaji[currentDate.getDay()];
+    const japaneseDate = `${japaneseMonths[currentMonth]}${japaneseNumbers[selectedDay - 1]}日`;
+    const japaneseDateRomaji = `${japaneseMonths[currentMonth]} (${japaneseMonthsRomaji[currentMonth]}) ${japaneseNumbersRomaji[selectedDay - 1]}-nichi`;
     const englishDate = `${selectedDay}${getOrdinalSuffix(selectedDay)} of ${months[currentMonth]}`;
 
-    questionElement.textContent = `How do you say "Today is ${dayOfWeek}. Today is the ${englishDate}" in Slovak?`;
-    answerElement.textContent = `Dnes je ${slovakDayOfWeek}. Dnes je ${slovakDate}`;
+    questionElement.textContent = `How do you say "Today is ${dayOfWeek}. Today is the ${englishDate}" in Japanese?`;
+    answerElement.innerHTML = `今日は${japaneseDayOfWeek}です。今日は${japaneseDate}です。<br>
+                               Kyō wa ${japaneseDayOfWeekRomaji} desu. Kyō wa ${japaneseDateRomaji} desu.`;
     answerElement.style.display = 'none';
 }
 
