@@ -18,7 +18,7 @@ body {
 
 h1 {
     text-align: center;
-    color: #4CAF50;
+    color: #ea0b0b;
 }
 
 #calendar {
@@ -41,7 +41,7 @@ h1 {
 }
 
 .day.selected {
-    background-color: #4CAF50;
+    background-color: #ea0b0b;
     color: white;
 }
 
@@ -63,7 +63,7 @@ button {
 
 #answer {
     font-weight: bold;
-    color: #4CAF50;
+    color: #ea0b0b;
 }
 
 #monthDropdown {
