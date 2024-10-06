@@ -8,6 +8,11 @@ const slovakMonths = [
     'Júl', 'August', 'September', 'Október', 'November', 'December'
 ];
 
+const slovakMonthsGenitive = [
+    'Januára', 'Februára', 'Marca', 'Apríla', 'Mája', 'Júna',
+    'Júla', 'Augusta', 'Septembra', 'Októbra', 'Novembra', 'Decembra'
+];
+
 const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const slovakDaysOfWeek = ['Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne'];
 
@@ -18,6 +23,12 @@ const ordinalNumbers = [
     'prvý', 'druhý', 'tretí', 'štvrtý', 'piaty', 'šiesty', 'siedmy', 'ôsmy', 'deviaty', 'desiaty',
     'jedenásty', 'dvanásty', 'trinásty', 'štrnásty', 'pätnásty', 'šestnásty', 'sedemnásty', 'osemnásty', 'devätnásty', 'dvadsiaty',
     'dvadsiaty prvý', 'dvadsiaty druhý', 'dvadsiaty tretí', 'dvadsiaty štvrtý', 'dvadsiaty piaty', 'dvadsiaty šiesty', 'dvadsiaty siedmy', 'dvadsiaty ôsmy', 'dvadsiaty deviaty', 'tridsiaty', 'tridsiaty prvý'
+];
+
+const ordinalNumbersGenitive = [
+    'prvého', 'druhého', 'tretieho', 'štvrtého', 'piateho', 'šiesteho', 'siedmeho', 'ôsmeho', 'deviateho', 'desiateho',
+    'jedenásteho', 'dvanásteho', 'trinásteho', 'štrnásteho', 'pätnásteho', 'šestnásteho', 'sedemnásteho', 'osemnásteho', 'devätnásteho', 'dvadsiateho',
+    'dvadsiateho prvého', 'dvadsiateho druhého', 'dvadsiateho tretieho', 'dvadsiateho štvrtého', 'dvadsiateho piateho', 'dvadsiateho šiesteho', 'dvadsiateho siedmeho', 'dvadsiateho ôsmeho', 'dvadsiateho deviateho', 'tridsiateho', 'tridsiateho prvého'
 ];
 
 let currentDate = new Date();
@@ -108,10 +119,14 @@ function generateQuestion() {
     const dayOfWeek = fullDaysOfWeek[currentDate.getDay()];
     const slovakDayOfWeek = fullSlovakDaysOfWeek[currentDate.getDay()];
     const slovakDate = `${ordinalNumbers[selectedDay - 1]} ${slovakMonths[currentMonth]}`;
+    const slovakDateGenitive = `${ordinalNumbersGenitive[selectedDay - 1]} ${slovakMonthsGenitive[currentMonth]}`;
     const englishDate = `${selectedDay}${getOrdinalSuffix(selectedDay)} of ${months[currentMonth]}`;
 
     questionElement.textContent = `How do you say "Today is ${dayOfWeek}. Today is the ${englishDate}" in Slovak?`;
-    answerElement.textContent = `Dnes je ${slovakDayOfWeek}. Dnes je ${slovakDate}`;
+    answerElement.innerHTML = `
+        <p>Dnes je ${slovakDayOfWeek}. Dnes je ${slovakDate}.</p>
+        <p>Dnes je ${slovakDateGenitive}.</p>
+    `;
     answerElement.style.display = 'none';
 }
 
