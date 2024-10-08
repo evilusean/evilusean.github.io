@@ -65,16 +65,22 @@ function showSlovakTime() {
 
     // Handle special cases
     if (minutes === 0) {
-        slovakTime = `${slovakHours[hours % 12]} hodín`;
+        if (hours === 1) {
+            slovakTime = 'Je jedna hodina.';
+        } else if (hours >= 2 && hours <= 4) {
+            slovakTime = `Sú ${slovakHours[hours % 12]} hodiny.`;
+        } else {
+            slovakTime = `Je ${slovakHours[hours % 12]} hodín.`;
+        }
     } else if (minutes === 15) {
-        slovakTime = `štvrť na ${slovakHours[(hours % 12 + 1) % 12]}`;
+        slovakTime = `Je štvrť na ${slovakHours[(hours % 12 + 1) % 12]}.`;
     } else if (minutes === 30) {
-        slovakTime = `pol ${slovakHours[(hours % 12 + 1) % 12]}`;
+        slovakTime = `Je pol ${slovakHours[(hours % 12 + 1) % 12]}.`;
     } else if (minutes === 45) {
-        slovakTime = `trištvrte na ${slovakHours[(hours % 12 + 1) % 12]}`;
+        slovakTime = `Je trištvrte na ${slovakHours[(hours % 12 + 1) % 12]}.`;
     } else {
         // General case
-        slovakTime = `${slovakHours[hours % 12]} hodín a `;
+        slovakTime = `Je ${slovakHours[hours % 12]} hodín a `;
 
         if (minutes <= 20) {
             slovakTime += slovakMinutes[minutes];
@@ -87,7 +93,7 @@ function showSlovakTime() {
             }
         }
 
-        slovakTime += ' minút';
+        slovakTime += ' minút.';
     }
 
     slovakTimeDisplay.textContent = slovakTime;
