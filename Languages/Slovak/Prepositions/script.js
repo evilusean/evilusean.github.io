@@ -3,6 +3,10 @@ const showAnswerButton = document.getElementById('show-answer-button');
 const ball = document.getElementById('ball');
 const slovakAnswer = document.getElementById('slovak-answer');
 
+const randomDirectionButton = document.getElementById('random-direction-button');
+const showDirectionAnswerButton = document.getElementById('show-direction-answer-button');
+const directionAnswer = document.getElementById('direction-answer');
+
 // Define specific positions and their corresponding Slovak answers
 const positions = [
     { position: 'top', answer: 'Lopta je na vrchu.' },
@@ -10,7 +14,7 @@ const positions = [
     { position: 'left', answer: 'Lopta je na ľavej strane.' },
     { position: 'right', answer: 'Lopta je na pravej strane.' },
     { position: 'in', answer: 'Lopta je vo vnútri.' },
-    { position: 'below', answer: 'Lopta je pod kockou.' } // Added below position
+    { position: 'below', answer: 'Lopta je pod kockou.' }
 ];
 
 let currentPosition = null; // To keep track of the current position
@@ -57,5 +61,37 @@ showAnswerButton.addEventListener('click', () => {
         slovakAnswer.style.display = 'block'; // Show the Slovak answer
     } else {
         slovakAnswer.style.display = 'none'; // Hide if no position is set
+    }
+});
+
+// Direction functionality
+const directions = [
+    { direction: 'up', answer: 'Smer je hore.' },
+    { direction: 'left', answer: 'Smer je vľavo.' },
+    { direction: 'right', answer: 'Smer je vpravo.' },
+    { direction: 'down', answer: 'Smer je dole.' }
+];
+
+randomDirectionButton.addEventListener('click', () => {
+    const randomIndex = Math.floor(Math.random() * directions.length);
+    const currentDirection = directions[randomIndex].direction;
+
+    // Highlight the selected arrow
+    document.querySelectorAll('.arrow').forEach(arrow => {
+        arrow.style.fontWeight = 'normal'; // Reset all arrows
+        arrow.classList.remove('active'); // Remove active class
+    });
+    const selectedArrow = document.getElementById(`arrow-${currentDirection}`);
+    selectedArrow.style.fontWeight = 'bold'; // Highlight the selected arrow
+    selectedArrow.classList.add('active'); // Add active class to change color
+});
+
+showDirectionAnswerButton.addEventListener('click', () => {
+    const answer = directions.find(dir => dir.direction === currentDirection)?.answer;
+    if (answer) {
+        directionAnswer.textContent = answer; // Update the answer text
+        directionAnswer.style.display = 'block'; // Show the Slovak answer
+    } else {
+        directionAnswer.style.display = 'none'; // Hide if no direction is set
     }
 });

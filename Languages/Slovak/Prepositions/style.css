@@ -4,14 +4,34 @@ body {
     align-items: center; /* Center all content horizontally */
 }
 
+.container {
+    display: flex;
+    flex-direction: column; /* Stack items vertically on small screens */
+    align-items: center;
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .container {
+        flex-direction: row; /* Stack items horizontally on larger screens */
+        justify-content: space-around; /* Space out the items */
+    }
+}
+
 main {
     text-align: center; /* Center text within the main area */
 }
 
+.quiz-area, .direction-area, .empty-area {
+    width: 100%; /* Take full width on small screens */
+    max-width: 300px; /* Limit max width */
+    margin: 10px; /* Add some margin */
+}
+
 #quiz-area {
     position: relative;
-    width: 300px;
-    height: 300px;
+    width: 100%;
+    height: 300px; /* Adjust height for larger screens */
     margin: 20px auto;
     display: flex; /* Use flexbox for layout */
     justify-content: center; /* Center the cube and ball horizontally */
@@ -19,26 +39,49 @@ main {
 }
 
 #cube {
-    width: 100px;
-    height: 100px;
+    width: 100px; /* Increase size of the cube */
+    height: 100px; /* Increase size of the cube */
     background-color: blue; /* Color of the cube */
     position: relative; /* Change to relative for flex alignment */
     margin-right: 20px; /* Space between cube and ball */
 }
 
 #ball {
-    width: 30px;
-    height: 30px;
+    width: 50px; /* Increase size of the ball */
+    height: 50px; /* Increase size of the ball */
     background-color: red; /* Color of the ball */
     border-radius: 50%; /* Make it a circle */
     position: absolute; /* Keep it absolute for positioning */
+}
+
+.direction-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.arrows {
+    display: grid; /* Use grid for keyboard layout */
+    grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    margin: 10px 0;
+}
+
+.arrow {
+    font-size: 40px; /* Size of the arrows */
+    margin: 0; /* No margin */
+    cursor: pointer; /* Change cursor to pointer */
+    text-align: center; /* Center the arrow text */
+}
+
+.arrow.active {
+    color: red; /* Change color to red when active */
 }
 
 h1 {
     font-size: 24px; /* Increase the size of the main heading */
 }
 
-#slovak-answer {
+#slovak-answer, #direction-answer {
     font-size: 24px; /* Increase the size of the Slovak answer */
     font-weight: bold; /* Make the Slovak answer bold */
     display: none; /* Keep it hidden initially */
