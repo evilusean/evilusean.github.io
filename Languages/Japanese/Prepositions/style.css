@@ -2,6 +2,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center; /* Center all content horizontally */
+    background-color: black; /* Set background color to black */
+    color: white; /* Set default text color to white */
 }
 
 .container {
@@ -46,7 +48,7 @@ main {
 #cube {
     width: 100px; /* Increase size of the cube */
     height: 100px; /* Increase size of the cube */
-    background-color: blue; /* Color of the cube */
+    background-color: white; /* Change cube color to white */
     position: relative; /* Change to relative for flex alignment */
     margin-right: 20px; /* Space between cube and ball */
 }
@@ -54,7 +56,7 @@ main {
 #ball {
     width: 50px; /* Increase size of the ball */
     height: 50px; /* Increase size of the ball */
-    background-color: red; /* Color of the ball */
+    background-color: red; /* Keep the color of the ball red */
     border-radius: 50%; /* Make it a circle */
     position: absolute; /* Keep it absolute for positioning */
 }
@@ -79,6 +81,7 @@ main {
     margin: 0; /* No margin */
     cursor: pointer; /* Change cursor to pointer */
     text-align: center; /* Center the arrow text */
+    color: white; /* Change arrow color to white */
 }
 
 .arrow.active {
@@ -101,7 +104,7 @@ main {
     width: 200px; /* Set a fixed width for the compass */
     height: 200px; /* Set a fixed height for the compass */
     border-radius: 50%; /* Make it circular */
-    border: 2px solid black; /* Optional: Add a border */
+    border: 2px solid white; /* Change border color to white */
     margin: 10px 0;
 }
 
@@ -111,6 +114,7 @@ main {
     text-align: center; /* Center the compass text */
     position: absolute; /* Position absolute for circular layout */
     transition: color 0.3s; /* Smooth color transition */
+    color: white; /* Change compass direction color to white */
 }
 
 #N { top: 10%; left: 50%; transform: translate(-50%, -50%); }
@@ -124,11 +128,13 @@ main {
 
 h1 {
     font-size: 24px; /* Increase the size of the main heading */
+    color: red; /* Change heading color to red */
 }
 
 .question {
     font-size: 20px; /* Increase the size of the question text */
     margin: 0; /* Remove margin */
+    color: red; /* Change question color to red */
 }
 
 .bold {
@@ -144,10 +150,12 @@ h1 {
     font-size: 24px; /* Increase the size of the Japanese answer */
     font-weight: bold; /* Make the Japanese answer bold */
     display: none; /* Keep it hidden initially */
+    color: white; /* Change answer color to white */
 }
 
 #romaji-answer, #direction-romaji, #compass-romaji {
     font-size: 28px; /* Increase the size of the Romaji answer */
     font-weight: bold; /* Make the Romaji answer bold */
     display: none; /* Keep it hidden initially */
+    color: white; /* Change Romaji color to white */
 }
