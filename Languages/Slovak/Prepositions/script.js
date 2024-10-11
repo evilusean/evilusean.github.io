@@ -97,8 +97,8 @@ randomizeButton.addEventListener('click', () => {
 
 // Direction functionality for arrows (straight, behind, left, right)
 const directions = [
-    { direction: 'straight', answer: 'Smer je rovno.' }, // Changed from 'up' to 'straight'
-    { direction: 'behind', answer: 'Smer je za.' }, // Changed from 'down' to 'behind'
+    { direction: 'straight', answer: 'Smer je rovno (hore).' }, // Added (hore) for up
+    { direction: 'behind', answer: 'Smer je za (dole).' }, // Added (dole) for down
     { direction: 'left', answer: 'Smer je vľavo.' },
     { direction: 'right', answer: 'Smer je vpravo.' }
 ];
