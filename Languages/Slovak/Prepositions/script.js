@@ -53,21 +53,24 @@ function setBallPosition(position) {
     currentPosition = position; // Update current position
 }
 
-// Click event listener for the cube
-const cube = document.getElementById('cube');
-cube.addEventListener('click', (event) => {
-    const rect = cube.getBoundingClientRect();
-    const x = event.clientX; // Get x position relative to the viewport
-    const y = event.clientY; // Get y position relative to the viewport
+// Click event listener for the quiz area
+const quizArea = document.getElementById('quiz-area');
+quizArea.addEventListener('click', (event) => {
+    const rect = quizArea.getBoundingClientRect();
+    const x = event.clientX - rect.left; // Get x position relative to the quiz area
+    const y = event.clientY - rect.top; // Get y position relative to the quiz area
 
-    // Determine the position based on where the cube was clicked
-    if (y < rect.top) {
+    const cube = document.getElementById('cube');
+    const cubeRect = cube.getBoundingClientRect();
+
+    // Determine the position based on where the click occurred
+    if (y < cubeRect.top - rect.top) {
         setBallPosition('top'); // Clicked above the cube
-    } else if (y > rect.bottom) {
+    } else if (y > cubeRect.bottom - rect.top) {
         setBallPosition('below'); // Clicked below the cube
-    } else if (x < rect.left) {
+    } else if (x < cubeRect.left - rect.left) {
         setBallPosition('left'); // Clicked to the left of the cube
-    } else if (x > rect.right) {
+    } else if (x > cubeRect.right - rect.left) {
         setBallPosition('right'); // Clicked to the right of the cube
     } else {
         setBallPosition('in'); // Clicked inside the cube
@@ -92,10 +95,10 @@ randomizeButton.addEventListener('click', () => {
     setBallPosition(randomPosition); // Set the ball to a random position
 });
 
-// Direction functionality for arrows (up, down, left, right)
+// Direction functionality for arrows (straight, behind, left, right)
 const directions = [
-    { direction: 'up', answer: 'Smer je hore.' },
-    { direction: 'down', answer: 'Smer je dole.' },
+    { direction: 'straight', answer: 'Smer je rovno.' }, // Changed from 'up' to 'straight'
+    { direction: 'behind', answer: 'Smer je za.' }, // Changed from 'down' to 'behind'
     { direction: 'left', answer: 'Smer je vľavo.' },
     { direction: 'right', answer: 'Smer je vpravo.' }
 ];
@@ -117,6 +120,7 @@ document.querySelectorAll('.arrow').forEach(arrow => {
     });
 });
 
+// Random direction button functionality
 randomDirectionButton.addEventListener('click', () => {
     const randomIndex = Math.floor(Math.random() * directions.length);
     currentArrowDirection = directions[randomIndex].direction;
@@ -128,11 +132,14 @@ randomDirectionButton.addEventListener('click', () => {
         arrow.style.color = ''; // Reset color
     });
     const selectedArrow = document.getElementById(`arrow-${currentArrowDirection}`);
-    selectedArrow.classList.add('active'); // Add active class to change color
-    selectedArrow.style.fontWeight = 'bold'; // Make it bold
-    selectedArrow.style.color = 'red'; // Change color to red
+    if (selectedArrow) {
+        selectedArrow.classList.add('active'); // Add active class to change color
+        selectedArrow.style.fontWeight = 'bold'; // Make it bold
+        selectedArrow.style.color = 'red'; // Change color to red
+    }
 });
 
+// Show direction answer based on the current arrow direction
 showDirectionAnswerButton.addEventListener('click', () => {
     const answer = directions.find(dir => dir.direction === currentArrowDirection)?.answer;
     if (answer) {
@@ -189,6 +196,7 @@ document.getElementById('random-compass-direction-button').addEventListener('cli
     selectedCompass.style.color = 'red'; // Set the color to red for the selected direction
 });
 
+// Show compass answer based on the current compass direction
 showCompassAnswerButton.addEventListener('click', () => {
     const answer = compassDirections.find(dir => dir.direction === currentCompassDirection)?.answer;
     if (answer) {
