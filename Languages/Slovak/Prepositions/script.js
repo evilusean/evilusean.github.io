@@ -19,6 +19,40 @@ const positions = [
 
 let currentPosition = null; // To keep track of the current position
 
+// Clickable area for setting the ball's position
+const clickableArea = document.createElement('div');
+clickableArea.id = 'clickable-area';
+document.getElementById('quiz-area').appendChild(clickableArea);
+
+clickableArea.addEventListener('click', (event) => {
+    const rect = clickableArea.getBoundingClientRect();
+    const x = event.clientX - rect.left; // Get x position relative to the cube
+    const y = event.clientY - rect.top; // Get y position relative to the cube
+
+    // Set the ball's position based on the click location
+    if (y < 100) {
+        ball.style.top = '20px'; // Top
+        ball.style.left = `${x - 15}px`; // Centered horizontally
+        currentPosition = 'top';
+    } else if (y > 200) {
+        ball.style.top = '220px'; // Below
+        ball.style.left = `${x - 15}px`; // Centered horizontally
+        currentPosition = 'below';
+    } else if (x < 100) {
+        ball.style.top = '115px'; // Left
+        ball.style.left = '20px'; // Centered to the left of the cube
+        currentPosition = 'left';
+    } else if (x > 200) {
+        ball.style.top = '115px'; // Right
+        ball.style.left = '180px'; // Centered to the right of the cube
+        currentPosition = 'right';
+    } else {
+        ball.style.top = '115px'; // Middle
+        ball.style.left = '115px'; // Centered in the middle
+        currentPosition = 'middle';
+    }
+});
+
 randomizeButton.addEventListener('click', () => {
     // Randomly select a position from the defined positions
     const randomIndex = Math.floor(Math.random() * positions.length);
@@ -72,9 +106,11 @@ const directions = [
     { direction: 'down', answer: 'Smer je dole.' }
 ];
 
+let currentDirection = null; // To keep track of the current direction
+
 randomDirectionButton.addEventListener('click', () => {
     const randomIndex = Math.floor(Math.random() * directions.length);
-    const currentDirection = directions[randomIndex].direction;
+    currentDirection = directions[randomIndex].direction;
 
     // Highlight the selected arrow
     document.querySelectorAll('.arrow').forEach(arrow => {

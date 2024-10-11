@@ -14,18 +14,23 @@ body {
 @media (min-width: 768px) {
     .container {
         flex-direction: row; /* Stack items horizontally on larger screens */
-        justify-content: space-around; /* Space out the items */
+        justify-content: space-between; /* Space out the items */
     }
 }
 
 main {
     text-align: center; /* Center text within the main area */
+    width: 100%; /* Full width */
 }
 
-.quiz-area, .direction-area, .empty-area {
+.empty-area, .quiz-area, .direction-area {
     width: 100%; /* Take full width on small screens */
     max-width: 300px; /* Limit max width */
     margin: 10px; /* Add some margin */
+}
+
+.empty-area {
+    background-color: lightgray; /* Optional: Add a background color for visibility */
 }
 
 #quiz-area {
@@ -36,6 +41,13 @@ main {
     display: flex; /* Use flexbox for layout */
     justify-content: center; /* Center the cube and ball horizontally */
     align-items: center; /* Center items vertically */
+}
+
+#clickable-area {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    cursor: pointer; /* Change cursor to pointer */
 }
 
 #cube {
@@ -57,7 +69,10 @@ main {
 .direction-area {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: center; /* Center align the content */
+    margin: 0 auto; /* Center the direction area */
+    width: 100%; /* Ensure it takes full width */
+    max-width: 300px; /* Limit max width */
 }
 
 .arrows {
