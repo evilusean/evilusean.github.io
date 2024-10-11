@@ -163,12 +163,12 @@ button:hover {
 }
 
 #slovak-answer, #direction-answer, #compass-answer {
-    font-size: 24px; /* Increase the size of the Slovak answer */
+    font-size: 30px; /* Increase the size of the Slovak answer */
     font-weight: bold; /* Make the Slovak answer bold */
     display: none; /* Keep it hidden initially */
     color: red; /* Change answer color to red */
-    border: 1px solid black; /* Add a black border around the text */
+    border: 3px solid black; /* Add a black border around the text */
     padding: 5px; /* Optional: Add some padding for better visibility */
     display: inline-block; /* Ensure the border wraps around the text */
-    text-shadow: 1px 1px 0 black; /* Add black text shadow */
+    text-shadow: 2px 2px 0 black; /* Add black text shadow */
 }
