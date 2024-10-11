@@ -1,23 +1,26 @@
 const randomizeButton = document.getElementById('randomize-button');
 const showAnswerButton = document.getElementById('show-answer-button');
 const ball = document.getElementById('ball');
-const slovakAnswer = document.getElementById('slovak-answer');
+const japaneseAnswer = document.getElementById('japanese-answer');
+const romajiAnswer = document.getElementById('romaji-answer');
 
 const randomDirectionButton = document.getElementById('random-direction-button');
 const showDirectionAnswerButton = document.getElementById('show-direction-answer-button');
 const directionAnswer = document.getElementById('direction-answer');
+const directionRomaji = document.getElementById('direction-romaji');
 
 const showCompassAnswerButton = document.getElementById('show-compass-answer-button');
 const compassAnswer = document.getElementById('compass-answer');
+const compassRomaji = document.getElementById('compass-romaji');
 
-// Define specific positions and their corresponding Slovak answers
+// Define specific positions and their corresponding Japanese answers
 const positions = [
-    { position: 'top', answer: 'Lopta je na vrchu.' },
-    { position: 'middle', answer: 'Lopta je v strede.' },
-    { position: 'left', answer: 'Lopta je na ľavej strane.' },
-    { position: 'right', answer: 'Lopta je na pravej strane.' },
-    { position: 'in', answer: 'Lopta je vo vnútri.' },
-    { position: 'below', answer: 'Lopta je pod kockou.' }
+    { position: 'top', answer: 'ボールは上にあります。', romaji: 'Bōru wa ue ni arimasu.' },
+    { position: 'middle', answer: 'ボールは真ん中にあります。', romaji: 'Bōru wa mannaka ni arimasu.' },
+    { position: 'left', answer: 'ボールは左にあります。', romaji: 'Bōru wa hidari ni arimasu.' },
+    { position: 'right', answer: 'ボールは右にあります。', romaji: 'Bōru wa migi ni arimasu.' },
+    { position: 'in', answer: 'ボールは中にあります。', romaji: 'Bōru wa naka ni arimasu.' },
+    { position: 'below', answer: 'ボールは下にあります。', romaji: 'Bōru wa shita ni arimasu.' }
 ];
 
 let currentPosition = null; // To keep track of the current position
@@ -77,14 +80,17 @@ quizArea.addEventListener('click', (event) => {
     }
 });
 
-// Show Slovak answer based on the current position of the ball
+// Show Japanese answer based on the current position of the ball
 showAnswerButton.addEventListener('click', () => {
-    const answer = positions.find(pos => pos.position === currentPosition)?.answer;
-    if (answer) {
-        slovakAnswer.textContent = answer; // Update the answer text
-        slovakAnswer.style.display = 'block'; // Show the Slovak answer
+    const answerObj = positions.find(pos => pos.position === currentPosition);
+    if (answerObj) {
+        japaneseAnswer.textContent = answerObj.answer; // Update the answer text
+        romajiAnswer.textContent = answerObj.romaji; // Update the Romaji text
+        japaneseAnswer.style.display = 'block'; // Show the Japanese answer
+        romajiAnswer.style.display = 'block'; // Show the Romaji answer
     } else {
-        slovakAnswer.style.display = 'none'; // Hide if no position is set
+        japaneseAnswer.style.display = 'none'; // Hide if no position is set
+        romajiAnswer.style.display = 'none'; // Hide if no position is set
     }
 });
 
@@ -97,10 +103,10 @@ randomizeButton.addEventListener('click', () => {
 
 // Direction functionality for arrows (straight, behind, left, right)
 const directions = [
-    { direction: 'straight', answer: 'Smer je rovno (hore).' }, // Added (hore) for up
-    { direction: 'behind', answer: 'Smer je za (dole).' }, // Added (dole) for down
-    { direction: 'left', answer: 'Smer je vľavo.' },
-    { direction: 'right', answer: 'Smer je vpravo.' }
+    { direction: 'straight', answer: '方向はまっすぐです (上)。', romaji: 'Hōkō wa massugu desu (ue).' }, // Added (上) for up
+    { direction: 'behind', answer: '方向は後ろです (下)。', romaji: 'Hōkō wa ushiro desu (shita).' }, // Added (下) for down
+    { direction: 'left', answer: '方向は左です。', romaji: 'Hōkō wa hidari desu.' },
+    { direction: 'right', answer: '方向は右です。', romaji: 'Hōkō wa migi desu.' }
 ];
 
 let currentArrowDirection = null; // To keep track of the current arrow direction
@@ -141,25 +147,28 @@ randomDirectionButton.addEventListener('click', () => {
 
 // Show direction answer based on the current arrow direction
 showDirectionAnswerButton.addEventListener('click', () => {
-    const answer = directions.find(dir => dir.direction === currentArrowDirection)?.answer;
-    if (answer) {
-        directionAnswer.textContent = answer; // Update the answer text
-        directionAnswer.style.display = 'block'; // Show the Slovak answer
+    const answerObj = directions.find(dir => dir.direction === currentArrowDirection);
+    if (answerObj) {
+        directionAnswer.textContent = answerObj.answer; // Update the answer text
+        directionRomaji.textContent = answerObj.romaji; // Update the Romaji text
+        directionAnswer.style.display = 'block'; // Show the Japanese answer
+        directionRomaji.style.display = 'block'; // Show the Romaji answer
     } else {
         directionAnswer.style.display = 'none'; // Hide if no direction is set
+        directionRomaji.style.display = 'none'; // Hide if no direction is set
     }
 });
 
 // Compass functionality for compass directions (N, NE, E, SE, S, SW, W, NW)
 const compassDirections = [
-    { direction: 'N', answer: 'Smer je na sever.' },
-    { direction: 'NE', answer: 'Smer je na severovýchod.' },
-    { direction: 'E', answer: 'Smer je na východ.' },
-    { direction: 'SE', answer: 'Smer je na juhovýchod.' },
-    { direction: 'S', answer: 'Smer je na juh.' },
-    { direction: 'SW', answer: 'Smer je na juhozápad.' },
-    { direction: 'W', answer: 'Smer je na západ.' },
-    { direction: 'NW', answer: 'Smer je na severozápad.' }
+    { direction: 'N', answer: '方向は北です。', romaji: 'Hōkō wa kita desu.' },
+    { direction: 'NE', answer: '方向は北東です。', romaji: 'Hōkō wa hokutō desu.' },
+    { direction: 'E', answer: '方向は東です。', romaji: 'Hōkō wa higashi desu.' },
+    { direction: 'SE', answer: '方向は南東です。', romaji: 'Hōkō wa nantō desu.' },
+    { direction: 'S', answer: '方向は南です。', romaji: 'Hōkō wa minami desu.' },
+    { direction: 'SW', answer: '方向は南西です。', romaji: 'Hōkō wa nansei desu.' },
+    { direction: 'W', answer: '方向は西です。', romaji: 'Hōkō wa nishi desu.' },
+    { direction: 'NW', answer: '方向は北西です。', romaji: 'Hōkō wa hokusei desu.' }
 ];
 
 let currentCompassDirection = null; // To keep track of the current compass direction
@@ -198,11 +207,14 @@ document.getElementById('random-compass-direction-button').addEventListener('cli
 
 // Show compass answer based on the current compass direction
 showCompassAnswerButton.addEventListener('click', () => {
-    const answer = compassDirections.find(dir => dir.direction === currentCompassDirection)?.answer;
-    if (answer) {
-        compassAnswer.textContent = answer; // Update the answer text
-        compassAnswer.style.display = 'block'; // Show the Slovak answer
+    const answerObj = compassDirections.find(dir => dir.direction === currentCompassDirection);
+    if (answerObj) {
+        compassAnswer.textContent = answerObj.answer; // Update the answer text
+        compassRomaji.textContent = answerObj.romaji; // Update the Romaji text
+        compassAnswer.style.display = 'block'; // Show the Japanese answer
+        compassRomaji.style.display = 'block'; // Show the Romaji answer
     } else {
         compassAnswer.style.display = 'none'; // Hide if no direction is set
+        compassRomaji.style.display = 'none'; // Hide if no direction is set
     }
 });
