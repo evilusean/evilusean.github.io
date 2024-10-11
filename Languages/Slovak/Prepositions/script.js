@@ -7,6 +7,9 @@ const randomDirectionButton = document.getElementById('random-direction-button')
 const showDirectionAnswerButton = document.getElementById('show-direction-answer-button');
 const directionAnswer = document.getElementById('direction-answer');
 
+const showCompassAnswerButton = document.getElementById('show-compass-answer-button');
+const compassAnswer = document.getElementById('compass-answer');
+
 // Define specific positions and their corresponding Slovak answers
 const positions = [
     { position: 'top', answer: 'Lopta je na vrchu.' },
@@ -98,36 +101,109 @@ showAnswerButton.addEventListener('click', () => {
     }
 });
 
-// Direction functionality
+// Direction functionality for arrows (up, down, left, right)
 const directions = [
     { direction: 'up', answer: 'Smer je hore.' },
+    { direction: 'down', answer: 'Smer je dole.' },
     { direction: 'left', answer: 'Smer je vľavo.' },
-    { direction: 'right', answer: 'Smer je vpravo.' },
-    { direction: 'down', answer: 'Smer je dole.' }
+    { direction: 'right', answer: 'Smer je vpravo.' }
 ];
 
-let currentDirection = null; // To keep track of the current direction
+let currentArrowDirection = null; // To keep track of the current arrow direction
+
+// Add click event listeners to arrows
+document.querySelectorAll('.arrow').forEach(arrow => {
+    arrow.addEventListener('click', () => {
+        currentArrowDirection = arrow.id.replace('arrow-', ''); // Get the direction from the arrow ID
+        document.querySelectorAll('.arrow').forEach(a => {
+            a.classList.remove('active'); // Reset all arrows
+            a.style.fontWeight = 'normal'; // Reset font weight
+            a.style.color = ''; // Reset color
+        });
+        arrow.classList.add('active'); // Highlight the selected arrow
+        arrow.style.fontWeight = 'bold'; // Make it bold
+        arrow.style.color = 'red'; // Change color to red
+    });
+});
 
 randomDirectionButton.addEventListener('click', () => {
     const randomIndex = Math.floor(Math.random() * directions.length);
-    currentDirection = directions[randomIndex].direction;
+    currentArrowDirection = directions[randomIndex].direction;
 
     // Highlight the selected arrow
     document.querySelectorAll('.arrow').forEach(arrow => {
-        arrow.style.fontWeight = 'normal'; // Reset all arrows
-        arrow.classList.remove('active'); // Remove active class
+        arrow.classList.remove('active'); // Reset all arrows
+        arrow.style.fontWeight = 'normal'; // Reset font weight
+        arrow.style.color = ''; // Reset color
     });
-    const selectedArrow = document.getElementById(`arrow-${currentDirection}`);
-    selectedArrow.style.fontWeight = 'bold'; // Highlight the selected arrow
+    const selectedArrow = document.getElementById(`arrow-${currentArrowDirection}`);
     selectedArrow.classList.add('active'); // Add active class to change color
+    selectedArrow.style.fontWeight = 'bold'; // Make it bold
+    selectedArrow.style.color = 'red'; // Change color to red
 });
 
 showDirectionAnswerButton.addEventListener('click', () => {
-    const answer = directions.find(dir => dir.direction === currentDirection)?.answer;
+    const answer = directions.find(dir => dir.direction === currentArrowDirection)?.answer;
     if (answer) {
         directionAnswer.textContent = answer; // Update the answer text
         directionAnswer.style.display = 'block'; // Show the Slovak answer
     } else {
         directionAnswer.style.display = 'none'; // Hide if no direction is set
+    }
+});
+
+// Compass functionality for compass directions (N, NE, E, SE, S, SW, W, NW)
+const compassDirections = [
+    { direction: 'N', answer: 'Smer je na sever.' },
+    { direction: 'NE', answer: 'Smer je na severovýchod.' },
+    { direction: 'E', answer: 'Smer je na východ.' },
+    { direction: 'SE', answer: 'Smer je na juhovýchod.' },
+    { direction: 'S', answer: 'Smer je na juh.' },
+    { direction: 'SW', answer: 'Smer je na juhozápad.' },
+    { direction: 'W', answer: 'Smer je na západ.' },
+    { direction: 'NW', answer: 'Smer je na severozápad.' }
+];
+
+let currentCompassDirection = null; // To keep track of the current compass direction
+
+// Add click event listeners to compass directions
+document.querySelectorAll('.compass-direction').forEach(compass => {
+    compass.addEventListener('click', () => {
+        currentCompassDirection = compass.id; // Get the direction from the compass ID
+        document.querySelectorAll('.compass-direction').forEach(c => {
+            c.classList.remove('active'); // Reset all compass directions
+            c.style.fontWeight = 'normal'; // Reset font weight
+            c.style.color = ''; // Reset color
+        });
+        compass.classList.add('active'); // Highlight the selected compass direction
+        compass.style.fontWeight = 'bold'; // Make it bold
+        compass.style.color = 'red'; // Set the color to red for the selected direction
+    });
+});
+
+// Random compass direction functionality
+document.getElementById('random-compass-direction-button').addEventListener('click', () => {
+    const randomIndex = Math.floor(Math.random() * compassDirections.length);
+    currentCompassDirection = compassDirections[randomIndex].direction;
+
+    // Highlight the selected compass direction
+    document.querySelectorAll('.compass-direction').forEach(c => {
+        c.classList.remove('active'); // Reset all compass directions
+        c.style.fontWeight = 'normal'; // Reset font weight
+        c.style.color = ''; // Reset color
+    });
+    const selectedCompass = document.getElementById(currentCompassDirection);
+    selectedCompass.classList.add('active'); // Highlight the selected compass direction
+    selectedCompass.style.fontWeight = 'bold'; // Make it bold
+    selectedCompass.style.color = 'red'; // Set the color to red for the selected direction
+});
+
+showCompassAnswerButton.addEventListener('click', () => {
+    const answer = compassDirections.find(dir => dir.direction === currentCompassDirection)?.answer;
+    if (answer) {
+        compassAnswer.textContent = answer; // Update the answer text
+        compassAnswer.style.display = 'block'; // Show the Slovak answer
+    } else {
+        compassAnswer.style.display = 'none'; // Hide if no direction is set
     }
 });
