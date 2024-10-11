@@ -22,76 +22,60 @@ const positions = [
 
 let currentPosition = null; // To keep track of the current position
 
-// Clickable area for setting the ball's position
-const clickableArea = document.createElement('div');
-clickableArea.id = 'clickable-area';
-document.getElementById('quiz-area').appendChild(clickableArea);
-
-clickableArea.addEventListener('click', (event) => {
-    const rect = clickableArea.getBoundingClientRect();
-    const x = event.clientX - rect.left; // Get x position relative to the cube
-    const y = event.clientY - rect.top; // Get y position relative to the cube
-
-    // Set the ball's position based on the click location
-    if (y < 100) {
-        ball.style.top = '20px'; // Top
-        ball.style.left = `${x - 15}px`; // Centered horizontally
-        currentPosition = 'top';
-    } else if (y > 200) {
-        ball.style.top = '220px'; // Below
-        ball.style.left = `${x - 15}px`; // Centered horizontally
-        currentPosition = 'below';
-    } else if (x < 100) {
-        ball.style.top = '115px'; // Left
-        ball.style.left = '20px'; // Centered to the left of the cube
-        currentPosition = 'left';
-    } else if (x > 200) {
-        ball.style.top = '115px'; // Right
-        ball.style.left = '180px'; // Centered to the right of the cube
-        currentPosition = 'right';
-    } else {
-        ball.style.top = '115px'; // Middle
-        ball.style.left = '115px'; // Centered in the middle
-        currentPosition = 'middle';
-    }
-});
-
-randomizeButton.addEventListener('click', () => {
-    // Randomly select a position from the defined positions
-    const randomIndex = Math.floor(Math.random() * positions.length);
-    currentPosition = positions[randomIndex].position;
-
-    // Set the ball's position based on the selected position
-    switch (currentPosition) {
+// Function to set the ball's position
+function setBallPosition(position) {
+    switch (position) {
         case 'top':
-            ball.style.top = '20px';
+            ball.style.top = '20px'; // Move ball to the top
             ball.style.left = '115px'; // Centered above the cube
             break;
         case 'middle':
-            ball.style.top = '115px';
+            ball.style.top = '115px'; // Move ball to the middle
             ball.style.left = '115px'; // Centered in the middle
             break;
         case 'left':
-            ball.style.top = '115px';
+            ball.style.top = '115px'; // Move ball to the left
             ball.style.left = '20px'; // Centered to the left of the cube
             break;
         case 'right':
-            ball.style.top = '115px';
+            ball.style.top = '115px'; // Move ball to the right
             ball.style.left = '180px'; // Centered to the right of the cube
             break;
         case 'in':
-            ball.style.top = '100px';
+            ball.style.top = '100px'; // Move ball inside the cube
             ball.style.left = '100px'; // Centered inside the cube
             break;
         case 'below':
-            ball.style.top = '220px';
+            ball.style.top = '220px'; // Move ball below the cube
             ball.style.left = '115px'; // Centered below the cube
             break;
     }
+    currentPosition = position; // Update current position
+}
+
+// Click event listener for the cube
+const cube = document.getElementById('cube');
+cube.addEventListener('click', (event) => {
+    const rect = cube.getBoundingClientRect();
+    const x = event.clientX; // Get x position relative to the viewport
+    const y = event.clientY; // Get y position relative to the viewport
+
+    // Determine the position based on where the cube was clicked
+    if (y < rect.top) {
+        setBallPosition('top'); // Clicked above the cube
+    } else if (y > rect.bottom) {
+        setBallPosition('below'); // Clicked below the cube
+    } else if (x < rect.left) {
+        setBallPosition('left'); // Clicked to the left of the cube
+    } else if (x > rect.right) {
+        setBallPosition('right'); // Clicked to the right of the cube
+    } else {
+        setBallPosition('in'); // Clicked inside the cube
+    }
 });
 
+// Show Slovak answer based on the current position of the ball
 showAnswerButton.addEventListener('click', () => {
-    // Find the answer based on the current position
     const answer = positions.find(pos => pos.position === currentPosition)?.answer;
     if (answer) {
         slovakAnswer.textContent = answer; // Update the answer text
@@ -99,6 +83,13 @@ showAnswerButton.addEventListener('click', () => {
     } else {
         slovakAnswer.style.display = 'none'; // Hide if no position is set
     }
+});
+
+// Randomize button functionality
+randomizeButton.addEventListener('click', () => {
+    const randomIndex = Math.floor(Math.random() * positions.length);
+    const randomPosition = positions[randomIndex].position;
+    setBallPosition(randomPosition); // Set the ball to a random position
 });
 
 // Direction functionality for arrows (up, down, left, right)
