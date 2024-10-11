@@ -1,0 +1,53 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center all content horizontally */
+}
+
+main {
+    text-align: center; /* Center text within the main area */
+}
+
+#quiz-area {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    margin: 20px auto;
+    display: flex; /* Use flexbox for layout */
+    justify-content: center; /* Center the cube and ball horizontally */
+    align-items: center; /* Center items vertically */
+}
+
+#cube {
+    width: 100px;
+    height: 100px;
+    background-color: blue; /* Color of the cube */
+    position: relative; /* Change to relative for flex alignment */
+    margin-right: 20px; /* Space between cube and ball */
+}
+
+#ball {
+    width: 30px;
+    height: 30px;
+    background-color: red; /* Color of the ball */
+    border-radius: 50%; /* Make it a circle */
+    position: absolute; /* Keep it absolute for positioning */
+}
+
+h1 {
+    font-size: 24px; /* Increase the size of the main heading */
+}
+
+#slovak-answer {
+    font-size: 24px; /* Increase the size of the Slovak answer */
+    font-weight: bold; /* Make the Slovak answer bold */
+    display: none; /* Keep it hidden initially */
+}
+
+.question {
+    font-size: 20px; /* Increase the size of the question text */
+}
+
+.bold {
+    font-weight: bold; /* Make the Slovak translation bold */
+}

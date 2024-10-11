@@ -4,21 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PreposiSeans</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file -->
+    <link rel="stylesheet" href="style.css"> <!-- Link to your CSS file -->
 </head>
 <body>
     <header>
         <h1>PreposiSeans</h1>
     </header>
     <main>
-        <p>Where is the ball?</p> <!-- Quiz question -->
+        <p class="question">Where is the ball? <span class="bold">Kde je lopta?</span></p> <!-- Quiz question -->
         <div id="quiz-area">
             <div id="cube"></div>
             <div id="ball"></div>
         </div>
         <button id="randomize-button">Random Location</button>
         <button id="show-answer-button">Show Slovak Answer</button>
-        <p id="slovak-answer" style="display:none;">Kde je lopta?</p> <!-- Slovak answer, hidden by default -->
+        <p id="slovak-answer">Kde je lopta?</p> <!-- Slovak answer, hidden by default -->
     </main>
     <footer>
         <p>&copy; 2023 Sean Teams. All rights reserved.</p>
