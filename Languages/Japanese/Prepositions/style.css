@@ -126,16 +126,28 @@ h1 {
     font-size: 24px; /* Increase the size of the main heading */
 }
 
-#slovak-answer, #direction-answer, #compass-answer {
-    font-size: 24px; /* Increase the size of the Slovak answer */
-    font-weight: bold; /* Make the Slovak answer bold */
-    display: none; /* Keep it hidden initially */
-}
-
 .question {
     font-size: 20px; /* Increase the size of the question text */
+    margin: 0; /* Remove margin */
 }
 
 .bold {
-    font-weight: bold; /* Make the Slovak translation bold */
+    font-weight: bold; /* Make the Japanese translation bold */
+}
+
+.kanji {
+    font-weight: bold; /* Make the Japanese translation bold */
+    font-size: 16px; /* Adjust font size for Kanji */
+}
+
+#japanese-answer, #direction-answer, #compass-answer {
+    font-size: 24px; /* Increase the size of the Japanese answer */
+    font-weight: bold; /* Make the Japanese answer bold */
+    display: none; /* Keep it hidden initially */
+}
+
+#romaji-answer, #direction-romaji, #compass-romaji {
+    font-size: 28px; /* Increase the size of the Romaji answer */
+    font-weight: bold; /* Make the Romaji answer bold */
+    display: none; /* Keep it hidden initially */
 }
