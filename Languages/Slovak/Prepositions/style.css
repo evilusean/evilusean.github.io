@@ -2,7 +2,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center; /* Center all content horizontally */
-    background-color: #007BFF; /* Set background color to blue */
+    background-color: #007BFF; /* Set background color to the specified blue */
     color: white; /* Set default text color to white */
 }
 
@@ -48,7 +48,7 @@ main {
 #cube {
     width: 100px; /* Increase size of the cube */
     height: 100px; /* Increase size of the cube */
-    background-color: red; /* Color of the cube */
+    background-color: red; /* Change cube color to red */
     position: relative; /* Change to relative for flex alignment */
     margin-right: 20px; /* Space between cube and ball */
 }
@@ -56,7 +56,7 @@ main {
 #ball {
     width: 50px; /* Increase size of the ball */
     height: 50px; /* Increase size of the ball */
-    background-color: white; /* Color of the ball */
+    background-color: white; /* Change the color of the ball to white */
     border-radius: 50%; /* Make it a circle */
     position: absolute; /* Keep it absolute for positioning */
 }
@@ -77,22 +77,11 @@ main {
 }
 
 .arrow {
-    font-size: 60px; /* Size of the arrows (50% larger) */
+    font-size: 60px; /* Increase size of the arrows */
     margin: 0; /* No margin */
     cursor: pointer; /* Change cursor to pointer */
     text-align: center; /* Center the arrow text */
-    display: flex; /* Enable flexbox for multi-line text */
-    flex-direction: column; /* Stack English and Slovak vertically */
-    align-items: center; /* Center the text horizontally */
-}
-
-.arrow span:first-child {
-    font-size: 60px; /* Adjust English font size as needed */
-}
-
-.arrow span:last-child {
-    font-weight: bold; /* Make the Slovak translation bold */
-    font-size: 30px; /* Adjust Slovak font size as needed */
+    color: white; /* Change arrow color to white */
 }
 
 .arrow.active {
@@ -112,31 +101,20 @@ main {
     display: grid; /* Use grid for compass layout */
     grid-template-columns: repeat(3, 1fr); /* 3 columns */
     position: relative; /* Position relative for absolute children */
-    width: 200px; /* Set a fixed width for the compass */
-    height: 200px; /* Set a fixed height for the compass */
+    width: 250px; /* Increase the fixed width for the compass */
+    height: 250px; /* Increase the fixed height for the compass */
     border-radius: 50%; /* Make it circular */
-    border: 2px solid black; /* Optional: Add a border */
+    border: 2px solid white; /* Change border color to white */
     margin: 10px 0;
 }
 
 .compass-direction {
-    font-size: 45px; /* Size of the compass directions (50% larger) */
+    font-size: 40px; /* Increase the size of the compass directions */
     cursor: pointer; /* Change cursor to pointer */
     text-align: center; /* Center the compass text */
     position: absolute; /* Position absolute for circular layout */
     transition: color 0.3s; /* Smooth color transition */
-    display: flex; /* Enable flexbox for multi-line text */
-    flex-direction: column; /* Stack English and Slovak vertically */
-    align-items: center; /* Center the text horizontally */
-}
-
-.compass-direction span:first-child {
-    font-size: 45px; /* Adjust English font size as needed */
-}
-
-.compass-direction span:last-child {
-    font-weight: bold; /* Make the Slovak translation bold */
-    font-size: 22.5px; /* Adjust Slovak font size as needed */
+    color: white; /* Change compass direction color to white */
 }
 
 #N { top: 10%; left: 50%; transform: translate(-50%, -50%); }
@@ -149,26 +127,48 @@ main {
 #NW { top: 30%; left: 30%; transform: translate(-50%, -50%); }
 
 h1 {
-    font-size: 24px; /* Increase the size of the main heading */
+    font-size: 28px; /* Increase the size of the main heading */
+    font-weight: bold; /* Make the title bold */
+}
+
+.question {
+    font-size: 20px; /* Reduce the size of the English question text */
+    margin: 0; /* Remove margin */
+    font-weight: bold; /* Make the question bold */
+}
+
+.bold {
+    font-weight: bold; /* Make the Slovak translation bold */
+    font-size: 30px;
+}
+
+.slovak {
+    font-weight: bold; /* Make the Slovak translation bold */
+    font-size: 26px; /* Increase font size for Slovak to be larger than English */
+}
+
+button {
+    background-color: red; /* Set button background color to red */
+    color: white; /* Set button text color to white */
+    border: 2px solid black; /* Add a black border around the button */
+    padding: 10px 20px; /* Add padding for better appearance */
+    font-size: 16px; /* Set font size for button text */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    border-radius: 5px; /* Optional: Add rounded corners */
+    transition: background-color 0.3s; /* Smooth transition for background color */
+}
+
+button:hover {
+    background-color: darkred; /* Change background color on hover */
 }
 
 #slovak-answer, #direction-answer, #compass-answer {
     font-size: 24px; /* Increase the size of the Slovak answer */
     font-weight: bold; /* Make the Slovak answer bold */
     display: none; /* Keep it hidden initially */
-    color: red; /* Set answer text color to red */
-}
-
-.question {
-    font-size: 20px; /* Increase the size of the question text */
-    margin: 0; /* Remove margin */
-}
-
-.slovak-question {
-    font-size: 16px; /* Slightly smaller font size for Slovak translation */
-    font-weight: bold; /* Make the Slovak translation bold */
-}
-
-.bold {
-    font-weight: bold; /* Make the Slovak translation bold */
+    color: red; /* Change answer color to red */
+    border: 1px solid black; /* Add a black border around the text */
+    padding: 5px; /* Optional: Add some padding for better visibility */
+    display: inline-block; /* Ensure the border wraps around the text */
+    text-shadow: 1px 1px 0 black; /* Add black text shadow */
 }
