@@ -77,7 +77,7 @@ main {
 }
 
 .arrow {
-    font-size: 40px; /* Size of the arrows */
+    font-size: 60px; /* Size of the arrows */
     margin: 0; /* No margin */
     cursor: pointer; /* Change cursor to pointer */
     text-align: center; /* Center the arrow text */
