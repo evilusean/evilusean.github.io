@@ -1,0 +1,58 @@
+body {
+    background-color: white; /* Solid white background */
+    position: relative; /* Position relative for absolute positioning of the circle */
+    height: 100vh; /* Full viewport height */
+    margin: 0; /* Remove default margin */
+    display: flex; /* Use flexbox for layout */
+    flex-direction: column; /* Stack content vertically */
+    align-items: center; /* Center items horizontally */
+}
+
+body::before {
+    content: ""; /* Create a pseudo-element for the flag */
+    position: absolute; /* Position it absolutely */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    width: 200px; /* Width of the red circle */
+    height: 200px; /* Height of the red circle */
+    background-color: red; /* Red circle */
+    border-radius: 50%; /* Make it a circle */
+    transform: translate(-50%, -50%); /* Center the circle */
+    z-index: -1; /* Send it to the back */
+}
+
+.card-container {
+    display: flex; /* Use flexbox for the card container */
+    justify-content: center; /* Center cards horizontally */
+    flex-wrap: wrap; /* Allow cards to wrap to the next line */
+    margin-top: 20px; /* Space from the top */
+}
+
+.card {
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background for the card */
+    border: 2px solid black; /* Black border */
+    border-radius: 8px;
+    padding: 20px;
+    margin: 10px;
+    text-align: center;
+    color: black; /* Black text color */
+    text-decoration: none; /* Remove underline from links */
+    width: 200px; /* Set a fixed width for cards */
+}
+
+.card a {
+    display: block;
+    height: 100%;
+    width: 100%;
+    font-size: 32px; /* Increased text size */
+    font-weight: bold; /* Bold text */
+    background-color: transparent; /* Remove background from link */
+}
+
+/* Media query for small screens */
+@media (max-width: 600px) {
+    .card-container {
+        flex-direction: column; /* Stack cards vertically on small screens */
+        align-items: center; /* Center cards horizontally */
+    }
+}
