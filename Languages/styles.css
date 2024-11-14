@@ -1,0 +1,65 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #000; /* Set background to black */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    gap: 40px; /* Increased gap between flags */
+}
+
+.flag {
+    position: relative;
+    width: 200px; /* Increased width */
+    height: 120px; /* Increased height */
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-weight: bold;
+    font-size: 24px; /* Increased font size */
+}
+
+.flag:hover {
+    transform: scale(1.05);
+}
+
+.slovak {
+    background: linear-gradient(to bottom, #ffffff 33.33%, #0056a0 33.33%, #0056a0 66.67%, #ff0000 66.67%); /* White, Blue, Red */
+    color: black; /* Set text color to black */
+}
+
+.japanese {
+    background-color: white;
+    color: black;
+    position: relative;
+}
+
+.japanese::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px; /* Diameter of the circle */
+    height: 40px; /* Diameter of the circle */
+    background-color: red; /* Circle color */
+    border-radius: 50%; /* Make it a circle */
+    transform: translate(-50%, -50%); /* Center the circle */
+}
+
+.flag a {
+    position: relative;
+    z-index: 1; /* Ensure text is above the flag background */
+    text-decoration: none;
+    color: inherit; /* Use the color defined in the flag class */
+    font-size: inherit; /* Inherit font size from flag */
+}
