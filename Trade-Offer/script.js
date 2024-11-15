@@ -6,9 +6,9 @@ const give2 = urlParams.get("G2") || "$ for Flight/Travel";
 const give3 = urlParams.get("G3") || "¥ for First Month of Rent";
 const give4 = urlParams.get("G4") || "Competitive Salary";
 const give5 = urlParams.get("G5") || "Help Setting up Banking";
-const take1 = urlParams.get("T1") || "Jr. Web Developer";
-const take2 = urlParams.get("T2") || "Jr. Data Analyst";
-const take3 = urlParams.get("T3") || "Jr. Software Engineer";
+const take1 = urlParams.get("T1") || "Web Developer";
+const take2 = urlParams.get("T2") || "Data Analyst";
+const take3 = urlParams.get("T3") || "Software Engineer";
 const take4 = urlParams.get("T4") || "IT Specialist";
 const take5 = urlParams.get("T5") || "Native English Speaker";
 
