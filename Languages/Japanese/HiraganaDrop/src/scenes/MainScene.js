@@ -6,16 +6,37 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload() {
-        // Load assets here
+        // We'll load assets here later
     }
 
     create() {
-        this.add.text(400, 300, 'Hello Phaser!', {
+        // Add a title
+        this.add.text(400, 100, 'ひらがなドロップ', {
+            fontSize: '48px',
+            color: '#ffffff',
+            fontFamily: '"Noto Sans JP", sans-serif'
+        }).setOrigin(0.5);
+
+        // Add subtitle
+        this.add.text(400, 200, 'Hiragana Drop', {
+            fontSize: '32px',
             color: '#ffffff'
         }).setOrigin(0.5);
+
+        // Add start instruction
+        this.add.text(400, 300, 'Click anywhere to start', {
+            fontSize: '24px',
+            color: '#ffff00'
+        }).setOrigin(0.5);
+
+        // Make the scene interactive
+        this.input.on('pointerdown', () => {
+            console.log('Game clicked!');
+            // We'll add game start logic here later
+        });
     }
 
     update() {
-        // Game loop
+        // Game loop will go here
     }
 }

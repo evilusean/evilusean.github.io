@@ -6,14 +6,14 @@ const config = {
     width: 800,
     height: 600,
     parent: 'game',
+    backgroundColor: '#000000',
     scene: MainScene,
-    physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: { y: 300 },
-            debug: false
-        }
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH
     }
 };
 
-const game = new Phaser.Game(config);
+window.addEventListener('load', () => {
+    const game = new Phaser.Game(config);
+});
