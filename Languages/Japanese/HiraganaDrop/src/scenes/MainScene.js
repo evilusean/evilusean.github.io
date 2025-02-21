@@ -3,13 +3,16 @@ import Phaser from 'phaser';
 export default class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
+        console.log('MainScene constructed'); // Debug log
     }
 
     preload() {
-        // We'll load assets here later
+        console.log('MainScene preload'); // Debug log
     }
 
     create() {
+        console.log('MainScene create'); // Debug log
+        
         // Add a title
         this.add.text(400, 100, 'ひらがなドロップ', {
             fontSize: '48px',
@@ -31,6 +34,7 @@ export default class MainScene extends Phaser.Scene {
 
         // Make the scene interactive
         this.input.on('pointerdown', () => {
+            console.log('Starting GameScene...'); // Debug log
             this.scene.start('GameScene');
         });
     }

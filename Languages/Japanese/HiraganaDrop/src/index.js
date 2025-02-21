@@ -2,6 +2,8 @@ import Phaser from 'phaser';
 import MainScene from './scenes/MainScene';
 import GameScene from './scenes/GameScene';
 
+console.log('Game initializing...'); // Debug log
+
 const config = {
     type: Phaser.AUTO,
     width: 800,
@@ -23,5 +25,6 @@ const config = {
 };
 
 window.addEventListener('load', () => {
+    console.log('Window loaded, creating game...'); // Debug log
     const game = new Phaser.Game(config);
 });
