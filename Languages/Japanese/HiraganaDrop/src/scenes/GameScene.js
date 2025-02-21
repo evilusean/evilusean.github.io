@@ -11,6 +11,7 @@ class GameScene extends Phaser.Scene {
         this.isGameActive = true;
         this.remainingCharacters = new Set();
         this.correctCharacters = new Set();
+        this.progressContainer = null;  // Initialize as null
     }
 
     init(data) {
@@ -32,28 +33,43 @@ class GameScene extends Phaser.Scene {
     }
 
     create() {
-        // Timer/Lives display
+        // Create status text
         this.statusText = this.add.text(400, 50, '', {
             fontSize: '32px',
             color: '#ffffff'
         }).setOrigin(0.5);
 
-        // Score display
+        // Create score text
         this.scoreText = this.add.text(400, 100, 'Score: 0', {
             fontSize: '24px',
             color: '#ffffff'
         }).setOrigin(0.5);
 
-        // Input display
+        // Create input text
         this.inputText = this.add.text(400, 550, '', {
             fontSize: '24px',
             color: '#ffffff'
         }).setOrigin(0.5);
 
+        // Initialize progress container first
+        this.progressContainer = this.add.container(0, 0);
+
         // Create opening matrix rain effect
         this.createOpeningMatrixRain();
 
-        // Spawn timer with 3-second delay
+        // Initialize game mode specific elements
+        if (this.gameMode === 'survival') {
+            this.createCharacterProgress();
+        } else if (this.gameMode === 'timed') {
+            this.gameTimer = this.time.addEvent({
+                delay: 1000,
+                callback: this.updateTimer,
+                callbackScope: this,
+                loop: true
+            });
+        }
+
+        // Spawn timer
         this.spawnTimer = this.time.addEvent({
             delay: 3000,
             callback: this.spawnCharacter,
@@ -64,31 +80,23 @@ class GameScene extends Phaser.Scene {
         // Matrix trail config
         this.trailConfig = {
             count: 5,
-            fadeDelay: 300,     // Increased delay between fades
-            fadeTime: 2000,     // Increased fade duration
-            startAlpha: 0.6,    // Higher starting opacity
-            spacing: 40         // Increased spacing
+            fadeDelay: 300,
+            fadeTime: 2000,
+            startAlpha: 0.6,
+            spacing: 40
         };
 
-        // Keyboard input
+        // Set up keyboard input
         this.input.keyboard.on('keydown', this.handleKeyInput, this);
+
+        // Initialize spawn area
+        this.spawnArea = {
+            left: 150,  // Default value if not in survival mode
+            right: 650
+        };
 
         // Add container for missed character notifications
         this.missedNotifications = this.add.container(0, 550);
-
-        // Add timer update for timed mode
-        if (this.gameMode === 'timed') {
-            this.gameTimer = this.time.addEvent({
-                delay: 1000,
-                callback: this.updateTimer,
-                callbackScope: this,
-                loop: true
-            });
-        }
-
-        if (this.gameMode === 'survival') {
-            this.createCharacterProgress();
-        }
     }
 
     createOpeningMatrixRain() {
@@ -136,7 +144,7 @@ class GameScene extends Phaser.Scene {
         const randomIndex = Phaser.Math.Between(0, HIRAGANA_SET.basic.length - 1);
         const character = HIRAGANA_SET.basic[randomIndex];
 
-        const x = Phaser.Math.Between(100, 700);
+        const x = Phaser.Math.Between(this.spawnArea.left, this.spawnArea.right);
         const mainChar = this.add.text(x, -50, character.hiragana, {
             fontSize: '48px',
             color: '#00ff00',
@@ -381,38 +389,42 @@ class GameScene extends Phaser.Scene {
         this.fallingCharacters = [];
 
         // Show game over text
-        const gameOverText = this.add.text(400, 200, 'Game Over!', {
+        this.add.text(400, 200, 'Game Over!', {
             fontSize: '64px',
             color: '#ffffff'
         }).setOrigin(0.5);
 
-        const scoreText = this.add.text(400, 280, `Final Score: ${this.score}`, {
-            fontSize: '32px',
-            color: '#ffffff'
-        }).setOrigin(0.5);
+        // Show score in red
+        this.scoreText.setColor('#ff0000');
 
-        // Show missed characters
-        let missedText = 'Missed Characters:\n\n';
-        Object.entries(this.missedCharacters).forEach(([char, count]) => {
-            const romaji = HIRAGANA_SET.basic.find(h => h.hiragana === char)?.romaji;
-            missedText += `${char} (${romaji}): ${count} times\n`;
-        });
+        // Show missed characters in compact format
+        if (Object.keys(this.missedCharacters).length > 0) {
+            const missedText = Object.entries(this.missedCharacters)
+                .sort(([, countA], [, countB]) => countB - countA)
+                .map(([char, count]) => {
+                    const romaji = HIRAGANA_SET.basic.find(h => h.hiragana === char)?.romaji;
+                    return `${char}(${romaji}):${count}`;
+                })
+                .join(' | ');
 
-        const missedList = this.add.text(400, 350, missedText, {
-            fontSize: '24px',
-            color: '#ff0000',
-            align: 'center'
-        }).setOrigin(0.5);
+            this.add.text(400, 350, 'Missed:', {
+                fontSize: '24px',
+                color: '#ff0000'
+            }).setOrigin(0.5);
 
-        const escText = this.add.text(400, 500, 'Press ESC to return to menu', {
+            this.add.text(400, 390, missedText, {
+                fontSize: '20px',
+                color: '#ff0000',
+                align: 'center',
+                wordWrap: { width: 700 }
+            }).setOrigin(0.5);
+        }
+
+        // Return to menu instruction
+        this.add.text(400, 500, 'Press ESC to return to menu', {
             fontSize: '24px',
             color: '#ffff00'
         }).setOrigin(0.5);
-
-        // Make sure ESC key is properly handled
-        this.input.keyboard.on('keydown-ESC', () => {
-            this.scene.start('MainScene');
-        });
     }
 
     cleanupAndReturnToMenu() {
@@ -431,29 +443,48 @@ class GameScene extends Phaser.Scene {
     }
 
     createCharacterProgress() {
-        this.progressContainer = this.add.container(0, 10);
-        
-        // Create progress display
+        if (!this.progressContainer) return;  // Safety check
+
+        // Clear any existing progress display
+        this.progressContainer.removeAll();
+
+        // Create left and right margins for character progress
+        const margin = 80;
+        const charHeight = 25;
+        const charsPerColumn = Math.ceil(HIRAGANA_SET.basic.length / 2);
+
+        // Split characters into left and right groups
         const remaining = Array.from(this.remainingCharacters);
-        const charsPerRow = 15;
-        const charWidth = 40;
-        const charHeight = 30;
-        
-        remaining.forEach((char, index) => {
-            const row = Math.floor(index / charsPerRow);
-            const col = index % charsPerRow;
-            const x = 50 + (col * charWidth);
-            const y = (row * charHeight);
-            
-            const charText = this.add.text(x, y, char, {
+        const leftChars = remaining.slice(0, charsPerColumn);
+        const rightChars = remaining.slice(charsPerColumn);
+
+        // Create left column
+        leftChars.forEach((char, index) => {
+            const charText = this.add.text(margin, 50 + (index * charHeight), char, {
                 fontSize: '20px',
                 color: '#00ff00',
                 fontFamily: '"Noto Sans JP", sans-serif'
             });
-            
-            this.progressContainer.add(charText);
             charText.setData('hiragana', char);
+            this.progressContainer.add(charText);
         });
+
+        // Create right column
+        rightChars.forEach((char, index) => {
+            const charText = this.add.text(this.game.config.width - margin, 50 + (index * charHeight), char, {
+                fontSize: '20px',
+                color: '#00ff00',
+                fontFamily: '"Noto Sans JP", sans-serif'
+            }).setOrigin(1, 0);
+            charText.setData('hiragana', char);
+            this.progressContainer.add(charText);
+        });
+
+        // Update spawn area to avoid character lists
+        this.spawnArea = {
+            left: margin + 50,
+            right: this.game.config.width - margin - 50
+        };
     }
 
     updateCharacterProgress(completedChar) {
