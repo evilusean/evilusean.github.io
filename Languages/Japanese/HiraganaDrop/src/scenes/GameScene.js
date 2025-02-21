@@ -5,37 +5,43 @@ class GameScene extends Phaser.Scene {
     constructor() {
         super({ key: 'GameScene' });
         this.fallingCharacters = [];
-        this.selectedCharacterIndex = -1;
-        this.timeLeft = 30;
-        this.characterStats = {};
         this.currentInput = '';
-        
-        // Initialize stats for each character
-        HIRAGANA_SET.basic.forEach(char => {
-            this.characterStats[char.hiragana] = {
-                correct: 0,
-                incorrect: 0,
-                attempts: 0
-            };
-        });
+        this.score = 0;
     }
 
-    preload() {
-        console.log('GameScene preload');
+    init(data) {
+        this.gameMode = data.mode;
+        if (this.gameMode === 'timed') {
+            this.timeLeft = 60;
+            this.lives = Infinity;
+        } else {
+            this.timeLeft = 0;
+            this.lives = 3;
+        }
     }
 
     create() {
-        console.log('GameScene create');
-        
-        // Add timer text
-        this.timerText = this.add.text(400, 50, 'Time: 30', {
+        // Timer/Lives display
+        this.statusText = this.add.text(400, 50, '', {
             fontSize: '32px',
             color: '#ffffff'
         }).setOrigin(0.5);
 
-        // Start spawning characters
+        // Score display
+        this.scoreText = this.add.text(400, 100, 'Score: 0', {
+            fontSize: '24px',
+            color: '#ffffff'
+        }).setOrigin(0.5);
+
+        // Input display
+        this.inputText = this.add.text(400, 550, '', {
+            fontSize: '24px',
+            color: '#ffffff'
+        }).setOrigin(0.5);
+
+        // Spawn characters more slowly
         this.spawnTimer = this.time.addEvent({
-            delay: 2000,  // Spawn a new character every 2 seconds
+            delay: 3000,  // Spawn every 3 seconds
             callback: this.spawnCharacter,
             callbackScope: this,
             loop: true
@@ -46,134 +52,117 @@ class GameScene extends Phaser.Scene {
             delay: 1000,
             callback: this.updateTimer,
             callbackScope: this,
-            repeat: 30  // 30 second game
+            loop: true
         });
 
-        // Add keyboard input
+        // Keyboard input
         this.input.keyboard.on('keydown', this.handleKeyInput, this);
-
-        // Add score display
-        this.scoreText = this.add.text(400, 550, 'Score: 0', {
-            fontSize: '24px',
-            color: '#ffffff'
-        }).setOrigin(0.5);
     }
 
     spawnCharacter() {
-        // Get random character from HIRAGANA_SET
         const randomIndex = Phaser.Math.Between(0, HIRAGANA_SET.basic.length - 1);
         const character = HIRAGANA_SET.basic[randomIndex];
 
-        // Create text object for the character
-        const x = Phaser.Math.Between(100, 700);  // Random x position
+        const x = Phaser.Math.Between(100, 700);
         const charObject = this.add.text(x, -50, character.hiragana, {
             fontSize: '48px',
             color: '#00ff00',
             fontFamily: '"Noto Sans JP", sans-serif'
         }).setOrigin(0.5);
 
-        // Add physics to the character
+        // Much slower falling speed
         this.matter.add.gameObject(charObject, {
             friction: 0,
-            frictionAir: 0.001,
+            frictionAir: 0.005,  // Increased air friction for slower falling
             bounce: 0.4,
-            mass: 1
+            mass: 0.5  // Lighter mass for slower falling
         });
 
-        // Store character data
         this.fallingCharacters.push({
             gameObject: charObject,
-            character: character,
-            isSelected: false
+            character: character
         });
-
-        console.log('Spawned character:', character.hiragana);
     }
 
     handleKeyInput(event) {
-        if (this.selectedCharacterIndex === -1) {
-            // If no character is selected, Tab key selects the first unselected character
-            if (event.key === 'Tab') {
-                event.preventDefault();
-                this.selectNextCharacter();
-            }
-        } else {
-            // If a character is selected, handle typing
-            const currentChar = this.fallingCharacters[this.selectedCharacterIndex];
-            if (currentChar) {
-                if (event.key === currentChar.character.romaji[this.currentInput.length]) {
-                    this.currentInput += event.key;
-                    if (this.currentInput === currentChar.character.romaji) {
-                        // Correct input
-                        this.handleCorrectInput();
-                    }
+        if (event.key === 'Escape') {
+            this.scene.start('MainScene');
+            return;
+        }
+
+        if (event.key.length === 1) {
+            this.currentInput += event.key;
+            this.inputText.setText(`Typing: ${this.currentInput}`);
+
+            // Check all characters for matches
+            this.fallingCharacters.forEach((char, index) => {
+                if (char.character.romaji === this.currentInput) {
+                    this.handleCorrectInput(index);
+                    this.currentInput = '';
+                    this.inputText.setText('');
                 }
-            }
+            });
+        } else if (event.key === 'Backspace') {
+            this.currentInput = this.currentInput.slice(0, -1);
+            this.inputText.setText(`Typing: ${this.currentInput}`);
         }
     }
 
-    selectNextCharacter() {
-        // Deselect current character if any
-        if (this.selectedCharacterIndex !== -1) {
-            const current = this.fallingCharacters[this.selectedCharacterIndex];
-            if (current) {
-                current.gameObject.setColor('#00ff00');
-                current.isSelected = false;
-            }
-        }
-
-        // Find next unselected character
-        for (let i = 0; i < this.fallingCharacters.length; i++) {
-            if (!this.fallingCharacters[i].isSelected) {
-                this.selectedCharacterIndex = i;
-                this.fallingCharacters[i].isSelected = true;
-                this.fallingCharacters[i].gameObject.setColor('#ff0000');
-                this.currentInput = '';
-                break;
-            }
-        }
-    }
-
-    handleCorrectInput() {
-        const char = this.fallingCharacters[this.selectedCharacterIndex];
+    handleCorrectInput(index) {
+        const char = this.fallingCharacters[index];
         char.gameObject.destroy();
-        this.fallingCharacters.splice(this.selectedCharacterIndex, 1);
-        this.selectedCharacterIndex = -1;
-        this.currentInput = '';
+        this.fallingCharacters.splice(index, 1);
         
-        // Update score
-        this.score = (this.score || 0) + 100;
+        this.score += 100;
         this.scoreText.setText(`Score: ${this.score}`);
     }
 
     updateTimer() {
-        this.timeLeft--;
-        this.timerText.setText(`Time: ${this.timeLeft}`);
-        
-        if (this.timeLeft <= 0) {
-            this.endGame();
+        if (this.gameMode === 'timed') {
+            this.timeLeft--;
+            this.statusText.setText(`Time: ${this.timeLeft}`);
+            if (this.timeLeft <= 0) {
+                this.endGame();
+            }
+        } else {
+            this.timeLeft++;
+            this.statusText.setText(`Lives: ${this.lives} | Time: ${this.timeLeft}`);
         }
     }
 
     endGame() {
-        // Stop timers
         this.spawnTimer.destroy();
         this.gameTimer.destroy();
+        this.input.keyboard.removeAllListeners();
 
         // Show final score
         this.add.text(400, 300, 'Game Over!', {
             fontSize: '64px',
             color: '#ffffff'
         }).setOrigin(0.5);
+
+        this.add.text(400, 400, `Final Score: ${this.score}`, {
+            fontSize: '32px',
+            color: '#ffffff'
+        }).setOrigin(0.5);
+
+        // Return to menu instruction
+        this.add.text(400, 500, 'Press ESC to return to menu', {
+            fontSize: '24px',
+            color: '#ffff00'
+        }).setOrigin(0.5);
     }
 
     update() {
-        // Clean up characters that have fallen off screen
-        this.fallingCharacters = this.fallingCharacters.filter((char, index) => {
+        // Check for fallen characters
+        this.fallingCharacters = this.fallingCharacters.filter(char => {
             if (char.gameObject.y > 650) {
                 char.gameObject.destroy();
-                if (index === this.selectedCharacterIndex) {
-                    this.selectedCharacterIndex = -1;
+                if (this.gameMode === 'elimination') {
+                    this.lives--;
+                    if (this.lives <= 0) {
+                        this.endGame();
+                    }
                 }
                 return false;
             }

@@ -13,29 +13,43 @@ class MainScene extends Phaser.Scene {
     create() {
         console.log('MainScene create'); // Debug log
         
-        // Add a title
+        // Title
         this.add.text(400, 100, 'ひらがなドロップ', {
             fontSize: '48px',
             color: '#ffffff',
             fontFamily: '"Noto Sans JP", sans-serif'
         }).setOrigin(0.5);
 
-        // Add subtitle
+        // Subtitle
         this.add.text(400, 200, 'Hiragana Drop', {
             fontSize: '32px',
             color: '#ffffff'
         }).setOrigin(0.5);
 
-        // Add start instruction
-        this.add.text(400, 300, 'Click anywhere to start', {
+        // Mode selection buttons
+        const timedButton = this.add.text(400, 300, 'Timed Mode (60s)', {
             fontSize: '24px',
             color: '#ffff00'
-        }).setOrigin(0.5);
+        }).setOrigin(0.5).setInteractive();
 
-        // Make the scene interactive
-        this.input.on('pointerdown', () => {
-            console.log('Starting GameScene...'); // Debug log
-            this.scene.start('GameScene');
+        const eliminationButton = this.add.text(400, 350, 'Elimination Mode (3 Lives)', {
+            fontSize: '24px',
+            color: '#ffff00'
+        }).setOrigin(0.5).setInteractive();
+
+        // Button hover effects
+        [timedButton, eliminationButton].forEach(button => {
+            button.on('pointerover', () => button.setColor('#ff0000'));
+            button.on('pointerout', () => button.setColor('#ffff00'));
+        });
+
+        // Button click handlers
+        timedButton.on('pointerdown', () => {
+            this.scene.start('GameScene', { mode: 'timed' });
+        });
+
+        eliminationButton.on('pointerdown', () => {
+            this.scene.start('GameScene', { mode: 'elimination' });
         });
     }
 
