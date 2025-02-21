@@ -14,29 +14,31 @@ class GameScene extends Phaser.Scene {
         this.isGameOver = false;
         this.remainingCharacters = new Set();
         this.correctCharacters = new Set();
-        this.progressContainer = null;  // Initialize as null
-        this.lastInput = '';  // Store last input character
+        this.progressContainer = null;
+        this.lastInput = '';
     }
 
     init(data) {
         this.gameMode = data.mode;
-        if (this.gameMode === 'timed') {
-            this.timeLeft = data.time || 60;  // Use provided time or default to 60
-            this.lives = Infinity;
-        } else if (this.gameMode === 'elimination') {
-            this.timeLeft = 0;
-            this.lives = 3;
-        } else if (this.gameMode === 'survival') {
-            this.timeLeft = 0;
-            this.lives = Infinity;
-            this.remainingCharacters = new Set(HIRAGANA_SET.basic.map(char => char.hiragana));
-            this.correctCharacters = new Set();
-        }
-        this.missedCharacters = {};
-        this.isGameActive = true;
         this.characterSet = data.characterSet || 'hiragana';
         this.CHAR_SET = this.characterSet === 'hiragana' ? HIRAGANA_SET : KATAKANA_SET;
         this.SPECIAL_CASES = this.characterSet === 'hiragana' ? HIRAGANA_SPECIAL : KATAKANA_SPECIAL;
+
+        if (this.gameMode === 'timed') {
+            this.timeLeft = data.time || 60;
+            this.lives = Infinity;
+        } else if (this.gameMode === 'elimination') {
+            this.timeLeft = 0;
+            this.lives = data.lives || 3;
+        } else if (this.gameMode === 'survival') {
+            this.timeLeft = 0;
+            this.lives = Infinity;
+            this.remainingCharacters = new Set(this.CHAR_SET.basic.map(char => 
+                this.characterSet === 'hiragana' ? char.hiragana : char.katakana
+            ));
+            this.correctCharacters.clear();
+        }
+        this.missedCharacters = {};
     }
 
     create() {
@@ -182,46 +184,49 @@ class GameScene extends Phaser.Scene {
     spawnCharacter() {
         if (this.isPaused) return;
 
-        const randomIndex = Phaser.Math.Between(0, this.CHAR_SET.basic.length - 1);
-        const character = this.CHAR_SET.basic[randomIndex];
+        let character;
+        if (this.gameMode === 'survival' && this.remainingCharacters.size > 0) {
+            // For survival mode, prioritize remaining characters
+            const remainingArray = Array.from(this.remainingCharacters);
+            const charSymbol = Phaser.Math.RND.pick(remainingArray);
+            character = this.CHAR_SET.basic.find(c => 
+                (this.characterSet === 'hiragana' ? c.hiragana : c.katakana) === charSymbol
+            );
+        } else {
+            const randomIndex = Phaser.Math.Between(0, this.CHAR_SET.basic.length - 1);
+            character = this.CHAR_SET.basic[randomIndex];
+        }
 
-        const x = Phaser.Math.Between(this.spawnArea.left, this.spawnArea.right);
-        const mainChar = this.add.text(x, -50, character.hiragana, {
+        const x = Phaser.Math.Between(this.spawnArea?.left || 100, this.spawnArea?.right || 700);
+        const mainChar = this.add.text(x, -50, 
+            this.characterSet === 'hiragana' ? character.hiragana : character.katakana, {
             fontSize: '48px',
             color: '#00ff00',
             fontFamily: '"Noto Sans JP", sans-serif'
         }).setOrigin(0.5);
 
-        // Add physics to main character
         this.matter.add.gameObject(mainChar, {
             friction: 0,
             frictionAir: 0.02,
             bounce: 0.4,
-            mass: 0.1,
-            render: {
-                visible: false
-            }
+            mass: 0.1
         });
 
-        const charObj = {
+        this.fallingCharacters.push({
             gameObject: mainChar,
             character: character,
             trails: [],
             lastTrailTime: 0
-        };
-
-        this.fallingCharacters.push(charObj);
+        });
     }
 
     handleKeyInput(event) {
-        if (!this.isGameActive || this.isPaused) return;
-
         if (event.key === 'Escape') {
             if (this.isGameOver) {
                 this.scene.start('MainScene');
-                return;
+            } else {
+                this.togglePause();
             }
-            this.togglePause();
             return;
         }
 
@@ -230,15 +235,14 @@ class GameScene extends Phaser.Scene {
             return;
         }
 
+        if (this.isPaused || !this.isGameActive) return;
+
         if (event.key.match(/^[a-z]$/)) {
             this.currentInput += event.key;
-            this.lastInput = event.key;  // Store last input
+            this.lastInput = event.key;
 
-            // Check for matches in any order
             this.fallingCharacters.forEach((char, index) => {
                 const target = char.character.romaji;
-                
-                // Check if current input contains all characters needed in any order
                 const inputChars = this.currentInput.split('');
                 const targetChars = target.split('');
                 const isMatch = targetChars.every(c => 
@@ -248,29 +252,42 @@ class GameScene extends Phaser.Scene {
 
                 if (isMatch) {
                     this.handleCorrectInput(index);
-                    this.currentInput = '';  // Reset input after correct match
+                    this.currentInput = '';
                     return;
                 }
             });
 
-            // Reset input if too long, but keep last character
             if (this.currentInput.length >= 3) {
                 this.currentInput = this.lastInput;
             }
 
             this.inputText.setText(this.currentInput);
-        } else if (event.key === 'Backspace') {
-            this.currentInput = '';
-            this.inputText.setText('');
         }
     }
 
-    checkForMatch() {
-        this.fallingCharacters.forEach((char, index) => {
-            if (char.character.romaji === this.currentInput) {
-                this.handleCorrectInput(index);
-                this.currentInput = '';
-                this.inputText.setText('');
+    showMissedCharacterNotification(character) {
+        const missedChar = this.characterSet === 'hiragana' ? character.hiragana : character.katakana;
+        // Create notification text
+        const notification = this.add.text(
+            Phaser.Math.Between(100, 700), // Random X position
+            600, // Bottom of screen
+            `${missedChar} (${character.romaji})`, // Show both hiragana and romaji
+            {
+                fontSize: '32px',
+                color: '#ff0000',
+                fontFamily: '"Noto Sans JP", sans-serif'
+            }
+        ).setOrigin(0.5);
+
+        // Animate the notification
+        this.tweens.add({
+            targets: notification,
+            y: 550,          // Float up slightly
+            alpha: 0,        // Fade out
+            duration: 2000,  // Over 2 seconds
+            ease: 'Power2',
+            onComplete: () => {
+                notification.destroy();
             }
         });
     }
@@ -308,9 +325,11 @@ class GameScene extends Phaser.Scene {
         });
         
         if (this.gameMode === 'survival') {
-            this.remainingCharacters.delete(char.character.hiragana);
-            this.correctCharacters.add(char.character.hiragana);
-            this.updateCharacterProgress(char.character.hiragana);
+            const charSymbol = this.characterSet === 'hiragana' ? 
+                char.character.hiragana : char.character.katakana;
+            this.remainingCharacters.delete(charSymbol);
+            this.correctCharacters.add(charSymbol);
+            this.updateCharacterProgress(charSymbol);
             
             if (this.remainingCharacters.size === 0 && !this.gameComplete) {
                 this.gameComplete = true;
@@ -411,32 +430,6 @@ class GameScene extends Phaser.Scene {
                 return false;
             }
             return true;
-        });
-    }
-
-    showMissedCharacterNotification(character) {
-        // Create notification text
-        const notification = this.add.text(
-            Phaser.Math.Between(100, 700), // Random X position
-            600, // Bottom of screen
-            `${character.hiragana} (${character.romaji})`, // Show both hiragana and romaji
-            {
-                fontSize: '32px',
-                color: '#ff0000',
-                fontFamily: '"Noto Sans JP", sans-serif'
-            }
-        ).setOrigin(0.5);
-
-        // Animate the notification
-        this.tweens.add({
-            targets: notification,
-            y: 550,          // Float up slightly
-            alpha: 0,        // Fade out
-            duration: 2000,  // Over 2 seconds
-            ease: 'Power2',
-            onComplete: () => {
-                notification.destroy();
-            }
         });
     }
 
@@ -575,38 +568,16 @@ class GameScene extends Phaser.Scene {
         this.pauseOverlay.setVisible(this.isPaused);
 
         if (this.isPaused) {
-            // Pause timers
             if (this.spawnTimer) this.spawnTimer.paused = true;
             if (this.gameTimer) this.gameTimer.paused = true;
-
-            // Store current velocities and pause physics
-            this.fallingCharacters.forEach(char => {
-                if (char.gameObject.body) {
-                    char.savedVelocity = { 
-                        x: char.gameObject.body.velocity.x,
-                        y: char.gameObject.body.velocity.y
-                    };
-                    char.gameObject.setVelocity(0, 0);
-                }
-            });
             this.matter.world.pause();
         } else {
-            // Resume timers
             if (this.spawnTimer) this.spawnTimer.paused = false;
             if (this.gameTimer) this.gameTimer.paused = false;
-
-            // Restore velocities and resume physics
-            this.fallingCharacters.forEach(char => {
-                if (char.gameObject.body && char.savedVelocity) {
-                    char.gameObject.setVelocity(
-                        char.savedVelocity.x,
-                        char.savedVelocity.y
-                    );
-                }
-            });
             this.matter.world.resume();
         }
     }
 }
 
+module.exports = GameScene;
 module.exports = GameScene;
