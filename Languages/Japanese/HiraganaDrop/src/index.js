@@ -1,6 +1,6 @@
 const Phaser = require('phaser');
-const MainScene = require('./scenes/MainScene').default;
-const GameScene = require('./scenes/GameScene').default;
+const MainScene = require('./scenes/MainScene');
+const GameScene = require('./scenes/GameScene');
 
 console.log('Game initializing...'); // Debug log
 
@@ -27,4 +27,5 @@ const config = {
 window.addEventListener('load', () => {
     console.log('Window loaded, creating game...'); // Debug log
     const game = new Phaser.Game(config);
+    window.game = game; // For debugging
 });

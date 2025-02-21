@@ -1,4 +1,4 @@
-export const HIRAGANA_SET = {
+const HIRAGANA_SET = {
     // Basic hiragana characters
     basic: [
   // Vowels (あ行)
@@ -106,3 +106,5 @@ export const HIRAGANA_SET = {
   { romaji: 'po', hiragana: 'ぽ' }
     ]
 };
+
+module.exports = { HIRAGANA_SET };

@@ -1,7 +1,7 @@
-import Phaser from 'phaser';
-import { HIRAGANA_SET } from '../helpers/characters';
+const Phaser = require('phaser');
+const HIRAGANA_SET = require('../helpers/characters').HIRAGANA_SET;
 
-export default class GameScene extends Phaser.Scene {
+class GameScene extends Phaser.Scene {
     constructor() {
         super({ key: 'GameScene' });
         this.fallingCharacters = [];
@@ -18,6 +18,19 @@ export default class GameScene extends Phaser.Scene {
                 attempts: 0
             };
         });
+    }
+
+    preload() {
+        console.log('GameScene preload'); // Debug log
+    }
+
+    create() {
+        console.log('GameScene create'); // Debug log
+        // Add debug text to verify scene is loading
+        this.add.text(400, 300, 'Game Scene Loaded', {
+            fontSize: '32px',
+            color: '#ffffff'
+        }).setOrigin(0.5);
     }
 
     spawnCharacter() {
@@ -173,6 +186,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     update() {
+        console.log('GameScene update'); // Debug log
         // Clean up characters that have fallen off screen
         this.fallingCharacters = this.fallingCharacters.filter((char, index) => {
             if (char.mainChar.y > 650) {
@@ -183,3 +197,5 @@ export default class GameScene extends Phaser.Scene {
         });
     }
 }
+
+module.exports = GameScene;
