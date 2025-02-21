@@ -107,4 +107,11 @@ const HIRAGANA_SET = {
     ]
 };
 
-module.exports = { HIRAGANA_SET };
+// Add special cases for partial matching
+const SPECIAL_CASES = {
+    'ts': ['tsu'],
+    'ch': ['chi'],
+    'sh': ['shi']
+};
+
+module.exports = { HIRAGANA_SET, SPECIAL_CASES };

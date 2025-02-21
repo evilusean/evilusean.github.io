@@ -27,18 +27,23 @@ class MainScene extends Phaser.Scene {
         }).setOrigin(0.5);
 
         // Mode selection buttons
-        const timedButton = this.add.text(400, 300, 'Timed Mode (60s)', {
+        const timedButton = this.add.text(400, 280, 'Timed Mode (60s)', {
             fontSize: '24px',
             color: '#ffff00'
         }).setOrigin(0.5).setInteractive();
 
-        const eliminationButton = this.add.text(400, 350, 'Elimination Mode (3 Lives)', {
+        const eliminationButton = this.add.text(400, 340, 'Elimination Mode (3 Lives)', {
+            fontSize: '24px',
+            color: '#ffff00'
+        }).setOrigin(0.5).setInteractive();
+
+        const survivalButton = this.add.text(400, 400, 'Survival Mode (All Characters)', {
             fontSize: '24px',
             color: '#ffff00'
         }).setOrigin(0.5).setInteractive();
 
         // Button hover effects
-        [timedButton, eliminationButton].forEach(button => {
+        [timedButton, eliminationButton, survivalButton].forEach(button => {
             button.on('pointerover', () => button.setColor('#ff0000'));
             button.on('pointerout', () => button.setColor('#ffff00'));
         });
@@ -50,6 +55,10 @@ class MainScene extends Phaser.Scene {
 
         eliminationButton.on('pointerdown', () => {
             this.scene.start('GameScene', { mode: 'elimination' });
+        });
+
+        survivalButton.on('pointerdown', () => {
+            this.scene.start('GameScene', { mode: 'survival' });
         });
     }
 
