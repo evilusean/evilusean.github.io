@@ -16,7 +16,7 @@ class GameScene extends Phaser.Scene {
     init(data) {
         this.gameMode = data.mode;
         if (this.gameMode === 'timed') {
-            this.timeLeft = 60;  // Initialize timeLeft for timed mode
+            this.timeLeft = data.time || 60;  // Use provided time or default to 60
             this.lives = Infinity;
         } else if (this.gameMode === 'elimination') {
             this.timeLeft = 0;
@@ -25,7 +25,7 @@ class GameScene extends Phaser.Scene {
             this.timeLeft = 0;
             this.lives = Infinity;
             this.remainingCharacters = new Set(HIRAGANA_SET.basic.map(char => char.hiragana));
-            this.correctCharacters.clear();
+            this.correctCharacters = new Set();
         }
         this.missedCharacters = {};
         this.isGameActive = true;
@@ -84,6 +84,10 @@ class GameScene extends Phaser.Scene {
                 callbackScope: this,
                 loop: true
             });
+        }
+
+        if (this.gameMode === 'survival') {
+            this.createCharacterProgress();
         }
     }
 
@@ -237,6 +241,7 @@ class GameScene extends Phaser.Scene {
         if (this.gameMode === 'survival') {
             this.remainingCharacters.delete(char.character.hiragana);
             this.correctCharacters.add(char.character.hiragana);
+            this.updateCharacterProgress(char.character.hiragana);
             
             if (this.remainingCharacters.size === 0 && !this.gameComplete) {
                 this.gameComplete = true;
@@ -423,6 +428,42 @@ class GameScene extends Phaser.Scene {
         
         // Return to menu
         this.scene.start('MainScene');
+    }
+
+    createCharacterProgress() {
+        this.progressContainer = this.add.container(0, 10);
+        
+        // Create progress display
+        const remaining = Array.from(this.remainingCharacters);
+        const charsPerRow = 15;
+        const charWidth = 40;
+        const charHeight = 30;
+        
+        remaining.forEach((char, index) => {
+            const row = Math.floor(index / charsPerRow);
+            const col = index % charsPerRow;
+            const x = 50 + (col * charWidth);
+            const y = (row * charHeight);
+            
+            const charText = this.add.text(x, y, char, {
+                fontSize: '20px',
+                color: '#00ff00',
+                fontFamily: '"Noto Sans JP", sans-serif'
+            });
+            
+            this.progressContainer.add(charText);
+            charText.setData('hiragana', char);
+        });
+    }
+
+    updateCharacterProgress(completedChar) {
+        if (this.progressContainer) {
+            this.progressContainer.each(charText => {
+                if (charText.getData('hiragana') === completedChar) {
+                    charText.setColor('#ff0000');
+                }
+            });
+        }
     }
 }
 
