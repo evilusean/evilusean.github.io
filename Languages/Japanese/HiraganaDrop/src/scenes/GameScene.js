@@ -7,6 +7,7 @@ class GameScene extends Phaser.Scene {
         this.fallingCharacters = [];
         this.currentInput = '';
         this.score = 0;
+        this.missedCharacters = {};  // Track missed characters
     }
 
     init(data) {
@@ -18,6 +19,7 @@ class GameScene extends Phaser.Scene {
             this.timeLeft = 0;
             this.lives = 3;
         }
+        this.missedCharacters = {};
     }
 
     create() {
@@ -39,9 +41,9 @@ class GameScene extends Phaser.Scene {
             color: '#ffffff'
         }).setOrigin(0.5);
 
-        // Spawn characters more slowly
+        // Much slower spawn rate
         this.spawnTimer = this.time.addEvent({
-            delay: 3000,  // Spawn every 3 seconds
+            delay: 5000,  // Spawn every 5 seconds
             callback: this.spawnCharacter,
             callbackScope: this,
             loop: true
@@ -73,14 +75,33 @@ class GameScene extends Phaser.Scene {
         // Much slower falling speed
         this.matter.add.gameObject(charObject, {
             friction: 0,
-            frictionAir: 0.005,  // Increased air friction for slower falling
+            frictionAir: 0.02,  // Significantly increased for much slower falling
             bounce: 0.4,
-            mass: 0.5  // Lighter mass for slower falling
+            mass: 0.1,  // Much lighter mass
+            render: {
+                fillStyle: 'transparent',  // Remove physics body visual
+                lineWidth: 0
+            }
         });
+
+        // Create trail effect
+        const trail = [];
+        const trailCount = 5;
+        for (let i = 0; i < trailCount; i++) {
+            const trailChar = this.add.text(x, -50, character.hiragana, {
+                fontSize: '48px',
+                color: '#00ff00',
+                fontFamily: '"Noto Sans JP", sans-serif',
+                alpha: 0.2 - (i * 0.03)
+            }).setOrigin(0.5);
+            trail.push(trailChar);
+        }
 
         this.fallingCharacters.push({
             gameObject: charObject,
-            character: character
+            character: character,
+            trail: trail,
+            lastPos: { x: x, y: -50 }
         });
     }
 
@@ -94,24 +115,57 @@ class GameScene extends Phaser.Scene {
             this.currentInput += event.key;
             this.inputText.setText(`Typing: ${this.currentInput}`);
 
-            // Check all characters for matches
-            this.fallingCharacters.forEach((char, index) => {
-                if (char.character.romaji === this.currentInput) {
-                    this.handleCorrectInput(index);
-                    this.currentInput = '';
-                    this.inputText.setText('');
-                }
-            });
+            // Auto-reset after 2 characters
+            if (this.currentInput.length >= 2) {
+                // Check for match before resetting
+                this.checkForMatch();
+                this.currentInput = '';
+                this.inputText.setText('');
+            } else {
+                // Check for single character matches (a, e, i, o, u)
+                this.checkForMatch();
+            }
         } else if (event.key === 'Backspace') {
-            this.currentInput = this.currentInput.slice(0, -1);
-            this.inputText.setText(`Typing: ${this.currentInput}`);
+            this.currentInput = '';
+            this.inputText.setText('');
         }
+    }
+
+    checkForMatch() {
+        this.fallingCharacters.forEach((char, index) => {
+            if (char.character.romaji === this.currentInput) {
+                this.handleCorrectInput(index);
+            }
+        });
     }
 
     handleCorrectInput(index) {
         const char = this.fallingCharacters[index];
-        char.gameObject.destroy();
-        this.fallingCharacters.splice(index, 1);
+        
+        // Create floating correct answer display
+        const correctText = this.add.text(
+            char.gameObject.x + 50, 
+            char.gameObject.y, 
+            char.character.romaji, 
+            {
+                fontSize: '32px',
+                color: '#00ff00'
+            }
+        );
+
+        // Highlight character
+        char.gameObject.setColor('#ffff00');
+
+        // Pause character movement
+        this.matter.world.remove(char.gameObject.body);
+
+        // Remove after delay
+        this.time.delayedCall(1000, () => {
+            correctText.destroy();
+            char.gameObject.destroy();
+            char.trail.forEach(t => t.destroy());
+            this.fallingCharacters.splice(index, 1);
+        });
         
         this.score += 100;
         this.scoreText.setText(`Score: ${this.score}`);
@@ -130,34 +184,47 @@ class GameScene extends Phaser.Scene {
         }
     }
 
-    endGame() {
-        this.spawnTimer.destroy();
-        this.gameTimer.destroy();
-        this.input.keyboard.removeAllListeners();
-
-        // Show final score
-        this.add.text(400, 300, 'Game Over!', {
-            fontSize: '64px',
-            color: '#ffffff'
-        }).setOrigin(0.5);
-
-        this.add.text(400, 400, `Final Score: ${this.score}`, {
-            fontSize: '32px',
-            color: '#ffffff'
-        }).setOrigin(0.5);
-
-        // Return to menu instruction
-        this.add.text(400, 500, 'Press ESC to return to menu', {
-            fontSize: '24px',
-            color: '#ffff00'
-        }).setOrigin(0.5);
-    }
-
     update() {
+        // Update trail positions
+        this.fallingCharacters.forEach(char => {
+            const currentPos = { x: char.gameObject.x, y: char.gameObject.y };
+            
+            // Update trail positions with delay
+            char.trail.forEach((trailChar, i) => {
+                const delay = (i + 1) * 2;
+                this.time.delayedCall(delay, () => {
+                    trailChar.setPosition(char.lastPos.x, char.lastPos.y);
+                });
+            });
+            
+            char.lastPos = { x: currentPos.x, y: currentPos.y };
+        });
+
         // Check for fallen characters
         this.fallingCharacters = this.fallingCharacters.filter(char => {
             if (char.gameObject.y > 650) {
-                char.gameObject.destroy();
+                // Show missed character romaji
+                const missedText = this.add.text(
+                    char.gameObject.x,
+                    600,
+                    char.character.romaji,
+                    {
+                        fontSize: '32px',
+                        color: '#ff0000'
+                    }
+                ).setOrigin(0.5);
+
+                // Track missed character
+                this.missedCharacters[char.character.hiragana] = 
+                    (this.missedCharacters[char.character.hiragana] || 0) + 1;
+
+                // Remove after delay
+                this.time.delayedCall(1000, () => {
+                    missedText.destroy();
+                    char.gameObject.destroy();
+                    char.trail.forEach(t => t.destroy());
+                });
+
                 if (this.gameMode === 'elimination') {
                     this.lives--;
                     if (this.lives <= 0) {
@@ -168,6 +235,41 @@ class GameScene extends Phaser.Scene {
             }
             return true;
         });
+    }
+
+    endGame() {
+        this.spawnTimer.destroy();
+        this.gameTimer.destroy();
+        this.input.keyboard.removeAllListeners();
+
+        // Show game over text
+        this.add.text(400, 200, 'Game Over!', {
+            fontSize: '64px',
+            color: '#ffffff'
+        }).setOrigin(0.5);
+
+        this.add.text(400, 300, `Final Score: ${this.score}`, {
+            fontSize: '32px',
+            color: '#ffffff'
+        }).setOrigin(0.5);
+
+        // Show missed characters
+        let missedText = 'Missed Characters:\n\n';
+        Object.entries(this.missedCharacters).forEach(([char, count]) => {
+            const romaji = HIRAGANA_SET.basic.find(h => h.hiragana === char)?.romaji;
+            missedText += `${char} (${romaji}): ${count} times\n`;
+        });
+
+        this.add.text(400, 400, missedText, {
+            fontSize: '24px',
+            color: '#ff0000',
+            align: 'center'
+        }).setOrigin(0.5);
+
+        this.add.text(400, 550, 'Press ESC to return to menu', {
+            fontSize: '24px',
+            color: '#ffff00'
+        }).setOrigin(0.5);
     }
 }
 
