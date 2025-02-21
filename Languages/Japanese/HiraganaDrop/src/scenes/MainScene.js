@@ -1,6 +1,6 @@
-import Phaser from 'phaser';
+const Phaser = require('phaser');
 
-export default class MainScene extends Phaser.Scene {
+class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
         console.log('MainScene constructed'); // Debug log
@@ -43,3 +43,5 @@ export default class MainScene extends Phaser.Scene {
         // Game loop will go here
     }
 }
+
+module.exports = MainScene;

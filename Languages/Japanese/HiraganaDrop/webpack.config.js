@@ -14,25 +14,13 @@ module.exports = {
         test: /\.js$/,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader',
-          options: {
-            presets: [
-              ['@babel/preset-env', {
-                targets: {
-                  browsers: ['last 2 versions']
-                }
-              }]
-            ]
-          }
+          loader: 'babel-loader'
         }
       }
     ]
   },
   resolve: {
-    extensions: ['.js'],
-    alias: {
-      phaser: path.join(__dirname, 'node_modules/phaser/dist/phaser.js')
-    }
+    extensions: ['.js']
   },
   devServer: {
     static: {

@@ -1,6 +1,6 @@
-import Phaser from 'phaser';
-import MainScene from './scenes/MainScene';
-import GameScene from './scenes/GameScene';
+const Phaser = require('phaser');
+const MainScene = require('./scenes/MainScene').default;
+const GameScene = require('./scenes/GameScene').default;
 
 console.log('Game initializing...'); // Debug log
 
