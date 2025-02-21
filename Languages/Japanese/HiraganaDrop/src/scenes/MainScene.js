@@ -3,6 +3,7 @@ const Phaser = require('phaser');
 class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
+        this.selectedSet = 'hiragana'; // Default selection
         console.log('MainScene constructed'); // Debug log
     }
 
@@ -25,6 +26,30 @@ class MainScene extends Phaser.Scene {
             fontSize: '32px',
             color: '#ffffff'
         }).setOrigin(0.5);
+
+        // Character set selection
+        const hiraganaButton = this.add.text(300, 240, 'Hiragana', {
+            fontSize: '24px',
+            color: '#ff0000'  // Start with hiragana selected
+        }).setOrigin(0.5).setInteractive();
+
+        const katakanaButton = this.add.text(500, 240, 'Katakana', {
+            fontSize: '24px',
+            color: '#ffff00'
+        }).setOrigin(0.5).setInteractive();
+
+        // Character set selection logic
+        hiraganaButton.on('pointerdown', () => {
+            this.selectedSet = 'hiragana';
+            hiraganaButton.setColor('#ff0000');
+            katakanaButton.setColor('#ffff00');
+        });
+
+        katakanaButton.on('pointerdown', () => {
+            this.selectedSet = 'katakana';
+            katakanaButton.setColor('#ff0000');
+            hiraganaButton.setColor('#ffff00');
+        });
 
         // Timed Mode submenu
         const timedButton = this.add.text(400, 260, 'Timed Mode', {
@@ -91,9 +116,19 @@ class MainScene extends Phaser.Scene {
             button.on('pointerout', () => button.setColor('#ffff00'));
         });
 
-        survivalButton.on('pointerdown', () => {
-            this.scene.start('GameScene', { mode: 'survival' });
-        });
+        // Update scene start to include character set
+        const startGame = (mode, options = {}) => {
+            this.scene.start('GameScene', {
+                mode,
+                characterSet: this.selectedSet,
+                ...options
+            });
+        };
+
+        // Update all game start calls to use the new startGame function
+        timedButton.on('pointerdown', () => startGame('timed', { time: 60 }));
+        livesButton.on('pointerdown', () => startGame('elimination', { lives: 3 }));
+        survivalButton.on('pointerdown', () => startGame('survival'));
     }
 
     createOptionButtons(options, startY, type) {

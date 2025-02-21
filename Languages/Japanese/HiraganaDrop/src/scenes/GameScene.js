@@ -1,5 +1,6 @@
 const Phaser = require('phaser');
-const { HIRAGANA_SET, SPECIAL_CASES } = require('../helpers/characters');
+const { HIRAGANA_SET, SPECIAL_CASES: HIRAGANA_SPECIAL } = require('../helpers/HiraganaCharacters');
+const { KATAKANA_SET, SPECIAL_CASES: KATAKANA_SPECIAL } = require('../helpers/KatakanaCharacters');
 
 class GameScene extends Phaser.Scene {
     constructor() {
@@ -9,9 +10,12 @@ class GameScene extends Phaser.Scene {
         this.score = 0;
         this.missedCharacters = {};
         this.isGameActive = true;
+        this.isPaused = false;
+        this.isGameOver = false;
         this.remainingCharacters = new Set();
         this.correctCharacters = new Set();
         this.progressContainer = null;  // Initialize as null
+        this.lastInput = '';  // Store last input character
     }
 
     init(data) {
@@ -30,6 +34,9 @@ class GameScene extends Phaser.Scene {
         }
         this.missedCharacters = {};
         this.isGameActive = true;
+        this.characterSet = data.characterSet || 'hiragana';
+        this.CHAR_SET = this.characterSet === 'hiragana' ? HIRAGANA_SET : KATAKANA_SET;
+        this.SPECIAL_CASES = this.characterSet === 'hiragana' ? HIRAGANA_SPECIAL : KATAKANA_SPECIAL;
     }
 
     create() {
@@ -97,6 +104,38 @@ class GameScene extends Phaser.Scene {
 
         // Add container for missed character notifications
         this.missedNotifications = this.add.container(0, 550);
+
+        // Create pause overlay (initially hidden)
+        this.pauseOverlay = this.add.container(0, 0);
+        this.pauseOverlay.setVisible(false);
+
+        // Semi-transparent background
+        const overlay = this.add.rectangle(
+            0, 0, 
+            this.game.config.width, 
+            this.game.config.height, 
+            0x000000, 0.7
+        );
+        this.pauseOverlay.add(overlay);
+
+        // Pause text
+        const pauseText = this.add.text(400, 250, 'PAUSED', {
+            fontSize: '64px',
+            color: '#ffffff'
+        }).setOrigin(0.5);
+        this.pauseOverlay.add(pauseText);
+
+        const resumeText = this.add.text(400, 350, 'Press ESC to resume', {
+            fontSize: '24px',
+            color: '#ffff00'
+        }).setOrigin(0.5);
+        this.pauseOverlay.add(resumeText);
+
+        const menuText = this.add.text(400, 400, 'Press ENTER to return to menu', {
+            fontSize: '24px',
+            color: '#ffff00'
+        }).setOrigin(0.5);
+        this.pauseOverlay.add(menuText);
     }
 
     createOpeningMatrixRain() {
@@ -114,7 +153,7 @@ class GameScene extends Phaser.Scene {
 
         this.time.delayedCall(delay, () => {
             for (let i = 0; i < count; i++) {
-                const randomChar = Phaser.Utils.Array.GetRandom(HIRAGANA_SET.basic);
+                const randomChar = Phaser.Utils.Array.GetRandom(this.CHAR_SET.basic);
                 const y = -50 - (i * 50);
                 const char = this.add.text(x, y, randomChar.hiragana, {
                     fontSize: '48px',
@@ -141,8 +180,10 @@ class GameScene extends Phaser.Scene {
     }
 
     spawnCharacter() {
-        const randomIndex = Phaser.Math.Between(0, HIRAGANA_SET.basic.length - 1);
-        const character = HIRAGANA_SET.basic[randomIndex];
+        if (this.isPaused) return;
+
+        const randomIndex = Phaser.Math.Between(0, this.CHAR_SET.basic.length - 1);
+        const character = this.CHAR_SET.basic[randomIndex];
 
         const x = Phaser.Math.Between(this.spawnArea.left, this.spawnArea.right);
         const mainChar = this.add.text(x, -50, character.hiragana, {
@@ -173,31 +214,51 @@ class GameScene extends Phaser.Scene {
     }
 
     handleKeyInput(event) {
+        if (!this.isGameActive || this.isPaused) return;
+
         if (event.key === 'Escape') {
-            this.cleanupAndReturnToMenu();
+            if (this.isGameOver) {
+                this.scene.start('MainScene');
+                return;
+            }
+            this.togglePause();
             return;
         }
 
-        if (event.key.length === 1) {
-            this.currentInput += event.key;
-            this.inputText.setText(`Typing: ${this.currentInput}`);
+        if (event.key === 'Enter' && this.isPaused) {
+            this.scene.start('MainScene');
+            return;
+        }
 
-            // Check for special cases
-            const isSpecialCase = Object.entries(SPECIAL_CASES).some(([partial, matches]) => {
-                if (this.currentInput === partial) {
-                    return true; // Keep collecting input
+        if (event.key.match(/^[a-z]$/)) {
+            this.currentInput += event.key;
+            this.lastInput = event.key;  // Store last input
+
+            // Check for matches in any order
+            this.fallingCharacters.forEach((char, index) => {
+                const target = char.character.romaji;
+                
+                // Check if current input contains all characters needed in any order
+                const inputChars = this.currentInput.split('');
+                const targetChars = target.split('');
+                const isMatch = targetChars.every(c => 
+                    inputChars.includes(c) && 
+                    inputChars.filter(i => i === c).length >= targetChars.filter(t => t === c).length
+                );
+
+                if (isMatch) {
+                    this.handleCorrectInput(index);
+                    this.currentInput = '';  // Reset input after correct match
+                    return;
                 }
-                return false;
             });
 
-            // Check for complete matches or reset if too long
-            if (!isSpecialCase && this.currentInput.length >= 3) {
-                this.checkForMatch();
-                this.currentInput = '';
-                this.inputText.setText('');
-            } else {
-                this.checkForMatch();
+            // Reset input if too long, but keep last character
+            if (this.currentInput.length >= 3) {
+                this.currentInput = this.lastInput;
             }
+
+            this.inputText.setText(this.currentInput);
         } else if (event.key === 'Backspace') {
             this.currentInput = '';
             this.inputText.setText('');
@@ -262,6 +323,8 @@ class GameScene extends Phaser.Scene {
     }
 
     updateTimer() {
+        if (this.isPaused) return;
+
         if (this.gameMode === 'timed' && this.isGameActive) {
             this.timeLeft--;
             this.statusText.setText(`Time: ${this.timeLeft}`);
@@ -273,6 +336,8 @@ class GameScene extends Phaser.Scene {
     }
 
     update(time) {
+        if (this.isPaused) return;
+
         // Update falling characters and create stationary trails
         this.fallingCharacters.forEach(char => {
             if (time > char.lastTrailTime + this.trailConfig.fadeDelay) {
@@ -377,6 +442,7 @@ class GameScene extends Phaser.Scene {
 
     endGame() {
         this.isGameActive = false;
+        this.isGameOver = true;
         if (this.spawnTimer) this.spawnTimer.destroy();
         if (this.gameTimer) this.gameTimer.destroy();
         this.input.keyboard.removeAllListeners();
@@ -402,7 +468,7 @@ class GameScene extends Phaser.Scene {
             const missedText = Object.entries(this.missedCharacters)
                 .sort(([, countA], [, countB]) => countB - countA)
                 .map(([char, count]) => {
-                    const romaji = HIRAGANA_SET.basic.find(h => h.hiragana === char)?.romaji;
+                    const romaji = this.CHAR_SET.basic.find(h => h.hiragana === char)?.romaji;
                     return `${char}(${romaji}):${count}`;
                 })
                 .join(' | ');
@@ -425,6 +491,13 @@ class GameScene extends Phaser.Scene {
             fontSize: '24px',
             color: '#ffff00'
         }).setOrigin(0.5);
+
+        // Make sure ESC listener is properly set up
+        this.input.keyboard.on('keydown', event => {
+            if (event.key === 'Escape') {
+                this.scene.start('MainScene');
+            }
+        });
     }
 
     cleanupAndReturnToMenu() {
@@ -451,7 +524,7 @@ class GameScene extends Phaser.Scene {
         // Create left and right margins for character progress
         const margin = 80;
         const charHeight = 25;
-        const charsPerColumn = Math.ceil(HIRAGANA_SET.basic.length / 2);
+        const charsPerColumn = Math.ceil(this.CHAR_SET.basic.length / 2);
 
         // Split characters into left and right groups
         const remaining = Array.from(this.remainingCharacters);
@@ -494,6 +567,44 @@ class GameScene extends Phaser.Scene {
                     charText.setColor('#ff0000');
                 }
             });
+        }
+    }
+
+    togglePause() {
+        this.isPaused = !this.isPaused;
+        this.pauseOverlay.setVisible(this.isPaused);
+
+        if (this.isPaused) {
+            // Pause timers
+            if (this.spawnTimer) this.spawnTimer.paused = true;
+            if (this.gameTimer) this.gameTimer.paused = true;
+
+            // Store current velocities and pause physics
+            this.fallingCharacters.forEach(char => {
+                if (char.gameObject.body) {
+                    char.savedVelocity = { 
+                        x: char.gameObject.body.velocity.x,
+                        y: char.gameObject.body.velocity.y
+                    };
+                    char.gameObject.setVelocity(0, 0);
+                }
+            });
+            this.matter.world.pause();
+        } else {
+            // Resume timers
+            if (this.spawnTimer) this.spawnTimer.paused = false;
+            if (this.gameTimer) this.gameTimer.paused = false;
+
+            // Restore velocities and resume physics
+            this.fallingCharacters.forEach(char => {
+                if (char.gameObject.body && char.savedVelocity) {
+                    char.gameObject.setVelocity(
+                        char.savedVelocity.x,
+                        char.savedVelocity.y
+                    );
+                }
+            });
+            this.matter.world.resume();
         }
     }
 }
