@@ -6,6 +6,7 @@ module.exports = {
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
+    publicPath: '/dist/'
   },
   module: {
     rules: [
@@ -15,11 +16,23 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env']
+            presets: [
+              ['@babel/preset-env', {
+                targets: {
+                  browsers: ['last 2 versions']
+                }
+              }]
+            ]
           }
         }
       }
     ]
+  },
+  resolve: {
+    extensions: ['.js'],
+    alias: {
+      phaser: path.join(__dirname, 'node_modules/phaser/dist/phaser.js')
+    }
   },
   devServer: {
     static: {
@@ -27,5 +40,7 @@ module.exports = {
     },
     compress: true,
     port: 3000,
+    hot: true
   },
+  devtool: 'source-map'
 };
