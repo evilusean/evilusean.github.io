@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import MainScene from './scenes/MainScene';
+import GameScene from './scenes/GameScene';
 
 const config = {
     type: Phaser.AUTO,
@@ -7,7 +8,14 @@ const config = {
     height: 600,
     parent: 'game',
     backgroundColor: '#000000',
-    scene: MainScene,
+    physics: {
+        default: 'matter',
+        matter: {
+            gravity: { y: 0.3 },
+            debug: true  // This will show physics bodies - useful for testing
+        }
+    },
+    scene: [MainScene, GameScene],
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH
