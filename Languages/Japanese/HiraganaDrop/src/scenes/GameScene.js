@@ -157,7 +157,8 @@ class GameScene extends Phaser.Scene {
             for (let i = 0; i < count; i++) {
                 const randomChar = Phaser.Utils.Array.GetRandom(this.CHAR_SET.basic);
                 const y = -50 - (i * 50);
-                const char = this.add.text(x, y, randomChar.hiragana, {
+                const char = this.add.text(x, y, 
+                    this.characterSet === 'hiragana' ? randomChar.hiragana : randomChar.katakana, {
                     fontSize: '48px',
                     color: '#003300',
                     fontFamily: '"Noto Sans JP", sans-serif'
@@ -165,7 +166,6 @@ class GameScene extends Phaser.Scene {
 
                 chars.push(char);
 
-                // Animate each character
                 this.tweens.add({
                     targets: char,
                     y: 650 + (i * 50),
@@ -579,5 +579,4 @@ class GameScene extends Phaser.Scene {
     }
 }
 
-module.exports = GameScene;
 module.exports = GameScene;
