@@ -31,8 +31,7 @@ export default class MainScene extends Phaser.Scene {
 
         // Make the scene interactive
         this.input.on('pointerdown', () => {
-            console.log('Game clicked!');
-            // We'll add game start logic here later
+            this.scene.start('GameScene');
         });
     }
 
