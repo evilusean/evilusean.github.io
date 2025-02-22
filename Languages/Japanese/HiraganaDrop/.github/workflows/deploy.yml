@@ -5,27 +5,28 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+    - uses: actions/checkout@v2
+    
+    - name: Setup Node
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+        
+    - name: Navigate to game directory
+      run: cd Languages/Japanese/HiraganaDrop
+        
+    - name: Install dependencies
+      run: npm install
       
-      - name: Install Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-          
-      - name: Install dependencies
-        working-directory: ./Languages/Japanese/HiraganaDrop
-        run: npm install
-        
-      - name: Build
-        working-directory: ./Languages/Japanese/HiraganaDrop
-        run: npm run build
-        
-      - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@4.1.5
-        with:
-          branch: gh-pages
-          folder: Languages/Japanese/HiraganaDrop/dist
-          clean: true 
+    - name: Build
+      run: npm run build
+      
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./Languages/Japanese/HiraganaDrop/dist
+        destination_dir: Languages/Japanese/HiraganaDrop 

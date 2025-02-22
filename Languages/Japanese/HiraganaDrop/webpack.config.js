@@ -7,7 +7,7 @@ module.exports = {
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
-    publicPath: '/Languages/Japanese/HiraganaDrop/'
+    publicPath: './'
   },
   module: {
     rules: [
