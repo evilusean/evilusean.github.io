@@ -16,6 +16,13 @@ class GameScene extends Phaser.Scene {
         this.correctCharacters = new Set();
         this.progressContainer = null;
         this.lastInput = '';
+        this.trailConfig = {
+            count: 5,
+            spacing: 40,
+            fadeDelay: 50,
+            fadeTime: 1000,
+            startAlpha: 0.6
+        };
     }
 
     init(data) {
@@ -89,10 +96,10 @@ class GameScene extends Phaser.Scene {
         // Matrix trail config
         this.trailConfig = {
             count: 5,
-            fadeDelay: 300,
-            fadeTime: 2000,
-            startAlpha: 0.6,
-            spacing: 40
+            spacing: 40,
+            fadeDelay: 50,
+            fadeTime: 1000,
+            startAlpha: 0.6
         };
 
         // Set up keyboard input
@@ -235,7 +242,7 @@ class GameScene extends Phaser.Scene {
             this.characterSet === 'hiragana' ? char.character.hiragana : char.character.katakana,
             {
                 fontSize: '48px',
-                color: '#003300',
+                color: '#006600',
                 fontFamily: '"Noto Sans JP", sans-serif',
                 padding: 0,
                 backgroundColor: null
