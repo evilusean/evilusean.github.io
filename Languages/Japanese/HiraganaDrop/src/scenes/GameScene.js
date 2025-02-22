@@ -17,11 +17,11 @@ class GameScene extends Phaser.Scene {
         this.progressContainer = null;
         this.lastInput = '';
         this.trailConfig = {
-            count: 6,
-            spacing: 45,
-            fadeDelay: 60,
-            fadeTime: 1300,
-            startAlpha: 0.85
+            count: 2,
+            spacing: 50,
+            fadeDelay: 80,
+            fadeTime: 1000,
+            startAlpha: 0.5
         };
     }
 
@@ -95,11 +95,11 @@ class GameScene extends Phaser.Scene {
 
         // Matrix trail config
         this.trailConfig = {
-            count: 6,
-            spacing: 45,
-            fadeDelay: 60,
-            fadeTime: 1300,
-            startAlpha: 0.85
+            count: 2,
+            spacing: 50,
+            fadeDelay: 80,
+            fadeTime: 1000,
+            startAlpha: 0.5
         };
 
         // Set up keyboard input
@@ -240,7 +240,7 @@ class GameScene extends Phaser.Scene {
             this.characterSet === 'hiragana' ? char.character.hiragana : char.character.katakana,
             {
                 fontSize: '48px',
-                color: '#00dd00',
+                color: '#00bb00',
                 fontFamily: '"Noto Sans JP", sans-serif',
                 padding: 0,
                 backgroundColor: null
@@ -396,7 +396,7 @@ class GameScene extends Phaser.Scene {
                     this.characterSet === 'hiragana' ? char.character.hiragana : char.character.katakana,
                     {
                         fontSize: '48px',
-                        color: '#00dd00',
+                        color: '#00bb00',
                         fontFamily: '"Noto Sans JP", sans-serif',
                         padding: 0,
                         backgroundColor: null
@@ -406,12 +406,12 @@ class GameScene extends Phaser.Scene {
                 char.trails.push(trail);
                 char.lastTrailTime = time;
 
-                // Gradient effect with moderate minimum opacity
+                // Simple linear fade out
                 if (char.trails.length > this.trailConfig.count) {
                     const oldestTrail = char.trails[0];
                     this.tweens.add({
                         targets: oldestTrail,
-                        alpha: 0.2,
+                        alpha: 0,
                         duration: this.trailConfig.fadeTime,
                         ease: 'Linear',
                         onComplete: () => {
@@ -421,10 +421,10 @@ class GameScene extends Phaser.Scene {
                     });
                 }
 
-                // Update trail colors with moderate gradient
+                // Simple decreasing opacity for each trail
                 char.trails.forEach((trail, index) => {
-                    const alpha = Math.max(0.25, this.trailConfig.startAlpha * (1 - (index / this.trailConfig.count)));
-                    trail.setAlpha(alpha);
+                    const fadeRatio = index / this.trailConfig.count;
+                    trail.setAlpha(this.trailConfig.startAlpha * (1 - fadeRatio));
                 });
             }
         });
