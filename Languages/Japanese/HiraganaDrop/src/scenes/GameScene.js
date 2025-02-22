@@ -17,11 +17,11 @@ class GameScene extends Phaser.Scene {
         this.progressContainer = null;
         this.lastInput = '';
         this.trailConfig = {
-            count: 5,
+            count: 6,
             spacing: 40,
             fadeDelay: 50,
-            fadeTime: 1000,
-            startAlpha: 0.6
+            fadeTime: 1200,
+            startAlpha: 0.8
         };
     }
 
@@ -95,11 +95,11 @@ class GameScene extends Phaser.Scene {
 
         // Matrix trail config
         this.trailConfig = {
-            count: 5,
+            count: 6,
             spacing: 40,
             fadeDelay: 50,
-            fadeTime: 1000,
-            startAlpha: 0.6
+            fadeTime: 1200,
+            startAlpha: 0.8
         };
 
         // Set up keyboard input
@@ -167,13 +167,11 @@ class GameScene extends Phaser.Scene {
                 const char = this.add.text(x, y, 
                     this.characterSet === 'hiragana' ? randomChar.hiragana : randomChar.katakana, {
                     fontSize: '48px',
-                    color: '#003300',
-                    fontFamily: '"Noto Sans JP", sans-serif'
-                }).setOrigin(0.5).setAlpha(0.3);
-
-                // Remove box
-                char.setStyle({ backgroundColor: null });
-                char.setPadding(0);
+                    color: '#00cc00',
+                    fontFamily: '"Noto Sans JP", sans-serif',
+                    padding: 0,
+                    backgroundColor: null
+                }).setOrigin(0.5).setAlpha(0.8);
 
                 chars.push(char);
 
@@ -242,7 +240,7 @@ class GameScene extends Phaser.Scene {
             this.characterSet === 'hiragana' ? char.character.hiragana : char.character.katakana,
             {
                 fontSize: '48px',
-                color: '#006600',
+                color: '#00cc00',
                 fontFamily: '"Noto Sans JP", sans-serif',
                 padding: 0,
                 backgroundColor: null
@@ -398,29 +396,36 @@ class GameScene extends Phaser.Scene {
                     this.characterSet === 'hiragana' ? char.character.hiragana : char.character.katakana,
                     {
                         fontSize: '48px',
-                        color: '#003300',
+                        color: '#00cc00',
                         fontFamily: '"Noto Sans JP", sans-serif',
-                        padding: { x: 0, y: 0 },
-                        backgroundColor: 'transparent'
+                        padding: 0,
+                        backgroundColor: null
                     }
-                ).setOrigin(0.5).setAlpha(0.3);
+                ).setOrigin(0.5).setAlpha(this.trailConfig.startAlpha);
 
                 char.trails.push(trail);
                 char.lastTrailTime = time;
 
-                // Fade out trails sequentially
+                // Fade out trails with a gradient effect
                 if (char.trails.length > this.trailConfig.count) {
                     const oldestTrail = char.trails[0];
                     this.tweens.add({
                         targets: oldestTrail,
                         alpha: 0,
                         duration: this.trailConfig.fadeTime,
+                        ease: 'Cubic.easeOut',
                         onComplete: () => {
                             oldestTrail.destroy();
                             char.trails.shift();
                         }
                     });
                 }
+
+                // Update trail colors to create gradient effect
+                char.trails.forEach((trail, index) => {
+                    const alpha = this.trailConfig.startAlpha * (1 - (index / this.trailConfig.count));
+                    trail.setAlpha(alpha);
+                });
             }
         });
 
