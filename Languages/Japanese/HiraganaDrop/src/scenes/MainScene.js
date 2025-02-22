@@ -23,6 +23,9 @@ rm -rf dist
 npm install
 npm run build
 npm run deploy
+
+Future Sean: 
+Don't forget to run 'npm run build' after making changes to upload to github pages
 */
 class MainScene extends Phaser.Scene {
     constructor() {
