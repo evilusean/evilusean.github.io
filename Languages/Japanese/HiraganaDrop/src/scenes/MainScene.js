@@ -9,6 +9,7 @@ Fix the fade, it's uniform, it should fade from top to bottom,
 add mobile support? all new cells have a built in keyboard, could be run mobile as well
     will need to fix ratios, and add responsiveness - future sean problems
 not showing up on github pages 
+add keyboard interaction on main screen
 
 To Start : 
 npm run clean
