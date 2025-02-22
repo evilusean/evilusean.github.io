@@ -17,11 +17,11 @@ class GameScene extends Phaser.Scene {
         this.progressContainer = null;
         this.lastInput = '';
         this.trailConfig = {
-            count: 2,
-            spacing: 50,
-            fadeDelay: 80,
-            fadeTime: 1000,
-            startAlpha: 0.5
+            count: 1,
+            spacing: 25,
+            fadeDelay: 120,
+            fadeTime: 800,
+            startAlpha: 0.4
         };
     }
 
@@ -95,11 +95,11 @@ class GameScene extends Phaser.Scene {
 
         // Matrix trail config
         this.trailConfig = {
-            count: 2,
-            spacing: 50,
-            fadeDelay: 80,
-            fadeTime: 1000,
-            startAlpha: 0.5
+            count: 1,
+            spacing: 25,
+            fadeDelay: 120,
+            fadeTime: 800,
+            startAlpha: 0.4
         };
 
         // Set up keyboard input
@@ -406,7 +406,7 @@ class GameScene extends Phaser.Scene {
                 char.trails.push(trail);
                 char.lastTrailTime = time;
 
-                // Simple linear fade out
+                // Simple fade out
                 if (char.trails.length > this.trailConfig.count) {
                     const oldestTrail = char.trails[0];
                     this.tweens.add({
@@ -420,12 +420,6 @@ class GameScene extends Phaser.Scene {
                         }
                     });
                 }
-
-                // Simple decreasing opacity for each trail
-                char.trails.forEach((trail, index) => {
-                    const fadeRatio = index / this.trailConfig.count;
-                    trail.setAlpha(this.trailConfig.startAlpha * (1 - fadeRatio));
-                });
             }
         });
 
