@@ -19,7 +19,7 @@ class GameScene extends Phaser.Scene {
         this.trailConfig = {
             count: 1,
             spacing: 25,
-            fadeDelay: 350,
+            fadeDelay: 200,
             fadeTime: 800,
             startAlpha: 0.4
         };
