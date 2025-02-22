@@ -387,22 +387,35 @@ class GameScene extends Phaser.Scene {
 
         this.fallingCharacters.forEach(char => {
             if (time > char.lastTrailTime + this.trailConfig.fadeDelay) {
-                this.createMatrixTrail(char);
+                // Create new trail
+                const trail = this.add.text(
+                    char.gameObject.x,
+                    char.gameObject.y,
+                    this.characterSet === 'hiragana' ? char.character.hiragana : char.character.katakana,
+                    {
+                        fontSize: '48px',
+                        color: '#003300',
+                        fontFamily: '"Noto Sans JP", sans-serif',
+                        padding: { x: 0, y: 0 },
+                        backgroundColor: 'transparent'
+                    }
+                ).setOrigin(0.5).setAlpha(0.3);
+
+                char.trails.push(trail);
                 char.lastTrailTime = time;
 
-                // Clean up old trails
-                while (char.trails.length > this.trailConfig.count) {
-                    const oldestTrail = char.trails.shift();
-                    if (oldestTrail) {
-                        this.tweens.add({
-                            targets: oldestTrail,
-                            alpha: 0,
-                            duration: this.trailConfig.fadeTime,
-                            onComplete: () => {
-                                oldestTrail.destroy();
-                            }
-                        });
-                    }
+                // Fade out trails sequentially
+                if (char.trails.length > this.trailConfig.count) {
+                    const oldestTrail = char.trails[0];
+                    this.tweens.add({
+                        targets: oldestTrail,
+                        alpha: 0,
+                        duration: this.trailConfig.fadeTime,
+                        onComplete: () => {
+                            oldestTrail.destroy();
+                            char.trails.shift();
+                        }
+                    });
                 }
             }
         });
