@@ -15,6 +15,9 @@ npm run clean
 npm install
 npm run build
 npm start
+
+deploy :
+npm run deploy
 */
 class MainScene extends Phaser.Scene {
     constructor() {
