@@ -21,7 +21,7 @@ rm -rf node_modules
 rm -rf dist
 npm install
 npm run build
-npm run deploynpm run deploy
+npm run deploy
 */
 class MainScene extends Phaser.Scene {
     constructor() {
