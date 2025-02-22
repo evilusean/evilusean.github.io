@@ -5,8 +5,8 @@ module.exports = {
   mode: 'development',
   entry: './src/index.js',
   output: {
+    path: path.resolve(__dirname, './'),
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist'),
     publicPath: './'
   },
   module: {
@@ -26,12 +26,10 @@ module.exports = {
       filename: 'index.html'
     })
   ],
-  resolve: {
-    extensions: ['.js']
-  },
   devServer: {
     static: {
-      directory: path.join(__dirname, 'dist')
+      directory: path.join(__dirname, './'),
+      publicPath: '/'
     },
     compress: true,
     port: 3000,
