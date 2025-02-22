@@ -204,19 +204,19 @@ class GameScene extends Phaser.Scene {
             this.characterSet === 'hiragana' ? character.hiragana : character.katakana, {
             fontSize: '48px',
             color: '#00ff00',
-            fontFamily: '"Noto Sans JP", sans-serif'
+            fontFamily: '"Noto Sans JP", sans-serif',
+            padding: 0,
+            backgroundColor: null
         }).setOrigin(0.5);
 
-        // Remove box
-        mainChar.setStyle({ backgroundColor: null });
-        mainChar.setPadding(0);
-
-        this.matter.add.gameObject(mainChar, {
+        // Remove physics body debug rendering
+        const physicsBody = this.matter.add.gameObject(mainChar, {
             friction: 0,
             frictionAir: 0.02,
             bounce: 0.4,
             mass: 0.1
         });
+        physicsBody.setRectangle(undefined, undefined, { render: { visible: false } });
 
         const fallingChar = {
             gameObject: mainChar,
@@ -226,7 +226,6 @@ class GameScene extends Phaser.Scene {
         };
 
         this.fallingCharacters.push(fallingChar);
-        this.createMatrixTrail(fallingChar);
     }
 
     createMatrixTrail(char) {
@@ -237,13 +236,11 @@ class GameScene extends Phaser.Scene {
             {
                 fontSize: '48px',
                 color: '#003300',
-                fontFamily: '"Noto Sans JP", sans-serif'
+                fontFamily: '"Noto Sans JP", sans-serif',
+                padding: 0,
+                backgroundColor: null
             }
         ).setOrigin(0.5).setAlpha(this.trailConfig.startAlpha);
-
-        // Remove box
-        trail.setStyle({ backgroundColor: null });
-        trail.setPadding(0);
 
         char.trails.push(trail);
     }
