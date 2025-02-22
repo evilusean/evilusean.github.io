@@ -164,6 +164,10 @@ class GameScene extends Phaser.Scene {
                     fontFamily: '"Noto Sans JP", sans-serif'
                 }).setOrigin(0.5).setAlpha(0.3);
 
+                // Remove box
+                char.setStyle({ backgroundColor: null });
+                char.setPadding(0);
+
                 chars.push(char);
 
                 this.tweens.add({
@@ -186,15 +190,13 @@ class GameScene extends Phaser.Scene {
 
         let character;
         if (this.gameMode === 'survival' && this.remainingCharacters.size > 0) {
-            // For survival mode, prioritize remaining characters
             const remainingArray = Array.from(this.remainingCharacters);
             const charSymbol = Phaser.Math.RND.pick(remainingArray);
             character = this.CHAR_SET.basic.find(c => 
                 (this.characterSet === 'hiragana' ? c.hiragana : c.katakana) === charSymbol
             );
         } else {
-            const randomIndex = Phaser.Math.Between(0, this.CHAR_SET.basic.length - 1);
-            character = this.CHAR_SET.basic[randomIndex];
+            character = Phaser.Math.RND.pick(this.CHAR_SET.basic);
         }
 
         const x = Phaser.Math.Between(this.spawnArea?.left || 100, this.spawnArea?.right || 700);
@@ -205,6 +207,10 @@ class GameScene extends Phaser.Scene {
             fontFamily: '"Noto Sans JP", sans-serif'
         }).setOrigin(0.5);
 
+        // Remove box
+        mainChar.setStyle({ backgroundColor: null });
+        mainChar.setPadding(0);
+
         this.matter.add.gameObject(mainChar, {
             friction: 0,
             frictionAir: 0.02,
@@ -212,12 +218,34 @@ class GameScene extends Phaser.Scene {
             mass: 0.1
         });
 
-        this.fallingCharacters.push({
+        const fallingChar = {
             gameObject: mainChar,
             character: character,
             trails: [],
             lastTrailTime: 0
-        });
+        };
+
+        this.fallingCharacters.push(fallingChar);
+        this.createMatrixTrail(fallingChar);
+    }
+
+    createMatrixTrail(char) {
+        const trail = this.add.text(
+            char.gameObject.x,
+            char.gameObject.y - this.trailConfig.spacing,
+            this.characterSet === 'hiragana' ? char.character.hiragana : char.character.katakana,
+            {
+                fontSize: '48px',
+                color: '#003300',
+                fontFamily: '"Noto Sans JP", sans-serif'
+            }
+        ).setOrigin(0.5).setAlpha(this.trailConfig.startAlpha);
+
+        // Remove box
+        trail.setStyle({ backgroundColor: null });
+        trail.setPadding(0);
+
+        char.trails.push(trail);
     }
 
     handleKeyInput(event) {
@@ -357,41 +385,23 @@ class GameScene extends Phaser.Scene {
     update(time) {
         if (this.isPaused) return;
 
-        // Update falling characters and create stationary trails
         this.fallingCharacters.forEach(char => {
             if (time > char.lastTrailTime + this.trailConfig.fadeDelay) {
-                // Create new trail at current position
-                const trail = this.add.text(
-                    char.gameObject.x,
-                    char.gameObject.y,
-                    char.character.hiragana,
-                    {
-                        fontSize: '48px',
-                        color: '#003300',
-                        fontFamily: '"Noto Sans JP", sans-serif',
-                        alpha: this.trailConfig.startAlpha
-                    }
-                ).setOrigin(0.5);
-
-                // Fade out trail over time
-                this.tweens.add({
-                    targets: trail,
-                    alpha: 0,
-                    duration: this.trailConfig.fadeTime,
-                    ease: 'Linear',
-                    onComplete: () => {
-                        trail.destroy();
-                    }
-                });
-
-                char.trails.push(trail);
+                this.createMatrixTrail(char);
                 char.lastTrailTime = time;
 
-                // Limit number of trails
-                if (char.trails.length > this.trailConfig.count) {
+                // Clean up old trails
+                while (char.trails.length > this.trailConfig.count) {
                     const oldestTrail = char.trails.shift();
                     if (oldestTrail) {
-                        oldestTrail.destroy();
+                        this.tweens.add({
+                            targets: oldestTrail,
+                            alpha: 0,
+                            duration: this.trailConfig.fadeTime,
+                            onComplete: () => {
+                                oldestTrail.destroy();
+                            }
+                        });
                     }
                 }
             }
