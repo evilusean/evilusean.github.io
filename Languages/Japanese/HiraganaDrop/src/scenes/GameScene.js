@@ -674,12 +674,79 @@ class GameScene extends Phaser.Scene {
     }
 
     /**
+     * Shows game over screen - modified to handle survival mode differently
+     */
+    showGameOver() {
+        this.isPaused = true;
+        if (this.gameTimer) {
+            this.gameTimer.destroy();
+        }
+
+        // Don't show game over for survival mode victory
+        if (this.gameMode === 'survival' && this.remainingCharacters.size === 0) {
+            this.showSurvivalVictory();
+            return;  // Exit early to avoid showing game over screen
+        }
+
+        // Create semi-transparent black overlay
+        const overlay = this.add.rectangle(0, 0, 800, 600, 0x000000, 0.7);
+        overlay.setOrigin(0);
+
+        // Game Over text
+        this.gameOverText = this.add.text(400, 200, 'Game Over', {
+            fontSize: '64px',
+            color: '#ff0000',
+            fontFamily: '"Noto Sans JP", sans-serif'
+        }).setOrigin(0.5);
+
+        // Score text
+        const scoreText = this.add.text(400, 300, `Score: ${this.score}`, {
+            fontSize: '32px',
+            color: '#00ff00',
+            fontFamily: '"Noto Sans JP", sans-serif'
+        }).setOrigin(0.5);
+
+        // Add time for elimination mode
+        if (this.gameMode === 'elimination') {
+            const minutes = Math.floor(this.elapsedTime / 60);
+            const seconds = this.elapsedTime % 60;
+            const timeText = this.add.text(400, 350, 
+                `Time Survived: ${minutes}:${seconds.toString().padStart(2, '0')}`, {
+                fontSize: '32px',
+                color: '#00ff00',
+                fontFamily: '"Noto Sans JP", sans-serif'
+            }).setOrigin(0.5);
+        }
+
+        // Restart text
+        const restartText = this.add.text(400, 450, 'Press SPACE to restart\nPress ESC for menu', {
+            fontSize: '24px',
+            color: '#00ff00',
+            fontFamily: '"Noto Sans JP", sans-serif',
+            align: 'center'
+        }).setOrigin(0.5);
+
+        // Add keyboard listeners
+        this.input.keyboard.once('keydown-SPACE', () => {
+            this.scene.restart(this.scene.settings.data);
+        });
+
+        this.input.keyboard.once('keydown-ESC', () => {
+            this.scene.start('MainScene');
+        });
+    }
+
+    /**
      * Shows victory celebration for completing survival mode
      */
     showSurvivalVictory() {
         // Stop the game
         this.isGameActive = false;
         this.isPaused = true;
+
+        // Create semi-transparent black overlay
+        const overlay = this.add.rectangle(0, 0, 800, 600, 0x000000, 0.7);
+        overlay.setOrigin(0);
 
         // Create congratulatory text with animation
         const congratsText = this.add.text(400, 200, 'Congratulations!', {
@@ -720,7 +787,7 @@ class GameScene extends Phaser.Scene {
                 if (fireworkCount >= 10) {
                     fireworkTimer.destroy();
                     
-                    // Show return to menu text
+                    // Show return to menu text (only green version)
                     this.time.delayedCall(2000, () => {
                         const menuText = this.add.text(400, 500, 'Press ESC to return to menu', {
                             fontSize: '24px',
