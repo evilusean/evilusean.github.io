@@ -27,119 +27,125 @@ npm run deploy
 Future Sean: 
 Don't forget to run 'npm run build' after making changes to upload to github pages
 */
+/**
+ * MainScene - Handles the main menu and game mode selection
+ * This is the first scene players see when starting the game
+ */
 class MainScene extends Phaser.Scene {
     constructor() {
-        super({ key: 'MainScene' });
+        super({ key: 'MainScene' });  // Scene identifier
+        
+        // Track which character set is selected (hiragana/katakana)
         this.selectedSet = 'hiragana';
+        
+        // Array to store menu items for navigation
         this.menuItems = [];
+        
+        // Track current menu selection for keyboard navigation
         this.currentSelection = 0;
     }
 
+    /**
+     * Creates all game objects for the main menu
+     * Called automatically by Phaser after scene starts
+     */
     create() {
-        // Title
-        this.add.text(400, 100, 'ひらがなドロップ', {
+        // Create title text
+        this.add.text(400, 100, 'Hiragana Drop', {
             fontSize: '48px',
-            color: '#ffffff',
-            fontFamily: '"Noto Sans JP", sans-serif'
+            color: '#00ff00'
         }).setOrigin(0.5);
 
-        // Subtitles
-        this.add.text(400, 170, 'Katakana Drop', {
-            fontSize: '32px',
-            color: '#ffffff'
-        }).setOrigin(0.5);
+        // Create character set selection buttons
+        this.createCharacterSetButtons();
 
-        this.add.text(400, 210, 'Hiragana Drop', {
-            fontSize: '32px',
-            color: '#ffffff'
-        }).setOrigin(0.5);
+        // Create game mode buttons
+        this.createGameModeButtons();
 
-        // Create menu items array for navigation
-        this.menuItems = [
-            {
-                text: this.add.text(300, 280, 'Hiragana', {
-                    fontSize: '24px',
-                    color: '#ff0000'
-                }).setOrigin(0.5).setInteractive(),
-                type: 'characterSet',
-                value: 'hiragana'
-            },
-            {
-                text: this.add.text(500, 280, 'Katakana', {
-                    fontSize: '24px',
-                    color: '#00ff00'
-                }).setOrigin(0.5).setInteractive(),
-                type: 'characterSet',
-                value: 'katakana'
-            },
-            {
-                text: this.add.text(400, 350, 'Timed Mode', {
-                    fontSize: '24px',
-                    color: '#00ff00'
-                }).setOrigin(0.5).setInteractive(),
-                type: 'mode',
-                value: 'timed'
-            },
-            {
-                text: this.add.text(400, 400, 'Elimination Mode', {
-                    fontSize: '24px',
-                    color: '#00ff00'
-                }).setOrigin(0.5).setInteractive(),
-                type: 'mode',
-                value: 'elimination'
-            },
-            {
-                text: this.add.text(400, 450, 'Survival Mode', {
-                    fontSize: '24px',
-                    color: '#00ff00'
-                }).setOrigin(0.5).setInteractive(),
-                type: 'mode',
-                value: 'survival'
-            }
+        // Set up keyboard controls
+        this.input.keyboard.on('keydown', this.handleKeyboard, this);
+    }
+
+    /**
+     * Creates buttons for selecting character set (Hiragana/Katakana)
+     */
+    createCharacterSetButtons() {
+        // Add Hiragana button
+        const hiraganaButton = {
+            text: this.add.text(300, 280, 'Hiragana', {
+                fontSize: '24px',
+                color: '#ff0000'
+            }).setOrigin(0.5).setInteractive(),
+            type: 'characterSet',
+            value: 'hiragana'
+        };
+
+        // Add Katakana button
+        const katakanaButton = {
+            text: this.add.text(500, 280, 'Katakana', {
+                fontSize: '24px',
+                color: '#00ff00'
+            }).setOrigin(0.5).setInteractive(),
+            type: 'characterSet',
+            value: 'katakana'
+        };
+
+        this.menuItems.push(hiraganaButton, katakanaButton);
+    }
+
+    /**
+     * Shows time selection presets for Timed Mode
+     */
+    showTimePresets() {
+        // Define time preset options
+        const presets = [
+            { text: '60 Seconds', value: 60 },
+            { text: '120 Seconds', value: 120 },
+            { text: '300 Seconds', value: 300 },
+            { text: 'Custom Time', value: 'custom' }
         ];
 
-        // Set initial selection
-        this.updateSelection();
-
-        // Add keyboard controls
-        this.input.keyboard.on('keydown', this.handleKeyboard, this);
-
-        // Add mouse hover effects
-        this.menuItems.forEach((item, index) => {
-            item.text.on('pointerover', () => {
-                this.currentSelection = index;
-                this.updateSelection();
-            });
-
-            item.text.on('pointerdown', () => {
-                this.handleSelection(item);
+        // Create buttons for each preset
+        const presetMenu = presets.map((preset, index) => {
+            return this.add.text(400, 250 + (index * 50), preset.text, {
+                fontSize: '24px',
+                color: '#00ff00'
+            }).setOrigin(0.5).setInteractive()
+            .on('pointerdown', () => {
+                if (preset.value === 'custom') {
+                    this.showCustomTimeInput();
+                } else {
+                    // Start game with selected time preset
+                    this.scene.start('GameScene', {
+                        mode: 'timed',
+                        characterSet: this.selectedSet,
+                        time: preset.value
+                    });
+                }
             });
         });
     }
 
+    /**
+     * Handles keyboard input for menu navigation
+     * @param {KeyboardEvent} event - The keyboard event
+     */
     handleKeyboard(event) {
         switch(event.code) {
             case 'ArrowUp':
+                // Move selection up
                 this.currentSelection = (this.currentSelection - 1 + this.menuItems.length) % this.menuItems.length;
-                this.updateSelection();
                 break;
             case 'ArrowDown':
+                // Move selection down
                 this.currentSelection = (this.currentSelection + 1) % this.menuItems.length;
-                this.updateSelection();
-                break;
-            case 'ArrowLeft':
-            case 'ArrowRight':
-                if (this.menuItems[this.currentSelection].type === 'characterSet') {
-                    this.selectedSet = this.selectedSet === 'hiragana' ? 'katakana' : 'hiragana';
-                    this.currentSelection = this.selectedSet === 'hiragana' ? 0 : 1;
-                    this.updateSelection();
-                }
                 break;
             case 'Enter':
-            case 'Space':
+                // Select current menu item
                 this.handleSelection(this.menuItems[this.currentSelection]);
                 break;
         }
+        this.updateSelection();
     }
 
     updateSelection() {
@@ -174,33 +180,6 @@ class MainScene extends Phaser.Scene {
                     break;
             }
         }
-    }
-
-    showTimePresets() {
-        const presets = [
-            { text: '60 Seconds', value: 60 },
-            { text: '120 Seconds', value: 120 },
-            { text: '300 Seconds', value: 300 },
-            { text: 'Custom Time', value: 'custom' }
-        ];
-
-        const presetMenu = presets.map((preset, index) => {
-            return this.add.text(400, 250 + (index * 50), preset.text, {
-                fontSize: '24px',
-                color: '#00ff00'
-            }).setOrigin(0.5).setInteractive()
-            .on('pointerdown', () => {
-                if (preset.value === 'custom') {
-                    this.showCustomTimeInput();
-                } else {
-                    this.scene.start('GameScene', {
-                        mode: 'timed',
-                        characterSet: this.selectedSet,
-                        time: preset.value
-                    });
-                }
-            });
-        });
     }
 
     showLifePresets() {
