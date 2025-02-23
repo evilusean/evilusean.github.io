@@ -24,11 +24,16 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './index.html',
-      filename: 'index.html'
+      filename: 'index.html',
+      inject: true
     }),
     new CopyWebpackPlugin({
       patterns: [
-        { from: 'public', to: '' }
+        { 
+          from: 'public',
+          to: './',
+          noErrorOnMissing: true  // Won't error if public folder doesn't exist yet
+        }
       ]
     })
   ],
