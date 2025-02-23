@@ -27,17 +27,14 @@ module.exports = {
       template: './index.html',
       filename: 'index.html',
       inject: true,
-      hash: true  // Add hash to prevent caching issues
+      hash: true  // Add hash to prevent caching
     }),
     new CopyWebpackPlugin({
       patterns: [
         { 
           from: 'public',
           to: 'dist',
-          noErrorOnMissing: true,
-          globOptions: {
-            ignore: ['**/index.html']  // Ignore index.html in public folder
-          }
+          noErrorOnMissing: true
         }
       ]
     })
@@ -45,7 +42,6 @@ module.exports = {
   devServer: {
     static: {
       directory: path.join(__dirname, 'dist'),
-      publicPath: '/'
     },
     compress: true,
     port: 3000,
