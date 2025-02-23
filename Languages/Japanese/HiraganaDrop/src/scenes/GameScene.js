@@ -152,6 +152,13 @@ class GameScene extends Phaser.Scene {
             callback: this.clearBackground,
             loop: true
         });
+
+        // Create particle texture for fireworks
+        const graphics = this.add.graphics();
+        graphics.fillStyle(0xffffff);
+        graphics.fillCircle(4, 4, 4);
+        graphics.generateTexture('particle', 8, 8);
+        graphics.destroy();
     }
 
     createOpeningMatrixRain() {
@@ -371,6 +378,7 @@ class GameScene extends Phaser.Scene {
             if (this.remainingCharacters.size === 0 && !this.gameComplete) {
                 this.gameComplete = true;
                 this.time.delayedCall(1000, () => this.endGame());
+                this.showSurvivalVictory();
             }
         }
         
@@ -618,6 +626,105 @@ class GameScene extends Phaser.Scene {
                 trail.destroy();
             });
             char.trails = [];
+        });
+    }
+
+    /**
+     * Creates a firework particle effect
+     * @param {number} x - X position to spawn firework
+     * @param {number} y - Y position to spawn firework
+     * @param {string} color - Color of the firework in hex
+     */
+    createFirework(x, y, color) {
+        // Create particle manager for this firework
+        const particles = this.add.particles(0, 0, 'particle', {
+            x: x,
+            y: y,
+            speed: { min: 100, max: 200 },
+            angle: { min: 0, max: 360 },
+            scale: { start: 0.6, end: 0 },
+            blendMode: 'ADD',
+            lifespan: 1000,
+            gravityY: 300,
+            quantity: 50,
+            tint: color
+        });
+
+        // Auto-destroy particles after animation
+        this.time.delayedCall(1000, () => {
+            particles.destroy();
+        });
+    }
+
+    /**
+     * Shows victory celebration for completing survival mode
+     */
+    showSurvivalVictory() {
+        // Stop the game
+        this.isGameActive = false;
+        this.isPaused = true;
+
+        // Create congratulatory text with animation
+        const congratsText = this.add.text(400, 200, 'Congratulations!', {
+            fontSize: '64px',
+            color: '#00ff00',
+            fontFamily: '"Noto Sans JP", sans-serif'
+        }).setOrigin(0.5).setAlpha(0);
+
+        const scoreText = this.add.text(400, 300, `Final Score: ${this.score}`, {
+            fontSize: '32px',
+            color: '#00ff00',
+            fontFamily: '"Noto Sans JP", sans-serif'
+        }).setOrigin(0.5).setAlpha(0);
+
+        // Fade in text
+        this.tweens.add({
+            targets: [congratsText, scoreText],
+            alpha: 1,
+            duration: 1000,
+            ease: 'Power2'
+        });
+
+        // Create fireworks sequence
+        const fireworkColors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff];
+        let fireworkCount = 0;
+
+        // Launch fireworks every 500ms
+        const fireworkTimer = this.time.addEvent({
+            delay: 500,
+            callback: () => {
+                const x = Phaser.Math.Between(100, 700);
+                const y = Phaser.Math.Between(100, 500);
+                const color = Phaser.Utils.Array.GetRandom(fireworkColors);
+                this.createFirework(x, y, color);
+                fireworkCount++;
+
+                // Stop after 10 fireworks
+                if (fireworkCount >= 10) {
+                    fireworkTimer.destroy();
+                    
+                    // Show return to menu text
+                    this.time.delayedCall(2000, () => {
+                        const menuText = this.add.text(400, 500, 'Press ESC to return to menu', {
+                            fontSize: '24px',
+                            color: '#00ff00',
+                            fontFamily: '"Noto Sans JP", sans-serif'
+                        }).setOrigin(0.5).setAlpha(0);
+
+                        this.tweens.add({
+                            targets: menuText,
+                            alpha: 1,
+                            duration: 1000
+                        });
+
+                        // Add keyboard listener for menu return
+                        this.input.keyboard.once('keydown-ESC', () => {
+                            this.scene.start('MainScene');
+                        });
+                    });
+                }
+            },
+            loop: true
         });
     }
 }
