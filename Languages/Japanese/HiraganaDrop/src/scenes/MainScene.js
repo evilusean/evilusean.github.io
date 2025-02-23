@@ -43,6 +43,9 @@ class MainScene extends Phaser.Scene {
         
         // Track current menu selection for keyboard navigation
         this.currentSelection = 0;
+        
+        // Track active preset menu
+        this.activePresetMenu = null;
     }
 
     /**
@@ -106,8 +109,8 @@ class MainScene extends Phaser.Scene {
         ];
 
         // Create buttons for each preset
-        const presetMenu = presets.map((preset, index) => {
-            return this.add.text(400, 250 + (index * 50), preset.text, {
+        this.activePresetMenu = presets.map((preset, index) => {
+            const text = this.add.text(400, 250 + (index * 50), preset.text, {
                 fontSize: '24px',
                 color: '#00ff00'
             }).setOrigin(0.5).setInteractive()
@@ -123,6 +126,38 @@ class MainScene extends Phaser.Scene {
                     });
                 }
             });
+            return text;
+        });
+    }
+
+    /**
+     * Shows life selection presets for Elimination Mode
+     */
+    showLifePresets() {
+        const presets = [
+            { text: '1 Life', value: 1 },
+            { text: '3 Lives', value: 3 },
+            { text: '5 Lives', value: 5 },
+            { text: 'Custom Lives', value: 'custom' }
+        ];
+
+        this.activePresetMenu = presets.map((preset, index) => {
+            const text = this.add.text(400, 250 + (index * 50), preset.text, {
+                fontSize: '24px',
+                color: '#00ff00'
+            }).setOrigin(0.5).setInteractive()
+            .on('pointerdown', () => {
+                if (preset.value === 'custom') {
+                    this.showCustomLivesInput();
+                } else {
+                    this.scene.start('GameScene', {
+                        mode: 'elimination',
+                        characterSet: this.selectedSet,
+                        lives: preset.value
+                    });
+                }
+            });
+            return text;
         });
     }
 
@@ -144,6 +179,12 @@ class MainScene extends Phaser.Scene {
                 // Select current menu item
                 this.handleSelection(this.menuItems[this.currentSelection]);
                 break;
+            case 'Escape':
+                if (this.activePresetMenu) {
+                    this.activePresetMenu.forEach(text => text.destroy());
+                    this.activePresetMenu = null;
+                }
+                break;
         }
         this.updateSelection();
     }
@@ -161,6 +202,12 @@ class MainScene extends Phaser.Scene {
     }
 
     handleSelection(item) {
+        // Clear any existing preset menu
+        if (this.activePresetMenu) {
+            this.activePresetMenu.forEach(text => text.destroy());
+            this.activePresetMenu = null;
+        }
+
         if (item.type === 'characterSet') {
             this.selectedSet = item.value;
             this.updateSelection();
@@ -182,31 +229,20 @@ class MainScene extends Phaser.Scene {
         }
     }
 
-    showLifePresets() {
-        const presets = [
-            { text: '1 Life', value: 1 },
-            { text: '3 Lives', value: 3 },
-            { text: '5 Lives', value: 5 },
-            { text: 'Custom Lives', value: 'custom' }
-        ];
+    /**
+     * Shows custom time input for Timed Mode
+     */
+    showCustomTimeInput() {
+        // Implementation for custom time input
+        // You can add this later if needed
+    }
 
-        const presetMenu = presets.map((preset, index) => {
-            return this.add.text(400, 250 + (index * 50), preset.text, {
-                fontSize: '24px',
-                color: '#00ff00'
-            }).setOrigin(0.5).setInteractive()
-            .on('pointerdown', () => {
-                if (preset.value === 'custom') {
-                    this.showCustomLivesInput();
-                } else {
-                    this.scene.start('GameScene', {
-                        mode: 'elimination',
-                        characterSet: this.selectedSet,
-                        lives: preset.value
-                    });
-                }
-            });
-        });
+    /**
+     * Shows custom lives input for Elimination Mode
+     */
+    showCustomLivesInput() {
+        // Implementation for custom lives input
+        // You can add this later if needed
     }
 }
 
