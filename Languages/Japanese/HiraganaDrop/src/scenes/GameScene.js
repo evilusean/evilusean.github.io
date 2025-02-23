@@ -23,6 +23,9 @@ class GameScene extends Phaser.Scene {
             fadeTime: 800,
             startAlpha: 0.4
         };
+        this.elapsedTime = 0;  // Track elapsed time
+        this.timeText = null;  // Timer display text
+        this.gameTimer = null; // Timer event
     }
 
     init(data) {
@@ -159,6 +162,22 @@ class GameScene extends Phaser.Scene {
         graphics.fillCircle(4, 4, 4);
         graphics.generateTexture('particle', 8, 8);
         graphics.destroy();
+
+        // Add timer display for elimination mode
+        if (this.gameMode === 'elimination') {
+            this.timeText = this.add.text(16, 16, 'Time: 0:00', {
+                fontSize: '24px',
+                color: '#00ff00'
+            });
+            
+            // Start the timer
+            this.gameTimer = this.time.addEvent({
+                delay: 1000,  // Update every second
+                callback: this.updateTimer,
+                callbackScope: this,
+                loop: true
+            });
+        }
     }
 
     createOpeningMatrixRain() {
@@ -387,14 +406,12 @@ class GameScene extends Phaser.Scene {
     }
 
     updateTimer() {
-        if (this.isPaused) return;
-
-        if (this.gameMode === 'timed' && this.isGameActive) {
-            this.timeLeft--;
-            this.statusText.setText(`Time: ${this.timeLeft}`);
-            
-            if (this.timeLeft <= 0) {
-                this.endGame();
+        if (!this.isPaused) {
+            this.elapsedTime++;
+            if (this.timeText) {
+                const minutes = Math.floor(this.elapsedTime / 60);
+                const seconds = this.elapsedTime % 60;
+                this.timeText.setText(`Time: ${minutes}:${seconds.toString().padStart(2, '0')}`);
             }
         }
     }

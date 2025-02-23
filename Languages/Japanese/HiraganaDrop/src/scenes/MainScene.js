@@ -41,6 +41,9 @@ class MainScene extends Phaser.Scene {
         
         // Track active preset menu
         this.activePresetMenu = null;
+        
+        // Track main menu visibility
+        this.mainMenuVisible = true;
     }
 
     /**
@@ -48,72 +51,93 @@ class MainScene extends Phaser.Scene {
      * Called automatically by Phaser after scene starts
      */
     create() {
-        // Create title text
+        this.createMainMenu();
+    }
+
+    createMainMenu() {
+        // Clear any existing menus
+        this.clearAllMenus();
+        
+        this.mainMenuVisible = true;
+
+        // Create title
         this.add.text(400, 100, 'Hiragana Drop', {
             fontSize: '48px',
             color: '#00ff00'
         }).setOrigin(0.5);
 
-        // Create character set selection buttons
-        this.createCharacterSetButtons();
+        // Create menu items
+        this.menuItems = [
+            this.createMenuItem(300, 280, 'Hiragana', 'characterSet', 'hiragana'),
+            this.createMenuItem(500, 280, 'Katakana', 'characterSet', 'katakana'),
+            this.createMenuItem(400, 350, 'Timed Mode', 'mode', 'timed'),
+            this.createMenuItem(400, 400, 'Elimination Mode', 'mode', 'elimination'),
+            this.createMenuItem(400, 450, 'Survival Mode', 'mode', 'survival')
+        ];
 
-        // Create game mode buttons
-        this.createGameModeButtons();
-
-        // Set up keyboard controls
-        this.input.keyboard.on('keydown', this.handleKeyboard, this);
+        this.updateSelection();
     }
 
-    /**
-     * Creates buttons for selecting character set (Hiragana/Katakana)
-     */
-    createCharacterSetButtons() {
-        // Add Hiragana button
-        const hiraganaButton = {
-            text: this.add.text(300, 280, 'Hiragana', {
-                fontSize: '24px',
-                color: '#ff0000'
-            }).setOrigin(0.5).setInteractive(),
-            type: 'characterSet',
-            value: 'hiragana'
-        };
-
-        // Add Katakana button
-        const katakanaButton = {
-            text: this.add.text(500, 280, 'Katakana', {
+    createMenuItem(x, y, text, type, value) {
+        const menuItem = {
+            text: this.add.text(x, y, text, {
                 fontSize: '24px',
                 color: '#00ff00'
             }).setOrigin(0.5).setInteractive(),
-            type: 'characterSet',
-            value: 'katakana'
+            type: type,
+            value: value
         };
 
-        this.menuItems.push(hiraganaButton, katakanaButton);
+        menuItem.text.on('pointerdown', () => this.handleSelection(menuItem));
+        menuItem.text.on('pointerover', () => {
+            this.currentSelection = this.menuItems.indexOf(menuItem);
+            this.updateSelection();
+        });
+
+        return menuItem;
+    }
+
+    clearAllMenus() {
+        // Clear main menu items
+        if (this.menuItems) {
+            this.menuItems.forEach(item => item.text.destroy());
+            this.menuItems = [];
+        }
+
+        // Clear preset menu
+        if (this.activePresetMenu) {
+            this.activePresetMenu.forEach(text => text.destroy());
+            this.activePresetMenu = null;
+        }
     }
 
     /**
      * Shows time selection presets for Timed Mode
      */
     showTimePresets() {
-        // Define time preset options
+        // Hide main menu
+        this.mainMenuVisible = false;
+        this.menuItems.forEach(item => item.text.setVisible(false));
+
         const presets = [
+            { text: '← Back to Menu', value: 'back' },
             { text: '60 Seconds', value: 60 },
             { text: '120 Seconds', value: 120 },
             { text: '300 Seconds', value: 300 },
             { text: 'Custom Time', value: 'custom' }
         ];
 
-        // Create buttons for each preset
         this.activePresetMenu = presets.map((preset, index) => {
-            const text = this.add.text(400, 250 + (index * 50), preset.text, {
+            return this.add.text(400, 200 + (index * 50), preset.text, {
                 fontSize: '24px',
                 color: '#00ff00'
             }).setOrigin(0.5).setInteractive()
             .on('pointerdown', () => {
-                if (preset.value === 'custom') {
+                if (preset.value === 'back') {
+                    this.returnToMainMenu();
+                } else if (preset.value === 'custom') {
                     this.showCustomTimeInput();
                 } else {
-                    // Start game with selected time preset
                     this.scene.start('GameScene', {
                         mode: 'timed',
                         characterSet: this.selectedSet,
@@ -121,7 +145,6 @@ class MainScene extends Phaser.Scene {
                     });
                 }
             });
-            return text;
         });
     }
 
@@ -129,7 +152,12 @@ class MainScene extends Phaser.Scene {
      * Shows life selection presets for Elimination Mode
      */
     showLifePresets() {
+        // Hide main menu
+        this.mainMenuVisible = false;
+        this.menuItems.forEach(item => item.text.setVisible(false));
+
         const presets = [
+            { text: '← Back to Menu', value: 'back' },
             { text: '1 Life', value: 1 },
             { text: '3 Lives', value: 3 },
             { text: '5 Lives', value: 5 },
@@ -137,12 +165,14 @@ class MainScene extends Phaser.Scene {
         ];
 
         this.activePresetMenu = presets.map((preset, index) => {
-            const text = this.add.text(400, 250 + (index * 50), preset.text, {
+            return this.add.text(400, 200 + (index * 50), preset.text, {
                 fontSize: '24px',
                 color: '#00ff00'
             }).setOrigin(0.5).setInteractive()
             .on('pointerdown', () => {
-                if (preset.value === 'custom') {
+                if (preset.value === 'back') {
+                    this.returnToMainMenu();
+                } else if (preset.value === 'custom') {
                     this.showCustomLivesInput();
                 } else {
                     this.scene.start('GameScene', {
@@ -152,57 +182,20 @@ class MainScene extends Phaser.Scene {
                     });
                 }
             });
-            return text;
         });
     }
 
-    /**
-     * Handles keyboard input for menu navigation
-     * @param {KeyboardEvent} event - The keyboard event
-     */
-    handleKeyboard(event) {
-        switch(event.code) {
-            case 'ArrowUp':
-                // Move selection up
-                this.currentSelection = (this.currentSelection - 1 + this.menuItems.length) % this.menuItems.length;
-                break;
-            case 'ArrowDown':
-                // Move selection down
-                this.currentSelection = (this.currentSelection + 1) % this.menuItems.length;
-                break;
-            case 'Enter':
-                // Select current menu item
-                this.handleSelection(this.menuItems[this.currentSelection]);
-                break;
-            case 'Escape':
-                if (this.activePresetMenu) {
-                    this.activePresetMenu.forEach(text => text.destroy());
-                    this.activePresetMenu = null;
-                }
-                break;
-        }
-        this.updateSelection();
-    }
-
-    updateSelection() {
-        this.menuItems.forEach((item, index) => {
-            if (index === this.currentSelection) {
-                item.text.setColor('#ff0000');
-            } else if (item.type === 'characterSet' && item.value === this.selectedSet) {
-                item.text.setColor('#ff0000');
-            } else {
-                item.text.setColor('#00ff00');
-            }
-        });
-    }
-
-    handleSelection(item) {
-        // Clear any existing preset menu
+    returnToMainMenu() {
         if (this.activePresetMenu) {
             this.activePresetMenu.forEach(text => text.destroy());
             this.activePresetMenu = null;
         }
+        this.menuItems.forEach(item => item.text.setVisible(true));
+        this.mainMenuVisible = true;
+        this.updateSelection();
+    }
 
+    handleSelection(item) {
         if (item.type === 'characterSet') {
             this.selectedSet = item.value;
             this.updateSelection();
@@ -238,6 +231,40 @@ class MainScene extends Phaser.Scene {
     showCustomLivesInput() {
         // Implementation for custom lives input
         // You can add this later if needed
+    }
+
+    handleKeyboard(event) {
+        if (this.mainMenuVisible) {
+            switch(event.code) {
+                case 'ArrowUp':
+                    this.currentSelection = (this.currentSelection - 1 + this.menuItems.length) % this.menuItems.length;
+                    this.updateSelection();
+                    break;
+                case 'ArrowDown':
+                    this.currentSelection = (this.currentSelection + 1) % this.menuItems.length;
+                    this.updateSelection();
+                    break;
+                case 'Enter':
+                    this.handleSelection(this.menuItems[this.currentSelection]);
+                    break;
+            }
+        } else if (event.code === 'Escape') {
+            this.returnToMainMenu();
+        }
+    }
+
+    updateSelection() {
+        if (!this.mainMenuVisible) return;
+        
+        this.menuItems.forEach((item, index) => {
+            if (index === this.currentSelection) {
+                item.text.setColor('#ff0000');
+            } else if (item.type === 'characterSet' && item.value === this.selectedSet) {
+                item.text.setColor('#ff0000');
+            } else {
+                item.text.setColor('#00ff00');
+            }
+        });
     }
 }
 
