@@ -5,6 +5,11 @@ add mobile support? all new cells have a built in keyboard, could be run mobile 
     will need to fix ratios, and add responsiveness - future sean problems
 Fix logic so it doesn't give the same character twice in a row
 speed up matrix effect slightly, almost good 'fadeDelay' in GameScene.js
+Fix timed mode, add presets
+Fix elimination mode, add presets
+Favicon
+add a background clear, some afterimages don't disapear if you run in background
+    add a force clear background image every 5 minutes so there is no buildup
 
 To Start : 
 npm run clean
