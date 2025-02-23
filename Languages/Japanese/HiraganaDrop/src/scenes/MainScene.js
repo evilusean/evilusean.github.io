@@ -1,15 +1,10 @@
 const Phaser = require('phaser');
 /* 
 TO DO: Future Sean
-Remove the green boxes
-Theres a weird red dot on the falling katakana/hiragana - remove that
-I got an error after testing, forgot to save, need to find that again, something is broke
-    Found it : errors out on elimination mode instead of showing game over screen
-Fix the fade, it's uniform, it should fade from top to bottom, 
 add mobile support? all new cells have a built in keyboard, could be run mobile as well
     will need to fix ratios, and add responsiveness - future sean problems
-not showing up on github pages 
-add keyboard interaction on main screen
+Fix logic so it doesn't give the same character twice in a row
+speed up matrix effect slightly, almost good 'fadeDelay' in GameScene.js
 
 To Start : 
 npm run clean
