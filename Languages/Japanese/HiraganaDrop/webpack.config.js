@@ -8,7 +8,8 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, './'),
     filename: 'bundle.js',
-    publicPath: './'
+    publicPath: './',
+    clean: true  // Clean the output directory before emit
   },
   module: {
     rules: [
@@ -25,14 +26,18 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './index.html',
       filename: 'index.html',
-      inject: true
+      inject: true,
+      hash: true  // Add hash to prevent caching issues
     }),
     new CopyWebpackPlugin({
       patterns: [
         { 
           from: 'public',
           to: './',
-          noErrorOnMissing: true  // Won't error if public folder doesn't exist yet
+          noErrorOnMissing: true,
+          globOptions: {
+            ignore: ['**/index.html']  // Ignore index.html in public folder
+          }
         }
       ]
     })
