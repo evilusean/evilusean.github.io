@@ -6,7 +6,7 @@ module.exports = {
   mode: 'development',
   entry: './src/index.js',
   output: {
-    path: path.resolve(__dirname, './'),
+    path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
     publicPath: './',
     clean: true  // Clean the output directory before emit
@@ -33,7 +33,7 @@ module.exports = {
       patterns: [
         { 
           from: 'public',
-          to: './',
+          to: 'dist',
           noErrorOnMissing: true,
           globOptions: {
             ignore: ['**/index.html']  // Ignore index.html in public folder
@@ -44,7 +44,7 @@ module.exports = {
   ],
   devServer: {
     static: {
-      directory: path.join(__dirname, './'),
+      directory: path.join(__dirname, 'dist'),
       publicPath: '/'
     },
     compress: true,
