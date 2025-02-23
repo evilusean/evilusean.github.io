@@ -145,6 +145,13 @@ class GameScene extends Phaser.Scene {
             color: '#ffff00'
         }).setOrigin(0.5);
         this.pauseOverlay.add(menuText);
+
+        // Set up background clearing
+        this.time.addEvent({
+            delay: 300000, // 5 minutes
+            callback: this.clearBackground,
+            loop: true
+        });
     }
 
     createOpeningMatrixRain() {
@@ -602,6 +609,16 @@ class GameScene extends Phaser.Scene {
             if (this.gameTimer) this.gameTimer.paused = false;
             this.matter.world.resume();
         }
+    }
+
+    clearBackground() {
+        // Clear all trails
+        this.fallingCharacters.forEach(char => {
+            char.trails.forEach(trail => {
+                trail.destroy();
+            });
+            char.trails = [];
+        });
     }
 }
 
