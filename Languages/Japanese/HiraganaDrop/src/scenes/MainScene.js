@@ -161,18 +161,10 @@ class MainScene extends Phaser.Scene {
         } else if (item.type === 'mode') {
             switch(item.value) {
                 case 'timed':
-                    this.scene.start('GameScene', {
-                        mode: 'timed',
-                        characterSet: this.selectedSet,
-                        time: 60
-                    });
+                    this.showTimePresets();
                     break;
                 case 'elimination':
-                    this.scene.start('GameScene', {
-                        mode: 'elimination',
-                        characterSet: this.selectedSet,
-                        lives: 3
-                    });
+                    this.showLifePresets();
                     break;
                 case 'survival':
                     this.scene.start('GameScene', {
@@ -182,6 +174,60 @@ class MainScene extends Phaser.Scene {
                     break;
             }
         }
+    }
+
+    showTimePresets() {
+        const presets = [
+            { text: '60 Seconds', value: 60 },
+            { text: '120 Seconds', value: 120 },
+            { text: '300 Seconds', value: 300 },
+            { text: 'Custom Time', value: 'custom' }
+        ];
+
+        const presetMenu = presets.map((preset, index) => {
+            return this.add.text(400, 250 + (index * 50), preset.text, {
+                fontSize: '24px',
+                color: '#00ff00'
+            }).setOrigin(0.5).setInteractive()
+            .on('pointerdown', () => {
+                if (preset.value === 'custom') {
+                    this.showCustomTimeInput();
+                } else {
+                    this.scene.start('GameScene', {
+                        mode: 'timed',
+                        characterSet: this.selectedSet,
+                        time: preset.value
+                    });
+                }
+            });
+        });
+    }
+
+    showLifePresets() {
+        const presets = [
+            { text: '1 Life', value: 1 },
+            { text: '3 Lives', value: 3 },
+            { text: '5 Lives', value: 5 },
+            { text: 'Custom Lives', value: 'custom' }
+        ];
+
+        const presetMenu = presets.map((preset, index) => {
+            return this.add.text(400, 250 + (index * 50), preset.text, {
+                fontSize: '24px',
+                color: '#00ff00'
+            }).setOrigin(0.5).setInteractive()
+            .on('pointerdown', () => {
+                if (preset.value === 'custom') {
+                    this.showCustomLivesInput();
+                } else {
+                    this.scene.start('GameScene', {
+                        mode: 'elimination',
+                        characterSet: this.selectedSet,
+                        lives: preset.value
+                    });
+                }
+            });
+        });
     }
 }
 

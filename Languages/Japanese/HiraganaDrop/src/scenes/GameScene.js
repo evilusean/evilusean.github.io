@@ -17,9 +17,9 @@ class GameScene extends Phaser.Scene {
         this.progressContainer = null;
         this.lastInput = '';
         this.trailConfig = {
-            count: 1,
+            count: 2,
             spacing: 25,
-            fadeDelay: 200,
+            fadeDelay: 250,
             fadeTime: 800,
             startAlpha: 0.4
         };
