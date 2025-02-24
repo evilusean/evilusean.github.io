@@ -5,6 +5,8 @@ add mobile support? all new cells have a built in keyboard, could be run mobile 
     will need to fix ratios, and add responsiveness - future sean problems
 Fix logic so it doesn't give the same character twice in a row
 fireworks
+fix timed mode, no timer - make sure it only does timed mode so it doesn't blow up the codebase(again)
+
 
 To Start : 
 npm run clean
