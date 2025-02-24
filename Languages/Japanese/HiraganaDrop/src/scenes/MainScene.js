@@ -7,6 +7,7 @@ Fix logic so it doesn't give the same character twice in a row
 fireworks
 fix timed mode, no timer - make sure it only does timed mode so it doesn't blow up the codebase(again)
 add presets, they disapeared again after reverting the code
+just tested, it's not saving the characters in timed/elimination mode 'undefined(undefined):x'
 
 To Start : 
 npm run clean
