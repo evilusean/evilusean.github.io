@@ -8,6 +8,11 @@ fireworks
 fix timed mode, no timer - make sure it only does timed mode so it doesn't blow up the codebase(again)
 add presets, they disapeared again after reverting the code
 just tested, it's not saving the characters in timed/elimination mode 'undefined(undefined):x'
+My local game with bug fixes is working 'npm start' but my 'npm run build' that is pushed to
+    github pages is different, I had some problems with git earlier, could be that, had to
+    revert, and now I can't push any of my bug fixes, to github pages, the github pages version
+    still technically works, just missing functionality like presets and bug fixes
+
 
 To Start : 
 npm run clean
