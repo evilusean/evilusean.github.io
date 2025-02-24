@@ -225,7 +225,7 @@ class MainScene extends Phaser.Scene {
      */
     showCustomTimeInput() {
         // Implementation for custom time input
-        // You can add this later if needed
+        console.log("Custom time input not implemented yet.");
     }
 
     /**
@@ -233,7 +233,7 @@ class MainScene extends Phaser.Scene {
      */
     showCustomLivesInput() {
         // Implementation for custom lives input
-        // You can add this later if needed
+        console.log("Custom lives input not implemented yet.");
     }
 
     handleKeyboard(event) {
