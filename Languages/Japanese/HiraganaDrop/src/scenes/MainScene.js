@@ -12,7 +12,7 @@ My local game with bug fixes is working 'npm start' but my 'npm run build' that 
     github pages is different, I had some problems with git earlier, could be that, had to
     revert, and now I can't push any of my bug fixes, to github pages, the github pages version
     still technically works, just missing functionality like presets and bug fixes
-
+I have 2 'bundle.js' one in root, and one in dist, this might be the problem 
 
 To Start : 
 npm run clean

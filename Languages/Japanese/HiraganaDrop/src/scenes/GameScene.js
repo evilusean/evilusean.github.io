@@ -8,7 +8,7 @@ class GameScene extends Phaser.Scene {
         this.fallingCharacters = [];
         this.currentInput = '';
         this.score = 0;
-        this.missedCharacters = {};
+        this.missedCharacters = new Map();
         this.isGameActive = true;
         this.isPaused = false;
         this.isGameOver = false;
@@ -26,6 +26,13 @@ class GameScene extends Phaser.Scene {
         this.elapsedTime = 0;  // Track elapsed time
         this.timeText = null;  // Timer display text
         this.gameTimer = null; // Timer event
+        this.timeLeft = 0; // Time left for the game
+        this.spawnArea = { left: 150, right: 650 }; // Define spawn area
+        this.spawnConfig = {
+            initialDelay: 2000, // Initial delay before first spawn
+            minDelay: 1500,     // Minimum time between spawns
+            maxDelay: 2500      // Maximum time between spawns
+        };
     }
 
     init(data) {
@@ -38,8 +45,7 @@ class GameScene extends Phaser.Scene {
             this.timeLeft = data.time || 60;
             this.lives = Infinity;
         } else if (this.gameMode === 'elimination') {
-            this.timeLeft = 0;
-            this.lives = data.lives || 3;
+            this.timeLeft = data.lives * 60; // Example: 1 life = 60 seconds, adjust as needed
         } else if (this.gameMode === 'survival') {
             this.timeLeft = 0;
             this.lives = Infinity;
@@ -48,7 +54,7 @@ class GameScene extends Phaser.Scene {
             ));
             this.correctCharacters.clear();
         }
-        this.missedCharacters = {};
+        this.missedCharacters = new Map();
     }
 
     create() {
@@ -90,7 +96,7 @@ class GameScene extends Phaser.Scene {
 
         // Spawn timer
         this.spawnTimer = this.time.addEvent({
-            delay: 3000,
+            delay: this.spawnConfig.initialDelay,
             callback: this.spawnCharacter,
             callbackScope: this,
             loop: true
@@ -107,12 +113,6 @@ class GameScene extends Phaser.Scene {
 
         // Set up keyboard input
         this.input.keyboard.on('keydown', this.handleKeyInput, this);
-
-        // Initialize spawn area
-        this.spawnArea = {
-            left: 150,  // Default value if not in survival mode
-            right: 650
-        };
 
         // Add container for missed character notifications
         this.missedNotifications = this.add.container(0, 550);
@@ -163,21 +163,11 @@ class GameScene extends Phaser.Scene {
         graphics.generateTexture('particle', 8, 8);
         graphics.destroy();
 
-        // Add timer display for elimination mode
-        if (this.gameMode === 'elimination') {
-            this.timeText = this.add.text(16, 16, 'Time: 0:00', {
-                fontSize: '24px',
-                color: '#00ff00'
-            });
-            
-            // Start the timer
-            this.gameTimer = this.time.addEvent({
-                delay: 1000,  // Update every second
-                callback: this.updateTimer,
-                callbackScope: this,
-                loop: true
-            });
-        }
+        // Create timer text
+        this.timerText = this.add.text(400, 150, `Time: ${this.timeLeft}`, {
+            fontSize: '24px',
+            color: '#ffffff'
+        }).setOrigin(0.5);
     }
 
     createOpeningMatrixRain() {
@@ -264,6 +254,21 @@ class GameScene extends Phaser.Scene {
         };
 
         this.fallingCharacters.push(fallingChar);
+
+        if (this.gameMode === 'survival') {
+            this.remainingCharacters.delete(charSymbol);
+            this.correctCharacters.add(charSymbol);
+            this.updateCharacterProgress(charSymbol);
+            
+            if (this.remainingCharacters.size === 0 && !this.gameComplete) {
+                this.gameComplete = true;
+                this.time.delayedCall(1000, () => this.endGame());
+                this.showSurvivalVictory();
+            }
+        }
+        
+        this.score += 100;
+        this.scoreText.setText(`Score: ${this.score}`);
     }
 
     createMatrixTrail(char) {
@@ -406,13 +411,13 @@ class GameScene extends Phaser.Scene {
     }
 
     updateTimer() {
-        if (!this.isPaused) {
-            this.elapsedTime++;
-            if (this.timeText) {
-                const minutes = Math.floor(this.elapsedTime / 60);
-                const seconds = this.elapsedTime % 60;
-                this.timeText.setText(`Time: ${minutes}:${seconds.toString().padStart(2, '0')}`);
-            }
+        if (this.isPaused) return;
+
+        this.timeLeft--;
+        this.timerText.setText(`Time: ${this.timeLeft}`);
+
+        if (this.timeLeft <= 0) {
+            this.endGame();
         }
     }
 
@@ -476,8 +481,8 @@ class GameScene extends Phaser.Scene {
                 });
 
                 char.gameObject.destroy();
-                this.missedCharacters[char.character.hiragana] = 
-                    (this.missedCharacters[char.character.hiragana] || 0) + 1;
+                this.missedCharacters.set(this.characterSet === 'hiragana' ? char.character.hiragana : char.character.katakana, 
+                    (this.missedCharacters.get(this.characterSet === 'hiragana' ? char.character.hiragana : char.character.katakana) || 0) + 1);
 
                 if (this.gameMode === 'elimination') {
                     this.lives--;
@@ -515,8 +520,8 @@ class GameScene extends Phaser.Scene {
         this.scoreText.setColor('#ff0000');
 
         // Show missed characters in compact format
-        if (Object.keys(this.missedCharacters).length > 0) {
-            const missedText = Object.entries(this.missedCharacters)
+        if (this.missedCharacters.size > 0) {
+            const missedText = Array.from(this.missedCharacters.entries())
                 .sort(([, countA], [, countB]) => countB - countA)
                 .map(([char, count]) => {
                     const romaji = this.CHAR_SET.basic.find(h => h.hiragana === char)?.romaji;
