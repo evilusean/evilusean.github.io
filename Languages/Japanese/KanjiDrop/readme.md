@@ -1,5 +1,9 @@
 A repo to store my new game for learning kanji meanings passively
 
+Extracted all Kanji from this Anki Deck : Remembering_the_Kanji_1_6th_Edition_2200_Kanji.apkg </br>
+Using : https://github.com/evilusean/Pysean/blob/main/Anki/RTK-DeckExtractor </br>
+Originally From : James Heisigs 'RTK' Remembering the Kanji 1, 6th Edition. </br>
+
 I want future Sean to create another game that flashes the kanji on the screen briefly
  and then shows the answer after a brief delay, should be easy enough, and useful
  you should be able to select a range, 2200 kanji, learn 100-200, or 0-2200 for all,
