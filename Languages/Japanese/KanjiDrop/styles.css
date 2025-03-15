@@ -32,33 +32,73 @@ h1 {
     font-size: 2rem;
 }
 
-#index-range {
+.controls-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.range-inputs {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.range-inputs input {
+    width: 80px;
     padding: 10px;
     font-size: 1rem;
-    margin-bottom: 10px;
     background-color: #111;
     color: #0f0;
     border: 1px solid #0f0;
     border-radius: 4px;
+    margin: 0 5px;
+}
+
+.range-inputs span {
+    color: #0f0;
+    font-size: 1.2rem;
+}
+
+.range-note {
+    position: absolute;
+    bottom: -20px;
+    font-size: 0.8rem;
+    color: #0f0;
     width: 100%;
-    max-width: 300px;
-    margin: 0 auto 10px;
+    text-align: center;
+}
+
+.buttons-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.buttons-row button {
+    padding: 10px 15px;
+    font-size: 1rem;
+    background-color: rgba(0, 255, 0, 0.2);
+    color: #0f0;
+    border: 1px solid #0f0;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 #start-button {
-    padding: 10px 20px;
-    font-size: 1rem;
     background-color: #0f0;
     color: #000;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin: 0 auto 20px;
-    display: block;
 }
 
 #start-button:hover {
     background-color: #0c0;
+}
+
+.buttons-row button:hover:not(#start-button) {
+    background-color: rgba(0, 255, 0, 0.3);
 }
 
 #kanji-display {
@@ -72,6 +112,14 @@ h1 {
     font-size: 2.5rem;
     color: #0f0;
     animation: drop 5s linear forwards;
+}
+
+.kanji-trail {
+    position: absolute;
+    font-size: 2.5rem;
+    color: #0f0;
+    opacity: 0.3;
+    animation: fade 1s linear forwards;
 }
 
 @keyframes drop {
@@ -91,15 +139,13 @@ h1 {
     }
 }
 
-.kanji::after {
-    content: '';
-    position: absolute;
-    top: -150px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 2px;
-    height: 150px;
-    background: linear-gradient(to top, rgba(0, 255, 0, 1), rgba(0, 255, 0, 0));
+@keyframes fade {
+    0% {
+        opacity: 0.3;
+    }
+    100% {
+        opacity: 0;
+    }
 }
 
 #meaning-display {
@@ -139,63 +185,47 @@ h1 {
     color: #f00;
 }
 
-#pause-button {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    padding: 10px;
-    background-color: rgba(0, 255, 0, 0.2);
-    color: #0f0;
-    border: 1px solid #0f0;
-    border-radius: 4px;
-    cursor: pointer;
-    z-index: 20;
-}
-
-#history-toggle {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    padding: 10px;
-    background-color: rgba(0, 255, 0, 0.2);
-    color: #0f0;
-    border: 1px solid #0f0;
-    border-radius: 4px;
-    cursor: pointer;
-    z-index: 20;
-}
-
-#history-section {
+#history-section, #vocab-section {
     position: fixed;
-    left: 0;
     bottom: 0;
-    width: 100%;
-    height: 30%;
     background-color: rgba(0, 0, 0, 0.9);
     border-top: 1px solid #0f0;
     z-index: 30;
+    height: 40%;
     overflow-y: auto;
+    display: none;
 }
 
-#history-list {
+#history-section {
+    left: 0;
+    width: 50%;
+    border-right: 1px solid #0f0;
+}
+
+#vocab-section {
+    right: 0;
+    width: 50%;
+}
+
+#history-list, #vocab-list {
     padding: 10px;
     max-height: 100%;
     overflow-y: auto;
 }
 
-.history-item {
+.history-item, .vocab-item {
     display: flex;
     justify-content: space-between;
     padding: 5px 10px;
     border-bottom: 1px solid rgba(0, 255, 0, 0.3);
 }
 
-.history-kanji {
+.history-kanji, .vocab-kanji {
     font-size: 1.5rem;
     color: #0f0;
 }
 
-.history-meaning {
+.history-meaning, .vocab-meaning {
     color: #0f0;
 }
 
@@ -203,6 +233,16 @@ h1 {
 @media (max-width: 768px) {
     h1 {
         font-size: 1.5rem;
+    }
+    
+    .buttons-row {
+        flex-direction: column;
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .buttons-row button {
+        width: 100%;
     }
     
     .kanji {
@@ -217,9 +257,15 @@ h1 {
         font-size: 1.5rem;
     }
     
-    #pause-button, #history-toggle {
-        padding: 8px;
-        font-size: 0.9rem;
+    #history-section, #vocab-section {
+        width: 100%;
+        height: 50%;
+    }
+    
+    #history-section {
+        bottom: 50%;
+        border-right: none;
+        border-bottom: 1px solid #0f0;
     }
 }
 
@@ -228,7 +274,12 @@ h1 {
         font-size: 1.2rem;
     }
     
-    #index-range, #start-button {
+    .range-inputs input {
+        width: 60px;
+        font-size: 0.9rem;
+    }
+    
+    .buttons-row button {
         font-size: 0.9rem;
     }
     
