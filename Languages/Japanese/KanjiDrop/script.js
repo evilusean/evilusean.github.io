@@ -12,6 +12,9 @@ let trailElements = [];
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         const response = await fetch('RTK_Kanji_Meanings.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         kanjiData = data;
         
@@ -21,7 +24,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Setup event listeners
         document.getElementById('start-button').addEventListener('click', startGame);
-        document.getElementById('pause-button').addEventListener('click', togglePause);
         document.getElementById('history-toggle').addEventListener('click', toggleHistory);
         document.getElementById('vocab-toggle').addEventListener('click', toggleVocab);
         
@@ -46,14 +48,14 @@ function startGame() {
     const endRange = parseInt(document.getElementById('end-range').value) || defaultEndRange;
     
     // Validate input
-    if (startRange < 1 || endRange > kanjiData.length || startRange > endRange) {
-        alert(`Please enter a valid range between 1 and ${kanjiData.length}`);
+    if (startRange < 1 || endRange > 2200 || startRange > endRange) {
+        alert(`Please enter a valid range between 1 and 2200`);
         return;
     }
     
     // Adjust for zero-based index
     const start = Math.max(0, startRange - 1);
-    const end = Math.min(kanjiData.length, endRange);
+    const end = Math.min(2200, endRange);
     
     // Get selected kanji and shuffle them
     selectedKanji = kanjiData.slice(start, end);
@@ -62,7 +64,6 @@ function startGame() {
     // Reset game state
     currentIndex = 0;
     isPaused = false;
-    document.getElementById('pause-button').textContent = 'Pause';
     
     // Populate vocab list
     populateVocabList(start, end);
@@ -142,7 +143,7 @@ function createMatrixTrail(kanjiElement, xPosition) {
             trailElement.className = 'kanji-trail';
             trailElement.textContent = kanjiElement.textContent;
             trailElement.style.left = `${xPosition}%`;
-            trailElement.style.top = `${rect.top - 10}px`; // Position slightly above the kanji
+            trailElement.style.top = `${rect.top - 30}px`; // Position behind the kanji
             
             kanjiDisplay.appendChild(trailElement);
             trailElements.push(trailElement);
@@ -216,16 +217,6 @@ function populateVocabList(start, end) {
         
         vocabListElement.appendChild(listItem);
     });
-}
-
-function togglePause() {
-    isPaused = !isPaused;
-    const pauseButton = document.getElementById('pause-button');
-    pauseButton.textContent = isPaused ? 'Resume' : 'Pause';
-    
-    if (!isPaused) {
-        dropNextKanji();
-    }
 }
 
 function toggleHistory() {
