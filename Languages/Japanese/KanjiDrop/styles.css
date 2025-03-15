@@ -73,8 +73,7 @@ h1 {
 .buttons-row {
     display: flex;
     justify-content: space-between;
-    flex-grow: 1;
-    gap: 10px;
+    gap: 20px;
 }
 
 .buttons-row button {
@@ -104,6 +103,7 @@ h1 {
     position: relative;
     flex-grow: 1;
     overflow: hidden;
+    transition: width 0.3s ease, float 0.3s ease;
 }
 
 .kanji {
@@ -111,6 +111,7 @@ h1 {
     font-size: 2.5rem;
     color: #0f0;
     animation: drop 5s linear forwards;
+    z-index: 5;
 }
 
 .kanji-trail {
@@ -118,6 +119,7 @@ h1 {
     font-size: 2.5rem;
     color: #0f0;
     opacity: 0.3;
+    z-index: 4;
     animation: fade 1s linear forwards;
 }
 
@@ -186,24 +188,22 @@ h1 {
 
 #history-section, #vocab-section {
     position: fixed;
+    top: 100px;
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.9);
-    border-top: 1px solid #0f0;
+    border: 1px solid #0f0;
     z-index: 30;
-    height: 40%;
+    width: 50%;
     overflow-y: auto;
     display: none;
 }
 
 #history-section {
     left: 0;
-    width: 50%;
-    border-right: 1px solid #0f0;
 }
 
 #vocab-section {
     right: 0;
-    width: 50%;
 }
 
 #history-list, #vocab-list {
