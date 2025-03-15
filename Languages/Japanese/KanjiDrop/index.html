@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kanji Drop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -11,7 +12,13 @@
         <h1>Kanji Drop Game</h1>
         <input type="text" id="index-range" placeholder="Enter index range (e.g., 1-100)">
         <button id="start-button">Start Game</button>
+        <button id="pause-button">Pause</button>
+        <button id="history-toggle">History</button>
         <div id="kanji-display"></div>
+        <div id="meaning-display"></div>
+        <div id="history-section">
+            <div id="history-list"></div>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>
