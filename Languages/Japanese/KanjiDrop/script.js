@@ -126,34 +126,45 @@ function dropNextKanji() {
 
 function createMatrixTrail(kanjiElement, xPosition) {
     const kanjiDisplay = document.getElementById('kanji-display');
+    const trailElements = [];
+    
+    // Create trail effect
     const trailInterval = setInterval(() => {
-        if (isPaused) return;
+        if (isPaused || !kanjiElement.isConnected) {
+            clearInterval(trailInterval);
+            return;
+        }
         
-        // Get current position of the kanji
         const rect = kanjiElement.getBoundingClientRect();
-        const kanjiTop = rect.top;
-        
-        if (kanjiTop > 0 && kanjiTop < window.innerHeight) {
-            // Create a trail element
+        if (rect.top > 0) {
+            // Create a trail element at the current position of the kanji
             const trailElement = document.createElement('div');
             trailElement.className = 'kanji-trail';
             trailElement.textContent = kanjiElement.textContent;
             trailElement.style.left = `${xPosition}%`;
-            trailElement.style.top = `${kanjiTop}px`;
+            trailElement.style.top = `${rect.top - 10}px`; // Position slightly above the kanji
             
             kanjiDisplay.appendChild(trailElement);
+            trailElements.push(trailElement);
             
             // Remove trail element after animation completes
-            trailElement.addEventListener('animationend', () => {
-                trailElement.remove();
-            });
+            setTimeout(() => {
+                if (trailElement.parentNode) {
+                    trailElement.remove();
+                }
+            }, 1000); // Remove after 1 second (matching the fade animation)
         }
-        
-        // Stop creating trails if the kanji is no longer visible
-        if (!kanjiElement.isConnected) {
-            clearInterval(trailInterval);
-        }
-    }, 150); // Create a new trail every 150ms
+    }, 100); // Create a new trail every 100ms
+    
+    // Clean up all trail elements when the kanji is removed
+    kanjiElement.addEventListener('animationend', () => {
+        clearInterval(trailInterval);
+        trailElements.forEach(el => {
+            if (el.parentNode) {
+                el.remove();
+            }
+        });
+    });
 }
 
 function showMeaning(kanjiObj) {
@@ -222,11 +233,13 @@ function toggleHistory() {
     const currentDisplay = historySection.style.display;
     
     // Hide vocab section if showing history
-    if (currentDisplay === 'none') {
-        document.getElementById('vocab-section').style.display = 'none';
-    }
+    document.getElementById('vocab-section').style.display = 'none';
     
+    // Toggle history section
     historySection.style.display = currentDisplay === 'none' ? 'block' : 'none';
+    
+    // Adjust kanji display area
+    adjustKanjiDisplayArea();
 }
 
 function toggleVocab() {
@@ -234,9 +247,25 @@ function toggleVocab() {
     const currentDisplay = vocabSection.style.display;
     
     // Hide history section if showing vocab
-    if (currentDisplay === 'none') {
-        document.getElementById('history-section').style.display = 'none';
-    }
+    document.getElementById('history-section').style.display = 'none';
     
+    // Toggle vocab section
     vocabSection.style.display = currentDisplay === 'none' ? 'block' : 'none';
+    
+    // Adjust kanji display area
+    adjustKanjiDisplayArea();
+}
+
+function adjustKanjiDisplayArea() {
+    const kanjiDisplay = document.getElementById('kanji-display');
+    const historyVisible = document.getElementById('history-section').style.display === 'block';
+    const vocabVisible = document.getElementById('vocab-section').style.display === 'block';
+    
+    if (historyVisible || vocabVisible) {
+        kanjiDisplay.style.width = '50%';
+        kanjiDisplay.style.float = historyVisible ? 'right' : 'left';
+    } else {
+        kanjiDisplay.style.width = '100%';
+        kanjiDisplay.style.float = 'none';
+    }
 }
