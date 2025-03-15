@@ -9,15 +9,33 @@
 </head>
 <body>
     <div id="game-container">
-        <!--<h1>Kanji Drop</h1>-->
-        <input type="text" id="index-range" placeholder="Enter index range (e.g., 1-100)">
-        <button id="start-button">Start Game</button>
-        <button id="pause-button">Pause</button>
-        <button id="history-toggle">History</button>
+        <h1>Kanji Drop Game</h1>
+        
+        <div class="controls-container">
+            <div class="range-inputs">
+                <input type="number" id="start-range" placeholder="Start (1)" value="1">
+                <span>-</span>
+                <input type="number" id="end-range" placeholder="End (20)" value="20">
+                <p class="range-note">Select a range between 1-2200</p>
+            </div>
+            
+            <div class="buttons-row">
+                <button id="start-button">Start Game</button>
+                <button id="pause-button">Pause</button>
+                <button id="history-toggle">History</button>
+                <button id="vocab-toggle">Vocab List</button>
+            </div>
+        </div>
+        
         <div id="kanji-display"></div>
         <div id="meaning-display"></div>
+        
         <div id="history-section">
             <div id="history-list"></div>
+        </div>
+        
+        <div id="vocab-section">
+            <div id="vocab-list"></div>
         </div>
     </div>
     <script src="script.js"></script>
