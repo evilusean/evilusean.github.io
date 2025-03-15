@@ -34,8 +34,7 @@ h1 {
 
 .controls-container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    justify-content: space-between;
     margin-bottom: 20px;
 }
 
@@ -73,8 +72,8 @@ h1 {
 
 .buttons-row {
     display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
+    justify-content: space-between;
+    flex-grow: 1;
     gap: 10px;
 }
 
