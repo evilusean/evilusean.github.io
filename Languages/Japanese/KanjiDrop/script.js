@@ -145,7 +145,7 @@ function createMatrixTrail(kanjiElement, xPosition) {
                 trailElement.className = 'kanji-trail';
                 trailElement.textContent = kanjiElement.textContent;
                 trailElement.style.left = `${xPosition}%`;
-                trailElement.style.top = `${rect.top - 125}px`; // Position further behind the kanji
+                trailElement.style.top = `${rect.top - 130}px`; // Position further behind the kanji
                 
                 kanjiDisplay.appendChild(trailElement);
                 trailElements.push(trailElement);
