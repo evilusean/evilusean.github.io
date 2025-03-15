@@ -1,0 +1,246 @@
+@font-face {
+    font-family: 'Noto Sans JP';
+    src: url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap');
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans JP', Arial, sans-serif;
+    background-color: #000;
+    color: #0f0;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+#game-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 20px;
+    position: relative;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+#index-range {
+    padding: 10px;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    background-color: #111;
+    color: #0f0;
+    border: 1px solid #0f0;
+    border-radius: 4px;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto 10px;
+}
+
+#start-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #0f0;
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 0 auto 20px;
+    display: block;
+}
+
+#start-button:hover {
+    background-color: #0c0;
+}
+
+#kanji-display {
+    position: relative;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.kanji {
+    position: absolute;
+    font-size: 2.5rem;
+    color: #0f0;
+    animation: drop 5s linear forwards;
+}
+
+@keyframes drop {
+    0% {
+        top: -50px;
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        top: 100vh;
+        opacity: 0;
+    }
+}
+
+.kanji::after {
+    content: '';
+    position: absolute;
+    top: -150px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 150px;
+    background: linear-gradient(to top, rgba(0, 255, 0, 1), rgba(0, 255, 0, 0));
+}
+
+#meaning-display {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.meaning-container {
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 20px;
+    border-radius: 10px;
+    animation: fadeInOut 2s ease-in-out;
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0; }
+    20%, 80% { opacity: 1; }
+}
+
+.kanji-large {
+    font-size: 5rem;
+    color: #f00;
+    margin-bottom: 10px;
+}
+
+.meaning-text {
+    font-size: 2rem;
+    color: #f00;
+}
+
+#pause-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px;
+    background-color: rgba(0, 255, 0, 0.2);
+    color: #0f0;
+    border: 1px solid #0f0;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 20;
+}
+
+#history-toggle {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 10px;
+    background-color: rgba(0, 255, 0, 0.2);
+    color: #0f0;
+    border: 1px solid #0f0;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 20;
+}
+
+#history-section {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 30%;
+    background-color: rgba(0, 0, 0, 0.9);
+    border-top: 1px solid #0f0;
+    z-index: 30;
+    overflow-y: auto;
+}
+
+#history-list {
+    padding: 10px;
+    max-height: 100%;
+    overflow-y: auto;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 10px;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+}
+
+.history-kanji {
+    font-size: 1.5rem;
+    color: #0f0;
+}
+
+.history-meaning {
+    color: #0f0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    .kanji {
+        font-size: 2rem;
+    }
+    
+    .kanji-large {
+        font-size: 3.5rem;
+    }
+    
+    .meaning-text {
+        font-size: 1.5rem;
+    }
+    
+    #pause-button, #history-toggle {
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.2rem;
+    }
+    
+    #index-range, #start-button {
+        font-size: 0.9rem;
+    }
+    
+    .kanji {
+        font-size: 1.8rem;
+    }
+    
+    .kanji-large {
+        font-size: 3rem;
+    }
+    
+    .meaning-text {
+        font-size: 1.2rem;
+    }
+}
