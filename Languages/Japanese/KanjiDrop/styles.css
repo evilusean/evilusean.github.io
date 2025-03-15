@@ -35,22 +35,21 @@ h1 {
 .controls-container {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
+    max-height: 10vh;
 }
 
 .range-inputs {
     display: flex;
     align-items: center;
-    margin-bottom: 15px;
     position: relative;
-    flex-direction: column;
-    align-items: flex-start;
 }
 
 .range-inputs input {
-    width: 80px;
-    padding: 10px;
-    font-size: 1rem;
+    width: 60px;
+    padding: 8px;
+    font-size: 0.9rem;
     background-color: #111;
     color: #0f0;
     border: 1px solid #0f0;
@@ -58,53 +57,36 @@ h1 {
     margin: 0 5px;
 }
 
-.range-inputs span {
-    color: #0f0;
-    font-size: 1.2rem;
-}
-
 .range-note {
-    position: relative;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     color: #0f0;
-    margin-bottom: 10px;
+    margin-left: 10px;
 }
 
 #start-button {
-    padding: 12px 20px;
-    font-size: 1.1rem;
+    padding: 8px 15px;
+    font-size: 0.9rem;
     background-color: #0f0;
     color: #000;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    margin-top: 10px;
-    width: 100%;
-    max-width: 200px;
-}
-
-#start-button:hover {
-    background-color: #0c0;
+    margin-left: 10px;
 }
 
 .buttons-row {
     display: flex;
-    justify-content: space-between;
-    gap: 20px;
+    gap: 10px;
 }
 
 .buttons-row button {
-    padding: 10px 15px;
-    font-size: 1rem;
+    padding: 8px 12px;
+    font-size: 0.9rem;
     background-color: rgba(0, 255, 0, 0.2);
     color: #0f0;
     border: 1px solid #0f0;
     border-radius: 4px;
     cursor: pointer;
-}
-
-.buttons-row button:hover {
-    background-color: rgba(0, 255, 0, 0.3);
 }
 
 #kanji-display {
@@ -196,22 +178,25 @@ h1 {
 
 #history-section, #vocab-section {
     position: fixed;
-    top: 100px;
     bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40%;
     background-color: rgba(0, 0, 0, 0.9);
-    border: 1px solid #0f0;
+    border-top: 1px solid #0f0;
     z-index: 30;
-    width: 50%;
     overflow-y: auto;
     display: none;
 }
 
 #history-section {
     left: 0;
+    width: 100%;
 }
 
 #vocab-section {
-    right: 0;
+    left: 0;
+    width: 100%;
 }
 
 #history-list, #vocab-list {
@@ -242,10 +227,20 @@ h1 {
         font-size: 1.5rem;
     }
     
-    .buttons-row {
+    .controls-container {
         flex-direction: column;
+        align-items: flex-start;
+        max-height: none;
+    }
+    
+    .range-inputs {
+        margin-bottom: 10px;
         width: 100%;
-        max-width: 300px;
+    }
+    
+    .buttons-row {
+        width: 100%;
+        justify-content: space-between;
     }
     
     .buttons-row button {
