@@ -7,6 +7,7 @@ let historyList = [];
 let defaultStartRange = 1;
 let defaultEndRange = 20;
 let trailElements = [];
+let animationTimer = null;
 
 // Fetch the JSON data when the page loads
 document.addEventListener('DOMContentLoaded', async () => {
@@ -80,13 +81,20 @@ function shuffleArray(array) {
 }
 
 function dropNextKanji() {
-    if (isPaused || currentIndex >= selectedKanji.length) {
-        if (currentIndex >= selectedKanji.length) {
-            // Restart with the same selection when all kanji have been shown
-            shuffleArray(selectedKanji);
-            currentIndex = 0;
-        }
+    // Clear any existing timers to prevent multiple instances
+    if (animationTimer) {
+        clearTimeout(animationTimer);
+    }
+    
+    if (isPaused) {
         return;
+    }
+    
+    // Check if we've reached the end of the array
+    if (currentIndex >= selectedKanji.length) {
+        // Restart with the same selection when all kanji have been shown
+        shuffleArray(selectedKanji);
+        currentIndex = 0;
     }
     
     const kanjiObj = selectedKanji[currentIndex];
@@ -118,11 +126,32 @@ function dropNextKanji() {
         // Move to next kanji
         currentIndex++;
         
-        // Schedule next drop
-        setTimeout(() => {
-            dropNextKanji();
+        // Schedule next drop with a more reliable method
+        animationTimer = setTimeout(() => {
+            // Use requestAnimationFrame to ensure smooth animation timing
+            requestAnimationFrame(() => {
+                dropNextKanji();
+            });
         }, 2000); // Wait 2 seconds after showing meaning
     });
+    
+    // Backup timer in case the animation event doesn't fire
+    setTimeout(() => {
+        if (kanjiElement.parentNode) {
+            // If the element is still in the DOM after 7 seconds (5s animation + 2s buffer)
+            // force the next kanji to drop
+            kanjiElement.remove();
+            showMeaning(kanjiObj);
+            addToHistory(kanjiObj);
+            currentIndex++;
+            
+            animationTimer = setTimeout(() => {
+                requestAnimationFrame(() => {
+                    dropNextKanji();
+                });
+            }, 2000);
+        }
+    }, 7000);
 }
 
 function createMatrixTrail(kanjiElement, xPosition) {
@@ -155,9 +184,9 @@ function createMatrixTrail(kanjiElement, xPosition) {
                     if (trailElement.parentNode) {
                         trailElement.remove();
                     }
-                }, 1000); // Remove after 1 second (matching the fade animation)
+                }, 2000); // Remove after 1 second (matching the fade animation)
             }
-        }, 150); // Create a new trail every 150ms (slightly slower)
+        }, 200); // Create a new trail every 150ms (slightly slower)
         
         // Clean up all trail elements when the kanji is removed
         kanjiElement.addEventListener('animationend', () => {
@@ -263,3 +292,29 @@ function adjustKanjiDisplayArea() {
         kanjiDisplay.style.width = '100%';
     }
 }
+
+// Add a visibility change handler to prevent pausing when tab is inactive
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && selectedKanji.length > 0 && !isPaused) {
+        // Resume the animation if the tab becomes visible again
+        dropNextKanji();
+    }
+});
+
+// Add a periodic check to ensure the animation keeps running
+function ensureAnimationRunning() {
+    if (selectedKanji.length > 0 && !isPaused && document.visibilityState === 'visible') {
+        const kanjiElements = document.querySelectorAll('.kanji');
+        if (kanjiElements.length === 0) {
+            // No kanji elements found, animation might have stalled
+            console.log("Animation appears to have stalled. Restarting...");
+            dropNextKanji();
+        }
+    }
+    
+    // Check again after 10 seconds
+    setTimeout(ensureAnimationRunning, 10000);
+}
+
+// Start the periodic check
+setTimeout(ensureAnimationRunning, 10000);
