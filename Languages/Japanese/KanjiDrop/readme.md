@@ -1,5 +1,7 @@
 A repo to store my new game for learning kanji meanings passively
 
+https://evilusean.github.io/Languages/Japanese/KanjiDrop/
+
 Extracted all Kanji from this Anki Deck : Remembering_the_Kanji_1_6th_Edition_2200_Kanji.apkg - https://ankiweb.net/shared/info/1654787298 </br>
 Using : https://github.com/evilusean/Pysean/blob/main/Anki/RTK-DeckExtractor </br>
 Originally From : James Heisigs 'RTK' Remembering the Kanji 1, 6th Edition. </br>
