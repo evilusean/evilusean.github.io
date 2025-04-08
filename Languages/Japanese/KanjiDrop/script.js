@@ -330,6 +330,34 @@ setTimeout(ensureAnimationRunning, 10000);
 
 function handleKeyPress(event) {
     switch(event.key) {
+        case ' ': // Space bar
+            event.preventDefault();
+            const currentKanji = selectedKanji[currentIndex];
+            if (currentKanji) {
+                // Find the currently dropping kanji element
+                const kanjiElement = document.querySelector('.kanji');
+                if (kanjiElement) {
+                    // Pause the dropping animation
+                    kanjiElement.style.animationPlayState = 'paused';
+                    
+                    // Add blink animation
+                    kanjiElement.classList.add('kanji-blink');
+                    
+                    // After blinking, show meaning and add to list
+                    setTimeout(() => {
+                        kanjiElement.remove();
+                        showMeaning(currentKanji);
+                        addToMyList(currentKanji);
+                        
+                        // Continue with next kanji after delay
+                        setTimeout(() => {
+                            currentIndex++;
+                            dropNextKanji();
+                        }, 2000);
+                    }, 1000); // Wait for blink animation to complete
+                }
+            }
+            break;
         case 'ArrowLeft':
             showPreviousKanji();
             break;
@@ -338,10 +366,6 @@ function handleKeyPress(event) {
             break;
         case 'Enter':
             startGame();
-            break;
-        case ' ': // Space bar
-            event.preventDefault();
-            addToMyList(selectedKanji[currentIndex]);
             break;
     }
 }
