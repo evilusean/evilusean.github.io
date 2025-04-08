@@ -9,6 +9,7 @@ let defaultEndRange = 20;
 let trailElements = [];
 let animationTimer = null;
 let myList = new Map(); // Map to store kanji and wrong count
+let isProcessingKanji = false; // Add this with other global variables at the top
 
 // Fetch the JSON data when the page loads
 document.addEventListener('DOMContentLoaded', async () => {
@@ -89,6 +90,8 @@ function shuffleArray(array) {
 }
 
 function dropNextKanji() {
+    if (isProcessingKanji) return; // Also modify dropNextKanji to respect the flag
+
     // Clear any existing timers to prevent multiple instances
     if (animationTimer) {
         clearTimeout(animationTimer);
@@ -261,29 +264,31 @@ function populateVocabList(start, end) {
 
 function toggleHistory() {
     const historySection = document.getElementById('history-section');
-    const currentDisplay = historySection.style.display;
+    const vocabSection = document.getElementById('vocab-section');
+    const myListSection = document.getElementById('mylist-section');
     
-    // Hide vocab section if showing history
-    document.getElementById('vocab-section').style.display = 'none';
+    // Hide all sections
+    vocabSection.style.display = 'none';
+    myListSection.style.display = 'none';
     
     // Toggle history section
-    historySection.style.display = currentDisplay === 'none' ? 'block' : 'none';
+    historySection.style.display = historySection.style.display === 'none' ? 'block' : 'none';
     
-    // Adjust kanji display area
     adjustKanjiDisplayArea();
 }
 
 function toggleVocab() {
+    const historySection = document.getElementById('history-section');
     const vocabSection = document.getElementById('vocab-section');
-    const currentDisplay = vocabSection.style.display;
+    const myListSection = document.getElementById('mylist-section');
     
-    // Hide history section if showing vocab
-    document.getElementById('history-section').style.display = 'none';
+    // Hide all sections
+    historySection.style.display = 'none';
+    myListSection.style.display = 'none';
     
     // Toggle vocab section
-    vocabSection.style.display = currentDisplay === 'none' ? 'block' : 'none';
+    vocabSection.style.display = vocabSection.style.display === 'none' ? 'block' : 'none';
     
-    // Adjust kanji display area
     adjustKanjiDisplayArea();
 }
 
@@ -332,29 +337,38 @@ function handleKeyPress(event) {
     switch(event.key) {
         case ' ': // Space bar
             event.preventDefault();
+            // Check if we're already processing a kanji
+            if (isProcessingKanji) return;
+            
             const currentKanji = selectedKanji[currentIndex];
             if (currentKanji) {
-                // Find the currently dropping kanji element
                 const kanjiElement = document.querySelector('.kanji');
                 if (kanjiElement) {
-                    // Pause the dropping animation
+                    isProcessingKanji = true; // Set flag
+                    
+                    // Force stop the dropping animation
                     kanjiElement.style.animationPlayState = 'paused';
+                    
+                    // Remove any existing animation classes
+                    kanjiElement.classList.remove('kanji-blink');
+                    
+                    // Force a reflow to ensure animation restarts
+                    void kanjiElement.offsetWidth;
                     
                     // Add blink animation
                     kanjiElement.classList.add('kanji-blink');
                     
-                    // After blinking, show meaning and add to list
                     setTimeout(() => {
                         kanjiElement.remove();
                         showMeaning(currentKanji);
                         addToMyList(currentKanji);
                         
-                        // Continue with next kanji after delay
                         setTimeout(() => {
                             currentIndex++;
+                            isProcessingKanji = false; // Reset flag
                             dropNextKanji();
                         }, 2000);
-                    }, 1000); // Wait for blink animation to complete
+                    }, 1000);
                 }
             }
             break;
@@ -429,15 +443,16 @@ function removeFromMyList(kanji) {
 }
 
 function toggleMyList() {
+    const historySection = document.getElementById('history-section');
+    const vocabSection = document.getElementById('vocab-section');
     const myListSection = document.getElementById('mylist-section');
-    const currentDisplay = myListSection.style.display;
     
-    // Hide other sections
-    document.getElementById('history-section').style.display = 'none';
-    document.getElementById('vocab-section').style.display = 'none';
+    // Hide all sections
+    historySection.style.display = 'none';
+    vocabSection.style.display = 'none';
     
     // Toggle mylist section
-    myListSection.style.display = currentDisplay === 'none' ? 'block' : 'none';
+    myListSection.style.display = myListSection.style.display === 'none' ? 'block' : 'none';
     
     adjustKanjiDisplayArea();
 }

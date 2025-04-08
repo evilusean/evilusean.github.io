@@ -150,6 +150,22 @@ h1 {
     }
 }
 
+@keyframes blinkRedGreen {
+    0% { color: #0f0; }
+    20% { color: #f00; }
+    40% { color: #0f0; }
+    60% { color: #f00; }
+    80% { color: #0f0; }
+    100% { color: #f00; }
+}
+
+.kanji-blink {
+    animation: blinkRedGreen 1s linear;
+    animation-fill-mode: forwards;
+    animation-iteration-count: 1;
+    animation-play-state: running !important;
+}
+
 #meaning-display {
     position: fixed;
     top: 0;
