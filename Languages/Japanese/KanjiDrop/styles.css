@@ -89,6 +89,17 @@ h1 {
     cursor: pointer;
 }
 
+#previous-button, #next-button {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    background-color: rgba(0, 255, 0, 0.2);
+    color: #0f0;
+    border: 1px solid #0f0;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
 #kanji-display {
     position: relative;
     flex-grow: 1;
@@ -153,6 +164,10 @@ h1 {
 }
 
 .meaning-container {
+    position: fixed;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
     text-align: center;
     background-color: rgba(0, 0, 0, 0.7);
     padding: 20px;
@@ -199,6 +214,19 @@ h1 {
     width: 100%;
 }
 
+#mylist-section {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40%;
+    background-color: rgba(0, 0, 0, 0.9);
+    border-top: 1px solid #0f0;
+    z-index: 30;
+    overflow-y: auto;
+    display: none;
+}
+
 #history-list, #vocab-list {
     padding: 10px;
     max-height: 100%;
@@ -210,6 +238,28 @@ h1 {
     justify-content: space-between;
     padding: 5px 10px;
     border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+}
+
+.mylist-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 10px;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+}
+
+.remove-button {
+    background-color: #f00;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
+.wrong-count {
+    color: #f00;
+    margin: 0 10px;
 }
 
 .history-kanji, .vocab-kanji {

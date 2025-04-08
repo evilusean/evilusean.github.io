@@ -8,6 +8,7 @@ let defaultStartRange = 1;
 let defaultEndRange = 20;
 let trailElements = [];
 let animationTimer = null;
+let myList = new Map(); // Map to store kanji and wrong count
 
 // Fetch the JSON data when the page loads
 document.addEventListener('DOMContentLoaded', async () => {
@@ -27,10 +28,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('start-button').addEventListener('click', startGame);
         document.getElementById('history-toggle').addEventListener('click', toggleHistory);
         document.getElementById('vocab-toggle').addEventListener('click', toggleVocab);
+        document.getElementById('previous-button').addEventListener('click', showPreviousKanji);
+        document.getElementById('next-button').addEventListener('click', showNextKanji);
+        document.getElementById('mylist-toggle').addEventListener('click', toggleMyList);
+        
+        // Add keyboard event listeners
+        document.addEventListener('keydown', handleKeyPress);
         
         // Hide sections initially
         document.getElementById('history-section').style.display = 'none';
         document.getElementById('vocab-section').style.display = 'none';
+        document.getElementById('mylist-section').style.display = 'none';
     } catch (error) {
         console.error('Error loading kanji data:', error);
         alert('Failed to load kanji data. Please check your connection and try again.');
@@ -283,8 +291,9 @@ function adjustKanjiDisplayArea() {
     const kanjiDisplay = document.getElementById('kanji-display');
     const historyVisible = document.getElementById('history-section').style.display === 'block';
     const vocabVisible = document.getElementById('vocab-section').style.display === 'block';
+    const myListVisible = document.getElementById('mylist-section').style.display === 'block';
     
-    if (historyVisible || vocabVisible) {
+    if (historyVisible || vocabVisible || myListVisible) {
         kanjiDisplay.style.height = '60%'; // Adjust height to 60% of container
         kanjiDisplay.style.width = '100%'; // Keep full width
     } else {
@@ -318,3 +327,93 @@ function ensureAnimationRunning() {
 
 // Start the periodic check
 setTimeout(ensureAnimationRunning, 10000);
+
+function handleKeyPress(event) {
+    switch(event.key) {
+        case 'ArrowLeft':
+            showPreviousKanji();
+            break;
+        case 'ArrowRight':
+            showNextKanji();
+            break;
+        case 'Enter':
+            startGame();
+            break;
+        case ' ': // Space bar
+            event.preventDefault();
+            addToMyList(selectedKanji[currentIndex]);
+            break;
+    }
+}
+
+function showPreviousKanji() {
+    if (currentIndex > 0) {
+        currentIndex--;
+        clearDisplay();
+        dropNextKanji();
+    }
+}
+
+function showNextKanji() {
+    currentIndex++;
+    if (currentIndex >= selectedKanji.length) {
+        currentIndex = 0;
+    }
+    clearDisplay();
+    dropNextKanji();
+}
+
+function clearDisplay() {
+    const kanjiDisplay = document.getElementById('kanji-display');
+    const meaningDisplay = document.getElementById('meaning-display');
+    kanjiDisplay.innerHTML = '';
+    meaningDisplay.innerHTML = '';
+}
+
+function addToMyList(kanjiObj) {
+    if (!kanjiObj) return;
+    
+    const count = myList.get(kanjiObj.kanji)?.count || 0;
+    myList.set(kanjiObj.kanji, {
+        meaning: kanjiObj.meaning,
+        count: count + 1
+    });
+    
+    updateMyListDisplay();
+}
+
+function updateMyListDisplay() {
+    const myListElement = document.getElementById('mylist-list');
+    myListElement.innerHTML = '';
+    
+    [...myList.entries()].forEach(([kanji, data]) => {
+        const listItem = document.createElement('div');
+        listItem.className = 'mylist-item';
+        listItem.innerHTML = `
+            <span class="vocab-kanji">${kanji}</span>
+            <span class="vocab-meaning">${data.meaning}</span>
+            <span class="wrong-count">× ${data.count}</span>
+            <button class="remove-button" onclick="removeFromMyList('${kanji}')">Remove</button>
+        `;
+        myListElement.appendChild(listItem);
+    });
+}
+
+function removeFromMyList(kanji) {
+    myList.delete(kanji);
+    updateMyListDisplay();
+}
+
+function toggleMyList() {
+    const myListSection = document.getElementById('mylist-section');
+    const currentDisplay = myListSection.style.display;
+    
+    // Hide other sections
+    document.getElementById('history-section').style.display = 'none';
+    document.getElementById('vocab-section').style.display = 'none';
+    
+    // Toggle mylist section
+    myListSection.style.display = currentDisplay === 'none' ? 'block' : 'none';
+    
+    adjustKanjiDisplayArea();
+}
