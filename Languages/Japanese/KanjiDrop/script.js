@@ -381,6 +381,18 @@ function handleKeyPress(event) {
         case 'Enter':
             startGame();
             break;
+        case 'h': // Toggle History
+        case 'H':
+            toggleHistory();
+            break;
+        case 'v': // Toggle Vocab List
+        case 'V':
+            toggleVocab();
+            break;
+        case 'l': // Toggle My List
+        case 'L':
+            toggleMyList();
+            break;
     }
 }
 

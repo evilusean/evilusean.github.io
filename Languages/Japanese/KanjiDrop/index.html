@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <!--TO DO:
-    Fix the blinking kanji when 'Space' is presssed and added to 'My List' - it TP's to the top, still works though, It's not a bug, It's a feature
+
     Make the remove button unselectable, so you can just copy and paste your list of kanji for review instead of having [REMOVE] on every line
     Also make it so that 'My List' Displays the highest count kanji first, so you know what to practice/study - reverse count order? ah ah ah.
     Add new keypress listeners to open up lists, if pressed twice, they should open, then close :
@@ -27,15 +27,15 @@
                 <span>-</span>
                 <input type="number" id="end-range" placeholder="End (20)" value="20">
                 <span class="range-note">Range: 1-2200</span>
-                <button id="previous-button">Previous</button>
-                <button id="start-button">Start</button>
-                <button id="next-button">Next</button>
+                <button id="previous-button">Previous (&#8592;)</button>
+                <button id="start-button">Start (Enter)</button>
+                <button id="next-button">Next (&#8594;)</button>
             </div>
             <h1>Kanji Drop</h1>
             <div class="buttons-row">
-                <button id="history-toggle">History</button>
-                <button id="vocab-toggle">Vocab List</button>
-                <button id="mylist-toggle">My List</button>
+                <button id="history-toggle">(H) History</button>
+                <button id="vocab-toggle">(V) Vocab List</button>
+                <button id="mylist-toggle">(L) My List (Space)</button>
             </div>
         </div>
         
