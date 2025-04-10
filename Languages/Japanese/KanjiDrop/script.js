@@ -10,6 +10,9 @@ let trailElements = [];
 let animationTimer = null;
 let myList = new Map(); // Map to store kanji and wrong count
 let isProcessingKanji = false; // Add this with other global variables at the top
+let kanjiSize = 3.0; // Default size in rem
+const MIN_SIZE = 2.0;
+const MAX_SIZE = 12.0;
 
 // Fetch the JSON data when the page loads
 document.addEventListener('DOMContentLoaded', async () => {
@@ -32,6 +35,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('previous-button').addEventListener('click', showPreviousKanji);
         document.getElementById('next-button').addEventListener('click', showNextKanji);
         document.getElementById('mylist-toggle').addEventListener('click', toggleMyList);
+        document.getElementById('size-increase').addEventListener('click', () => {
+            if (kanjiSize < MAX_SIZE) {
+                kanjiSize += 0.5;
+                updateKanjiSize();
+            }
+        });
+        document.getElementById('size-decrease').addEventListener('click', () => {
+            if (kanjiSize > MIN_SIZE) {
+                kanjiSize -= 0.5;
+                updateKanjiSize();
+            }
+        });
         
         // Add keyboard event listeners
         document.addEventListener('keydown', handleKeyPress);
@@ -115,6 +130,7 @@ function dropNextKanji() {
     const kanjiElement = document.createElement('div');
     kanjiElement.className = 'kanji';
     kanjiElement.textContent = kanjiObj.kanji;
+    kanjiElement.style.fontSize = `${kanjiSize}rem`;
     
     // Randomize horizontal position
     const randomX = Math.random() * 80 + 10; // Between 10% and 90% of the screen width
@@ -337,6 +353,19 @@ function ensureAnimationRunning() {
 setTimeout(ensureAnimationRunning, 10000);
 
 function handleKeyPress(event) {
+    if (event.key === '+' || event.key === '=') {
+        event.preventDefault();
+        if (kanjiSize < MAX_SIZE) {
+            kanjiSize += 0.5;
+            updateKanjiSize();
+        }
+    } else if (event.key === '-' || event.key === '_') {
+        event.preventDefault();
+        if (kanjiSize > MIN_SIZE) {
+            kanjiSize -= 0.5;
+            updateKanjiSize();
+        }
+    }
     switch(event.key) {
         case ' ': // Space bar
             event.preventDefault();
@@ -471,4 +500,11 @@ function toggleMyList() {
     myListSection.style.display = myListSection.style.display === 'none' ? 'block' : 'none';
     
     adjustKanjiDisplayArea();
+}
+
+function updateKanjiSize() {
+    const root = document.documentElement;
+    root.style.setProperty('--kanji-size', `${kanjiSize}rem`);
+    // Update the size display
+    document.getElementById('current-size').textContent = kanjiSize.toFixed(1);
 }

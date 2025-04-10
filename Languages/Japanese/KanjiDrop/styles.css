@@ -9,6 +9,10 @@
     box-sizing: border-box;
 }
 
+:root {
+    --kanji-size: 3rem;
+}
+
 body {
     font-family: 'Noto Sans JP', Arial, sans-serif;
     background-color: #000;
@@ -109,10 +113,10 @@ h1 {
 
 .kanji {
     position: absolute;
-    font-size: 2.5rem;
     color: #0f0;
-    animation: drop 5s linear forwards;
-    z-index: 5;
+    font-size: var(--kanji-size);
+    animation: drop 4s linear;
+    user-select: none;
 }
 
 .kanji-trail {
@@ -346,6 +350,40 @@ h1 {
     -moz-user-select: text;
     -ms-user-select: text;
     font-size: 1.5rem; /* Match vocab list size */
+}
+
+#size-increase, #size-decrease {
+    background-color: #000;
+    color: #0f0;
+    border: 1px solid #0f0;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    min-width: 40px;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+.size-display {
+    color: #0f0;
+    font-size: 1.2rem;
+    padding: 0 10px;
+    min-width: 40px;
+    text-align: center;
+    display: inline-block;
+}
+
+#size-increase:hover, #size-decrease:hover {
+    background-color: #0f0;
+    color: #000;
+}
+
+.size-note {
+    color: #0f0;
+    font-size: 1.2rem;
+    margin-left: 15px;
+    margin-right: 5px;
 }
 
 /* Responsive adjustments */
