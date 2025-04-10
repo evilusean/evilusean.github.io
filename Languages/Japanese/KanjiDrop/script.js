@@ -340,35 +340,27 @@ function handleKeyPress(event) {
     switch(event.key) {
         case ' ': // Space bar
             event.preventDefault();
-            // Check if we're already processing a kanji
             if (isProcessingKanji) return;
             
             const currentKanji = selectedKanji[currentIndex];
             if (currentKanji) {
                 const kanjiElement = document.querySelector('.kanji');
                 if (kanjiElement) {
-                    isProcessingKanji = true; // Set flag
-                    
-                    // Force stop the dropping animation
+                    isProcessingKanji = true;
                     kanjiElement.style.animationPlayState = 'paused';
-                    
-                    // Remove any existing animation classes
                     kanjiElement.classList.remove('kanji-blink');
-                    
-                    // Force a reflow to ensure animation restarts
                     void kanjiElement.offsetWidth;
-                    
-                    // Add blink animation
                     kanjiElement.classList.add('kanji-blink');
                     
                     setTimeout(() => {
                         kanjiElement.remove();
                         showMeaning(currentKanji);
                         addToMyList(currentKanji);
+                        addToHistory(currentKanji); // Add to history when space is pressed
                         
                         setTimeout(() => {
                             currentIndex++;
-                            isProcessingKanji = false; // Reset flag
+                            isProcessingKanji = false;
                             dropNextKanji();
                         }, 2000);
                     }, 1000);
@@ -440,15 +432,22 @@ function updateMyListDisplay() {
     const myListElement = document.getElementById('mylist-list');
     myListElement.innerHTML = '';
     
-    // Sort entries by count in descending order
-    const sortedEntries = [...myList.entries()].sort((a, b) => b[1].count - a[1].count);
+    // Sort entries by count (descending) and then by index (ascending)
+    const sortedEntries = [...myList.entries()].sort((a, b) => {
+        if (b[1].count !== a[1].count) {
+            return b[1].count - a[1].count; // Sort by count first
+        }
+        return a[1].index - b[1].index; // If counts are equal, sort by index
+    });
     
     sortedEntries.forEach(([kanji, data]) => {
         const listItem = document.createElement('div');
         listItem.className = 'mylist-item';
         listItem.innerHTML = `
-            <span class="mylist-index">${data.index}</span>
-            <span class="vocab-kanji">${kanji}</span>
+            <div class="left-group">
+                <span class="mylist-index">${data.index}</span>
+                <span class="vocab-kanji">${kanji}</span>
+            </div>
             <span class="vocab-meaning">${data.meaning}</span>
             <span class="wrong-count">× ${data.count}</span>
             <button class="remove-button" onclick="removeFromMyList('${kanji}')">Remove</button>
