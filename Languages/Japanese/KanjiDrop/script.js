@@ -247,15 +247,18 @@ function populateVocabList(start, end) {
     const vocabListElement = document.getElementById('vocab-list');
     vocabListElement.innerHTML = '';
     
-    // Get all kanji in the selected range
-    const vocabKanji = kanjiData.slice(start, end);
+    const startIndex = Math.max(0, start - 1);
+    const endIndex = Math.min(kanjiData.length, end);
+    const vocabKanji = kanjiData.slice(startIndex, endIndex);
     
-    vocabKanji.forEach(kanji => {
+    vocabKanji.forEach((kanji) => {
         const listItem = document.createElement('div');
         listItem.className = 'vocab-item';
         listItem.innerHTML = `
-            <span class="vocab-index">${kanji.index}</span>
-            <span class="vocab-kanji">${kanji.kanji}</span>
+            <div class="left-group">
+                <span class="vocab-index">${kanji.index}</span>
+                <span class="vocab-kanji">${kanji.kanji}</span>
+            </div>
             <span class="vocab-meaning">${kanji.meaning}</span>
         `;
         vocabListElement.appendChild(listItem);

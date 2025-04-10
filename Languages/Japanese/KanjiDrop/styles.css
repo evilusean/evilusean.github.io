@@ -251,32 +251,38 @@ h1 {
 
 .history-item, .vocab-item, .mylist-item {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    padding: 5px 10px;
+    padding: 5px 20px;
     border-bottom: 1px solid rgba(0, 255, 0, 0.3);
     width: 100%;
 }
 
+/* Left group for index and kanji */
+.left-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;  /* Small gap between index and kanji */
+}
+
 .vocab-index, .mylist-index {
     color: #0f0;
-    margin-right: 15px;
-    min-width: 40px;
+    width: 40px;  /* Fixed width for 4 characters */
     text-align: right;
-    display: inline-block;
 }
 
 .history-kanji, .vocab-kanji {
     font-size: 1.5rem;
     color: #0f0;
     min-width: 40px;
-    text-align: center;
-    margin: 0 15px;
+    text-align: left;
 }
 
 .history-meaning, .vocab-meaning {
     color: #0f0;
-    flex-grow: 1;
-    padding-left: 15px;
+    text-align: right;
+    padding-right: 20px;
+    min-width: 150px;
 }
 
 .mylist-item {
@@ -304,20 +310,6 @@ h1 {
     margin: 0 15px;
     min-width: 30px;
     text-align: right;
-}
-
-.history-kanji, .vocab-kanji {
-    font-size: 1.5rem;
-    color: #0f0;
-    min-width: 40px;
-    text-align: center;
-    margin: 0 15px;
-}
-
-.history-meaning, .vocab-meaning {
-    color: #0f0;
-    flex-grow: 1;
-    padding-left: 15px;
 }
 
 /* Responsive adjustments */
