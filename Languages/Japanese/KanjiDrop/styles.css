@@ -269,6 +269,7 @@ h1 {
     color: #0f0;
     width: 40px;  /* Fixed width for 4 characters */
     text-align: right;
+    margin-right: 1em; /* Add space after index */
 }
 
 .history-kanji, .vocab-kanji {
@@ -276,6 +277,7 @@ h1 {
     color: #0f0;
     min-width: 40px;
     text-align: left;
+    margin-right: 1em; /* Add space after kanji */
 }
 
 .history-meaning, .vocab-meaning {
@@ -289,8 +291,9 @@ h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 5px 10px;
+    padding: 5px 20px;
     border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+    width: 100%;
 }
 
 .remove-button {
@@ -303,6 +306,11 @@ h1 {
     margin-left: 10px;
     min-width: 70px;
     text-align: center;
+    pointer-events: auto;
+    user-select: none;
+    -webkit-user-select: none; /* Safari support */
+    -moz-user-select: none;    /* Firefox support */
+    -ms-user-select: none;     /* IE/Edge support */
 }
 
 .wrong-count {
@@ -310,6 +318,34 @@ h1 {
     margin: 0 15px;
     min-width: 30px;
     text-align: right;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.right-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Add selectable class for kanji and meanings */
+.vocab-kanji, .vocab-meaning, .mylist-index {
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+}
+
+.copy-text {
+    display: inline-block;
+    white-space: pre;  /* Changed from nowrap to pre to preserve tabs */
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    font-size: 1.5rem; /* Match vocab list size */
 }
 
 /* Responsive adjustments */

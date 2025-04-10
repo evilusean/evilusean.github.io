@@ -432,25 +432,22 @@ function updateMyListDisplay() {
     const myListElement = document.getElementById('mylist-list');
     myListElement.innerHTML = '';
     
-    // Sort entries by count (descending) and then by index (ascending)
     const sortedEntries = [...myList.entries()].sort((a, b) => {
         if (b[1].count !== a[1].count) {
-            return b[1].count - a[1].count; // Sort by count first
+            return b[1].count - a[1].count;
         }
-        return a[1].index - b[1].index; // If counts are equal, sort by index
+        return a[1].index - b[1].index;
     });
     
     sortedEntries.forEach(([kanji, data]) => {
         const listItem = document.createElement('div');
         listItem.className = 'mylist-item';
         listItem.innerHTML = `
-            <div class="left-group">
-                <span class="mylist-index">${data.index}</span>
-                <span class="vocab-kanji">${kanji}</span>
+            <span class="copy-text">${data.index}\t${kanji}\t${data.meaning}</span>
+            <div class="right-group">
+                <span class="wrong-count">× ${data.count}</span>
+                <button class="remove-button" onclick="removeFromMyList('${kanji}')">Remove</button>
             </div>
-            <span class="vocab-meaning">${data.meaning}</span>
-            <span class="wrong-count">× ${data.count}</span>
-            <button class="remove-button" onclick="removeFromMyList('${kanji}')">Remove</button>
         `;
         myListElement.appendChild(listItem);
     });
