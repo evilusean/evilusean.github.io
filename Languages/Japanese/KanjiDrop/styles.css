@@ -264,6 +264,20 @@ h1 {
     border-bottom: 1px solid rgba(0, 255, 0, 0.3);
 }
 
+.vocab-index, .mylist-index {
+    color: #0f0;
+    margin-right: 15px;
+    min-width: 30px;
+    text-align: right;
+}
+
+.vocab-item, .mylist-item {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+}
+
 .remove-button {
     background-color: #f00;
     color: white;

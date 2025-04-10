@@ -254,10 +254,10 @@ function populateVocabList(start, end) {
         const listItem = document.createElement('div');
         listItem.className = 'vocab-item';
         listItem.innerHTML = `
+            <span class="vocab-index">${kanji.index}</span>
             <span class="vocab-kanji">${kanji.kanji}</span>
             <span class="vocab-meaning">${kanji.meaning}</span>
         `;
-        
         vocabListElement.appendChild(listItem);
     });
 }
@@ -425,6 +425,7 @@ function addToMyList(kanjiObj) {
     
     const count = myList.get(kanjiObj.kanji)?.count || 0;
     myList.set(kanjiObj.kanji, {
+        index: kanjiObj.index,
         meaning: kanjiObj.meaning,
         count: count + 1
     });
@@ -436,10 +437,14 @@ function updateMyListDisplay() {
     const myListElement = document.getElementById('mylist-list');
     myListElement.innerHTML = '';
     
-    [...myList.entries()].forEach(([kanji, data]) => {
+    // Sort entries by count in descending order
+    const sortedEntries = [...myList.entries()].sort((a, b) => b[1].count - a[1].count);
+    
+    sortedEntries.forEach(([kanji, data]) => {
         const listItem = document.createElement('div');
         listItem.className = 'mylist-item';
         listItem.innerHTML = `
+            <span class="mylist-index">${data.index}</span>
             <span class="vocab-kanji">${kanji}</span>
             <span class="vocab-meaning">${data.meaning}</span>
             <span class="wrong-count">× ${data.count}</span>
