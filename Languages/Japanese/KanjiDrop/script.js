@@ -18,6 +18,30 @@ const MAX_SIZE = 12.0;
 let lastTap = 0;
 let touchTimeout;
 
+// Add this code to keep the screen on for mobile devices
+let wakeLock = null;
+
+async function requestWakeLock() {
+    try {
+        if ('wakeLock' in navigator) {
+            wakeLock = await navigator.wakeLock.request('screen');
+            
+            // Listen for visibility changes to re-acquire the wake lock if needed
+            document.addEventListener('visibilitychange', async () => {
+                if (document.visibilityState === 'visible' && wakeLock === null) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                }
+            });
+            
+            console.log('Wake Lock is active');
+        } else {
+            console.log('Wake Lock API not supported');
+        }
+    } catch (err) {
+        console.error(`Error requesting wake lock: ${err.name}, ${err.message}`);
+    }
+}
+
 // Fetch the JSON data when the page loads
 document.addEventListener('DOMContentLoaded', async () => {
     try {
@@ -109,6 +133,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Add this line to initialize double tap detection
     setupMobileDoubleTap();
+
+    // Request wake lock on initial load
+    requestWakeLock();
 });
 
 function startGame() {
@@ -145,6 +172,9 @@ function startGame() {
     
     // Start dropping kanji
     dropNextKanji();
+
+    // Request wake lock when the game starts
+    requestWakeLock();
 }
 
 function shuffleArray(array) {
