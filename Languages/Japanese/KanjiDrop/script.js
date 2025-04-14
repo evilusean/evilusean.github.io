@@ -59,6 +59,28 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error loading kanji data:', error);
         alert('Failed to load kanji data. Please check your connection and try again.');
     }
+
+    // Mobile menu handling
+    const menuToggle = document.getElementById('menu-toggle');
+    const controlsContainer = document.querySelector('.controls-container');
+    
+    menuToggle.addEventListener('click', () => {
+        controlsContainer.classList.toggle('active');
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!controlsContainer.contains(e.target) && 
+            !menuToggle.contains(e.target) && 
+            controlsContainer.classList.contains('active')) {
+            controlsContainer.classList.remove('active');
+        }
+    });
+
+    // Screen orientation handling
+    screen.orientation?.addEventListener('change', () => {
+        adjustKanjiDisplayArea();
+    });
 });
 
 function startGame() {
