@@ -28,28 +28,36 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
     <div id="game-container">
+        <div class="mobile-nav">
+            <button id="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
         <div class="controls-container">
-            <div class="range-inputs">
-                <input type="number" id="start-range" placeholder="Start (1)" value="1">
-                <span>-</span>
-                <input type="number" id="end-range" placeholder="End (20)" value="20">
-                <span class="range-note">Range: 1-2200</span>
-                <button id="previous-button">Previous (&#8592;)</button>
-                <button id="start-button">Start (Enter)</button>
-                <button id="next-button">Next (&#8594;)</button>
-            </div>
-            <h1>Kanji Drop</h1>
-            <div class="buttons-row">
-                <span class="size-note">Size: </span>
-                <button id="size-decrease">-</button>
-                <span id="current-size" class="size-display">3.0</span>
-                <button id="size-increase">+</button>
-                <button id="history-toggle">(H) History</button>
-                <button id="vocab-toggle">(V) Vocab List</button>
-                <button id="mylist-toggle">(L) My List (Space)</button>
+            <div class="menu-content">
+                <div class="range-inputs">
+                    <input type="number" id="start-range" placeholder="Start (1)" value="1">
+                    <span>-</span>
+                    <input type="number" id="end-range" placeholder="End (20)" value="20">
+                    <span class="range-note">Range: 1-2200</span>
+                    <button id="previous-button">Previous (&#8592;)</button>
+                    <button id="start-button">Start (Enter)</button>
+                    <button id="next-button">Next (&#8594;)</button>
+                </div>
+                <h1 class="desktop-only">Kanji Drop</h1>
+                <div class="buttons-row">
+                    <span class="size-note">Size: </span>
+                    <button id="size-decrease">-</button>
+                    <span id="current-size" class="size-display">3.0</span>
+                    <button id="size-increase">+</button>
+                    <button id="history-toggle">(H) History</button>
+                    <button id="vocab-toggle">(V) Vocab List</button>
+                    <button id="mylist-toggle">(L) My List (Space)</button>
+                </div>
             </div>
         </div>
         
