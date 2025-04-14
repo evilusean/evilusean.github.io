@@ -225,7 +225,7 @@ h1 {
 
 .meaning-container {
     position: fixed;
-    top: 120px; /* Increased from 100px to move below menus */
+    top: 120px;
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
@@ -252,7 +252,7 @@ h1 {
     color: #f00;
 }
 
-#history-section, #vocab-section {
+#history-section, #vocab-section, #mylist-section {
     position: fixed;
     bottom: 0;
     left: 0;
@@ -265,30 +265,7 @@ h1 {
     display: none;
 }
 
-#history-section {
-    left: 0;
-    width: 100%;
-}
-
-#vocab-section {
-    left: 0;
-    width: 100%;
-}
-
-#mylist-section {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 40%;
-    background-color: rgba(0, 0, 0, 0.9);
-    border-top: 1px solid #0f0;
-    z-index: 30;
-    overflow-y: auto;
-    display: none;
-}
-
-#history-list, #vocab-list {
+#history-list, #vocab-list, #mylist-list {
     padding: 10px;
     max-height: 100%;
     overflow-y: auto;
@@ -303,18 +280,17 @@ h1 {
     width: 100%;
 }
 
-/* Left group for index and kanji */
 .left-group {
     display: flex;
     align-items: center;
-    gap: 10px;  /* Small gap between index and kanji */
+    gap: 10px;
 }
 
 .vocab-index, .mylist-index {
     color: #0f0;
-    width: 40px;  /* Fixed width for 4 characters */
+    width: 40px;
     text-align: right;
-    margin-right: 1em; /* Add space after index */
+    margin-right: 1em;
 }
 
 .history-kanji, .vocab-kanji {
@@ -322,7 +298,7 @@ h1 {
     color: #0f0;
     min-width: 40px;
     text-align: left;
-    margin-right: 1em; /* Add space after kanji */
+    margin-right: 1em;
 }
 
 .history-meaning, .vocab-meaning {
@@ -332,13 +308,18 @@ h1 {
     min-width: 150px;
 }
 
-.mylist-item {
+.wrong-count {
+    color: #f00;
+    margin: 0 15px;
+    min-width: 30px;
+    text-align: right;
+    user-select: none;
+}
+
+.right-group {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 5px 20px;
-    border-bottom: 1px solid rgba(0, 255, 0, 0.3);
-    width: 100%;
+    gap: 10px;
 }
 
 .remove-button {
@@ -353,44 +334,13 @@ h1 {
     text-align: center;
     pointer-events: auto;
     user-select: none;
-    -webkit-user-select: none; /* Safari support */
-    -moz-user-select: none;    /* Firefox support */
-    -ms-user-select: none;     /* IE/Edge support */
-}
-
-.wrong-count {
-    color: #f00;
-    margin: 0 15px;
-    min-width: 30px;
-    text-align: right;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-}
-
-.right-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-/* Add selectable class for kanji and meanings */
-.vocab-kanji, .vocab-meaning, .mylist-index {
-    user-select: text;
-    -webkit-user-select: text;
-    -moz-user-select: text;
-    -ms-user-select: text;
 }
 
 .copy-text {
     display: inline-block;
-    white-space: pre;  /* Changed from nowrap to pre to preserve tabs */
+    white-space: pre;
     user-select: text;
-    -webkit-user-select: text;
-    -moz-user-select: text;
-    -ms-user-select: text;
-    font-size: 1.5rem; /* Match vocab list size */
+    font-size: 1.5rem;
 }
 
 #size-increase, #size-decrease {
@@ -415,11 +365,6 @@ h1 {
     display: inline-block;
 }
 
-#size-increase:hover, #size-decrease:hover {
-    background-color: #0f0;
-    color: #000;
-}
-
 .size-note {
     color: #0f0;
     font-size: 1.2rem;
@@ -427,661 +372,314 @@ h1 {
     margin-right: 5px;
 }
 
-/* Mobile menu styles */
-.mobile-nav {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    padding: 1rem;
-    z-index: 1000;
-}
-
-.menu-content {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-}
-
-#menu-toggle {
-    background: none;
-    border: none;
-    color: #0f0;
-    font-size: 2rem;
-    cursor: pointer;
-}
-
-/* Responsive adjustments */
+/* Mobile styles */
 @media (max-width: 768px) {
-    html, body {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-    }
-
-    body {
-        position: fixed;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-    }
-
-    h1 {
-        font-size: 1.5rem;
-    }
-    
-    .controls-container {
-        flex-direction: column;
-        align-items: flex-start;
-        max-height: none;
-        padding: 10px;
-    }
-    
-    .range-inputs {
-        margin-bottom: 10px;
-        width: 100%;
-    }
-    
-    .buttons-row {
-        width: 100%;
-        justify-content: space-between;
-    }
-    
-    .buttons-row button {
-        width: 100%;
-    }
-    
-    .kanji {
-        font-size: 2rem;
-    }
-    
-    .kanji-large {
-        font-size: 3.5rem;
-    }
-    
-    .meaning-text {
-        font-size: 1.5rem;
-    }
-    
-    #history-section, #vocab-section {
-        width: 100%;
-        height: 50%;
-    }
-    
-    #history-section {
-        bottom: 50%;
-        border-right: none;
-        border-bottom: 1px solid #0f0;
-    }
-
-    .mobile-nav {
-        display: block;
-        position: fixed;
-        top: 10px;
-        right: 10px;
-        z-index: 1000;
-    }
-
-    #menu-toggle {
-        background: none;
-        border: 1px solid #0f0;
-        color: #0f0;
-        font-size: 1.5rem;
-        padding: 5px 10px;
-        cursor: pointer;
-    }
-
-    .desktop-only {
+    /* Hide title on mobile */
+    .title {
         display: none;
     }
-
+    
+    /* Fix container positioning to avoid URL bar */
     .controls-container {
         position: fixed;
-        left: -100%;
-        top: 0;
-        width: 80%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.9);
-        transition: left 0.3s ease;
-        padding: 1rem;
-        z-index: 999;
-    }
-
-    .controls-container.active {
+        top: 20px; /* Move down to avoid URL bar */
         left: 0;
+        right: 0;
+        padding: 10px;
+        z-index: 100;
+        background: rgba(0, 0, 0, 0.9);
     }
-
-    .buttons-row {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .buttons-row button {
-        margin: 0.5rem 0;
-    }
-
-    #game-container {
-        padding-top: 60px;
-    }
-
-    .menu-content {
+    
+    /* Reposition top controls for mobile */
+    .top-controls {
+        display: flex;
+        align-items: center;
+        width: 100%;
         justify-content: flex-start;
-        padding: 0 10px;
     }
-
-    .hamburger-menu {
-        position: relative;
-    }
-
+    
+    /* Fix hamburger menu placement */
     #menu-toggle {
-        background: none;
-        border: 1px solid #0f0;
-        color: #0f0;
-        font-size: 1.5rem;
+        order: 1;
+        font-size: 24px;
         padding: 5px 10px;
         margin-right: 10px;
     }
-
-    .dropdown-content {
-        display: none;
-        position: fixed;
-        top: 60px;
-        left: 0;
-        width: 200px;
-        height: calc(100% - 60px);
-        background: rgba(0, 0, 0, 0.95);
-        border-right: 1px solid #0f0;
-        padding: 15px;
-        z-index: 1000;
-    }
-
-    .dropdown-content.active {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .range-note {
-        display: none;
-    }
-
-    /* Force landscape by default */
-    @media (orientation: portrait) {
-        body {
-            transform: rotate(90deg);
-            transform-origin: left top;
-            width: 100vh;
-            height: 100vw;
-            position: absolute;
-            top: 100%;
-            left: 0;
-        }
-    }
-
-    /* Hide desktop elements on mobile */
-    .desktop-only,
-    .range-note,
-    .size-note {
-        display: none;
-    }
-
-    /* Keep main controls visible */
+    
+    /* Range inputs with menu button */
     .range-inputs {
+        order: 2;
         display: flex;
         align-items: center;
-        gap: 10px;
+        flex-wrap: wrap;
+        gap: 5px;
+        white-space: nowrap;
+        width: calc(100% - 50px); /* Allow space for hamburger */
+        justify-content: flex-start;
     }
-
-    /* Hide secondary controls in hamburger */
-    .buttons-row {
-        display: none;
+    
+    /* Center the navigation buttons */
+    .navigation-buttons {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 5px;
+        width: 100%;
+        margin-top: 10px;
     }
-
-    .controls-container.active .buttons-row {
-        display: flex;
-        flex-direction: column;
+    
+    /* Make sure buttons are properly sized and visible */
+    #previous-button, #start-button, #next-button {
+        flex: 1;
+        min-width: 80px;
+        max-width: 33%;
+        margin: 0 2px;
+        padding: 8px 5px;
+        font-size: 14px;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* Fix dropdown positioning to be visible on screen */
+    .dropdown-content {
         position: fixed;
-        top: 60px;
+        top: 120px; /* Position below the controls */
+        left: 0;
         right: 0;
         background: rgba(0, 0, 0, 0.95);
-        padding: 20px;
-        border-left: 1px solid rgba(0, 255, 0, 0.3);
-        height: calc(100% - 60px);
-        width: 200px;
-    }
-
-    .buttons-row button {
+        border-top: 1px solid #0f0;
+        padding: 15px;
         width: 100%;
-        margin: 5px 0;
+        z-index: 1000;
+        display: none;
     }
-
+    
+    .dropdown-content.active {
+        display: block;
+    }
+    
+    /* Adjust the kanji display to account for controls */
     #kanji-display {
         position: fixed;
-        top: 60px;
+        top: 150px; /* Adjust based on your controls height */
         left: 0;
         right: 0;
         bottom: 0;
+        width: 100%;
+        height: calc(100% - 150px);
     }
+    
+    /* Adjust meaning container */
+    .meaning-container {
+        top: 180px; /* Position below controls */
+    }
+    
+    /* Fix list sections */
+    #history-section, #vocab-section, #mylist-section {
+        height: 50%; /* Taller on mobile */
+    }
+    
+    /* Remove any transformations */
+    html, body {
+        transform: none !important;
+        position: relative !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+    
+    /* Make touch targets bigger */
+    button, input {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Make the hamburger menu always visible */
+    #menu-toggle {
+        display: block;
+    }
+    
+    /* Fix button sizing */
+    .dropdown-content button {
+        width: 100%;
+        margin: 5px 0;
+        padding: 10px;
+    }
+    
+    /* Make sure dropdown is hidden by default on mobile */
+    .dropdown-content {
+        display: none;
+    }
+    
+    .dropdown-content.active {
+        display: block;
+    }
+    
+    /* Make range inputs wrap properly on mobile */
+    .range-inputs {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+    
+    /* Reorganize the top controls for mobile */
+    .menu-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .main-controls {
+        width: 100%;
+    }
+    
+    /* Make hamburger and range inputs on same row */
+    .main-controls {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .top-controls {
+        display: flex;
+        width: 100%;
+        align-items: center;
+    }
+}
 
+/* Desktop styles for larger screens */
+@media (min-width: 769px) {
+    .controls-container {
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 10px 20px;
+        background: rgba(0, 0, 0, 0.8);
+        top: 0;
+        height: auto;
+    }
+    
     .menu-content {
         display: flex;
         flex-direction: row;
         align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        gap: 15px;
+    }
+    
+    /* Center the title on desktop */
+    .title {
+        display: block;
+        color: #0f0;
+        font-size: 2rem;
+        text-align: center;
+        position: absolute;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        pointer-events: none;
+        z-index: 5;
+    }
+    
+    /* Create main control group */
+    .main-controls {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 15px;
+        flex: 1;
+        z-index: 10;
+    }
+    
+    .range-inputs {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 5px;
+        white-space: nowrap;
+        margin-right: 15px;
+    }
+    
+    .navigation-buttons {
+        display: flex;
+        align-items: center;
         justify-content: center;
         gap: 10px;
-        width: auto;
+        margin-right: 15px;
     }
-
-    /* Center the dropdown under navigation buttons */
-    .dropdown-content {
-        position: fixed;
-        top: 60px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 200px;
-        background: rgba(0, 0, 0, 0.95);
-        border: 1px solid #0f0;
-        padding: 15px;
-        z-index: 999;
-    }
-
-    /* Force landscape mode */
-    @media (orientation: portrait) {
-        body {
-            transform: rotate(90deg);
-            transform-origin: left top;
-            position: absolute;
-            width: 100vh;
-            height: 100vw;
-            top: 100%;
-            left: 0;
-        }
-
-        .controls-container {
-            transform: rotate(0deg);
-            width: 100vh;
-        }
-    }
-
-    /* Always visible controls */
-    .range-inputs, .navigation-buttons {
+    
+    /* Style for list buttons */
+    .list-buttons {
         display: flex;
         align-items: center;
         gap: 10px;
-    }
-
-    /* Hide notes on mobile */
-    .range-note, .size-note {
-        display: none;
-    }
-
-    /* Ensure buttons are visible and properly sized */
-    button {
-        min-height: 40px;
-        min-width: 40px;
-        padding: 8px 16px;
-        font-size: 16px;
-    }
-
-    input[type="number"] {
-        min-height: 40px;
-        width: 60px;
-        font-size: 16px;
-    }
-}
-
-@media (max-width: 480px) {
-    h1 {
-        font-size: 1.2rem;
+        z-index: 10;
     }
     
-    .range-inputs input {
-        width: 60px;
-        font-size: 0.9rem;
-    }
-    
-    .buttons-row button {
-        font-size: 0.9rem;
-    }
-    
-    .kanji {
-        font-size: 1.8rem;
-    }
-    
-    .kanji-large {
-        font-size: 3rem;
-    }
-    
-    .meaning-text {
-        font-size: 1.2rem;
-    }
-}
-
-/* Orientation handling */
-@media screen and (orientation: landscape) and (max-width: 968px) {
-    body {
-        height: 100vh;
-        width: 100vw;
-    }
-
-    #kanji-display {
-        height: 100vh;
-    }
-}
-
-/* Desktop layout */
-.controls-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.8);
-    padding: 10px;
-    z-index: 100;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.menu-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    gap: 20px;
-}
-
-.range-inputs {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    white-space: nowrap;
-}
-
-.buttons-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    white-space: nowrap;
-}
-
-h1.desktop-only {
-    margin: 0;
-    padding: 0 20px;
-    white-space: nowrap;
-}
-
-/* Hide mobile nav on desktop */
-.mobile-nav {
-    display: none;
-}
-
-/* Common styles for both desktop and mobile */
-.controls-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.8);
-    padding: 10px;
-    z-index: 100;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.menu-content {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-/* Hamburger menu styles */
-.hamburger-menu {
-    position: relative;
-    margin-right: 20px;
-}
-
-#menu-toggle {
-    background: none;
-    border: 1px solid #0f0;
-    color: #0f0;
-    font-size: 1.5rem;
-    padding: 5px 10px;
-    cursor: pointer;
-}
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background: rgba(0, 0, 0, 0.95);
-    border: 1px solid #0f0;
-    padding: 10px;
-    z-index: 1000;
-    min-width: 200px;
-}
-
-.dropdown-content.active {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-h1 {
-    color: #0f0;
-    margin: 0 20px;
-    white-space: nowrap;
-    font-size: 1.5rem;
-}
-
-.main-controls {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-/* Media queries */
-@media screen and (max-width: 768px) {
-    @media (orientation: portrait) {
-        body {
-            transform: rotate(-90deg);
-            transform-origin: right top;
-            width: 100vh;
-            overflow-x: hidden;
-            position: absolute;
-            top: 100%;
-            right: 100%;
-        }
-    }
-
-    .range-note {
-        display: none;
-    }
-
-    .dropdown-content {
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100vh;
-        width: 200px;
-    }
-}
-
-/* Mobile styles */
-@media screen and (max-width: 768px) {
-    /* Ensure content is visible */
-    #game-container {
-        width: 100%;
-        height: 100%;
-        position: relative;
-    }
-
-    .controls-container {
-        height: 60px;
-        padding: 5px;
-    }
-
-    .menu-content {
-        justify-content: flex-start;
-        padding: 0 10px;
-    }
-
-    #menu-toggle {
-        background: none;
-        border: 1px solid #0f0;
+    .list-buttons button {
+        background-color: rgba(0, 255, 0, 0.2);
         color: #0f0;
-        font-size: 1.5rem;
-        padding: 5px 10px;
+        border: 1px solid #0f0;
+        border-radius: 4px;
+        padding: 8px 12px;
         cursor: pointer;
-        margin-right: 15px;
+        white-space: nowrap;
     }
-
-    .dropdown-content {
-        position: fixed;
-        top: 60px;
-        left: 0;
-        height: calc(100vh - 60px);
-        width: 200px;
-        background: rgba(0, 0, 0, 0.95);
-        border-right: 1px solid #0f0;
-        padding: 15px;
-        display: none;
-        z-index: 1000;
-    }
-
-    .dropdown-content.active {
+    
+    /* Size controls */
+    .size-controls {
         display: flex;
-        flex-direction: column;
-        gap: 10px;
+        align-items: center;
+        white-space: nowrap;
+        gap: 5px;
+        z-index: 10;
     }
-
-    /* Force landscape */
-    @media (orientation: portrait) {
-        body {
-            transform: rotate(90deg);
-            transform-origin: left top;
-            width: 100vh;
-            height: 100vw;
-            position: absolute;
-            top: 100%;
-            left: 0;
-        }
-
-        #game-container {
-            width: 100vh;
-            height: 100vw;
-        }
-    }
-
-    .desktop-only, .range-note {
-        display: none;
-    }
-
-    .range-inputs input {
-        width: 50px;
-    }
-}
-
-/* Base styles */
-.controls-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.8);
-    padding: 10px;
-    z-index: 100;
-}
-
-.menu-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-}
-
-.top-controls {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
-
-.navigation-buttons {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
-
-/* Mobile styles */
-@media screen and (max-width: 768px) {
-    html {
-        /* Force landscape mode */
-        transform: rotate(-90deg);
-        transform-origin: right top;
-        width: 100vh;
-        overflow-x: hidden;
-        position: absolute;
-        top: 100%;
-        right: 100%;
-    }
-
-    body {
-        width: 100vh;
-        height: 100vw;
-    }
-
-    .top-controls {
-        width: 100%;
-        justify-content: center;
-        padding: 10px;
-    }
-
+    
+    /* Hide hamburger menu on desktop */
     #menu-toggle {
-        margin-right: 15px;
-        background: none;
-        border: 1px solid #0f0;
-        color: #0f0;
-        font-size: 1.5rem;
-        padding: 5px 10px;
-    }
-
-    .dropdown-content {
         display: none;
-        position: fixed;
-        top: 60px;
-        left: 0;
-        width: 200px;
-        height: calc(100% - 60px);
-        background: rgba(0, 0, 0, 0.95);
-        border-right: 1px solid #0f0;
-        padding: 15px;
-        z-index: 1000;
     }
-
-    .dropdown-content.active {
-        display: flex;
-        flex-direction: column;
+    
+    /* Show dropdown content directly in header on desktop */
+    .dropdown-content {
+        display: flex !important;
+        position: static;
+        background: transparent;
+        border: none;
+        padding: 0;
+        width: auto;
+        flex-direction: row;
+        align-items: center;
         gap: 10px;
     }
-
-    .range-note {
-        display: none;
+    
+    /* Adjust buttons for desktop */
+    #previous-button, #start-button, #next-button {
+        flex: none;
+        min-width: auto;
+        max-width: none;
+        margin: 0;
+        padding: 8px 15px;
+        font-size: 0.9rem;
     }
-
+    
+    #start-button {
+        background-color: #0f0;
+        color: #000;
+    }
+    
+    /* Reset kanji display position for desktop */
     #kanji-display {
-        position: fixed;
-        top: 60px;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        position: relative;
+        top: auto;
+        left: auto;
+        right: auto;
+        bottom: auto;
+        width: 100%;
+        height: calc(100vh - 70px);
+        margin-top: 70px; /* Space for the header */
+    }
+    
+    /* Adjust meaning container for desktop */
+    .meaning-container {
+        top: 120px;
     }
 }

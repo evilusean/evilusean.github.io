@@ -14,6 +14,10 @@ let kanjiSize = 3.0; // Default size in rem
 const MIN_SIZE = 2.0;
 const MAX_SIZE = 12.0;
 
+// Double tap detection for mobile
+let lastTap = 0;
+let touchTimeout;
+
 // Fetch the JSON data when the page loads
 document.addEventListener('DOMContentLoaded', async () => {
     try {
@@ -102,6 +106,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Also handle resize events
     window.addEventListener('resize', fixMobileDisplay);
+
+    // Add this line to initialize double tap detection
+    setupMobileDoubleTap();
 });
 
 function startGame() {
@@ -567,4 +574,55 @@ function fixMobileDisplay() {
     
     // Adjust for different screen sizes
     adjustKanjiDisplayArea();
+}
+
+function setupMobileDoubleTap() {
+    const kanjiDisplay = document.getElementById('kanji-display');
+    
+    kanjiDisplay.addEventListener('touchend', (event) => {
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTap;
+        
+        clearTimeout(touchTimeout);
+        
+        if (tapLength < 500 && tapLength > 0) {
+            // Double tap detected
+            event.preventDefault();
+            
+            // Similar logic to space bar press
+            if (isProcessingKanji) return;
+            
+            const currentKanji = selectedKanji[currentIndex];
+            if (currentKanji) {
+                const kanjiElement = document.querySelector('.kanji');
+                if (kanjiElement) {
+                    isProcessingKanji = true;
+                    kanjiElement.style.animationPlayState = 'paused';
+                    kanjiElement.classList.remove('kanji-blink');
+                    void kanjiElement.offsetWidth;
+                    kanjiElement.classList.add('kanji-blink');
+                    
+                    setTimeout(() => {
+                        kanjiElement.remove();
+                        showMeaning(currentKanji);
+                        addToMyList(currentKanji);
+                        addToHistory(currentKanji);
+                        
+                        setTimeout(() => {
+                            currentIndex++;
+                            isProcessingKanji = false;
+                            dropNextKanji();
+                        }, 2000);
+                    }, 1000);
+                }
+            }
+        } else {
+            // Single tap - start timer to check for double tap
+            touchTimeout = setTimeout(() => {
+                // Single tap only - do nothing or implement single tap behavior
+            }, 500);
+        }
+        
+        lastTap = currentTime;
+    });
 }
