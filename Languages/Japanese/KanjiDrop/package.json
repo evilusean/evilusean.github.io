@@ -1,0 +1,7 @@
+{
+    "name": "kanjidrop",
+    "version": "1.0.0",
+    "scripts": {
+      "start": "browser-sync start --server --files '*.html, *.css, *.js' --no-notify --port 3000 --no-ui"
+    }
+  }
