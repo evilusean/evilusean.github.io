@@ -81,6 +81,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     screen.orientation?.addEventListener('change', () => {
         adjustKanjiDisplayArea();
     });
+
+    const dropdownContent = document.querySelector('.dropdown-content');
+
+    menuToggle?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdownContent.classList.toggle('active');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!dropdownContent.contains(e.target) && 
+            !menuToggle.contains(e.target)) {
+            dropdownContent.classList.remove('active');
+        }
+    });
 });
 
 function startGame() {

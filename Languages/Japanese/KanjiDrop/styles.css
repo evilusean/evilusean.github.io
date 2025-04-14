@@ -13,13 +13,18 @@
     --kanji-size: 3rem;
 }
 
-body {
-    font-family: 'Noto Sans JP', Arial, sans-serif;
-    background-color: #000;
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
     color: #0f0;
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+body {
     overflow: hidden;
-    height: 100vh;
-    width: 100vw;
 }
 
 #game-container {
@@ -28,6 +33,9 @@ body {
     height: 100vh;
     padding: 20px;
     position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
 h1 {
@@ -37,17 +45,47 @@ h1 {
 }
 
 .controls-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    z-index: 100;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+}
+
+.menu-content {
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    margin-bottom: 20px;
-    max-height: 10vh;
+    gap: 10px;
+    width: 100%;
+}
+
+.top-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.navigation-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
 }
 
 .range-inputs {
+    order: 2;
     display: flex;
     align-items: center;
-    position: relative;
+    gap: 10px;
+    white-space: nowrap;
 }
 
 .range-inputs input {
@@ -81,6 +119,8 @@ h1 {
 .buttons-row {
     display: flex;
     gap: 10px;
+    align-items: center;
+    white-space: nowrap;
 }
 
 .buttons-row button {
@@ -400,6 +440,9 @@ h1 {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
 }
 
 #menu-toggle {
@@ -412,6 +455,13 @@ h1 {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+    body {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
     h1 {
         font-size: 1.5rem;
     }
@@ -420,6 +470,7 @@ h1 {
         flex-direction: column;
         align-items: flex-start;
         max-height: none;
+        padding: 10px;
     }
     
     .range-inputs {
@@ -461,6 +512,19 @@ h1 {
 
     .mobile-nav {
         display: block;
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 1000;
+    }
+
+    #menu-toggle {
+        background: none;
+        border: 1px solid #0f0;
+        color: #0f0;
+        font-size: 1.5rem;
+        padding: 5px 10px;
+        cursor: pointer;
     }
 
     .desktop-only {
@@ -490,6 +554,109 @@ h1 {
 
     .buttons-row button {
         margin: 0.5rem 0;
+    }
+
+    #game-container {
+        padding-top: 60px;
+    }
+
+    .menu-content {
+        justify-content: flex-start;
+        padding: 0 10px;
+    }
+
+    .hamburger-menu {
+        position: relative;
+    }
+
+    #menu-toggle {
+        background: none;
+        border: 1px solid #0f0;
+        color: #0f0;
+        font-size: 1.5rem;
+        padding: 5px 10px;
+        margin-right: 10px;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: fixed;
+        top: 60px;
+        left: 0;
+        width: 200px;
+        height: calc(100% - 60px);
+        background: rgba(0, 0, 0, 0.95);
+        border-right: 1px solid #0f0;
+        padding: 15px;
+        z-index: 1000;
+    }
+
+    .dropdown-content.active {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .range-note {
+        display: none;
+    }
+
+    /* Force landscape by default */
+    @media (orientation: portrait) {
+        body {
+            transform: rotate(90deg);
+            transform-origin: left top;
+            width: 100vh;
+            height: 100vw;
+            position: absolute;
+            top: 100%;
+            left: 0;
+        }
+    }
+
+    /* Hide desktop elements on mobile */
+    .desktop-only,
+    .range-note,
+    .size-note {
+        display: none;
+    }
+
+    /* Keep main controls visible */
+    .range-inputs {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Hide secondary controls in hamburger */
+    .buttons-row {
+        display: none;
+    }
+
+    .controls-container.active .buttons-row {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 60px;
+        right: 0;
+        background: rgba(0, 0, 0, 0.95);
+        padding: 20px;
+        border-left: 1px solid rgba(0, 255, 0, 0.3);
+        height: calc(100% - 60px);
+        width: 200px;
+    }
+
+    .buttons-row button {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    #kanji-display {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        right: 0;
+        bottom: 0;
     }
 }
 
@@ -529,5 +696,317 @@ h1 {
 
     #kanji-display {
         height: 100vh;
+    }
+}
+
+/* Desktop layout */
+.controls-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 20px;
+}
+
+.range-inputs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+}
+
+.buttons-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+}
+
+h1.desktop-only {
+    margin: 0;
+    padding: 0 20px;
+    white-space: nowrap;
+}
+
+/* Hide mobile nav on desktop */
+.mobile-nav {
+    display: none;
+}
+
+/* Common styles for both desktop and mobile */
+.controls-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.menu-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Hamburger menu styles */
+.hamburger-menu {
+    position: relative;
+    margin-right: 20px;
+}
+
+#menu-toggle {
+    background: none;
+    border: 1px solid #0f0;
+    color: #0f0;
+    font-size: 1.5rem;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: rgba(0, 0, 0, 0.95);
+    border: 1px solid #0f0;
+    padding: 10px;
+    z-index: 1000;
+    min-width: 200px;
+}
+
+.dropdown-content.active {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+h1 {
+    color: #0f0;
+    margin: 0 20px;
+    white-space: nowrap;
+    font-size: 1.5rem;
+}
+
+.main-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Media queries */
+@media screen and (max-width: 768px) {
+    @media (orientation: portrait) {
+        body {
+            transform: rotate(90deg);
+            transform-origin: left top;
+            width: 100vh;
+            height: 100vw;
+            position: absolute;
+            top: 100%;
+            left: 0;
+        }
+    }
+
+    .range-note {
+        display: none;
+    }
+
+    .dropdown-content {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 200px;
+    }
+}
+
+/* Mobile styles */
+@media screen and (max-width: 768px) {
+    /* Ensure content is visible */
+    #game-container {
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    .controls-container {
+        height: 60px;
+        padding: 5px;
+    }
+
+    .menu-content {
+        justify-content: flex-start;
+        padding: 0 10px;
+    }
+
+    #menu-toggle {
+        background: none;
+        border: 1px solid #0f0;
+        color: #0f0;
+        font-size: 1.5rem;
+        padding: 5px 10px;
+        cursor: pointer;
+        margin-right: 15px;
+    }
+
+    .dropdown-content {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        height: calc(100vh - 60px);
+        width: 200px;
+        background: rgba(0, 0, 0, 0.95);
+        border-right: 1px solid #0f0;
+        padding: 15px;
+        display: none;
+        z-index: 1000;
+    }
+
+    .dropdown-content.active {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    /* Force landscape */
+    @media (orientation: portrait) {
+        body {
+            transform: rotate(90deg);
+            transform-origin: left top;
+            width: 100vh;
+            height: 100vw;
+            position: absolute;
+            top: 100%;
+            left: 0;
+        }
+
+        #game-container {
+            width: 100vh;
+            height: 100vw;
+        }
+    }
+
+    .desktop-only, .range-note {
+        display: none;
+    }
+
+    .range-inputs input {
+        width: 50px;
+    }
+}
+
+/* Base styles */
+.controls-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    z-index: 100;
+}
+
+.menu-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.top-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.navigation-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Mobile styles */
+@media screen and (max-width: 768px) {
+    html {
+        /* Force landscape mode */
+        transform: rotate(-90deg);
+        transform-origin: right top;
+        width: 100vh;
+        overflow-x: hidden;
+        position: absolute;
+        top: 100%;
+        right: 100%;
+    }
+
+    body {
+        width: 100vh;
+        height: 100vw;
+    }
+
+    .top-controls {
+        width: 100%;
+        justify-content: center;
+        padding: 10px;
+    }
+
+    #menu-toggle {
+        margin-right: 15px;
+        background: none;
+        border: 1px solid #0f0;
+        color: #0f0;
+        font-size: 1.5rem;
+        padding: 5px 10px;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: fixed;
+        top: 60px;
+        left: 0;
+        width: 200px;
+        height: calc(100% - 60px);
+        background: rgba(0, 0, 0, 0.95);
+        border-right: 1px solid #0f0;
+        padding: 15px;
+        z-index: 1000;
+    }
+
+    .dropdown-content.active {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .range-note {
+        display: none;
+    }
+
+    #kanji-display {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        right: 0;
+        bottom: 0;
     }
 }
