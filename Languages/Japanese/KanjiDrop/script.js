@@ -365,6 +365,7 @@ function toggleHistory() {
     const historySection = document.getElementById('history-section');
     const vocabSection = document.getElementById('vocab-section');
     const myListSection = document.getElementById('mylist-section');
+    const dropdownContent = document.querySelector('.dropdown-content');
     
     // Hide all sections
     vocabSection.style.display = 'none';
@@ -373,6 +374,11 @@ function toggleHistory() {
     // Toggle history section
     historySection.style.display = historySection.style.display === 'none' ? 'block' : 'none';
     
+    // Close hamburger menu on mobile
+    if (window.innerWidth <= 768) {
+        dropdownContent.classList.remove('active');
+    }
+    
     adjustKanjiDisplayArea();
 }
 
@@ -380,6 +386,7 @@ function toggleVocab() {
     const historySection = document.getElementById('history-section');
     const vocabSection = document.getElementById('vocab-section');
     const myListSection = document.getElementById('mylist-section');
+    const dropdownContent = document.querySelector('.dropdown-content');
     
     // Hide all sections
     historySection.style.display = 'none';
@@ -387,6 +394,11 @@ function toggleVocab() {
     
     // Toggle vocab section
     vocabSection.style.display = vocabSection.style.display === 'none' ? 'block' : 'none';
+    
+    // Close hamburger menu on mobile
+    if (window.innerWidth <= 768) {
+        dropdownContent.classList.remove('active');
+    }
     
     adjustKanjiDisplayArea();
 }
@@ -571,6 +583,7 @@ function toggleMyList() {
     const historySection = document.getElementById('history-section');
     const vocabSection = document.getElementById('vocab-section');
     const myListSection = document.getElementById('mylist-section');
+    const dropdownContent = document.querySelector('.dropdown-content');
     
     // Hide all sections
     historySection.style.display = 'none';
@@ -578,6 +591,11 @@ function toggleMyList() {
     
     // Toggle mylist section
     myListSection.style.display = myListSection.style.display === 'none' ? 'block' : 'none';
+    
+    // Close hamburger menu on mobile
+    if (window.innerWidth <= 768) {
+        dropdownContent.classList.remove('active');
+    }
     
     adjustKanjiDisplayArea();
 }
