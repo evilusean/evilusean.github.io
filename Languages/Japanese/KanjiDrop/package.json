@@ -1,0 +1,6 @@
+{
+    "scripts": {
+      "dev": "browser-sync start --server --files \"*.html, *.css, *.js\" --host $npm_config_ip",
+      "test": "browser-sync start --server --files \"*.html, *.css, *.js\" --host $(hostname -I | awk '{print $1}')"
+    }
+  }
