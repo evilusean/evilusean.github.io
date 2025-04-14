@@ -225,7 +225,7 @@ h1 {
 
 .meaning-container {
     position: fixed;
-    top: 100px;
+    top: 120px; /* Increased from 100px to move below menus */
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
@@ -233,6 +233,7 @@ h1 {
     padding: 20px;
     border-radius: 10px;
     animation: fadeInOut 2s ease-in-out;
+    z-index: 20;
 }
 
 @keyframes fadeInOut {
@@ -455,6 +456,14 @@ h1 {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
     body {
         position: fixed;
         width: 100%;
@@ -658,6 +667,72 @@ h1 {
         right: 0;
         bottom: 0;
     }
+
+    .menu-content {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: auto;
+    }
+
+    /* Center the dropdown under navigation buttons */
+    .dropdown-content {
+        position: fixed;
+        top: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 200px;
+        background: rgba(0, 0, 0, 0.95);
+        border: 1px solid #0f0;
+        padding: 15px;
+        z-index: 999;
+    }
+
+    /* Force landscape mode */
+    @media (orientation: portrait) {
+        body {
+            transform: rotate(90deg);
+            transform-origin: left top;
+            position: absolute;
+            width: 100vh;
+            height: 100vw;
+            top: 100%;
+            left: 0;
+        }
+
+        .controls-container {
+            transform: rotate(0deg);
+            width: 100vh;
+        }
+    }
+
+    /* Always visible controls */
+    .range-inputs, .navigation-buttons {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Hide notes on mobile */
+    .range-note, .size-note {
+        display: none;
+    }
+
+    /* Ensure buttons are visible and properly sized */
+    button {
+        min-height: 40px;
+        min-width: 40px;
+        padding: 8px 16px;
+        font-size: 16px;
+    }
+
+    input[type="number"] {
+        min-height: 40px;
+        width: 60px;
+        font-size: 16px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -816,13 +891,13 @@ h1 {
 @media screen and (max-width: 768px) {
     @media (orientation: portrait) {
         body {
-            transform: rotate(90deg);
-            transform-origin: left top;
+            transform: rotate(-90deg);
+            transform-origin: right top;
             width: 100vh;
-            height: 100vw;
+            overflow-x: hidden;
             position: absolute;
             top: 100%;
-            left: 0;
+            right: 100%;
         }
     }
 

@@ -96,6 +96,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             dropdownContent.classList.remove('active');
         }
     });
+
+    // Add this line to fix mobile display issues
+    fixMobileDisplay();
+    
+    // Also handle resize events
+    window.addEventListener('resize', fixMobileDisplay);
 });
 
 function startGame() {
@@ -544,4 +550,21 @@ function updateKanjiSize() {
     root.style.setProperty('--kanji-size', `${kanjiSize}rem`);
     // Update the size display
     document.getElementById('current-size').textContent = kanjiSize.toFixed(1);
+}
+
+// Add this function after your existing code
+function fixMobileDisplay() {
+    // Reset any problematic styles
+    document.documentElement.style.transform = 'none';
+    document.body.style.transform = 'none';
+    document.body.style.position = 'relative';
+    document.body.style.width = '100%';
+    document.body.style.height = '100%';
+    
+    // Ensure kanji display is visible
+    const kanjiDisplay = document.getElementById('kanji-display');
+    kanjiDisplay.style.display = 'block';
+    
+    // Adjust for different screen sizes
+    adjustKanjiDisplayArea();
 }
