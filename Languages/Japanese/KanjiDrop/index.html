@@ -36,36 +36,51 @@
     <div id="game-container">
         <div class="controls-container">
             <div class="menu-content">
-                <div class="top-controls">
-                    <!-- Hamburger Menu -->
-                    <button id="menu-toggle">☰</button>
-                    
-                    <!-- Range inputs -->
-                    <div class="range-inputs">
-                        <input type="number" id="start-range" placeholder="Start (1)" value="1">
-                        <span>-</span>
-                        <input type="number" id="end-range" placeholder="End (20)" value="20">
-                        <span class="range-note">Range: 1-2200</span>
+                <!-- Title - centered on desktop, hidden on mobile -->
+                <h1 class="title">Kanji Drop</h1>
+                
+                <!-- Left side controls (range and navigation) -->
+                <div class="main-controls">
+                    <div class="main-controls-group">
+                        <div class="top-controls">
+                            <!-- Hamburger menu - only visible on mobile -->
+                            <button id="menu-toggle">☰</button>
+                            
+                            <!-- Range inputs -->
+                            <div class="range-inputs">
+                                <input type="number" id="start-range" placeholder="Start (1)" value="1">
+                                <span>-</span>
+                                <input type="number" id="end-range" placeholder="End (20)" value="20">
+                                <span class="range-note">Range: 1-2200</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Navigation buttons -->
+                        <div class="navigation-buttons">
+                            <button id="previous-button">Previous (&#8592;)</button>
+                            <button id="start-button">Start (Enter)</button>
+                            <button id="next-button">Next (&#8594;)</button>
+                        </div>
                     </div>
                 </div>
-
-                <div class="navigation-buttons">
-                    <button id="previous-button">Previous (&#8592;)</button>
-                    <button id="start-button">Start (Enter)</button>
-                    <button id="next-button">Next (&#8594;)</button>
-                </div>
-
-                <!-- Dropdown content -->
-                <div class="dropdown-content">
-                    <div class="size-controls">
-                        <span class="size-note">Size: </span>
-                        <button id="size-decrease">-</button>
-                        <span id="current-size">3.0</span>
-                        <button id="size-increase">+</button>
+                
+                <!-- Right side controls (size and lists) -->
+                <div class="right-controls">
+                    <!-- Dropdown content - shown inline on desktop, in dropdown on mobile -->
+                    <div class="dropdown-content">
+                        <div class="size-controls">
+                            <span class="size-note">Size:</span>
+                            <button id="size-decrease">-</button>
+                            <span id="current-size">3.0</span>
+                            <button id="size-increase">+</button>
+                        </div>
+                        
+                        <div class="list-buttons">
+                            <button id="history-toggle">(H) History</button>
+                            <button id="vocab-toggle">(V) Vocab</button>
+                            <button id="mylist-toggle">(L) My List</button>
+                        </div>
                     </div>
-                    <button id="history-toggle">(H) History</button>
-                    <button id="vocab-toggle">(V) Vocab</button>
-                    <button id="mylist-toggle">(M) My List</button>
                 </div>
             </div>
         </div>
