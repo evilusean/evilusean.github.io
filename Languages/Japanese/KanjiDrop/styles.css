@@ -372,6 +372,11 @@ h1 {
     margin-right: 5px;
 }
 
+/* Hide mobile text by default (desktop view) */
+.mobile-only {
+    display: none;
+}
+
 /* Mobile styles */
 @media (max-width: 768px) {
     /* Hide title on mobile */
@@ -542,6 +547,14 @@ h1 {
         display: flex;
         width: 100%;
         align-items: center;
+    }
+
+    .desktop-only {
+        display: none;
+    }
+    
+    .mobile-only {
+        display: inline;
     }
 }
 
