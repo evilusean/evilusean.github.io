@@ -5,7 +5,7 @@ So I need an app that allows you to write the preamble, will be able to add it t
 4 text boxes, one text box has the preamble prompt, the second text box has what you want to search, and the third text book allows you to copy it in full (preamble combined with the second box), 
 also one that gives you the URL with the preamble to bookmark/save your query</br>
 AI has this crazy problem, where it can't remember context, even just giving it a list of words to translate and format, within 3 queries it will forget the format.
-Even after you explicitly tell it 'Remember this format' you need to constantly remind it, every query, and any query over 1,000 characters, it can't even complete, this is my way to work around those shortcomings and fix these problems for future Sean</br>
+Even after you explicitly tell it 'Remember this format' you need to constantly remind it, every query, and any query over 1,000 lines, it can't even complete, this is my way to work around those shortcomings and fix these problems for future Sean</br>
 future sean problems : API integration to automatically add your updated query to an AI, URL Shortener for parameters (will need a backend for this) - 
 since I am running this on github for free hosting I need a static site,  How many characters can the preamble be <2000? -
 **Internet Explorer:** 2,083 characters total, with a maximum path length of 2,048. - **Google Chrome:** Around 32,767 characters.-
