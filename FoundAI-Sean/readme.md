@@ -1,3 +1,4 @@
+# FoundAI-Sean :
 A repo for creating my new AI app : </br>
 FoundAI-Sean : I got tired of writing a preamble for every query I sent to an AI specifying the format I wanted on a Japanese word. 
 So I need an app that allows you to write the preamble, will be able to add it to the URL and save it as a URL-Parameters/QueryString, 
