@@ -45,19 +45,14 @@ document.getElementById('copyUrl').addEventListener('click', function() {
 // 2. Open Gemini in a new tab
 // 3. Alert the user to paste the query into Gemini (since Gemini does not support pre-filling via URL)
 document.getElementById('searchGemini').addEventListener('click', function() {
-  const combined = document.getElementById('combined').value;
-  if (combined.trim()) {
-    // Open Gemini in a new tab immediately (returns a window reference)
-    const geminiWindow = window.open('https://gemini.google.com/app', '_blank');
-    // Now copy to clipboard
-    navigator.clipboard.writeText(combined).then(() => {
-      alert('Combined query copied! Paste it into Gemini.');
-      // Optionally, focus the new tab
-      if (geminiWindow) geminiWindow.focus();
-    }, () => {
-      alert('Could not copy to clipboard. Please copy manually.');
-      if (geminiWindow) geminiWindow.focus();
-    });
+  const combined = document.getElementById('combined');
+  if (combined.value.trim()) {
+    // Select and copy using execCommand for better compatibility
+    combined.select();
+    document.execCommand('copy');
+    // Open Gemini in a new tab
+    window.open('https://gemini.google.com/app', '_blank');
+    alert('Combined query copied! Paste it into Gemini.');
   }
 });
 
