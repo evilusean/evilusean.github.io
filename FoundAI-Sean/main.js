@@ -28,6 +28,17 @@ document.getElementById('copyUrl').addEventListener('click', function() {
   document.execCommand('copy');
 });
 
+document.getElementById('searchGemini').addEventListener('click', function() {
+  const combined = document.getElementById('combined').value;
+  if (combined.trim()) {
+    // Gemini search URL (using Google Gemini's public search interface)
+    // If Gemini has a specific search URL, use it. Otherwise, use Google as a fallback.
+    // Example Gemini URL (update if Gemini has a different endpoint):
+    const geminiUrl = 'https://gemini.google.com/app?query=' + encodeURIComponent(combined);
+    window.open(geminiUrl, '_blank');
+  }
+});
+
 // On load, populate from URL if present
 window.addEventListener('DOMContentLoaded', function() {
   const params = new URLSearchParams(window.location.search);
