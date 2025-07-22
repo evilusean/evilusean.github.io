@@ -31,11 +31,16 @@ document.getElementById('copyUrl').addEventListener('click', function() {
 document.getElementById('searchGemini').addEventListener('click', function() {
   const combined = document.getElementById('combined').value;
   if (combined.trim()) {
-    // Gemini search URL (using Google Gemini's public search interface)
-    // If Gemini has a specific search URL, use it. Otherwise, use Google as a fallback.
-    // Example Gemini URL (update if Gemini has a different endpoint):
-    const geminiUrl = 'https://gemini.google.com/app?query=' + encodeURIComponent(combined);
-    window.open(geminiUrl, '_blank');
+    // Copy to clipboard
+    navigator.clipboard.writeText(combined).then(() => {
+      // Open Gemini in a new tab
+      window.open('https://gemini.google.com/app', '_blank');
+      alert('Combined query copied! Paste it into Gemini.');
+    }, () => {
+      // Fallback if clipboard API fails
+      alert('Could not copy to clipboard. Please copy manually.');
+      window.open('https://gemini.google.com/app', '_blank');
+    });
   }
 });
 
