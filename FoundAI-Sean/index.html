@@ -13,7 +13,26 @@
     <h1>Welcome to FoundAI-Sean</h1>
   </header>
   <main>
-    <p>Your content goes here.</p>
+    <form id="queryForm" autocomplete="off">
+      <div>
+        <label for="preamble">Preamble:</label><br>
+        <textarea id="preamble" rows="3" cols="50" placeholder="Enter preamble..."></textarea>
+      </div>
+      <div>
+        <label for="search">Search Query:</label><br>
+        <textarea id="search" rows="2" cols="50" placeholder="Enter search query..."></textarea>
+      </div>
+      <div>
+        <label for="combined">Combined Output:</label><br>
+        <textarea id="combined" rows="4" cols="50" readonly></textarea>
+        <button type="button" id="copyCombined">Copy Combined</button>
+      </div>
+      <div>
+        <label for="urlOutput">Bookmarkable URL:</label><br>
+        <input id="urlOutput" type="text" size="60" readonly />
+        <button type="button" id="copyUrl">Copy URL</button>
+      </div>
+    </form>
   </main>
   <footer>
     <p>&copy; 2025 FoundAI-Sean. All rights reserved.</p>
