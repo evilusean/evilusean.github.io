@@ -47,16 +47,16 @@ document.getElementById('copyUrl').addEventListener('click', function() {
 document.getElementById('searchGemini').addEventListener('click', function() {
   const combined = document.getElementById('combined').value;
   if (combined.trim()) {
-    // Use the Clipboard API to copy the combined query
+    // Open Gemini in a new tab immediately (returns a window reference)
+    const geminiWindow = window.open('https://gemini.google.com/app', '_blank');
+    // Now copy to clipboard
     navigator.clipboard.writeText(combined).then(() => {
-      // Open Gemini in a new tab
-      window.open('https://gemini.google.com/app', '_blank');
-      // Notify the user
       alert('Combined query copied! Paste it into Gemini.');
+      // Optionally, focus the new tab
+      if (geminiWindow) geminiWindow.focus();
     }, () => {
-      // Fallback if clipboard API fails
       alert('Could not copy to clipboard. Please copy manually.');
-      window.open('https://gemini.google.com/app', '_blank');
+      if (geminiWindow) geminiWindow.focus();
     });
   }
 });
