@@ -52,7 +52,7 @@ document.getElementById('searchGemini').addEventListener('click', function() {
     document.execCommand('copy');
     // Open Gemini in a new tab
     window.open('https://gemini.google.com/app', '_blank');
-    alert('Combined query copied! Paste it into Gemini.');
+    // Removed alert for a smoother experience
   }
 });
 
