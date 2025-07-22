@@ -11,6 +11,7 @@
 <body>
   <header>
     <h1>Welcome to FoundAI-Sean</h1>
+    <button id="helpBtn" style="display:block;margin:1rem auto;">Help</button>
   </header>
   <main>
     <form id="queryForm" autocomplete="off">
@@ -38,6 +39,20 @@
   <footer>
     <p>&copy; 2025 FoundAI-Sean. All rights reserved.</p>
   </footer>
+  <div id="helpModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center;">
+    <div style="background:#fff;padding:2rem;max-width:500px;margin:auto;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.15);position:relative;">
+      <button id="closeHelp" style="position:absolute;top:0.5rem;right:0.5rem;font-size:1.2rem;background:none;border:none;cursor:pointer;">&times;</button>
+      <h2>About FoundAI-Sean</h2>
+      <p><strong>FoundAI-Sean</strong> is a productivity tool designed to streamline your workflow when interacting with AI language models, especially for tasks like Japanese word formatting and translation.</p>
+      <ul>
+        <li>Write and save your custom preamble for AI queries.</li>
+        <li>Combine your preamble and search query in real time.</li>
+        <li>Copy the combined prompt or generate a bookmarkable URL with your parameters.</li>
+        <li>Quickly open Gemini AI and paste your query for consistent results.</li>
+      </ul>
+      <p>This app addresses the common issue of AI models forgetting context or formatting instructions, allowing you to maintain consistency across multiple queries. Future enhancements may include direct API integration and URL shortening features.</p>
+    </div>
+  </div>
   <script src="main.js"></script>
 </body>
 </html>

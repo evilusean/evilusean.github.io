@@ -68,3 +68,19 @@ window.addEventListener('DOMContentLoaded', function() {
   }
   updateCombinedAndUrl();
 });
+
+// Help modal functionality
+// Show the help modal when the Help button is clicked
+document.getElementById('helpBtn').addEventListener('click', function() {
+  document.getElementById('helpModal').style.display = 'flex';
+});
+// Hide the help modal when the close button is clicked
+document.getElementById('closeHelp').addEventListener('click', function() {
+  document.getElementById('helpModal').style.display = 'none';
+});
+// Hide the help modal when clicking outside the modal content
+document.getElementById('helpModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    this.style.display = 'none';
+  }
+});
