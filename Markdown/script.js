@@ -66,17 +66,24 @@ Select from the dropdowns above to see examples and copy code!`;
             // Re-render MathJax with better compatibility
             setTimeout(function () {
                 if (window.MathJax) {
-                    if (MathJax.typesetPromise) {
-                        // MathJax v3
-                        MathJax.typesetPromise([markdownOutput]).catch(function (err) {
-                            console.log('MathJax rendering error:', err.message);
-                        });
-                    } else if (MathJax.Hub) {
-                        // MathJax v2 fallback
-                        MathJax.Hub.Queue(["Typeset", MathJax.Hub, markdownOutput]);
-                    } else if (MathJax.typeset) {
-                        // Alternative MathJax v3 method
-                        MathJax.typeset([markdownOutput]);
+                    try {
+                        if (MathJax.typesetPromise) {
+                            // MathJax v3 - check if it returns a promise
+                            var promise = MathJax.typesetPromise([markdownOutput]);
+                            if (promise && promise.catch) {
+                                promise.catch(function (err) {
+                                    console.log('MathJax rendering error:', err.message);
+                                });
+                            }
+                        } else if (MathJax.Hub) {
+                            // MathJax v2 fallback
+                            MathJax.Hub.Queue(["Typeset", MathJax.Hub, markdownOutput]);
+                        } else if (MathJax.typeset) {
+                            // Alternative MathJax v3 method
+                            MathJax.typeset([markdownOutput]);
+                        }
+                    } catch (err) {
+                        console.log('MathJax error:', err);
                     }
                 }
             }, 150);
@@ -250,17 +257,24 @@ Select from the dropdowns above to see examples and copy code!`;
             // Re-render MathJax in modal with better compatibility
             setTimeout(function () {
                 if (window.MathJax) {
-                    if (MathJax.typesetPromise) {
-                        // MathJax v3
-                        MathJax.typesetPromise([modalMathPreview]).catch(function (err) {
-                            console.log('MathJax modal rendering error:', err.message);
-                        });
-                    } else if (MathJax.Hub) {
-                        // MathJax v2 fallback
-                        MathJax.Hub.Queue(["Typeset", MathJax.Hub, modalMathPreview]);
-                    } else if (MathJax.typeset) {
-                        // Alternative MathJax v3 method
-                        MathJax.typeset([modalMathPreview]);
+                    try {
+                        if (MathJax.typesetPromise) {
+                            // MathJax v3 - check if it returns a promise
+                            var promise = MathJax.typesetPromise([modalMathPreview]);
+                            if (promise && promise.catch) {
+                                promise.catch(function (err) {
+                                    console.log('MathJax modal rendering error:', err.message);
+                                });
+                            }
+                        } else if (MathJax.Hub) {
+                            // MathJax v2 fallback
+                            MathJax.Hub.Queue(["Typeset", MathJax.Hub, modalMathPreview]);
+                        } else if (MathJax.typeset) {
+                            // Alternative MathJax v3 method
+                            MathJax.typeset([modalMathPreview]);
+                        }
+                    } catch (err) {
+                        console.log('MathJax modal error:', err);
                     }
                 }
             }, 300);
