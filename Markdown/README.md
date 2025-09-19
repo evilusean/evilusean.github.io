@@ -72,8 +72,23 @@ A comprehensive markdown preview tool with mathematical notation support, built 
 9. **Matrices & Vectors** - Different bracket types and operations
 10. **Sets & Logic** - Set theory and logical notation
 11. **Statistics Symbols** - Probability, distributions, hypothesis testing
-12. **Physics Formulas** - Mechanics, thermodynamics, quantum mechanics
-13. **Chemistry Formulas** - Gas laws, kinetics, equilibrium
+12. **Common Math Formulas** - Algebra, geometry, sequences, logarithms
+
+### Physics Formulas
+13. **Physics: Mechanics** - Newton's laws, kinematics, energy, rotational motion
+14. **Physics: Thermodynamics** - Laws, gas theory, heat transfer, entropy
+15. **Physics: Electromagnetism** - Electric fields, magnetic fields, Maxwell equations
+16. **Physics: Quantum & Modern** - Quantum mechanics, relativity, nuclear physics
+
+### Chemistry Formulas
+17. **Chemistry: General** - Atomic structure, gas laws, solutions, equilibrium
+18. **Chemistry: Organic** - Functional groups, nomenclature, mechanisms, spectroscopy
+19. **Chemistry: Physical** - Kinetics, thermodynamics, electrochemistry, quantum chemistry
+
+### Engineering Formulas
+20. **Engineering: Mechanical** - Statics, dynamics, fluid mechanics, heat transfer, machine design
+21. **Engineering: Electrical** - Circuit analysis, AC circuits, electromagnetics, control systems, power systems
+22. **Engineering: Civil** - Structural analysis, concrete/steel design, geotechnical, hydraulics, transportation
 
 ## 🛠️ Usage Instructions
 

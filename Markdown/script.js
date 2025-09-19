@@ -1054,89 +1054,475 @@ $$Z = \\frac{X - \\mu}{\\sigma} \\sim N(0, 1)$$
 $$\\chi^2 = \\sum_{i=1}^{k} \\frac{(O_i - E_i)^2}{E_i}$$
 $$r = \\frac{\\sum(x_i - \\bar{x})(y_i - \\bar{y})}{\\sqrt{\\sum(x_i - \\bar{x})^2 \\sum(y_i - \\bar{y})^2}}$$`,
 
-            'physics-formulas': `# Physics Formulas
+            'common-math': `# Common Mathematical Formulas
 
-## Classical Mechanics
-- Newton's second law: $F = ma$
+## Algebra
+- Quadratic formula: $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$
+- Distance formula: $d = \\sqrt{(x_2-x_1)^2 + (y_2-y_1)^2}$
+- Slope: $m = \\frac{y_2-y_1}{x_2-x_1}$
+- Point-slope form: $y - y_1 = m(x - x_1)$
+
+## Geometry
+- Circle area: $A = \\pi r^2$
+- Circle circumference: $C = 2\\pi r$
+- Sphere volume: $V = \\frac{4}{3}\\pi r^3$
+- Sphere surface area: $A = 4\\pi r^2$
+- Triangle area: $A = \\frac{1}{2}bh$
+- Pythagorean theorem: $a^2 + b^2 = c^2$
+
+## Trigonometry
+- Sine rule: $\\frac{a}{\\sin A} = \\frac{b}{\\sin B} = \\frac{c}{\\sin C}$
+- Cosine rule: $c^2 = a^2 + b^2 - 2ab\\cos C$
+- Area formula: $A = \\frac{1}{2}ab\\sin C$
+
+## Logarithms & Exponentials
+- Change of base: $\\log_a x = \\frac{\\log_b x}{\\log_b a}$
+- Product rule: $\\log(xy) = \\log x + \\log y$
+- Quotient rule: $\\log\\left(\\frac{x}{y}\\right) = \\log x - \\log y$
+- Power rule: $\\log(x^n) = n\\log x$
+- Exponential growth: $N(t) = N_0 e^{rt}$
+
+## Sequences & Series
+- Arithmetic sequence: $a_n = a_1 + (n-1)d$
+- Geometric sequence: $a_n = a_1 r^{n-1}$
+- Arithmetic series: $S_n = \\frac{n}{2}(2a_1 + (n-1)d)$
+- Geometric series: $S_n = a_1\\frac{1-r^n}{1-r}$
+- Infinite geometric series: $S = \\frac{a_1}{1-r}$ (for $|r| < 1$)`,
+
+            'physics-mechanics': `# Physics: Classical Mechanics
+
+## Newton's Laws
+- First law: $\\sum F = 0$ (equilibrium)
+- Second law: $F = ma = \\frac{dp}{dt}$
+- Third law: $F_{12} = -F_{21}$
+- Universal gravitation: $F = G\\frac{m_1 m_2}{r^2}$
+
+## Kinematics
+- Position: $x = x_0 + v_0 t + \\frac{1}{2}at^2$
+- Velocity: $v = v_0 + at$
+- Velocity squared: $v^2 = v_0^2 + 2a(x-x_0)$
+- Average velocity: $\\bar{v} = \\frac{\\Delta x}{\\Delta t}$
+
+## Energy & Work
 - Kinetic energy: $KE = \\frac{1}{2}mv^2$
-- Potential energy: $PE = mgh$
+- Gravitational PE: $PE = mgh$
+- Elastic PE: $PE = \\frac{1}{2}kx^2$
+- Work-energy theorem: $W = \\Delta KE$
+- Power: $P = \\frac{dW}{dt} = F \\cdot v$
+
+## Momentum & Collisions
 - Momentum: $p = mv$
-- Work: $W = F \\cdot d = Fd\\cos\\theta$
-- Power: $P = \\frac{W}{t} = Fv$
+- Impulse: $J = \\Delta p = F \\Delta t$
+- Conservation: $\\sum p_i = \\sum p_f$
+- Elastic collision (1D): $v_1' = \\frac{(m_1-m_2)v_1 + 2m_2v_2}{m_1+m_2}$
 
 ## Rotational Motion
+- Angular displacement: $\\theta = \\omega_0 t + \\frac{1}{2}\\alpha t^2$
 - Angular velocity: $\\omega = \\frac{d\\theta}{dt}$
 - Angular acceleration: $\\alpha = \\frac{d\\omega}{dt}$
 - Moment of inertia: $I = \\sum m_i r_i^2$
 - Torque: $\\tau = I\\alpha = r \\times F$
 - Angular momentum: $L = I\\omega$
+- Rotational KE: $KE_{rot} = \\frac{1}{2}I\\omega^2$
 
-## Thermodynamics
+## Simple Harmonic Motion
+- Position: $x(t) = A\\cos(\\omega t + \\phi)$
+- Velocity: $v(t) = -A\\omega\\sin(\\omega t + \\phi)$
+- Acceleration: $a(t) = -A\\omega^2\\cos(\\omega t + \\phi)$
+- Period: $T = \\frac{2\\pi}{\\omega}$
+- Spring: $\\omega = \\sqrt{\\frac{k}{m}}$
+- Pendulum: $\\omega = \\sqrt{\\frac{g}{L}}$`,
+
+            'physics-thermodynamics': `# Physics: Thermodynamics
+
+## Laws of Thermodynamics
+- Zeroth law: Thermal equilibrium is transitive
 - First law: $\\Delta U = Q - W$
-- Ideal gas law: $PV = nRT$
-- Entropy: $dS = \\frac{dQ}{T}$
-- Efficiency: $\\eta = 1 - \\frac{T_c}{T_h}$
+- Second law: $\\Delta S \\geq 0$ (isolated system)
+- Third law: $S \\to 0$ as $T \\to 0$
 
-## Electromagnetism
-- Coulomb's law: $F = k\\frac{q_1 q_2}{r^2}$
-- Electric field: $E = \\frac{F}{q}$
-- Magnetic force: $F = q(\\mathbf{v} \\times \\mathbf{B})$
+## Ideal Gas Laws
+- Ideal gas law: $PV = nRT = Nk_BT$
+- Boyle's law: $PV = \\text{constant}$ (isothermal)
+- Charles's law: $\\frac{V}{T} = \\text{constant}$ (isobaric)
+- Gay-Lussac's law: $\\frac{P}{T} = \\text{constant}$ (isochoric)
+
+## Kinetic Theory
+- Average kinetic energy: $\\langle KE \\rangle = \\frac{3}{2}k_BT$
+- RMS speed: $v_{rms} = \\sqrt{\\frac{3k_BT}{m}} = \\sqrt{\\frac{3RT}{M}}$
+- Maxwell-Boltzmann distribution: $f(v) = 4\\pi n\\left(\\frac{m}{2\\pi k_BT}\\right)^{3/2}v^2e^{-mv^2/2k_BT}$
+
+## Heat Transfer
+- Conduction: $q = -kA\\frac{dT}{dx}$ (Fourier's law)
+- Convection: $q = hA(T_s - T_\\infty)$
+- Radiation: $q = \\sigma A T^4$ (Stefan-Boltzmann)
+- Heat capacity: $C = \\frac{dQ}{dT}$
+
+## Entropy & Free Energy
+- Entropy: $dS = \\frac{dQ_{rev}}{T}$
+- Gibbs free energy: $G = H - TS$
+- Helmholtz free energy: $F = U - TS$
+- Maxwell relations: $\\left(\\frac{\\partial T}{\\partial V}\\right)_S = -\\left(\\frac{\\partial P}{\\partial S}\\right)_V$
+
+## Heat Engines & Refrigerators
+- Efficiency: $\\eta = \\frac{W}{Q_h} = 1 - \\frac{Q_c}{Q_h}$
+- Carnot efficiency: $\\eta_C = 1 - \\frac{T_c}{T_h}$
+- Coefficient of performance (heat pump): $COP_{hp} = \\frac{Q_h}{W}$
+- Coefficient of performance (refrigerator): $COP_r = \\frac{Q_c}{W}$`,
+
+            'physics-electromagnetism': `# Physics: Electromagnetism
+
+## Electric Fields & Forces
+- Coulomb's law: $F = k\\frac{q_1 q_2}{r^2} = \\frac{1}{4\\pi\\epsilon_0}\\frac{q_1 q_2}{r^2}$
+- Electric field: $E = \\frac{F}{q} = k\\frac{Q}{r^2}$
+- Electric potential: $V = k\\frac{Q}{r}$
+- Electric potential energy: $U = qV = k\\frac{q_1 q_2}{r}$
+
+## Gauss's Law
+- Gauss's law: $\\oint \\mathbf{E} \\cdot d\\mathbf{A} = \\frac{Q_{enc}}{\\epsilon_0}$
+- Point charge: $E = \\frac{Q}{4\\pi\\epsilon_0 r^2}$
+- Infinite line: $E = \\frac{\\lambda}{2\\pi\\epsilon_0 r}$
+- Infinite plane: $E = \\frac{\\sigma}{2\\epsilon_0}$
+
+## Capacitance & Dielectrics
+- Capacitance: $C = \\frac{Q}{V}$
+- Parallel plate: $C = \\epsilon_0\\frac{A}{d}$
+- Energy stored: $U = \\frac{1}{2}CV^2 = \\frac{1}{2}QV = \\frac{Q^2}{2C}$
+- With dielectric: $C = \\kappa C_0$
+
+## Current & Resistance
+- Current: $I = \\frac{dQ}{dt}$
+- Current density: $\\mathbf{J} = \\frac{I}{A}$
+- Ohm's law: $V = IR$
+- Resistance: $R = \\rho\\frac{L}{A}$
+- Power: $P = IV = I^2R = \\frac{V^2}{R}$
+
+## Magnetic Fields
+- Lorentz force: $\\mathbf{F} = q(\\mathbf{v} \\times \\mathbf{B})$
+- Biot-Savart law: $d\\mathbf{B} = \\frac{\\mu_0}{4\\pi}\\frac{Id\\mathbf{l} \\times \\mathbf{r}}{r^3}$
+- Ampère's law: $\\oint \\mathbf{B} \\cdot d\\mathbf{l} = \\mu_0 I_{enc}$
+- Magnetic dipole moment: $\\boldsymbol{\\mu} = I\\mathbf{A}$
+
+## Electromagnetic Induction
 - Faraday's law: $\\mathcal{E} = -\\frac{d\\Phi_B}{dt}$
+- Lenz's law: Induced current opposes change
+- Motional EMF: $\\mathcal{E} = Blv$
+- Self-inductance: $L = \\frac{\\Phi_B}{I}$
+- Mutual inductance: $M = \\frac{\\Phi_{21}}{I_1}$
 
-## Relativity
-- Mass-energy equivalence: $E = mc^2$
-- Time dilation: $\\Delta t = \\frac{\\Delta t_0}{\\sqrt{1 - v^2/c^2}}$
-- Length contraction: $L = L_0\\sqrt{1 - v^2/c^2}$
+## Maxwell's Equations
+- Gauss's law: $\\nabla \\cdot \\mathbf{E} = \\frac{\\rho}{\\epsilon_0}$
+- Gauss's law (magnetism): $\\nabla \\cdot \\mathbf{B} = 0$
+- Faraday's law: $\\nabla \\times \\mathbf{E} = -\\frac{\\partial \\mathbf{B}}{\\partial t}$
+- Ampère-Maxwell law: $\\nabla \\times \\mathbf{B} = \\mu_0\\mathbf{J} + \\mu_0\\epsilon_0\\frac{\\partial \\mathbf{E}}{\\partial t}$`,
+
+            'physics-quantum': `# Physics: Quantum & Modern Physics
+
+## Quantum Mechanics Fundamentals
+- Schrödinger equation (time-dependent): $i\\hbar\\frac{\\partial\\Psi}{\\partial t} = \\hat{H}\\Psi$
+- Schrödinger equation (time-independent): $\\hat{H}\\psi = E\\psi$
+- Probability density: $|\\Psi(x,t)|^2$
+- Normalization: $\\int_{-\\infty}^{\\infty} |\\Psi(x,t)|^2 dx = 1$
+
+## Uncertainty Principles
+- Position-momentum: $\\Delta x \\Delta p \\geq \\frac{\\hbar}{2}$
+- Energy-time: $\\Delta E \\Delta t \\geq \\frac{\\hbar}{2}$
+- Angular momentum: $\\Delta L_z \\Delta \\phi \\geq \\frac{\\hbar}{2}$
+
+## Wave-Particle Duality
+- de Broglie wavelength: $\\lambda = \\frac{h}{p}$
+- Planck's equation: $E = hf = \\hbar\\omega$
+- Photoelectric effect: $E_k = hf - \\phi$
+- Compton scattering: $\\lambda' - \\lambda = \\frac{h}{m_e c}(1 - \\cos\\theta)$
+
+## Quantum Harmonic Oscillator
+- Energy levels: $E_n = \\hbar\\omega\\left(n + \\frac{1}{2}\\right)$
+- Wave functions: $\\psi_n(x) = \\left(\\frac{m\\omega}{\\pi\\hbar}\\right)^{1/4}\\frac{1}{\\sqrt{2^n n!}}H_n\\left(\\sqrt{\\frac{m\\omega}{\\hbar}}x\\right)e^{-m\\omega x^2/2\\hbar}$
+
+## Hydrogen Atom
+- Energy levels: $E_n = -\\frac{13.6 \\text{ eV}}{n^2}$
+- Bohr radius: $a_0 = \\frac{4\\pi\\epsilon_0\\hbar^2}{m_e e^2} = 0.529 \\text{ Å}$
+- Rydberg formula: $\\frac{1}{\\lambda} = R_H\\left(\\frac{1}{n_1^2} - \\frac{1}{n_2^2}\\right)$
+
+## Special Relativity
 - Lorentz factor: $\\gamma = \\frac{1}{\\sqrt{1 - v^2/c^2}}$
+- Time dilation: $\\Delta t = \\gamma \\Delta t_0$
+- Length contraction: $L = \\frac{L_0}{\\gamma}$
+- Mass-energy: $E^2 = (pc)^2 + (m_0 c^2)^2$
+- Relativistic momentum: $p = \\gamma m_0 v$
 
-## Quantum Mechanics
-- Schrödinger equation: $i\\hbar\\frac{\\partial\\Psi}{\\partial t} = \\hat{H}\\Psi$
-- Uncertainty principle: $\\Delta x \\Delta p \\geq \\frac{\\hbar}{2}$
-- Energy levels: $E_n = \\frac{n^2\\pi^2\\hbar^2}{2mL^2}$
-- de Broglie wavelength: $\\lambda = \\frac{h}{p}$`,
+## Nuclear Physics
+- Mass-energy equivalence: $E = mc^2$
+- Binding energy: $BE = (Zm_H + Nm_n - M)c^2$
+- Radioactive decay: $N(t) = N_0 e^{-\\lambda t}$
+- Half-life: $t_{1/2} = \\frac{\\ln 2}{\\lambda}$`,
 
-            'chemistry-formulas': `# Chemistry Formulas
+            'chemistry-general': `# Chemistry: General Chemistry
+
+## Atomic Structure
+- Atomic number: $Z$ (number of protons)
+- Mass number: $A = Z + N$ (protons + neutrons)
+- Isotope notation: $^A_Z X$
+- Electron configuration: $1s^2 2s^2 2p^6 3s^2...$
 
 ## Gas Laws
 - Ideal gas law: $PV = nRT$
-- Boyle's law: $P_1V_1 = P_2V_2$
-- Charles's law: $\\frac{V_1}{T_1} = \\frac{V_2}{T_2}$
-- Gay-Lussac's law: $\\frac{P_1}{T_1} = \\frac{P_2}{T_2}$
 - Combined gas law: $\\frac{P_1V_1}{T_1} = \\frac{P_2V_2}{T_2}$
+- Dalton's law: $P_{total} = \\sum P_i$
+- Graham's law: $\\frac{r_1}{r_2} = \\sqrt{\\frac{M_2}{M_1}}$
+- van der Waals equation: $\\left(P + \\frac{a}{V^2}\\right)(V - b) = RT$
 
-## Solutions and Concentration
-- Molarity: $M = \\frac{n}{V}$
-- Molality: $m = \\frac{n}{kg_{solvent}}$
+## Solutions & Concentrations
+- Molarity: $M = \\frac{n_{solute}}{V_{solution}}$
+- Molality: $m = \\frac{n_{solute}}{kg_{solvent}}$
 - Mole fraction: $\\chi_A = \\frac{n_A}{n_{total}}$
-- Parts per million: $ppm = \\frac{mass_{solute}}{mass_{solution}} \\times 10^6$
+- Parts per million: $ppm = \\frac{mg_{solute}}{kg_{solution}}$
+- Dilution: $M_1V_1 = M_2V_2$
 
-## Acids and Bases
+## Acids & Bases
 - pH: $pH = -\\log[H^+]$
 - pOH: $pOH = -\\log[OH^-]$
 - Water constant: $K_w = [H^+][OH^-] = 1.0 \\times 10^{-14}$
 - Henderson-Hasselbalch: $pH = pK_a + \\log\\frac{[A^-]}{[HA]}$
+- Acid dissociation: $K_a = \\frac{[H^+][A^-]}{[HA]}$
+
+## Chemical Equilibrium
+- Equilibrium constant: $K_c = \\frac{[C]^c[D]^d}{[A]^a[B]^b}$
+- Reaction quotient: $Q_c = \\frac{[C]^c[D]^d}{[A]^a[B]^b}$
+- Le Chatelier's principle: System shifts to counteract stress
+- ICE table method for equilibrium calculations
+
+## Thermochemistry
+- Enthalpy change: $\\Delta H = H_{products} - H_{reactants}$
+- Heat capacity: $q = mc\\Delta T$
+- Calorimetry: $q_{system} + q_{surroundings} = 0$
+- Hess's law: $\\Delta H_{total} = \\sum \\Delta H_i$`,
+
+            'chemistry-organic': `# Chemistry: Organic Chemistry
+
+## Functional Groups
+- Alkane: $R-H$
+- Alkene: $R_2C=CR_2$
+- Alkyne: $R-C\\equiv C-R$
+- Alcohol: $R-OH$
+- Ether: $R-O-R'$
+- Aldehyde: $R-CHO$
+- Ketone: $R-CO-R'$
+- Carboxylic acid: $R-COOH$
+- Ester: $R-COO-R'$
+- Amine: $R-NH_2$, $R_2NH$, $R_3N$
+
+## Nomenclature Rules
+- Longest carbon chain determines base name
+- Number carbons to give substituents lowest numbers
+- Alphabetical order for substituents
+- Functional group priority order
+
+## Stereochemistry
+- Chirality: Non-superimposable mirror images
+- Optical activity: $[\\alpha] = \\frac{\\alpha_{observed}}{c \\cdot l}$
+- R/S configuration using Cahn-Ingold-Prelog rules
+- E/Z configuration for alkenes
+
+## Reaction Mechanisms
+- SN1 mechanism: Two-step, carbocation intermediate
+- SN2 mechanism: One-step, backside attack
+- E1 mechanism: Two-step elimination
+- E2 mechanism: One-step elimination
+- Addition reactions: Markovnikov's rule
+
+## Aromatic Chemistry
+- Hückel's rule: $4n + 2$ π electrons
+- Benzene resonance energy: ~36 kcal/mol
+- Electrophilic aromatic substitution
+- Activating/deactivating groups
+- Ortho/meta/para directing effects
+
+## Spectroscopy
+- IR stretching frequencies:
+  - O-H: 3200-3600 cm⁻¹
+  - C-H: 2850-3000 cm⁻¹
+  - C=O: 1650-1750 cm⁻¹
+  - C=C: 1620-1680 cm⁻¹
+- NMR chemical shifts and coupling patterns`,
+
+            'chemistry-physical': `# Chemistry: Physical Chemistry
 
 ## Chemical Kinetics
 - Rate law: $\\text{Rate} = k[A]^m[B]^n$
-- Arrhenius equation: $k = Ae^{-E_a/RT}$
-- Half-life (first order): $t_{1/2} = \\frac{\\ln 2}{k}$
-- Integrated rate law: $\\ln[A] = \\ln[A_0] - kt$
+- Integrated rate laws:
+  - Zero order: $[A] = [A]_0 - kt$
+  - First order: $\\ln[A] = \\ln[A]_0 - kt$
+  - Second order: $\\frac{1}{[A]} = \\frac{1}{[A]_0} + kt$
+- Half-life formulas:
+  - First order: $t_{1/2} = \\frac{\\ln 2}{k}$
+  - Second order: $t_{1/2} = \\frac{1}{k[A]_0}$
+
+## Arrhenius Equation
+- Temperature dependence: $k = Ae^{-E_a/RT}$
+- Logarithmic form: $\\ln k = \\ln A - \\frac{E_a}{RT}$
+- Two-temperature form: $\\ln\\frac{k_2}{k_1} = \\frac{E_a}{R}\\left(\\frac{1}{T_1} - \\frac{1}{T_2}\\right)$
 
 ## Thermodynamics
 - Gibbs free energy: $\\Delta G = \\Delta H - T\\Delta S$
-- Enthalpy: $\\Delta H = \\Delta U + \\Delta(PV)$
-- Entropy change: $\\Delta S = \\frac{q_{rev}}{T}$
 - Equilibrium constant: $\\Delta G° = -RT\\ln K$
+- van 't Hoff equation: $\\frac{d\\ln K}{dT} = \\frac{\\Delta H°}{RT^2}$
+- Maxwell relations and thermodynamic potentials
 
-## Equilibrium
-- Equilibrium constant: $K_{eq} = \\frac{[C]^c[D]^d}{[A]^a[B]^b}$
-- Reaction quotient: $Q = \\frac{[C]^c[D]^d}{[A]^a[B]^b}$
-- Le Chatelier's principle: System shifts to counteract changes
+## Electrochemistry
+- Nernst equation: $E = E° - \\frac{RT}{nF}\\ln Q$
+- At 25°C: $E = E° - \\frac{0.0592}{n}\\log Q$
+- Faraday's laws of electrolysis
+- Butler-Volmer equation: $i = i_0\\left[e^{\\frac{\\alpha nF\\eta}{RT}} - e^{-\\frac{(1-\\alpha)nF\\eta}{RT}}\\right]$
 
-## Examples
-$$K_a = \\frac{[H^+][A^-]}{[HA]}$$
-$$\\Delta G = \\Delta G° + RT\\ln Q$$
-$$\\text{Rate} = \\frac{d[P]}{dt} = -\\frac{d[R]}{dt}$$`
+## Quantum Chemistry
+- Schrödinger equation for atoms and molecules
+- Molecular orbital theory
+- Hückel method for π systems
+- Density functional theory (DFT)
+
+## Statistical Mechanics
+- Boltzmann distribution: $N_i = N\\frac{g_i e^{-E_i/k_BT}}{Z}$
+- Partition function: $Z = \\sum_i g_i e^{-E_i/k_BT}$
+- Maxwell-Boltzmann speed distribution
+- Relationship between microscopic and macroscopic properties`,
+
+            'engineering-mechanical': `# Engineering: Mechanical Engineering
+
+## Statics & Mechanics of Materials
+- Equilibrium: $\\sum F = 0$, $\\sum M = 0$
+- Stress: $\\sigma = \\frac{F}{A}$
+- Strain: $\\epsilon = \\frac{\\Delta L}{L_0}$
+- Hooke's law: $\\sigma = E\\epsilon$
+- Shear stress: $\\tau = \\frac{V}{A}$
+- Bending stress: $\\sigma = \\frac{My}{I}$
+- Torsional stress: $\\tau = \\frac{Tr}{J}$
+
+## Dynamics & Vibrations
+- Newton's second law: $F = ma$
+- Moment equation: $\\sum M = I\\alpha$
+- Natural frequency: $\\omega_n = \\sqrt{\\frac{k}{m}}$
+- Damped frequency: $\\omega_d = \\omega_n\\sqrt{1-\\zeta^2}$
+- Transmissibility: $TR = \\frac{1}{\\sqrt{(1-r^2)^2 + (2\\zeta r)^2}}$
+
+## Fluid Mechanics
+- Continuity equation: $\\rho_1 A_1 V_1 = \\rho_2 A_2 V_2$
+- Bernoulli's equation: $\\frac{P_1}{\\rho} + \\frac{V_1^2}{2} + gz_1 = \\frac{P_2}{\\rho} + \\frac{V_2^2}{2} + gz_2$
+- Reynolds number: $Re = \\frac{\\rho VD}{\\mu}$
+- Darcy-Weisbach equation: $h_f = f\\frac{L}{D}\\frac{V^2}{2g}$
+- Drag force: $F_D = \\frac{1}{2}\\rho V^2 C_D A$
+
+## Heat Transfer
+- Fourier's law: $q = -kA\\frac{dT}{dx}$
+- Newton's law of cooling: $q = hA(T_s - T_\\infty)$
+- Stefan-Boltzmann law: $q = \\sigma A T^4$
+- Overall heat transfer: $\\frac{1}{U} = \\frac{1}{h_1} + \\frac{t}{k} + \\frac{1}{h_2}$
+- Fin efficiency: $\\eta_f = \\frac{\\tanh(mL)}{mL}$ where $m = \\sqrt{\\frac{hP}{kA}}$
+
+## Thermodynamics
+- First law: $\\Delta U = Q - W$
+- Efficiency: $\\eta = \\frac{W_{net}}{Q_{in}}$
+- Carnot efficiency: $\\eta_C = 1 - \\frac{T_L}{T_H}$
+- Isentropic process: $PV^\\gamma = \\text{constant}$
+- Polytropic process: $PV^n = \\text{constant}$
+
+## Machine Design
+- Factor of safety: $FS = \\frac{\\sigma_{ultimate}}{\\sigma_{working}}$
+- Fatigue life (S-N curve): $\\sigma^m N = C$
+- Goodman relation: $\\frac{\\sigma_a}{S_e} + \\frac{\\sigma_m}{S_{ut}} = \\frac{1}{n}$
+- Bearing life: $L_{10} = \\left(\\frac{C}{P}\\right)^p$ (p=3 for ball, p=10/3 for roller)`,
+
+            'engineering-electrical': `# Engineering: Electrical Engineering
+
+## Circuit Analysis
+- Ohm's law: $V = IR$
+- Kirchhoff's current law: $\\sum I_{in} = \\sum I_{out}$
+- Kirchhoff's voltage law: $\\sum V = 0$
+- Power: $P = VI = I^2R = \\frac{V^2}{R}$
+- Voltage divider: $V_{out} = V_{in}\\frac{R_2}{R_1 + R_2}$
+- Current divider: $I_1 = I_{total}\\frac{R_2}{R_1 + R_2}$
+
+## AC Circuit Analysis
+- Impedance: $Z = R + jX = |Z|e^{j\\phi}$
+- Capacitive reactance: $X_C = \\frac{1}{\\omega C}$
+- Inductive reactance: $X_L = \\omega L$
+- RMS values: $V_{rms} = \\frac{V_{peak}}{\\sqrt{2}}$
+- Complex power: $S = P + jQ = VI^*$
+- Power factor: $pf = \\cos\\phi = \\frac{P}{S}$
+
+## Electromagnetic Fields
+- Electric field: $\\mathbf{E} = -\\nabla V$
+- Magnetic field: $\\mathbf{B} = \\nabla \\times \\mathbf{A}$
+- Poynting vector: $\\mathbf{S} = \\frac{1}{\\mu_0}\\mathbf{E} \\times \\mathbf{B}$
+- Wave equation: $\\nabla^2 \\mathbf{E} = \\mu_0\\epsilon_0\\frac{\\partial^2 \\mathbf{E}}{\\partial t^2}$
+- Characteristic impedance: $Z_0 = \\sqrt{\\frac{\\mu_0}{\\epsilon_0}} = 377\\,\\Omega$
+
+## Digital Signal Processing
+- Discrete Fourier Transform: $X[k] = \\sum_{n=0}^{N-1} x[n]e^{-j2\\pi kn/N}$
+- Z-transform: $X(z) = \\sum_{n=-\\infty}^{\\infty} x[n]z^{-n}$
+- Sampling theorem: $f_s > 2f_{max}$ (Nyquist criterion)
+- Digital filter transfer function: $H(z) = \\frac{Y(z)}{X(z)}$
+
+## Control Systems
+- Transfer function: $G(s) = \\frac{Y(s)}{X(s)}$
+- Closed-loop transfer function: $T(s) = \\frac{G(s)}{1 + G(s)H(s)}$
+- Characteristic equation: $1 + G(s)H(s) = 0$
+- PID controller: $G_c(s) = K_p + \\frac{K_i}{s} + K_d s$
+- Routh-Hurwitz stability criterion
+- Bode plot: $|G(j\\omega)|_{dB} = 20\\log_{10}|G(j\\omega)|$
+
+## Power Systems
+- Three-phase power: $P = \\sqrt{3}V_LI_L\\cos\\phi$
+- Per-unit system: $pu = \\frac{\\text{actual value}}{\\text{base value}}$
+- Transformer equation: $\\frac{V_1}{V_2} = \\frac{N_1}{N_2} = \\frac{I_2}{I_1}$
+- Transmission line equations: $\\gamma = \\sqrt{ZY}$, $Z_0 = \\sqrt{\\frac{Z}{Y}}$`,
+
+            'engineering-civil': `# Engineering: Civil Engineering
+
+## Structural Analysis
+- Moment equilibrium: $\\sum M = 0$
+- Force equilibrium: $\\sum F_x = 0$, $\\sum F_y = 0$
+- Bending moment: $M = \\int V \\, dx$
+- Shear force: $V = \\frac{dM}{dx}$
+- Deflection (Euler-Bernoulli): $EI\\frac{d^4y}{dx^4} = q(x)$
+- Critical buckling load: $P_{cr} = \\frac{\\pi^2 EI}{(KL)^2}$
+
+## Concrete Design
+- Compressive strength: $f'_c$ (28-day strength)
+- Modulus of elasticity: $E_c = 4700\\sqrt{f'_c}$ (psi)
+- Flexural strength: $f_r = 7.5\\sqrt{f'_c}$ (ACI)
+- Reinforcement ratio: $\\rho = \\frac{A_s}{bd}$
+- Balanced reinforcement: $\\rho_b = 0.85\\beta_1\\frac{f'_c}{f_y}\\frac{600}{600 + f_y}$
+- Moment capacity: $M_n = A_s f_y \\left(d - \\frac{a}{2}\\right)$
+
+## Steel Design
+- Yield strength: $F_y$
+- Ultimate strength: $F_u$
+- Slenderness ratio: $\\frac{KL}{r}$
+- Euler buckling: $F_e = \\frac{\\pi^2 E}{(KL/r)^2}$
+- AISC interaction equation: $\\frac{P_r}{P_c} + \\frac{8}{9}\\frac{M_r}{M_c} \\leq 1.0$
+
+## Geotechnical Engineering
+- Effective stress: $\\sigma' = \\sigma - u$
+- Terzaghi bearing capacity: $q_{ult} = cN_c + qN_q + \\frac{1}{2}\\gamma BN_\\gamma$
+- Consolidation settlement: $S = \\frac{C_c H}{1 + e_0}\\log\\frac{\\sigma'_0 + \\Delta\\sigma}{\\sigma'_0}$
+- Mohr-Coulomb failure: $\\tau = c + \\sigma'\\tan\\phi$
+- Coefficient of permeability: $k = \\frac{vL}{h}$ (Darcy's law)
+
+## Hydraulics & Hydrology
+- Manning's equation: $V = \\frac{1}{n}R^{2/3}S^{1/2}$
+- Hazen-Williams: $V = 1.318C R^{0.63}S^{0.54}$
+- Rational method: $Q = CiA$
+- Time of concentration: $t_c = t_{inlet} + t_{travel}$
+- Hydraulic radius: $R = \\frac{A}{P}$
+- Froude number: $Fr = \\frac{V}{\\sqrt{gD}}$
+
+## Transportation Engineering
+- Stopping sight distance: $SSD = 1.47Vt + \\frac{V^2}{30(f \\pm G)}$
+- Horizontal curve radius: $R = \\frac{V^2}{15(e + f)}$
+- Vertical curve length: $L = \\frac{AV^2}{100\\sqrt{2h_1} + \\sqrt{2h_2}}^2$
+- Traffic flow: $q = kv$ (flow = density × speed)
+- Level of service based on volume/capacity ratio`
         };
 
         return templates[template] || '';
