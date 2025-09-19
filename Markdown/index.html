@@ -1,31 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown Preview</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
+
 <body>
     <div class="container">
         <header>
             <h1>Markdown Preview</h1>
         </header>
-        
+
+        <div class="controls">
+            <div class="control-group">
+                <button id="clear-btn" class="btn">Clear</button>
+                <button id="copy-btn" class="btn">Copy All</button>
+                <button id="save-btn" class="btn">Save to URL</button>
+                <button id="load-btn" class="btn">Load from URL</button>
+            </div>
+
+            <div class="dropdown-group">
+                <select id="markdown-templates" class="dropdown">
+                    <option value="">Markdown Templates</option>
+                    <option value="basic">Basic Document</option>
+                    <option value="readme">README Template</option>
+                    <option value="blog">Blog Post</option>
+                    <option value="documentation">Documentation</option>
+                    <option value="cheatsheet">Cheatsheet</option>
+                </select>
+
+                <select id="math-templates" class="dropdown">
+                    <option value="">Math Formulas</option>
+                    <option value="basic-math">Basic Math</option>
+                    <option value="algebra">Algebra</option>
+                    <option value="calculus">Calculus</option>
+                    <option value="statistics">Statistics</option>
+                    <option value="physics">Physics</option>
+                    <option value="chemistry">Chemistry</option>
+                </select>
+            </div>
+        </div>
+
         <div class="editor-container">
             <div class="input-section">
                 <h2>Markdown Input</h2>
                 <textarea id="markdown-input" placeholder="Type your markdown here..."></textarea>
             </div>
-            
+
             <div class="output-section">
                 <h2>Preview</h2>
                 <div id="markdown-output"></div>
             </div>
         </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="script.js"></script>
 </body>
+
 </html>

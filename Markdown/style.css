@@ -150,6 +150,69 @@ header h1 {
     background-color: #f2f2f2;
 }
 
+/* Controls styling */
+.controls {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.control-group {
+    display: flex;
+    gap: 10px;
+}
+
+.dropdown-group {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #2980b9;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.dropdown {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+    cursor: pointer;
+    font-size: 14px;
+    min-width: 150px;
+}
+
+.dropdown:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+/* Math formula styling */
+.MathJax {
+    font-size: 1.1em !important;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
     .editor-container {
@@ -164,5 +227,20 @@ header h1 {
     
     header h1 {
         font-size: 2rem;
+    }
+    
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .control-group,
+    .dropdown-group {
+        justify-content: center;
+    }
+    
+    .dropdown {
+        min-width: auto;
+        flex: 1;
     }
 }
