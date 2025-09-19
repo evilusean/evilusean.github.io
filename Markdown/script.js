@@ -18,8 +18,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const copyBtn = document.getElementById('copy-btn');
     const saveBtn = document.getElementById('save-btn');
     const loadBtn = document.getElementById('load-btn');
-    const previewMarkdownBtn = document.getElementById('preview-markdown');
-    const previewMathBtn = document.getElementById('preview-math');
     const markdownTemplates = document.getElementById('markdown-templates');
     const mathTemplates = document.getElementById('math-templates');
     
@@ -69,7 +67,7 @@ function hello() {
 
 ---
 
-Try the dropdowns above or click Preview buttons to see examples!`;
+Select from the dropdowns above to see examples and copy code!`;
 
     // Load content from URL parameters or use default
     loadFromURL() || (markdownInput.value = defaultMarkdown);
@@ -81,10 +79,8 @@ Try the dropdowns above or click Preview buttons to see examples!`;
     copyBtn.addEventListener('click', copyContent);
     saveBtn.addEventListener('click', saveToURL);
     loadBtn.addEventListener('click', loadFromURL);
-    previewMarkdownBtn.addEventListener('click', showMarkdownPopup);
-    previewMathBtn.addEventListener('click', showMathPopup);
-    markdownTemplates.addEventListener('change', loadMarkdownTemplate);
-    mathTemplates.addEventListener('change', loadMathTemplate);
+    markdownTemplates.addEventListener('change', handleMarkdownDropdown);
+    lothTemplates.addEventListener('change', handleMathDropdown);
     
     function updatePreview() {
         const markdownText = markdownInput.value;
@@ -93,7 +89,7 @@ Try the dropdowns above or click Preview buttons to see examples!`;
         
         // Re-render MathJax
         if (window.MathJax && window.MathJax.typesetPromise) {
-            MathJax.typesetPromise([markdownOutput]).catch((err) => console.log(err.message));
+            MathJax.typinnerHTMise([markdownOutput]).catch((err) => console.log(err.message));
         }
     }
     
@@ -108,17 +104,21 @@ Try the dropdowns above or click Preview buttons to see examples!`;
         
         // Visual feedback
         const originalText = copyBtn.textContent;
+        copyBtn.texecCommand('copy');
+
+        // Visual feedback
+        const originalText = copyBtn.textContent;
         copyBtn.textContent = 'Copied!';
         setTimeout(() => {
             copyBtn.textContent = originalText;
         }, 2000);
     }
-    
+
     function saveToURL() {
         const content = markdownInput.value;
         const encoded = encodeURIComponent(content);
         const url = window.location.origin + window.location.pathname + '?content=' + encoded;
-        
+
         // Copy URL to clipboard
         navigator.clipboard.writeText(url).then(() => {
             const originalText = saveBtn.textContent;
@@ -128,7 +128,7 @@ Try the dropdowns above or click Preview buttons to see examples!`;
             }, 2000);
         });
     }
-    
+
     function loadFromURL() {
         const urlParams = new URLSearchParams(window.location.search);
         const content = urlParams.get('content');
@@ -139,22 +139,22 @@ Try the dropdowns above or click Preview buttons to see examples!`;
         }
         return false;
     }
-    
+
     // Handle tab key in textarea
-    markdownInput.addEventListener('keydown', function(e) {
+    markdownInput.addEventListener('keydown', function (e) {
         if (e.key === 'Tab') {
             e.preventDefault();
             const start = this.selectionStart;
             const end = this.selectionEnd;
-            
+
             // Insert tab character
             this.value = this.value.substring(0, start) + '\t' + this.value.substring(end);
-            
+
             // Move cursor
             this.selectionStart = this.selectionEnd = start + 1;
         }
     });    // M
-odal functionality
+Modal functionality
     const markdownModal = document.getElementById('markdown-modal');
     const mathModal = document.getElementById('math-modal');
     const closeMarkdown = document.getElementById('close-markdown');
@@ -204,7 +204,7 @@ odal functionality
         const content = getMathTemplate(template);
         modalMathCode.value = content;
         modalMathPreview.innerHTML = marked.parse(content);
-        
+
         // Re-render MathJax in modal
         if (window.MathJax && window.MathJax.typesetPromise) {
             MathJax.typesetPromise([modalMathPreview]).catch((err) => console.log(err.message));
@@ -214,7 +214,7 @@ odal functionality
     function copyModalMarkdown() {
         modalMarkdownCode.select();
         document.execCommand('copy');
-        
+
         const originalText = copyMarkdownCode.textContent;
         copyMarkdownCode.textContent = 'Copied!';
         setTimeout(() => {
@@ -225,7 +225,7 @@ odal functionality
     function copyModalMath() {
         modalMathCode.select();
         document.execCommand('copy');
-        
+
         const originalText = copyMathCode.textContent;
         copyMathCode.textContent = 'Copied!';
         setTimeout(() => {
@@ -237,17 +237,17 @@ odal functionality
     function loadMarkdownTemplate() {
         const template = markdownTemplates.value;
         if (!template) return;
-        
+
         const content = getMarkdownTemplate(template);
         markdownInput.value = content;
         updatePreview();
         markdownTemplates.value = '';
     }
-    
+
     function loadMathTemplate() {
         const template = mathTemplates.value;
         if (!template) return;
-        
+
         const content = getMathTemplate(template);
         const currentContent = markdownInput.value;
         const newContent = currentContent + (currentContent ? '\n\n' : '') + content;
@@ -584,7 +584,7 @@ This example showcases the versatility and power of Markdown for creating well-f
 
 *Happy writing with Markdown!* 🚀`
         };
-        
+
         return templates[template] || '';
     }
 
@@ -1061,7 +1061,7 @@ $$K_a = \\frac{[H^+][A^-]}{[HA]}$$
 $$\\Delta G = \\Delta G° + RT\\ln Q$$
 $$\\text{Rate} = \\frac{d[P]}{dt} = -\\frac{d[R]}{dt}$$`
         };
-        
+
         return templates[template] || '';
     }
 });
