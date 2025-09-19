@@ -22,26 +22,41 @@
                 <button id="copy-btn" class="btn">Copy All</button>
                 <button id="save-btn" class="btn">Save to URL</button>
                 <button id="load-btn" class="btn">Load from URL</button>
+                <button id="preview-markdown" class="btn btn-secondary">Preview Markdown</button>
+                <button id="preview-math" class="btn btn-secondary">Preview Math</button>
             </div>
 
             <div class="dropdown-group">
                 <select id="markdown-templates" class="dropdown">
-                    <option value="">Markdown Templates</option>
-                    <option value="basic">Basic Document</option>
-                    <option value="readme">README Template</option>
-                    <option value="blog">Blog Post</option>
-                    <option value="documentation">Documentation</option>
-                    <option value="cheatsheet">Cheatsheet</option>
+                    <option value="">📝 All Markdown Syntax</option>
+                    <option value="headers">Headers (H1-H6)</option>
+                    <option value="emphasis">Text Emphasis</option>
+                    <option value="lists">Lists & Checkboxes</option>
+                    <option value="links">Links & Images</option>
+                    <option value="code">Code & Syntax Highlighting</option>
+                    <option value="tables">Tables</option>
+                    <option value="blockquotes">Blockquotes & Callouts</option>
+                    <option value="horizontal-rules">Horizontal Rules</option>
+                    <option value="html">HTML in Markdown</option>
+                    <option value="advanced">Advanced Features</option>
+                    <option value="complete-example">Complete Example</option>
                 </select>
 
                 <select id="math-templates" class="dropdown">
-                    <option value="">Math Formulas</option>
-                    <option value="basic-math">Basic Math</option>
-                    <option value="algebra">Algebra</option>
-                    <option value="calculus">Calculus</option>
-                    <option value="statistics">Statistics</option>
-                    <option value="physics">Physics</option>
-                    <option value="chemistry">Chemistry</option>
+                    <option value="">🧮 Math Formula Guide</option>
+                    <option value="basic-operations">Basic Operations</option>
+                    <option value="fractions">Fractions</option>
+                    <option value="exponents">Exponents & Roots</option>
+                    <option value="subscripts">Subscripts & Superscripts</option>
+                    <option value="greek-letters">Greek Letters</option>
+                    <option value="operators">Mathematical Operators</option>
+                    <option value="functions">Functions & Trigonometry</option>
+                    <option value="calculus-symbols">Calculus Symbols</option>
+                    <option value="matrices">Matrices & Vectors</option>
+                    <option value="sets">Sets & Logic</option>
+                    <option value="statistics-symbols">Statistics Symbols</option>
+                    <option value="physics-formulas">Physics Formulas</option>
+                    <option value="chemistry-formulas">Chemistry Formulas</option>
                 </select>
             </div>
         </div>
@@ -55,6 +70,84 @@
             <div class="output-section">
                 <h2>Preview</h2>
                 <div id="markdown-output"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Markdown Templates -->
+    <div id="markdown-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📝 Markdown Syntax Guide</h2>
+                <span class="close" id="close-markdown">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="template-selector">
+                    <select id="modal-markdown-select" class="modal-dropdown">
+                        <option value="headers">Headers (H1-H6)</option>
+                        <option value="emphasis">Text Emphasis</option>
+                        <option value="lists">Lists & Checkboxes</option>
+                        <option value="links">Links & Images</option>
+                        <option value="code">Code & Syntax Highlighting</option>
+                        <option value="tables">Tables</option>
+                        <option value="blockquotes">Blockquotes & Callouts</option>
+                        <option value="horizontal-rules">Horizontal Rules</option>
+                        <option value="html">HTML in Markdown</option>
+                        <option value="advanced">Advanced Features</option>
+                        <option value="complete-example">Complete Example</option>
+                    </select>
+                </div>
+                <div class="modal-preview">
+                    <div class="modal-input">
+                        <h3>Markdown Code:</h3>
+                        <textarea id="modal-markdown-code" readonly></textarea>
+                        <button id="copy-markdown-code" class="btn">Copy Code</button>
+                    </div>
+                    <div class="modal-output">
+                        <h3>Preview:</h3>
+                        <div id="modal-markdown-preview"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Math Templates -->
+    <div id="math-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🧮 Math Formula Guide</h2>
+                <span class="close" id="close-math">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="template-selector">
+                    <select id="modal-math-select" class="modal-dropdown">
+                        <option value="basic-operations">Basic Operations</option>
+                        <option value="fractions">Fractions</option>
+                        <option value="exponents">Exponents & Roots</option>
+                        <option value="subscripts">Subscripts & Superscripts</option>
+                        <option value="greek-letters">Greek Letters</option>
+                        <option value="operators">Mathematical Operators</option>
+                        <option value="functions">Functions & Trigonometry</option>
+                        <option value="calculus-symbols">Calculus Symbols</option>
+                        <option value="matrices">Matrices & Vectors</option>
+                        <option value="sets">Sets & Logic</option>
+                        <option value="statistics-symbols">Statistics Symbols</option>
+                        <option value="physics-formulas">Physics Formulas</option>
+                        <option value="chemistry-formulas">Chemistry Formulas</option>
+                    </select>
+                </div>
+                <div class="modal-preview">
+                    <div class="modal-input">
+                        <h3>LaTeX Code:</h3>
+                        <textarea id="modal-math-code" readonly></textarea>
+                        <button id="copy-math-code" class="btn">Copy Code</button>
+                    </div>
+                    <div class="modal-output">
+                        <h3>Preview:</h3>
+                        <div id="modal-math-preview"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
