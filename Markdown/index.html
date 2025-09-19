@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Preview</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Markdown Preview</h1>
+        </header>
+        
+        <div class="editor-container">
+            <div class="input-section">
+                <h2>Markdown Input</h2>
+                <textarea id="markdown-input" placeholder="Type your markdown here..."></textarea>
+            </div>
+            
+            <div class="output-section">
+                <h2>Preview</h2>
+                <div id="markdown-output"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
