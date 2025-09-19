@@ -5,9 +5,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown Preview</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
     <link rel="stylesheet" href="style.css">
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        // MathJax configuration must be set before MathJax loads
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true,
+                packages: { '[+]': ['ams', 'newcommand', 'configmacros'] }
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            },
+            startup: {
+                ready: function() {
+                    try {
+                        if (MathJax.startup && MathJax.startup.defaultReady) {
+                            MathJax.startup.defaultReady();
+                        }
+                        console.log('MathJax is loaded and ready.');
+                    } catch (err) {
+                        console.log('MathJax startup error:', err);
+                    }
+                }
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
 </head>
 
 <body>
@@ -167,7 +195,20 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"
+        onerror="console.error('Failed to load Marked.js'); alert('Failed to load markdown parser. Please refresh the page.')"></script>
+    <script>
+        // Check if libraries loaded
+        window.addEventListener('load', function () {
+            if (typeof marked === 'undefined') {
+                console.error('Marked.js not loaded');
+                document.body.innerHTML = '<div style="padding: 20px; text-align: center;"><h1>Loading Error</h1><p>Failed to load required libraries. Please refresh the page.</p></div>';
+            }
+            if (typeof MathJax === 'undefined') {
+                console.warn('MathJax not loaded - math formulas will not render');
+            }
+        });
+    </script>
     <script src="script.js"></script>
 </body>
 

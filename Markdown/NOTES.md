@@ -1,0 +1,3 @@
+# Markdown Preview Tool - Quick Notes
+
+**Real-time markdown editor** with **MathJax mathematical formulas** ($E=mc^2$, $$\frac{a}{b}$$), built using **HTML5/CSS3/JavaScript** + **Marked.js** for parsing. Features **22 template categories** via dropdowns (11 markdown syntax + 11 math formulas covering basic operations to advanced physics/chemistry/engineering), **URL sharing**, **copy functionality**, and **responsive design**. Static site perfect for **GitHub Pages** deployment.
