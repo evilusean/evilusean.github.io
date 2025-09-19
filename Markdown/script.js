@@ -11,16 +11,15 @@ window.MathJax = {
     }
 };
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const markdownInput = document.getElementById('markdown-input');
     const markdownOutput = document.getElementById('markdown-output');
     const clearBtn = document.getElementById('clear-btn');
     const copyBtn = document.getElementById('copy-btn');
     const saveBtn = document.getElementById('save-btn');
-    const loadBtn = document.getElementById('load-btn');
     const markdownTemplates = document.getElementById('markdown-templates');
     const mathTemplates = document.getElementById('math-templates');
-    
+
     // Default markdown content
     const defaultMarkdown = `# Welcome to Markdown Preview
 
@@ -32,7 +31,7 @@ This is a **live markdown preview** tool with mathematical notation support. Sta
 - GitHub-flavored markdown support
 - Mathematical notation with MathJax
 - Template system with popups
-- URL saving/loading
+- URL saving and sharing
 - Responsive design
 
 ## Math Examples
@@ -72,57 +71,76 @@ Select from the dropdowns above to see examples and copy code!`;
     // Load content from URL parameters or use default
     loadFromURL() || (markdownInput.value = defaultMarkdown);
     updatePreview();
-    
+
     // Event listeners
     markdownInput.addEventListener('input', updatePreview);
     clearBtn.addEventListener('click', clearContent);
     copyBtn.addEventListener('click', copyContent);
     saveBtn.addEventListener('click', saveToURL);
-    loadBtn.addEventListener('click', loadFromURL);
     markdownTemplates.addEventListener('change', handleMarkdownDropdown);
-    lothTemplates.addEventListener('change', handleMathDropdown);
-    
+    mathTemplates.addEventListener('change', handleMathDropdown);
+
     function updatePreview() {
         const markdownText = markdownInput.value;
         const htmlOutput = marked.parse(markdownText);
         markdownOutput.innerHTML = htmlOutput;
-        
+
         // Re-render MathJax
         if (window.MathJax && window.MathJax.typesetPromise) {
-            MathJax.typinnerHTMise([markdownOutput]).catch((err) => console.log(err.message));
+            MathJax.typesetPromise([markdownOutput]).catch((err) => console.log(err.message));
         }
     }
-    
+
     function clearContent() {
         markdownInput.value = '';
         updatePreview();
     }
-    
-    function copyContent() {
-        markdownInput.select();
-        document.execCommand('copy');
-        
-        // Visual feedback
-        const originalText = copyBtn.textContent;
-        copyBtn.texecCommand('copy');
 
-        // Visual feedback
-        const originalText = copyBtn.textContent;
-        copyBtn.textContent = 'Copied!';
-        setTimeout(() => {
-            copyBtn.textContent = originalText;
-        }, 2000);
+    function copyContent() {
+        // Copy everything in the markdown input field
+        markdownInput.select();
+        markdownInput.setSelectionRange(0, 99999); // For mobile devices
+
+        try {
+            document.execCommand('copy');
+            // Visual feedback
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => {
+                copyBtn.textContent = originalText;
+            }, 2000);
+        } catch (err) {
+            // Fallback for modern browsers
+            navigator.clipboard.writeText(markdownInput.value).then(() => {
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = 'Copied!';
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                }, 2000);
+            });
+        }
     }
 
     function saveToURL() {
+        // Save current markdown input content to URL parameters
         const content = markdownInput.value;
         const encoded = encodeURIComponent(content);
         const url = window.location.origin + window.location.pathname + '?content=' + encoded;
 
+        // Update the browser URL without reloading
+        window.history.pushState({}, '', url);
+
         // Copy URL to clipboard
         navigator.clipboard.writeText(url).then(() => {
             const originalText = saveBtn.textContent;
-            saveBtn.textContent = 'URL Copied!';
+            saveBtn.textContent = 'URL Saved & Copied!';
+            setTimeout(() => {
+                saveBtn.textContent = originalText;
+            }, 2000);
+        }).catch(() => {
+            // Fallback if clipboard API fails
+            const originalText = saveBtn.textContent;
+            saveBtn.textContent = 'URL Saved!';
             setTimeout(() => {
                 saveBtn.textContent = originalText;
             }, 2000);
@@ -140,6 +158,23 @@ Select from the dropdowns above to see examples and copy code!`;
         return false;
     }
 
+    // Handle dropdown selections - show popup with examples
+    function handleMarkdownDropdown() {
+        const template = markdownTemplates.value;
+        if (template) {
+            showMarkdownPopup(template);
+            markdownTemplates.value = ''; // Reset dropdown
+        }
+    }
+
+    function handleMathDropdown() {
+        const template = mathTemplates.value;
+        if (template) {
+            showMathPopup(template);
+            mathTemplates.value = ''; // Reset dropdown
+        }
+    }
+
     // Handle tab key in textarea
     markdownInput.addEventListener('keydown', function (e) {
         if (e.key === 'Tab') {
@@ -153,8 +188,9 @@ Select from the dropdowns above to see examples and copy code!`;
             // Move cursor
             this.selectionStart = this.selectionEnd = start + 1;
         }
-    });    // M
-Modal functionality
+    });
+
+    // Modal functionality
     const markdownModal = document.getElementById('markdown-modal');
     const mathModal = document.getElementById('math-modal');
     const closeMarkdown = document.getElementById('close-markdown');
@@ -182,13 +218,19 @@ Modal functionality
         if (e.target === mathModal) mathModal.style.display = 'none';
     });
 
-    function showMarkdownPopup() {
+    function showMarkdownPopup(selectedTemplate = null) {
         markdownModal.style.display = 'block';
+        if (selectedTemplate) {
+            modalMarkdownSelect.value = selectedTemplate;
+        }
         updateMarkdownModal();
     }
 
-    function showMathPopup() {
+    function showMathPopup(selectedTemplate = null) {
         mathModal.style.display = 'block';
+        if (selectedTemplate) {
+            modalMathSelect.value = selectedTemplate;
+        }
         updateMathModal();
     }
 
@@ -213,7 +255,13 @@ Modal functionality
 
     function copyModalMarkdown() {
         modalMarkdownCode.select();
-        document.execCommand('copy');
+        modalMarkdownCode.setSelectionRange(0, 99999);
+
+        try {
+            document.execCommand('copy');
+        } catch (err) {
+            navigator.clipboard.writeText(modalMarkdownCode.value);
+        }
 
         const originalText = copyMarkdownCode.textContent;
         copyMarkdownCode.textContent = 'Copied!';
@@ -224,36 +272,19 @@ Modal functionality
 
     function copyModalMath() {
         modalMathCode.select();
-        document.execCommand('copy');
+        modalMathCode.setSelectionRange(0, 99999);
+
+        try {
+            document.execCommand('copy');
+        } catch (err) {
+            navigator.clipboard.writeText(modalMathCode.value);
+        }
 
         const originalText = copyMathCode.textContent;
         copyMathCode.textContent = 'Copied!';
         setTimeout(() => {
             copyMathCode.textContent = originalText;
         }, 2000);
-    }
-
-    // Template functions for dropdowns (original functionality)
-    function loadMarkdownTemplate() {
-        const template = markdownTemplates.value;
-        if (!template) return;
-
-        const content = getMarkdownTemplate(template);
-        markdownInput.value = content;
-        updatePreview();
-        markdownTemplates.value = '';
-    }
-
-    function loadMathTemplate() {
-        const template = mathTemplates.value;
-        if (!template) return;
-
-        const content = getMathTemplate(template);
-        const currentContent = markdownInput.value;
-        const newContent = currentContent + (currentContent ? '\n\n' : '') + content;
-        markdownInput.value = newContent;
-        updatePreview();
-        mathTemplates.value = '';
     }
 
     // Comprehensive markdown templates
