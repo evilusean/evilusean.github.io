@@ -149,26 +149,65 @@ Select from the dropdowns above to see examples and copy code!`;
     function saveToURL() {
         // Save current markdown input content to URL parameters
         const content = markdownInput.value;
+
+        if (!content.trim()) {
+            // Handle empty content
+            const originalText = saveBtn.textContent;
+            saveBtn.textContent = 'Nothing to save!';
+            setTimeout(() => {
+                saveBtn.textContent = originalText;
+            }, 2000);
+            return;
+        }
+
         const encoded = encodeURIComponent(content);
         const url = window.location.origin + window.location.pathname + '?content=' + encoded;
 
         // Update the browser URL without reloading
         window.history.pushState({}, '', url);
 
-        // Copy URL to clipboard
-        navigator.clipboard.writeText(url).then(() => {
+        // Copy URL to clipboard with multiple fallback methods
+        const copyToClipboard = async (text) => {
+            // Method 1: Modern Clipboard API
+            if (navigator.clipboard && window.isSecureContext) {
+                try {
+                    await navigator.clipboard.writeText(text);
+                    return true;
+                } catch (err) {
+                    console.log('Clipboard API failed:', err);
+                }
+            }
+
+            // Method 2: Fallback using document.execCommand
+            try {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                const result = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                return result;
+            } catch (err) {
+                console.log('execCommand failed:', err);
+                return false;
+            }
+        };
+
+        // Attempt to copy URL to clipboard
+        copyToClipboard(url).then((success) => {
             const originalText = saveBtn.textContent;
-            saveBtn.textContent = 'URL Saved & Copied!';
+            if (success) {
+                saveBtn.textContent = '✓ URL Saved & Copied!';
+            } else {
+                saveBtn.textContent = '✓ URL Saved (Copy failed)';
+            }
             setTimeout(() => {
                 saveBtn.textContent = originalText;
-            }, 2000);
-        }).catch(() => {
-            // Fallback if clipboard API fails
-            const originalText = saveBtn.textContent;
-            saveBtn.textContent = 'URL Saved!';
-            setTimeout(() => {
-                saveBtn.textContent = originalText;
-            }, 2000);
+            }, 3000);
         });
     }
 
