@@ -414,4 +414,39 @@ header h1 {
     .modal-header h2 {
         font-size: 1.2rem;
     }
+}/* 
+MathJax specific styling */
+.MathJax_Display {
+    margin: 1em 0 !important;
+}
+
+.MathJax {
+    outline: none;
+}
+
+/* Ensure MathJax renders properly in modals */
+#modal-markdown-preview .MathJax,
+#modal-math-preview .MathJax {
+    font-size: 1em !important;
+}
+
+#modal-markdown-preview .MathJax_Display,
+#modal-math-preview .MathJax_Display {
+    margin: 0.5em 0 !important;
+}
+
+/* Fix for MathJax in preview areas */
+#markdown-output .MathJax_Display,
+#modal-markdown-preview .MathJax_Display,
+#modal-math-preview .MathJax_Display {
+    text-align: center;
+    margin: 1em 0;
+}
+
+/* Ensure proper spacing for inline math */
+#markdown-output .MathJax,
+#modal-markdown-preview .MathJax,
+#modal-math-preview .MathJax {
+    display: inline-block;
+    vertical-align: middle;
 }

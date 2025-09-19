@@ -4,10 +4,17 @@ window.MathJax = {
         inlineMath: [['$', '$'], ['\\(', '\\)']],
         displayMath: [['$$', '$$'], ['\\[', '\\]']],
         processEscapes: true,
-        processEnvironments: true
+        processEnvironments: true,
+        packages: { '[+]': ['ams', 'newcommand', 'configmacros'] }
     },
     options: {
-        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    startup: {
+        ready: () => {
+            MathJax.startup.defaultReady();
+            console.log('MathJax is loaded and ready.');
+        }
     }
 };
 
@@ -70,7 +77,16 @@ Select from the dropdowns above to see examples and copy code!`;
 
     // Load content from URL parameters or use default
     loadFromURL() || (markdownInput.value = defaultMarkdown);
-    updatePreview();
+
+    // Wait for MathJax to be ready before initial preview
+    if (window.MathJax) {
+        MathJax.startup.promise.then(() => {
+            updatePreview();
+        });
+    } else {
+        // Fallback if MathJax isn't loaded yet
+        setTimeout(updatePreview, 1000);
+    }
 
     // Event listeners
     markdownInput.addEventListener('input', updatePreview);
@@ -85,10 +101,19 @@ Select from the dropdowns above to see examples and copy code!`;
         const htmlOutput = marked.parse(markdownText);
         markdownOutput.innerHTML = htmlOutput;
 
-        // Re-render MathJax
-        if (window.MathJax && window.MathJax.typesetPromise) {
-            MathJax.typesetPromise([markdownOutput]).catch((err) => console.log(err.message));
-        }
+        // Re-render MathJax with better error handling and delay
+        setTimeout(() => {
+            if (window.MathJax) {
+                if (MathJax.typesetPromise) {
+                    MathJax.typesetPromise([markdownOutput]).catch((err) => {
+                        console.log('MathJax rendering error:', err.message);
+                    });
+                } else if (MathJax.Hub) {
+                    // Fallback for older MathJax versions
+                    MathJax.Hub.Queue(["Typeset", MathJax.Hub, markdownOutput]);
+                }
+            }
+        }, 100);
     }
 
     function clearContent() {
@@ -212,10 +237,22 @@ Select from the dropdowns above to see examples and copy code!`;
     copyMarkdownCode.addEventListener('click', copyModalMarkdown);
     copyMathCode.addEventListener('click', copyModalMath);
 
-    // Close modals when clicking outside
+    // Close modals when clicking outside or pressing ESC
     window.addEventListener('click', (e) => {
         if (e.target === markdownModal) markdownModal.style.display = 'none';
         if (e.target === mathModal) mathModal.style.display = 'none';
+    });
+
+    // Close modals with ESC key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            if (markdownModal.style.display === 'block') {
+                markdownModal.style.display = 'none';
+            }
+            if (mathModal.style.display === 'block') {
+                mathModal.style.display = 'none';
+            }
+        }
     });
 
     function showMarkdownPopup(selectedTemplate = null) {
@@ -247,10 +284,19 @@ Select from the dropdowns above to see examples and copy code!`;
         modalMathCode.value = content;
         modalMathPreview.innerHTML = marked.parse(content);
 
-        // Re-render MathJax in modal
-        if (window.MathJax && window.MathJax.typesetPromise) {
-            MathJax.typesetPromise([modalMathPreview]).catch((err) => console.log(err.message));
-        }
+        // Re-render MathJax in modal with delay
+        setTimeout(() => {
+            if (window.MathJax) {
+                if (MathJax.typesetPromise) {
+                    MathJax.typesetPromise([modalMathPreview]).catch((err) => {
+                        console.log('MathJax modal rendering error:', err.message);
+                    });
+                } else if (MathJax.Hub) {
+                    // Fallback for older MathJax versions
+                    MathJax.Hub.Queue(["Typeset", MathJax.Hub, modalMathPreview]);
+                }
+            }
+        }, 200);
     }
 
     function copyModalMarkdown() {
