@@ -6,7 +6,7 @@ This directory contains interactive language learning applications for Japanese 
 
 - **Japanese/** - Japanese language learning apps with Japanese flag background
 - **Slovak/** - Slovak language learning apps with Slovak coat of arms background
-- **Main Directory** - Flag selection page with hover glow effects
+- **Main Directory** - Flag selection page with hover glow effects and responsive design
 
 ## Auto-Update System
 
@@ -80,4 +80,6 @@ The auto-update scripts preserve:
 - ✅ Black text on white background for better readability
 - ✅ Red glow effects for Japanese (🇯🇵) and blue glow for Slovak (🇸🇰)
 - ✅ Sharp text with glow effects using pseudo-elements for better readability
+- ✅ Large, prominent flags with responsive design for mobile devices
+- ✅ Vertical stacking on smaller screens (768px and below)
 - ✅ Proper project naming conventions

@@ -10,14 +10,17 @@ body {
 
 .container {
     display: flex;
-    gap: 40px; /* Increased gap between flags */
+    gap: 90px; /* 50% bigger gap: 60px * 1.5 */
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    justify-content: center; /* Center the flags */
+    align-items: center; /* Center vertically */
 }
 
 .flag {
     position: relative;
-    width: 200px; /* Increased width */
-    height: 120px; /* Increased height */
-    border-radius: 10px;
+    width: 450px; /* 50% bigger: 300px * 1.5 */
+    height: 270px; /* 50% bigger: 180px * 1.5 */
+    border-radius: 20px; /* Proportionally larger border radius */
     overflow: hidden;
     cursor: pointer;
     transition: transform 0.3s;
@@ -26,11 +29,13 @@ body {
     align-items: center;
     text-align: center;
     font-weight: bold;
-    font-size: 24px; /* Increased font size */
+    font-size: 54px; /* 50% bigger: 36px * 1.5 */
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3); /* Proportionally larger shadow */
 }
 
 .flag:hover {
-    transform: scale(1.05);
+    transform: scale(1.08); /* Slightly more dramatic hover effect */
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.4); /* 50% bigger shadow: 12px*1.5, 24px*1.5 */
 }
 
 .slovak {
@@ -91,8 +96,8 @@ body {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 40px; /* Diameter of the circle */
-    height: 40px; /* Diameter of the circle */
+    width: 90px; /* 50% bigger: 60px * 1.5 */
+    height: 90px; /* 50% bigger: 60px * 1.5 */
     background-color: red; /* Circle color */
     border-radius: 50%; /* Make it a circle */
     transform: translate(-50%, -50%); /* Center the circle */
@@ -105,4 +110,41 @@ body {
     color: inherit; /* Use the color defined in the flag class */
     font-size: inherit; /* Inherit font size from flag */
     transition: all 0.3s ease; /* Smooth transition for glow effects */
+}
+/*
+ Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column; /* Stack flags vertically */
+        gap: 45px; /* 50% bigger gap: 30px * 1.5 */
+    }
+    
+    .flag {
+        width: 420px; /* 50% bigger: 280px * 1.5 */
+        height: 252px; /* 50% bigger: 168px * 1.5 */
+        font-size: 48px; /* 50% bigger: 32px * 1.5 */
+    }
+    
+    .japanese::before {
+        width: 75px; /* 50% bigger: 50px * 1.5 */
+        height: 75px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        gap: 30px; /* 50% bigger: 20px * 1.5 */
+        padding: 30px; /* 50% bigger: 20px * 1.5 */
+    }
+    
+    .flag {
+        width: 375px; /* 50% bigger: 250px * 1.5 */
+        height: 225px; /* 50% bigger: 150px * 1.5 */
+        font-size: 42px; /* 50% bigger: 28px * 1.5 */
+    }
+    
+    .japanese::before {
+        width: 68px; /* 50% bigger: 45px * 1.5 */
+        height: 68px;
+    }
 }
