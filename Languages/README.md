@@ -6,6 +6,7 @@ This directory contains interactive language learning applications for Japanese 
 
 - **Japanese/** - Japanese language learning apps with Japanese flag background
 - **Slovak/** - Slovak language learning apps with Slovak coat of arms background
+- **Main Directory** - Flag selection page with hover glow effects
 
 ## Auto-Update System
 
@@ -20,11 +21,13 @@ Each language directory has its own auto-updating index.html that:
 - **Background**: Japanese flag (red circle on white)
 - **Projects**: Numbers, Time, Calendar, Prepositions, HiraganaDrop, KanjiDrop
 - **Naming**: "Japanese [Project] TranslaSean"
+- **Hover Effect**: Red glow text (#ff0000) with red border
 
 ### Slovak Projects  
 - **Background**: Slovak flag (white/blue/red stripes) + coat of arms SVG
 - **Projects**: Numbers, Time, Calendar, Prepositions
 - **Naming**: "Slovak [Project] TranslaSean"
+- **Hover Effect**: Blue glow text (#0066ff) with blue border
 
 ## Manual Updates
 
@@ -73,6 +76,7 @@ The auto-update scripts preserve:
 - ✅ Original flag/coat of arms backgrounds
 - ✅ Card-based layout with clean white cards and black borders
 - ✅ Responsive design for mobile devices
-- ✅ Hover effects with subtle animations
+- ✅ Hover effects with subtle animations and glow text
 - ✅ Black text on white background for better readability
+- ✅ Red glow effects for Japanese (🇯🇵) and blue glow for Slovak (🇸🇰)
 - ✅ Proper project naming conventions

@@ -46,6 +46,7 @@ body::before {
     background-color: rgba(255, 255, 255, 1); /* Full white on hover */
     transform: translateY(-2px); /* Slight lift on hover */
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
+    border-color: #ff0000; /* Red border on hover */
 }
 
 .card a {
@@ -57,6 +58,16 @@ body::before {
     color: black; /* Black text color */
     text-decoration: none; /* Remove underline from links */
     background-color: transparent; /* Remove background from link */
+    transition: all 0.3s ease; /* Smooth text transition */
+}
+
+.card:hover a {
+    color: #cc0000; /* Dark red text on hover */
+    text-shadow: 
+        0 0 5px #ff0000,
+        0 0 10px #ff0000,
+        0 0 15px #ff0000,
+        0 0 20px #ff0000; /* Red glow effect */
 }
 
 /* Media query for small screens */

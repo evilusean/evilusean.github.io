@@ -38,10 +38,28 @@ body {
     color: black; /* Set text color to black */
 }
 
+.slovak:hover a {
+    color: #0066ff; /* Blue text on hover */
+    text-shadow: 
+        0 0 5px #0066ff,
+        0 0 10px #0066ff,
+        0 0 15px #0066ff,
+        0 0 20px #0066ff; /* Blue glow effect */
+}
+
 .japanese {
     background-color: white;
     color: black;
     position: relative;
+}
+
+.japanese:hover a {
+    color: #cc0000; /* Dark red text on hover */
+    text-shadow: 
+        0 0 5px #ff0000,
+        0 0 10px #ff0000,
+        0 0 15px #ff0000,
+        0 0 20px #ff0000; /* Red glow effect */
 }
 
 .japanese::before {
@@ -62,4 +80,5 @@ body {
     text-decoration: none;
     color: inherit; /* Use the color defined in the flag class */
     font-size: inherit; /* Inherit font size from flag */
+    transition: all 0.3s ease; /* Smooth transition for glow effects */
 }
