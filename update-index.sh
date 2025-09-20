@@ -169,3 +169,9 @@ if [ -d "3ThreeJS" ] && [ -f "3ThreeJS/update-threejs-index.sh" ]; then
     echo "🔄 Updating 3ThreeJS index..."
     (cd 3ThreeJS && ./update-threejs-index.sh)
 fi
+
+# Update Languages indexes if they exist
+if [ -d "Languages" ] && [ -f "Languages/update-languages-index.sh" ]; then
+    echo "🌐 Updating Languages indexes..."
+    (cd Languages && ./update-languages-index.sh)
+fi

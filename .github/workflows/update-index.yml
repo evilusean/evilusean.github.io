@@ -25,11 +25,18 @@ jobs:
           cd 3ThreeJS && ./update-threejs-index.sh
         fi
         
+    - name: Update Languages indexes
+      run: |
+        if [ -d "Languages" ] && [ -f "Languages/update-languages-index.sh" ]; then
+          chmod +x Languages/update-languages-index.sh Languages/Japanese/update-japanese-index.sh Languages/Slovak/update-slovak-index.sh
+          cd Languages && ./update-languages-index.sh
+        fi
+        
     - name: Commit changes
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add index.html 3ThreeJS/index.html
+        git add index.html 3ThreeJS/index.html Languages/Japanese/index.html Languages/Slovak/index.html
         if git diff --staged --quiet; then
           echo "No changes to commit"
         else

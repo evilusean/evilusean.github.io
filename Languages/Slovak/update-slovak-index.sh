@@ -1,3 +1,17 @@
+#!/bin/bash
+
+# Get current date
+current_date=$(date +"%B %d, %Y")
+
+# Project name mappings for better display names
+declare -A project_names
+project_names["Numbers"]="Slovak Numbers TranslaSean"
+project_names["Time"]="Slovak Time TranslaSean"
+project_names["Calendar"]="Slovak Calendar TranslaSean"
+project_names["Prepositions"]="Slovak PreposiSeans"
+
+# Start building the HTML with the Slovak coat of arms SVG
+cat > index.html << 'EOF'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -43,18 +57,38 @@
         </svg>
     </div>
     <div class="card-container">
+EOF
+
+# Loop through directories and add project cards
+for dir in */; do
+    # Remove trailing slash
+    dir_name=${dir%/}
+    
+    # Skip hidden directories and files
+    if [[ $dir_name == .* ]] || [[ ! -d $dir_name ]]; then
+        continue
+    fi
+    
+    # Check if index.html exists in the directory
+    if [ -f "$dir_name/index.html" ]; then
+        # Get display name (use mapping if available, otherwise use directory name)
+        display_name=${project_names[$dir_name]:-"Slovak $dir_name TranslaSean"}
+        
+        # Add project card to HTML
+        cat >> index.html << EOF
         <div class="card">
-            <a href="Calendar/index.html">Slovak Calendar TranslaSean</a>
+            <a href="$dir_name/index.html">$display_name</a>
         </div>
-        <div class="card">
-            <a href="Numbers/index.html">Slovak Numbers TranslaSean</a>
-        </div>
-        <div class="card">
-            <a href="Prepositions/index.html">Slovak PreposiSeans</a>
-        </div>
-        <div class="card">
-            <a href="Time/index.html">Slovak Time TranslaSean</a>
-        </div>
+EOF
+    fi
+done
+
+# Close the HTML
+cat >> index.html << 'EOF'
     </div>
 </body>
 </html>
+EOF
+
+echo "✅ Slovak index.html updated successfully!"
+echo "📁 Found $(find . -maxdepth 1 -type d ! -name ".*" ! -name "." | wc -l) Slovak language projects"

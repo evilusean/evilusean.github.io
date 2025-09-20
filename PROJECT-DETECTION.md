@@ -49,6 +49,13 @@ The portfolio auto-update system now intelligently detects different types of pr
 - Handles subdirectory structures (like RapierPhysicSean/CenterGravityOrbs/)
 - Also detects React/Node.js projects within 3ThreeJS directory
 
+### Languages Portfolio (`Languages/update-languages-index.sh`)
+- Updates both Japanese and Slovak language learning app indexes
+- Preserves original flag/coat of arms styling
+- Maintains card-based layout with semi-transparent styling
+- Custom project naming conventions (e.g., "Japanese Numbers TranslaSean")
+- Automatically detects new language learning projects
+
 ## Adding New Projects
 
 1. **HTML Projects**: Just add an `index.html` file
@@ -67,6 +74,13 @@ The system will automatically detect and categorize your project on the next upd
 # Update 3ThreeJS portfolio
 cd 3ThreeJS && ./update-threejs-index.sh
 
-# Update both (main script calls 3ThreeJS automatically)
+# Update Languages portfolios
+cd Languages && ./update-languages-index.sh
+
+# Update specific language
+cd Languages/Japanese && ./update-japanese-index.sh
+cd Languages/Slovak && ./update-slovak-index.sh
+
+# Update everything (main script calls all sub-updates automatically)
 ./update-index.sh
 ```
