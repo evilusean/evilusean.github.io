@@ -4,6 +4,28 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+// Get control elements
+const colorPicker = document.getElementById("colorPicker");
+const speedSlider = document.getElementById("speedSlider");
+const speedValue = document.getElementById("speedValue");
+
+// Initialize with default values
+let matrixColor = "#0aff0a";
+let fps = 30;
+
+// Update speed display
+speedValue.textContent = fps;
+
+// Event listeners for controls
+colorPicker.addEventListener("input", (e) => {
+  matrixColor = e.target.value;
+});
+
+speedSlider.addEventListener("input", (e) => {
+  fps = parseInt(e.target.value);
+  speedValue.textContent = fps;
+});
+
 let gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
 //CIRCLE GRADIENT, CHANGE THE '100' or '200' TO CHANGE CIRCLE DIAMETER
 //let gradient = ctx.createLinearGradient(canvas.width/2, canvas.height/2, 100, canvas.width/2, canvas.height/2,200);
@@ -53,7 +75,7 @@ class Effect {
       this.symbols[i] = new Symbol(i, 0, this.fontSize, this.canvasHeight);
     }
   }
-  resize() {
+  resize(width, height) {
     this.canvasWidth = width;
     this.canvasHeight = height;
     this.columns = this.canvasWidth / this.fontSize;
@@ -64,18 +86,17 @@ class Effect {
 
 const effect = new Effect(canvas.width, canvas.height);
 let lastTime = 0;
-const fps = 30; //Change this to speed up or slow down
-const nextFrame = 1000 / fps;
 let timer = 0;
 
 function animate(timeStamp) {
   const deltaTime = timeStamp - lastTime;
   lastTime = timeStamp;
+  const nextFrame = 1000 / fps; // Use dynamic fps value
   if (timer > nextFrame) {
     ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-    ctx.textAkugb = "center";
+    ctx.textAlign = "center";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#0aff0a";
+    ctx.fillStyle = matrixColor; // Use dynamic color value
     //ctx.fillStyle = gradient;
     ctx.font = effect.fontSize + "px monospace";
     effect.symbols.forEach((symbol) => symbol.draw(ctx));

@@ -6,6 +6,7 @@
 body {
   overflow: hidden;
   background: black;
+  font-family: 'Courier New', monospace;
 }
 canvas {
   background: black;
@@ -13,4 +14,80 @@ canvas {
   top: 0;
   left: 0;
   z-index: -1;
+}
+
+.controls {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  border-radius: 10px;
+  border: 2px solid #0aff0a;
+  box-shadow: 0 0 20px rgba(10, 255, 10, 0.3);
+}
+
+.control-group {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.control-group:last-child {
+  margin-bottom: 0;
+}
+
+label {
+  color: #0aff0a;
+  font-weight: bold;
+  min-width: 100px;
+  text-shadow: 0 0 5px rgba(10, 255, 10, 0.5);
+}
+
+#colorPicker {
+  width: 50px;
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background: transparent;
+}
+
+#speedSlider {
+  flex: 1;
+  height: 5px;
+  background: #333;
+  border-radius: 5px;
+  outline: none;
+  cursor: pointer;
+}
+
+#speedSlider::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #0aff0a;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(10, 255, 10, 0.5);
+}
+
+#speedSlider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #0aff0a;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 10px rgba(10, 255, 10, 0.5);
+}
+
+#speedValue {
+  color: #0aff0a;
+  font-weight: bold;
+  min-width: 30px;
+  text-align: center;
+  text-shadow: 0 0 5px rgba(10, 255, 10, 0.5);
 }
