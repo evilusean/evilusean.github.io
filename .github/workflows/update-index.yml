@@ -18,14 +18,21 @@ jobs:
         chmod +x update-index.sh
         ./update-index.sh
         
+    - name: Update 3ThreeJS index
+      run: |
+        if [ -d "3ThreeJS" ] && [ -f "3ThreeJS/update-threejs-index.sh" ]; then
+          chmod +x 3ThreeJS/update-threejs-index.sh
+          cd 3ThreeJS && ./update-threejs-index.sh
+        fi
+        
     - name: Commit changes
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add index.html
+        git add index.html 3ThreeJS/index.html
         if git diff --staged --quiet; then
           echo "No changes to commit"
         else
-          git commit -m "Auto-update portfolio index"
+          git commit -m "Auto-update portfolio indexes"
           git push
         fi

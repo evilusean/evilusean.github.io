@@ -3,6 +3,20 @@
 # Get current date
 current_date=$(date +"%B %d, %Y")
 
+# Project descriptions mapping
+declare -A descriptions
+descriptions["2DaMoon"]="Interactive 3D moon scene with realistic lighting and space environment"
+descriptions["RapierPhysicSean"]="Physics simulation with gravity orbs using Rapier physics engine"
+descriptions["TransISean"]="Smooth scene transitions and visual effects showcase"
+descriptions["Wormhole"]="Journey through a dynamic wormhole with camera movement along spline curves"
+
+# Icon mapping for different project types
+declare -A icons
+icons["2DaMoon"]="bx-planet"
+icons["RapierPhysicSean"]="bx-atom"
+icons["TransISean"]="bx-shuffle"
+icons["Wormhole"]="bx-trip"
+
 # Start building the HTML
 cat > index.html << 'EOF'
 <!DOCTYPE html>
@@ -10,19 +24,22 @@ cat > index.html << 'EOF'
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sean's Portfolio Hub</title>
+    <title>Sean's Three.js Projects</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
 <body>
     <header class="header">
-        <div class="glow-text" data-text="Sean's Portfolio Hub">Sean's Portfolio Hub</div>
-        <p>Welcome to my collection of projects and experiments</p>
+        <div class="glow-text" data-text="Three.js Projects">Three.js Projects</div>
+        <p>Interactive 3D experiences and WebGL experiments</p>
+        <div class="nav-back">
+            <a href="../index.html" class="btn-back"><i class="bx bx-arrow-back"></i> Back to Portfolio</a>
+        </div>
     </header>
     
     <main>
         <section class="projects">
-            <h2 class="heading">Projects</h2>
+            <h2 class="heading">3D Projects</h2>
             <div class="project-grid">
 EOF
 
@@ -31,31 +48,48 @@ for dir in */; do
     # Remove trailing slash
     dir_name=${dir%/}
     
-    # Skip hidden directories
-    if [[ $dir_name == .* ]]; then
+    # Skip hidden directories and files
+    if [[ $dir_name == .* ]] || [[ ! -d $dir_name ]]; then
         continue
     fi
     
-    # Check if index.html exists in the directory
+    # Get description and icon
+    description=${descriptions[$dir_name]:-"Three.js project: $dir_name"}
+    icon=${icons[$dir_name]:-"bx-cube"}
+    
+    # Check if index.html exists in the directory or subdirectories
+    index_path=""
     if [ -f "$dir_name/index.html" ]; then
-        link="$dir_name/index.html"
-        status=""
-    else
-        link="#"
-        status=" (no index.html)"
+        index_path="$dir_name/index.html"
+    elif [ -f "$dir_name/CenterGravityOrbs/index.html" ]; then
+        index_path="$dir_name/CenterGravityOrbs/index.html"
     fi
     
-    # Add project card to HTML
-    cat >> index.html << EOF
+    if [ -n "$index_path" ]; then
+        # Add project card to HTML
+        cat >> index.html << EOF
                 <div class="project-card">
                     <div class="project-info">
-                        <i class="bx bx-folder"></i>
-                        <h3><a href="$link">$dir_name</a></h3>
-                        <p>$dir_name$status</p>
-                        $(if [ -f "$dir_name/index.html" ]; then echo '<div class="btn"><a href="'$link'">View Project</a></div>'; else echo '<div class="btn disabled">No Index</div>'; fi)
+                        <i class="bx $icon"></i>
+                        <h3><a href="$index_path">$dir_name</a></h3>
+                        <p>$description</p>
+                        <div class="btn"><a href="$index_path">View Project</a></div>
                     </div>
                 </div>
 EOF
+    else
+        # Add disabled card for projects without index
+        cat >> index.html << EOF
+                <div class="project-card">
+                    <div class="project-info">
+                        <i class="bx $icon"></i>
+                        <h3>$dir_name</h3>
+                        <p>$description (no index.html)</p>
+                        <div class="btn disabled">No Index</div>
+                    </div>
+                </div>
+EOF
+    fi
 done
 
 # Close the HTML
@@ -100,11 +134,5 @@ cat >> index.html << EOF
 </html>
 EOF
 
-echo "✅ index.html updated successfully!"
-echo "📁 Found $(find . -maxdepth 1 -type d ! -name ".*" ! -name "." | wc -l) directories"
-
-# Update 3ThreeJS index if it exists
-if [ -d "3ThreeJS" ] && [ -f "3ThreeJS/update-threejs-index.sh" ]; then
-    echo "🔄 Updating 3ThreeJS index..."
-    (cd 3ThreeJS && ./update-threejs-index.sh)
-fi
+echo "✅ 3ThreeJS index.html updated successfully!"
+echo "📁 Found $(find . -maxdepth 1 -type d ! -name ".*" ! -name "." | wc -l) Three.js projects"
