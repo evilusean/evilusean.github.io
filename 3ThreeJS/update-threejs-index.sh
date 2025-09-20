@@ -57,12 +57,33 @@ for dir in */; do
     description=${descriptions[$dir_name]:-"Three.js project: $dir_name"}
     icon=${icons[$dir_name]:-"bx-cube"}
     
-    # Check if index.html exists in the directory or subdirectories
+    # Check for different project types
     index_path=""
+    project_status=""
+    
     if [ -f "$dir_name/index.html" ]; then
+        # Standard HTML project
         index_path="$dir_name/index.html"
+        project_status=""
     elif [ -f "$dir_name/CenterGravityOrbs/index.html" ]; then
+        # Subdirectory with index
         index_path="$dir_name/CenterGravityOrbs/index.html"
+        project_status=""
+    elif [ -f "$dir_name/package.json" ]; then
+        # Check for different types of Node.js projects
+        if [ -f "$dir_name/src/app/page.tsx" ]; then
+            # Next.js project with app router
+            index_path="https://github.com/evilusean/evilusean.github.io/tree/main/3ThreeJS/$dir_name"
+            project_status=" (Next.js - see GitHub)"
+        elif [ -f "$dir_name/src/index.tsx" ] || [ -f "$dir_name/src/index.js" ]; then
+            # React project
+            index_path="https://github.com/evilusean/evilusean.github.io/tree/main/3ThreeJS/$dir_name"
+            project_status=" (React - see GitHub)"
+        else
+            # Generic Node.js project
+            index_path="https://github.com/evilusean/evilusean.github.io/tree/main/3ThreeJS/$dir_name"
+            project_status=" (Node.js - see GitHub)"
+        fi
     fi
     
     if [ -n "$index_path" ]; then
@@ -72,19 +93,19 @@ for dir in */; do
                     <div class="project-info">
                         <i class="bx $icon"></i>
                         <h3><a href="$index_path">$dir_name</a></h3>
-                        <p>$description</p>
-                        <div class="btn"><a href="$index_path">View Project</a></div>
+                        <p>$description$project_status</p>
+                        <div class="btn"><a href="$index_path" target="_blank">View Project</a></div>
                     </div>
                 </div>
 EOF
     else
-        # Add disabled card for projects without index
+        # Add disabled card for projects without any entry point
         cat >> index.html << EOF
                 <div class="project-card">
                     <div class="project-info">
                         <i class="bx $icon"></i>
                         <h3>$dir_name</h3>
-                        <p>$description (no index.html)</p>
+                        <p>$description (no entry point)</p>
                         <div class="btn disabled">No Index</div>
                     </div>
                 </div>

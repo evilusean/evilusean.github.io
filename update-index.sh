@@ -36,23 +36,84 @@ for dir in */; do
         continue
     fi
     
-    # Check if index.html exists in the directory
+    # Check for different project types
+    link="#"
+    status=""
+    project_type="folder"
+    
     if [ -f "$dir_name/index.html" ]; then
+        # Standard HTML project
         link="$dir_name/index.html"
         status=""
+        project_type="web"
+    elif [ -f "$dir_name/package.json" ]; then
+        # Check for different types of Node.js projects
+        if [ -f "$dir_name/src/app/page.tsx" ]; then
+            # Next.js project with app router - check if it's configured for static export
+            if [ -f "$dir_name/next.config.mjs" ] && grep -q "output.*export" "$dir_name/next.config.mjs"; then
+                # Static export Next.js - try to find the built files or link to GitHub Pages
+                if grep -q "basePath.*$dir_name" "$dir_name/next.config.mjs"; then
+                    # Has basePath configured, should be accessible as GitHub Pages subpath
+                    link="https://evilusean.github.io/$dir_name/"
+                    status=" (Next.js Static)"
+                    project_type="react"
+                else
+                    # Static export but no basePath, link to GitHub
+                    link="https://github.com/evilusean/evilusean.github.io/tree/main/$dir_name"
+                    status=" (Next.js - see GitHub)"
+                    project_type="react"
+                fi
+            else
+                # Regular Next.js project, needs dev server
+                link="https://github.com/evilusean/evilusean.github.io/tree/main/$dir_name"
+                status=" (Next.js - run locally)"
+                project_type="react"
+            fi
+        elif [ -f "$dir_name/src/index.tsx" ] || [ -f "$dir_name/src/index.js" ]; then
+            # React project
+            link="https://github.com/evilusean/evilusean.github.io/tree/main/$dir_name"
+            status=" (React - see GitHub)"
+            project_type="react"
+        elif [ -f "$dir_name/index.js" ] || [ -f "$dir_name/app.js" ]; then
+            # Node.js project
+            link="https://github.com/evilusean/evilusean.github.io/tree/main/$dir_name"
+            status=" (Node.js - see GitHub)"
+            project_type="node"
+        else
+            # Generic Node.js project
+            link="https://github.com/evilusean/evilusean.github.io/tree/main/$dir_name"
+            status=" (Node.js - see GitHub)"
+            project_type="node"
+        fi
+    elif [ -f "$dir_name/README.md" ]; then
+        # Project with README
+        link="https://github.com/evilusean/evilusean.github.io/tree/main/$dir_name"
+        status=" (see GitHub)"
+        project_type="github"
     else
+        # No recognizable entry point
         link="#"
         status=" (no index.html)"
+        project_type="folder"
     fi
+    
+    # Set icon based on project type
+    case $project_type in
+        "web") icon="bx-globe" ;;
+        "react") icon="bxl-react" ;;
+        "node") icon="bxl-nodejs" ;;
+        "github") icon="bxl-github" ;;
+        *) icon="bx-folder" ;;
+    esac
     
     # Add project card to HTML
     cat >> index.html << EOF
                 <div class="project-card">
                     <div class="project-info">
-                        <i class="bx bx-folder"></i>
+                        <i class="bx $icon"></i>
                         <h3><a href="$link">$dir_name</a></h3>
                         <p>$dir_name$status</p>
-                        $(if [ -f "$dir_name/index.html" ]; then echo '<div class="btn"><a href="'$link'">View Project</a></div>'; else echo '<div class="btn disabled">No Index</div>'; fi)
+                        $(if [[ $link != "#" ]]; then echo '<div class="btn"><a href="'$link'" target="_blank">View Project</a></div>'; else echo '<div class="btn disabled">No Index</div>'; fi)
                     </div>
                 </div>
 EOF
