@@ -29,15 +29,23 @@ body::before {
 }
 
 .card {
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background for the card */
-    border: 2px solid black; /* Black border */
-    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white background for the card */
+    border: 3px solid black; /* Black border */
+    border-radius: 12px;
     padding: 20px;
     margin: 10px;
     text-align: center;
     color: black; /* Black text color */
     text-decoration: none; /* Remove underline from links */
     width: 200px; /* Set a fixed width for cards */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add subtle shadow */
+    transition: all 0.3s ease; /* Smooth hover transition */
+}
+
+.card:hover {
+    background-color: rgba(255, 255, 255, 1); /* Full white on hover */
+    transform: translateY(-2px); /* Slight lift on hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
 }
 
 .card a {
@@ -46,6 +54,8 @@ body::before {
     width: 100%;
     font-size: 32px; /* Increased text size */
     font-weight: bold; /* Bold text */
+    color: black; /* Black text color */
+    text-decoration: none; /* Remove underline from links */
     background-color: transparent; /* Remove background from link */
 }
 

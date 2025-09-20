@@ -71,7 +71,8 @@ project_names["YourNewProject"]="Japanese Your New Project TranslaSean"
 
 The auto-update scripts preserve:
 - ✅ Original flag/coat of arms backgrounds
-- ✅ Card-based layout with semi-transparent black cards
+- ✅ Card-based layout with clean white cards and black borders
 - ✅ Responsive design for mobile devices
-- ✅ Original CSS styling and animations
+- ✅ Hover effects with subtle animations
+- ✅ Black text on white background for better readability
 - ✅ Proper project naming conventions
