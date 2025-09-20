@@ -13,6 +13,7 @@ const decayValue = document.getElementById("decayValue");
 const charactersInput = document.getElementById("charactersInput");
 const saveToUrlButton = document.getElementById("saveToUrl");
 const resetCharactersButton = document.getElementById("resetCharacters");
+const sequentialButton = document.getElementById("sequentialButton");
 const controls = document.querySelector(".controls");
 
 // Default Japanese characters only
@@ -20,10 +21,11 @@ const defaultCharacters = "アァカサタナハマヤャラワガザダバパ�
 
 // Initialize with default values
 let matrixColor = "#0aff0a";
-let fps = 30;
-let decayRate = 0.05; // Controls how fast the trail fades
+let fps = 15;
+let decayRate = 0.12; // Controls how fast the trail fades
 let currentCharacters = defaultCharacters;
 let controlsVisible = true;
+let sequentialMode = false; // Sequential character dropping mode
 
 // Update displays
 speedValue.textContent = fps;
@@ -56,6 +58,13 @@ function loadUrlParams() {
     decaySlider.value = decayRate;
     decayValue.textContent = decayRate.toFixed(2);
   }
+  
+  if (urlParams.has('sequential')) {
+    sequentialMode = urlParams.get('sequential') === 'true';
+    sequentialButton.textContent = sequentialMode ? "Sequential ✓" : "Sequential";
+    sequentialButton.style.backgroundColor = sequentialMode ? "rgba(10, 255, 10, 0.2)" : "rgba(0, 0, 0, 0.8)";
+    effect.updateSequentialMode(sequentialMode);
+  }
 }
 
 // Load URL parameters on page load
@@ -87,6 +96,7 @@ saveToUrlButton.addEventListener("click", () => {
   params.set('color', matrixColor);
   params.set('speed', fps);
   params.set('decay', decayRate);
+  params.set('sequential', sequentialMode);
   
   const newUrl = `${window.location.pathname}?${params.toString()}`;
   window.history.pushState({}, '', newUrl);
@@ -103,6 +113,13 @@ resetCharactersButton.addEventListener("click", () => {
   currentCharacters = defaultCharacters;
   charactersInput.value = currentCharacters;
   effect.updateCharacters(currentCharacters);
+});
+
+sequentialButton.addEventListener("click", () => {
+  sequentialMode = !sequentialMode;
+  sequentialButton.textContent = sequentialMode ? "Sequential ✓" : "Sequential";
+  sequentialButton.style.backgroundColor = sequentialMode ? "rgba(10, 255, 10, 0.2)" : "rgba(0, 0, 0, 0.8)";
+  effect.updateSequentialMode(sequentialMode);
 });
 
 // ESC key listener to hide/show controls
@@ -149,17 +166,30 @@ let gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
 //gradient.addColorStop(1, "magenta");
 
 class Symbol {
-  constructor(x, y, fontSize, canvasHeight, characters) {
+  constructor(x, y, fontSize, canvasHeight, characters, sequentialMode = false, characterIndex = 0) {
     this.characters = characters;
     this.x = x;
     this.y = y;
     this.fontSize = fontSize;
-    this.text = this.characters.charAt(
-      Math.floor(Math.random() * this.characters.length)
-    ); // Set character once when created
+    this.characterIndex = characterIndex;
+    this.sequentialMode = sequentialMode;
+    this.text = this.getNextCharacter(); // Set character once when created
     this.canvasHeight = canvasHeight;
     this.alpha = 1; // Add alpha for fading effect
   }
+  
+  getNextCharacter() {
+    if (this.sequentialMode) {
+      const char = this.characters.charAt(this.characterIndex % this.characters.length);
+      this.characterIndex++;
+      return char;
+    } else {
+      return this.characters.charAt(
+        Math.floor(Math.random() * this.characters.length)
+      );
+    }
+  }
+  
   draw(context) {
     // Don't change the character, just draw it with current alpha
     context.globalAlpha = this.alpha;
@@ -168,9 +198,7 @@ class Symbol {
     
     if (this.y * this.fontSize > this.canvasHeight && Math.random() > 0.95) {
       this.y = 0;
-      this.text = this.characters.charAt(
-        Math.floor(Math.random() * this.characters.length)
-      ); // Only change character when resetting
+      this.text = this.getNextCharacter(); // Only change character when resetting
       this.alpha = 1; // Reset alpha when character resets
     } else {
       this.y += 1;
@@ -181,18 +209,21 @@ class Symbol {
 }
 
 class Effect {
-  constructor(canvasWidth, canvasHeight, characters) {
+  constructor(canvasWidth, canvasHeight, characters, sequentialMode = false) {
     this.canvasWidth = canvasWidth;
     this.canvasHeight = canvasHeight;
     this.fontSize = 25;
     this.columns = this.canvasWidth / this.fontSize;
     this.symbols = [];
     this.characters = characters;
+    this.sequentialMode = sequentialMode;
+    this.globalCharacterIndex = 0;
     this.#initialize();
   }
   #initialize() {
     for (let i = 0; i < this.columns; i++) {
-      this.symbols[i] = new Symbol(i, 0, this.fontSize, this.canvasHeight, this.characters);
+      this.symbols[i] = new Symbol(i, 0, this.fontSize, this.canvasHeight, this.characters, this.sequentialMode, this.globalCharacterIndex);
+      this.globalCharacterIndex++;
     }
   }
   resize(width, height) {
@@ -200,6 +231,7 @@ class Effect {
     this.canvasHeight = height;
     this.columns = this.canvasWidth / this.fontSize;
     this.symbols = [];
+    this.globalCharacterIndex = 0;
     this.#initialize();
   }
   updateCharacters(newCharacters) {
@@ -207,14 +239,23 @@ class Effect {
     // Update existing symbols with new character set
     this.symbols.forEach(symbol => {
       symbol.characters = newCharacters;
-      symbol.text = newCharacters.charAt(
-        Math.floor(Math.random() * newCharacters.length)
-      );
+      symbol.text = symbol.getNextCharacter();
+    });
+  }
+  updateSequentialMode(sequentialMode) {
+    this.sequentialMode = sequentialMode;
+    this.globalCharacterIndex = 0;
+    // Update existing symbols with new sequential mode
+    this.symbols.forEach(symbol => {
+      symbol.sequentialMode = sequentialMode;
+      symbol.characterIndex = this.globalCharacterIndex;
+      symbol.text = symbol.getNextCharacter();
+      this.globalCharacterIndex++;
     });
   }
 }
 
-const effect = new Effect(canvas.width, canvas.height, currentCharacters);
+const effect = new Effect(canvas.width, canvas.height, currentCharacters, sequentialMode);
 let lastTime = 0;
 let timer = 0;
 
