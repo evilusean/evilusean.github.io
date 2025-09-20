@@ -79,4 +79,5 @@ The auto-update scripts preserve:
 - ✅ Hover effects with subtle animations and glow text
 - ✅ Black text on white background for better readability
 - ✅ Red glow effects for Japanese (🇯🇵) and blue glow for Slovak (🇸🇰)
+- ✅ Sharp text with glow effects using pseudo-elements for better readability
 - ✅ Proper project naming conventions

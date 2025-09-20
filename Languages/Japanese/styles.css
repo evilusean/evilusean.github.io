@@ -59,15 +59,28 @@ body::before {
     text-decoration: none; /* Remove underline from links */
     background-color: transparent; /* Remove background from link */
     transition: all 0.3s ease; /* Smooth text transition */
+    position: relative; /* For pseudo-element positioning */
 }
 
 .card:hover a {
-    color: #cc0000; /* Dark red text on hover */
+    color: #cc0000; /* Dark red text on hover - sharp and readable */
+}
+
+.card:hover a::before {
+    content: attr(data-text); /* Use data attribute for glow text */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: #ff0000; /* Bright red for glow */
     text-shadow: 
         0 0 5px #ff0000,
         0 0 10px #ff0000,
         0 0 15px #ff0000,
         0 0 20px #ff0000; /* Red glow effect */
+    z-index: -1; /* Behind the main text */
+    pointer-events: none; /* Don't interfere with clicks */
 }
 
 /* Media query for small screens */

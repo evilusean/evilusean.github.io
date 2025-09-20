@@ -77,7 +77,7 @@ for dir in */; do
         # Add project card to HTML
         cat >> index.html << EOF
         <div class="card">
-            <a href="$dir_name/index.html">$display_name</a>
+            <a href="$dir_name/index.html" data-text="$display_name">$display_name</a>
         </div>
 EOF
     fi
