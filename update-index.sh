@@ -36,6 +36,18 @@ for dir in */; do
         continue
     fi
     
+    # Skip directories with #hidden comment in their index.html or if they're in the hidden list
+    hidden_projects=("PythonLiveChatApp" "SEAnSharp")
+    if [[ " ${hidden_projects[@]} " =~ " ${dir_name} " ]]; then
+        echo "🙈 Skipping hidden project: $dir_name"
+        continue
+    fi
+    
+    if [ -f "$dir_name/index.html" ] && head -n 5 "$dir_name/index.html" | grep -q "^<!-- #hidden -->"; then
+        echo "🙈 Skipping hidden project: $dir_name"
+        continue
+    fi
+    
     # Check for different project types
     link="#"
     status=""

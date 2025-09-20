@@ -65,6 +65,28 @@ The portfolio auto-update system now intelligently detects different types of pr
 
 The system will automatically detect and categorize your project on the next update!
 
+## Hiding Projects
+
+You can hide projects from appearing in the portfolio by adding a `#hidden` comment at the top of their `index.html` file:
+
+```html
+<!-- #hidden -->
+<!DOCTYPE html>
+<html>
+...
+```
+
+**Hidden Projects:**
+- Projects with `<!-- #hidden -->` comment are automatically skipped
+- Also works in subdirectories (3ThreeJS, Languages/Japanese, Languages/Slovak)
+- Projects without `index.html` can be hidden by adding them to the `hidden_projects` array in the script 'update-index.js'
+
+**Currently Hidden:**
+- Coursera-HTML-CSS-JS
+- VaxxieATaxxie  
+- PythonLiveChatApp
+- SEAnSharp
+
 ## Manual Updates
 
 ```bash

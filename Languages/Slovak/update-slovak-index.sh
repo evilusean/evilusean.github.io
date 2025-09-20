@@ -69,6 +69,12 @@ for dir in */; do
         continue
     fi
     
+    # Skip directories with #hidden comment in their index.html
+    if [ -f "$dir_name/index.html" ] && head -n 5 "$dir_name/index.html" | grep -q "^<!-- #hidden -->"; then
+        echo "🙈 Skipping hidden Slovak project: $dir_name"
+        continue
+    fi
+    
     # Check if index.html exists in the directory
     if [ -f "$dir_name/index.html" ]; then
         # Get display name (use mapping if available, otherwise use directory name)

@@ -53,6 +53,12 @@ for dir in */; do
         continue
     fi
     
+    # Skip directories with #hidden comment in their index.html
+    if [ -f "$dir_name/index.html" ] && head -n 5 "$dir_name/index.html" | grep -q "^<!-- #hidden -->"; then
+        echo "🙈 Skipping hidden 3D project: $dir_name"
+        continue
+    fi
+    
     # Get description and icon
     description=${descriptions[$dir_name]:-"Three.js project: $dir_name"}
     icon=${icons[$dir_name]:-"bx-cube"}
