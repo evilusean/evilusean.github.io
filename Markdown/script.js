@@ -587,6 +587,8 @@ $$\\frac{d}{dx}\\left(\\frac{f(x)}{g(x)}\\right) = \\frac{f'(x)g(x) - f(x)g'(x)}
 - Negative: $x^{-1} = \\frac{1}{x}$
 - Fractional: $x^{1/2} = \\sqrt{x}$
 
+## Basic Exponents
+
 ## Complex Exponents
 - Multiple terms: $x^{a + b}$
 - Nested: $x^{y^z}$
@@ -599,30 +601,99 @@ $$\\frac{d}{dx}\\left(\\frac{f(x)}{g(x)}\\right) = \\frac{f'(x)g(x) - f(x)g'(x)}
 - Nested roots: $\\sqrt{\\sqrt{x}}$
 
 ## Examples
-$e^{i\\pi} + 1 = 0$
+$e^{i\pi} + 1 = 0$
 $\\sqrt{x^2 + y^2}$
 $$x^{\\frac{m}{n}} = \\sqrt[n]{x^m}$$`,
 
-            subscripts: `# Subscripts and Superscripts
+            'algebra1': `# Algebra 1 Formulas
 
-## Subscripts
-- Basic: $x_1, x_2, x_3$
-- Multiple characters: $x_{max}$
-- With expressions: $x_{i+1}$
+## I. Linear Equations and Graphs
 
-## Superscripts  
-- Basic: $x^1, x^2, x^3$
-- Multiple characters: $x^{max}$
-- With expressions: $x^{i+1}$
+**Slope Formula:**
+$$m = \\frac{y_2 - y_1}{x_2 - x_1}$$
 
-## Combined
-- Both: $x_1^2$
-- Complex: $x_{i,j}^{(k)}$
-- Nested: $x_{y_i}^{z^j}$
+**Slope-Intercept Form:**
+$$y = mx + b$$
 
-## Examples
-$$\\sum_{i=1}^{n} x_i^2$$
-$$\\lim_{x \\to \\infty} \\frac{1}{x^2}$$`,
+**Point-Slope Form:**
+$$y - y_1 = m(x - x_1)$$
+
+**Distance Formula:**
+$$d = \\sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$$
+
+**Midpoint Formula:**
+$$\\left(\\frac{x_1 + x_2}{2},\\ \\frac{y_1 + y_2}{2}\\right)$$
+
+**Parallel Lines:**
+$$m_1 = m_2$$
+
+**Perpendicular Lines:**
+$$m_1 = -\\frac{1}{m_2}$$
+
+---
+
+## II. Laws of Exponents
+
+**Product Rule:**
+$$a^m \\cdot a^n = a^{m+n}$$
+
+**Quotient Rule:**
+$$\\frac{a^n}{a^m} = a^{n-m}$$
+
+**Power of a Power Rule:**
+$$(a^m)^n = a^{m \\cdot n}$$
+
+**Zero Exponent Rule:**
+$$a^0 = 1$$
+
+**Negative Exponent Rule:**
+$$a^{-m} = \\frac{1}{a^m}$$
+
+---
+
+## III. Polynomials and Factoring
+
+**Difference of Squares:**
+$$a^2 - b^2 = (a-b)(a+b)$$
+
+**Perfect Square Trinomial 1:**
+$$a^2 + 2ab + b^2 = (a+b)^2$$
+
+**Perfect Square Trinomial 2:**
+$$a^2 - 2ab + b^2 = (a-b)^2$$
+
+**FOIL Method:**
+First, Outer, Inner, Last (for $ (a+b)(c+d) $)
+
+---
+
+## IV. Quadratic Equations
+
+**Standard Form:**
+$$ax^2 + bx + c = 0$$
+
+**Quadratic Formula:**
+$$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$
+
+**Discriminant:**
+$$\\Delta = b^2 - 4ac$$
+
+**Vertex (x-coordinate):**
+$$x = -\\frac{b}{2a}$$
+
+---
+
+## V. Sequences
+
+**Arithmetic Sequence (Explicit):**
+$$a_n = a_1 + (n-1)d$$
+
+**Geometric Sequence (Explicit):**
+$$a_n = a_1 \\cdot r^{n-1}$$
+
+
+
+`,
 
             'greek-letters': `# Greek Letters
 
@@ -634,7 +705,6 @@ $$\\lim_{x \\to \\infty} \\frac{1}{x^2}$$`,
 - Epsilon: $\\epsilon$ or $\\varepsilon$
 - Theta: $\\theta$ or $\\vartheta$
 - Lambda: $\\lambda$
-- Mu: $\\mu$
 - Pi: $\\pi$ or $\\varpi$
 - Sigma: $\\sigma$ or $\\varsigma$
 - Phi: $\\phi$ or $\\varphi$
@@ -650,7 +720,6 @@ $$\\lim_{x \\to \\infty} \\frac{1}{x^2}$$`,
 - Phi: $\\Phi$
 - Omega: $\\Omega$
 
-## Common Usage Examples
 $\\alpha + \\beta = \\gamma$
 $\\Delta x = x_2 - x_1$
 $$\\sum_{i=1}^{n} \\alpha_i$$
@@ -666,7 +735,6 @@ $\\pi r^2 = \\text{area of circle}$`,
 - Plus-minus: $\\pm$
 - Minus-plus: $\\mp$
 
-## Comparison Operators
 - Equal: $=$
 - Not equal: $\\neq$ or $\\ne$
 - Less than: $<$
