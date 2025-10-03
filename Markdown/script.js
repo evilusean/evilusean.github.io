@@ -615,6 +615,9 @@ $$m = \\frac{y_2 - y_1}{x_2 - x_1}$$
 **Slope-Intercept Form:**
 $$y = mx + b$$
 
+**Standard Form:**
+$$Ax + By = C$$
+
 **Point-Slope Form:**
 $$y - y_1 = m(x - x_1)$$
 
@@ -690,6 +693,66 @@ $$a_n = a_1 + (n-1)d$$
 
 **Geometric Sequence (Explicit):**
 $$a_n = a_1 \\cdot r^{n-1}$$
+
+---
+
+## VI. Radicals and Square Roots
+
+**Square Root:**
+$$\\sqrt{x}$$
+
+**Cube Root:**
+$$\\sqrt[3]{x}$$
+
+**nth Root:**
+$$\\sqrt[n]{x}$$
+
+**Properties:**
+$$\\sqrt{a^2} = \\left| a \\right|$$
+
+$$\\sqrt{ab} = \\sqrt{a} \\cdot \\sqrt{b}$$
+
+$$\\sqrt{\\frac{a}{b}} = \\frac{\\sqrt{a}}{\\sqrt{b}}$$
+
+$$\\sqrt{a^2 + b^2}$$
+
+
+---
+
+## VII. Inverse Functions
+
+**Definition:**
+If $f(x)$ is a function, its inverse $f^{-1}(x)$ satisfies $f(f^{-1}(x)) = x$ and $f^{-1}(f(x)) = x$.
+
+**Finding the Inverse:**
+1. Replace $f(x)$ with $y$.
+2. Solve for $x$ in terms of $y$.
+3. Swap $x$ and $y$.
+4. Write as $f^{-1}(x)$.
+
+**Example:**
+If $f(x) = 2x + 3$, then $f^{-1}(x) = \\frac{x - 3}{2}$
+
+---
+
+## VIII. Rational Functions & Variations
+
+**Rational Function:**
+A function of the form $f(x) = \\frac{P(x)}{Q(x)}$, where $P$ and $Q$ are polynomials and $Q(x) \\neq 0$.
+
+**Direct Variation:**
+$y = kx$  &nbsp; or &nbsp; $y \\propto x$
+
+**Inverse Variation:**
+$y = \\frac{k}{x}$  &nbsp; or &nbsp; $y \\propto \\frac{1}{x}$
+
+**Joint Variation:**
+$y = kxz$ (varies directly with $x$ and $z$)
+
+**Combined Variation:**
+$y = \\frac{kx}{z}$ (varies directly with $x$, inversely with $z$)
+
+---
 
 
 
