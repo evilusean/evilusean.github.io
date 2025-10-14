@@ -69,6 +69,25 @@ window.addEventListener('DOMContentLoaded', function() {
   updateCombinedAndUrl();
 });
 
+// Expandable preamble functionality
+// Toggle between expanded and collapsed states for the preamble textarea
+document.getElementById('togglePreamble').addEventListener('click', function() {
+  const preamble = document.getElementById('preamble');
+  const toggleBtn = this;
+  
+  if (preamble.classList.contains('expanded')) {
+    // Collapse the textarea
+    preamble.classList.remove('expanded');
+    preamble.classList.add('collapsed');
+    toggleBtn.textContent = 'Expand';
+  } else {
+    // Expand the textarea
+    preamble.classList.remove('collapsed');
+    preamble.classList.add('expanded');
+    toggleBtn.textContent = 'Collapse';
+  }
+});
+
 // Help modal functionality
 // Show the help modal when the Help button is clicked
 document.getElementById('helpBtn').addEventListener('click', function() {
