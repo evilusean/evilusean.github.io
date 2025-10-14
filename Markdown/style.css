@@ -160,8 +160,7 @@ header h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
+    gap: 20px;
 }
 
 .control-group {
@@ -240,11 +239,23 @@ header h1 {
     .controls {
         flex-direction: column;
         align-items: stretch;
+        gap: 15px;
     }
     
-    .control-group,
+    .control-group {
+        justify-content: center;
+        order: 1;
+    }
+    
+    .search-group {
+        order: 2;
+        margin: 0;
+        max-width: none;
+    }
+    
     .dropdown-group {
         justify-content: center;
+        order: 3;
     }
     
     .dropdown {
@@ -453,15 +464,16 @@ MathJax specific styling */
 
 /* Search functionality styles */
 .search-group {
-    margin: 15px 0;
+    flex: 1;
+    max-width: 600px;
+    margin: 0 10px;
 }
 
 .search-container {
     display: flex;
     gap: 10px;
     align-items: center;
-    max-width: 600px;
-    margin: 0 auto;
+    width: 100%;
 }
 
 .search-input {
@@ -630,5 +642,18 @@ MathJax specific styling */
         flex-direction: column;
         align-items: flex-start;
         gap: 8px;
+    }
+}
+
+/* Medium screens - keep search in middle but stack buttons */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .search-container {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .search-btn,
+    .clear-search-btn {
+        width: 100%;
     }
 }
