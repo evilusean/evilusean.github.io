@@ -51,6 +51,14 @@
                 <button id="save-btn" class="btn">Save to URL</button>
             </div>
 
+            <div class="search-group">
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="🔍 Search symbols, formulas, templates..." class="search-input">
+                    <button id="search-btn" class="btn search-btn">Search</button>
+                    <button id="clear-search-btn" class="btn clear-search-btn" style="display: none;">Clear</button>
+                </div>
+            </div>
+
             <div class="dropdown-group">
                 <select id="markdown-templates" class="dropdown">
                     <option value="">📝 All Markdown Syntax</option>
@@ -212,6 +220,22 @@
                         <h3>Preview:</h3>
                         <div id="modal-math-preview"></div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Results Modal -->
+    <div id="search-modal" class="modal">
+        <div class="modal-content search-modal-content">
+            <div class="modal-header">
+                <h2>🔍 Search Results</h2>
+                <span class="close" id="close-search">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="search-results-container">
+                    <div id="search-stats" class="search-stats"></div>
+                    <div id="search-results" class="search-results"></div>
                 </div>
             </div>
         </div>

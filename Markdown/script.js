@@ -197,10 +197,49 @@ Select from the dropdowns above to see examples and copy code!`;
     if (copyMarkdownCode) copyMarkdownCode.addEventListener('click', copyModalMarkdown);
     if (copyMathCode) copyMathCode.addEventListener('click', copyModalMath);
 
+    // Search functionality
+    const searchInput = document.getElementById('search-input');
+    const searchBtn = document.getElementById('search-btn');
+    const clearSearchBtn = document.getElementById('clear-search-btn');
+    const searchModal = document.getElementById('search-modal');
+    const closeSearch = document.getElementById('close-search');
+    const searchResults = document.getElementById('search-results');
+    const searchStats = document.getElementById('search-stats');
+
+    // Search event listeners
+    if (searchBtn) searchBtn.addEventListener('click', performSearch);
+    if (clearSearchBtn) clearSearchBtn.addEventListener('click', clearSearch);
+    if (closeSearch) closeSearch.addEventListener('click', function () { searchModal.style.display = 'none'; });
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+        searchInput.addEventListener('input', function () {
+            if (this.value.trim()) {
+                clearSearchBtn.style.display = 'inline-block';
+            } else {
+                clearSearchBtn.style.display = 'none';
+            }
+        });
+    }
+
+    // Keyboard shortcut for search (Ctrl+F)
+    document.addEventListener('keydown', function (e) {
+        if (e.ctrlKey && e.key === 'f') {
+            e.preventDefault();
+            if (searchInput) {
+                searchInput.focus();
+            }
+        }
+    });
+
     // Close modals when clicking outside or pressing ESC
     window.addEventListener('click', function (e) {
         if (e.target === markdownModal) markdownModal.style.display = 'none';
         if (e.target === mathModal) mathModal.style.display = 'none';
+        if (e.target === searchModal) searchModal.style.display = 'none';
     });
 
     document.addEventListener('keydown', function (e) {
@@ -210,6 +249,9 @@ Select from the dropdowns above to see examples and copy code!`;
             }
             if (mathModal && mathModal.style.display === 'block') {
                 mathModal.style.display = 'none';
+            }
+            if (searchModal && searchModal.style.display === 'block') {
+                searchModal.style.display = 'none';
             }
         }
     });
@@ -313,6 +355,212 @@ Select from the dropdowns above to see examples and copy code!`;
         setTimeout(function () {
             copyMathCode.textContent = originalText;
         }, 2000);
+    }
+
+    // Search functions
+    function performSearch() {
+        const query = searchInput.value.trim().toLowerCase();
+        if (!query) {
+            alert('Please enter a search term');
+            return;
+        }
+
+        const results = searchTemplates(query);
+        displaySearchResults(results, query);
+        searchModal.style.display = 'block';
+    }
+
+    function clearSearch() {
+        searchInput.value = '';
+        clearSearchBtn.style.display = 'none';
+        if (searchModal) {
+            searchModal.style.display = 'none';
+        }
+    }
+
+    function searchTemplates(query) {
+        const results = [];
+        
+        // Search through markdown templates
+        const markdownTemplates = {
+            'headers': 'Headers (H1-H6)',
+            'emphasis': 'Text Emphasis',
+            'lists': 'Lists & Checkboxes',
+            'links': 'Links & Images',
+            'code': 'Code & Syntax Highlighting',
+            'tables': 'Tables',
+            'blockquotes': 'Blockquotes & Callouts',
+            'horizontal-rules': 'Horizontal Rules',
+            'html': 'HTML in Markdown',
+            'advanced': 'Advanced Features',
+            'complete-example': 'Complete Example'
+        };
+
+        // Search through math templates
+        const mathTemplates = {
+            'algebra1': 'Algebra 1',
+            'algebra2-quadratic-functions': 'Algebra 2: Quadratic Functions',
+            'algebra2-polynomials': 'Algebra 2: Polynomials',
+            'algebra2-rational-functions': 'Algebra 2: Rational Functions',
+            'algebra2-radical-functions': 'Algebra 2: Radical Functions',
+            'algebra2-exponential-logarithmic': 'Algebra 2: Exponential & Logarithmic',
+            'algebra2-trigonometry': 'Algebra 2: Trigonometry',
+            'algebra2-sequences-series': 'Algebra 2: Sequences & Series',
+            'algebra2-probability-statistics': 'Algebra 2: Probability & Statistics',
+            'algebra2-conic-sections': 'Algebra 2: Conic Sections',
+            'algebra2-matrices': 'Algebra 2: Matrices',
+            'basic-operations': 'Basic Operations',
+            'fractions': 'Fractions',
+            'exponents': 'Exponents & Roots',
+            'subscripts': 'Subscripts & Superscripts',
+            'greek-letters': 'Greek Letters',
+            'operators': 'Mathematical Operators',
+            'functions': 'Functions & Trigonometry',
+            'calculus-symbols': 'Calculus Symbols',
+            'matrices': 'Matrices & Vectors',
+            'sets': 'Sets & Logic',
+            'statistics-symbols': 'Statistics Symbols',
+            'common-math': 'Common Math Formulas',
+            'physics-mechanics': 'Physics: Mechanics',
+            'physics-thermodynamics': 'Physics: Thermodynamics',
+            'physics-electromagnetism': 'Physics: Electromagnetism',
+            'physics-quantum': 'Physics: Quantum & Modern',
+            'chemistry-general': 'Chemistry: General',
+            'chemistry-organic': 'Chemistry: Organic',
+            'chemistry-physical': 'Chemistry: Physical',
+            'engineering-mechanical': 'Engineering: Mechanical',
+            'engineering-electrical': 'Engineering: Electrical',
+            'engineering-civil': 'Engineering: Civil'
+        };
+
+        // Search markdown templates
+        for (const [key, title] of Object.entries(markdownTemplates)) {
+            const content = getMarkdownTemplate(key);
+            if (content && (title.toLowerCase().includes(query) || content.toLowerCase().includes(query))) {
+                results.push({
+                    type: 'markdown',
+                    key: key,
+                    title: title,
+                    content: content,
+                    category: 'Markdown'
+                });
+            }
+        }
+
+        // Search math templates
+        for (const [key, title] of Object.entries(mathTemplates)) {
+            const content = getMathTemplate(key);
+            if (content && (title.toLowerCase().includes(query) || content.toLowerCase().includes(query))) {
+                results.push({
+                    type: 'math',
+                    key: key,
+                    title: title,
+                    content: content,
+                    category: 'Math'
+                });
+            }
+        }
+
+        // Sort results by relevance (title matches first, then content matches)
+        results.sort((a, b) => {
+            const aTitleMatch = a.title.toLowerCase().includes(query);
+            const bTitleMatch = b.title.toLowerCase().includes(query);
+            
+            if (aTitleMatch && !bTitleMatch) return -1;
+            if (!aTitleMatch && bTitleMatch) return 1;
+            
+            return a.title.localeCompare(b.title);
+        });
+
+        return results;
+    }
+
+    function displaySearchResults(results, query) {
+        if (!searchResults || !searchStats) return;
+
+        // Update stats
+        const statsText = `Found ${results.length} result${results.length !== 1 ? 's' : ''} for "${query}"`;
+        searchStats.textContent = statsText;
+
+        // Clear previous results
+        searchResults.innerHTML = '';
+
+        if (results.length === 0) {
+            searchResults.innerHTML = `
+                <div class="search-no-results">
+                    <h3>No results found</h3>
+                    <p>Try searching for different keywords or check your spelling.</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Display results
+        results.forEach(result => {
+            const preview = getPreviewText(result.content, query);
+            const highlightedPreview = highlightSearchTerms(preview, query);
+            
+            const resultElement = document.createElement('div');
+            resultElement.className = 'search-result-item';
+            resultElement.innerHTML = `
+                <div class="search-result-header">
+                    <div class="search-result-title">${highlightSearchTerms(result.title, query)}</div>
+                    <div class="search-result-category">${result.category}</div>
+                </div>
+                <div class="search-result-preview">${highlightedPreview}</div>
+            `;
+            
+            resultElement.addEventListener('click', function() {
+                if (result.type === 'markdown') {
+                    showMarkdownPopup(result.key);
+                } else {
+                    showMathPopup(result.key);
+                }
+                searchModal.style.display = 'none';
+            });
+            
+            searchResults.appendChild(resultElement);
+        });
+    }
+
+    function getPreviewText(content, query) {
+        // Remove markdown formatting for preview
+        let preview = content
+            .replace(/#{1,6}\s+/g, '') // Remove headers
+            .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold
+            .replace(/\*(.*?)\*/g, '$1') // Remove italic
+            .replace(/`(.*?)`/g, '$1') // Remove inline code
+            .replace(/```[\s\S]*?```/g, '[Code Block]') // Replace code blocks
+            .replace(/\$\$(.*?)\$\$/g, '[Math Formula]') // Replace display math
+            .replace(/\$(.*?)\$/g, '[Math]') // Replace inline math
+            .replace(/\n+/g, ' ') // Replace newlines with spaces
+            .trim();
+
+        // Find the best matching section
+        const queryLower = query.toLowerCase();
+        const contentLower = preview.toLowerCase();
+        
+        const index = contentLower.indexOf(queryLower);
+        if (index !== -1) {
+            const start = Math.max(0, index - 100);
+            const end = Math.min(preview.length, index + query.length + 100);
+            preview = preview.substring(start, end);
+            if (start > 0) preview = '...' + preview;
+            if (end < content.length) preview = preview + '...';
+        } else {
+            // If no direct match, take first 200 characters
+            preview = preview.substring(0, 200);
+            if (preview.length === 200) preview += '...';
+        }
+
+        return preview;
+    }
+
+    function highlightSearchTerms(text, query) {
+        if (!query) return text;
+        
+        const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        return text.replace(regex, '<span class="search-highlight">$1</span>');
     }
 
     // Markdown templates function
