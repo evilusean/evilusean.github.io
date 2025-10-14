@@ -1338,7 +1338,806 @@ $$\\chi^2 = \\sum_{i=1}^{n} \\frac{(O_i - E_i)^2}{E_i}$$`,
 ## Transportation Engineering
 - Stopping sight distance: $SSD = 1.47Vt + \\frac{V^2}{30(f \\pm G)}$
 - Horizontal curve radius: $R = \\frac{V^2}{15(e + f)}$
-- Traffic flow: $q = kv$ (flow = density × speed)`
+- Traffic flow: $q = kv$ (flow = density × speed)`,
+
+            'algebra2-quadratic-functions': `# Algebra 2: Quadratic Functions
+
+## Forms of Quadratic Functions
+
+**Standard Form:**
+$$f(x) = ax^2 + bx + c$$
+
+**Vertex Form:**
+$$f(x) = a(x - h)^2 + k$$
+where $(h, k)$ is the vertex
+
+**Factored Form:**
+$$f(x) = a(x - r_1)(x - r_2)$$
+where $r_1$ and $r_2$ are the roots
+
+## Key Properties
+
+**Vertex:**
+$$h = -\\frac{b}{2a}, \\quad k = f(h)$$
+
+**Axis of Symmetry:**
+$$x = h = -\\frac{b}{2a}$$
+
+**Discriminant:**
+$$\\Delta = b^2 - 4ac$$
+- If $\\Delta > 0$: two real roots
+- If $\\Delta = 0$: one real root (double root)
+- If $\\Delta < 0$: two complex roots
+
+**Quadratic Formula:**
+$$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$
+
+## Transformations
+
+**Vertical Shift:** $f(x) + k$ (up if $k > 0$)
+**Horizontal Shift:** $f(x - h)$ (right if $h > 0$)
+**Vertical Stretch/Compression:** $af(x)$ (stretch if $|a| > 1$)
+**Reflection:** $-f(x)$ (reflects over x-axis)
+
+## Completing the Square
+
+To convert $ax^2 + bx + c$ to vertex form:
+1. Factor out $a$: $a(x^2 + \\frac{b}{a}x) + c$
+2. Add and subtract $(\\frac{b}{2a})^2$: $a(x^2 + \\frac{b}{a}x + (\\frac{b}{2a})^2 - (\\frac{b}{2a})^2) + c$
+3. Simplify: $a(x + \\frac{b}{2a})^2 + c - \\frac{b^2}{4a}$
+
+## Examples
+
+**Example 1:** Find vertex of $f(x) = 2x^2 - 8x + 5$
+$$h = -\\frac{-8}{2(2)} = 2$$
+$$k = f(2) = 2(2)^2 - 8(2) + 5 = -3$$
+Vertex: $(2, -3)$
+
+**Example 2:** Solve $x^2 - 6x + 8 = 0$
+$$x = \\frac{6 \\pm \\sqrt{36 - 32}}{2} = \\frac{6 \\pm 2}{2}$$
+$$x = 4 \\text{ or } x = 2$$`,
+
+            'algebra2-polynomials': `# Algebra 2: Polynomials
+
+## Polynomial Basics
+
+**Definition:** A polynomial is an expression of the form:
+$$P(x) = a_nx^n + a_{n-1}x^{n-1} + \\cdots + a_1x + a_0$$
+
+**Degree:** The highest power of $x$ (value of $n$)
+**Leading Coefficient:** $a_n$ (coefficient of highest degree term)
+**Constant Term:** $a_0$
+
+## Operations on Polynomials
+
+**Addition/Subtraction:** Combine like terms
+$$(3x^2 + 2x - 1) + (x^2 - 4x + 3) = 4x^2 - 2x + 2$$
+
+**Multiplication:** Use distributive property or FOIL
+$$(x + 2)(x^2 - 3x + 1) = x^3 - 3x^2 + x + 2x^2 - 6x + 2 = x^3 - x^2 - 5x + 2$$
+
+**Division:** Long division or synthetic division
+
+## Factoring Techniques
+
+**Greatest Common Factor (GCF):**
+$$6x^3 + 9x^2 = 3x^2(2x + 3)$$
+
+**Difference of Squares:**
+$$a^2 - b^2 = (a + b)(a - b)$$
+$$x^2 - 16 = (x + 4)(x - 4)$$
+
+**Perfect Square Trinomials:**
+$$a^2 + 2ab + b^2 = (a + b)^2$$
+$$a^2 - 2ab + b^2 = (a - b)^2$$
+
+**Sum/Difference of Cubes:**
+$$a^3 + b^3 = (a + b)(a^2 - ab + b^2)$$
+$$a^3 - b^3 = (a - b)(a^2 + ab + b^2)$$
+
+**Trinomial Factoring:**
+$$x^2 + bx + c = (x + p)(x + q) \\text{ where } p + q = b, pq = c$$
+
+## Synthetic Division
+
+Used to divide polynomials by $(x - c)$:
+
+**Example:** Divide $x^3 - 6x^2 + 11x - 6$ by $(x - 2)$
+
+\`\`\`
+2 | 1  -6  11  -6
+  |    2  -8   6
+  ----------------
+    1  -4   3   0
+\`\`\`
+
+Result: $x^2 - 4x + 3$
+
+## Remainder and Factor Theorems
+
+**Remainder Theorem:** If $P(x)$ is divided by $(x - c)$, the remainder is $P(c)$
+
+**Factor Theorem:** $(x - c)$ is a factor of $P(x)$ if and only if $P(c) = 0$
+
+## Rational Root Theorem
+
+If $\\frac{p}{q}$ is a rational root of $P(x) = a_nx^n + \\cdots + a_0$, then:
+- $p$ divides $a_0$
+- $q$ divides $a_n$
+
+## Examples
+
+**Factor:** $x^3 - 8$
+$$x^3 - 8 = x^3 - 2^3 = (x - 2)(x^2 + 2x + 4)$$
+
+**Find roots:** $x^3 - 6x^2 + 11x - 6 = 0$
+Possible rational roots: $\\pm 1, \\pm 2, \\pm 3, \\pm 6$
+Testing $x = 1$: $1 - 6 + 11 - 6 = 0$ ✓
+So $(x - 1)$ is a factor.`,
+
+            'algebra2-rational-functions': `# Algebra 2: Rational Functions
+
+## Definition
+
+A rational function is a function of the form:
+$$f(x) = \\frac{P(x)}{Q(x)}$$
+where $P(x)$ and $Q(x)$ are polynomials and $Q(x) \\neq 0$
+
+## Domain and Range
+
+**Domain:** All real numbers except where $Q(x) = 0$
+**Range:** Depends on the function's behavior
+
+## Asymptotes
+
+**Vertical Asymptotes:** Occur where $Q(x) = 0$ (but $P(x) \\neq 0$)
+- Find by setting denominator equal to zero
+- $x = a$ is a vertical asymptote if $\\lim_{x \\to a} f(x) = \\pm \\infty$
+
+**Horizontal Asymptotes:** Based on degrees of numerator and denominator
+- If $\\deg(P) < \\deg(Q)$: $y = 0$
+- If $\\deg(P) = \\deg(Q)$: $y = \\frac{\\text{leading coefficient of } P}{\\text{leading coefficient of } Q}$
+- If $\\deg(P) > \\deg(Q)$: No horizontal asymptote (may have oblique)
+
+**Oblique Asymptotes:** When $\\deg(P) = \\deg(Q) + 1$
+- Found using long division: $f(x) = mx + b + \\frac{R(x)}{Q(x)}$
+- Asymptote is $y = mx + b$
+
+## Holes (Removable Discontinuities)
+
+Occur when both $P(x)$ and $Q(x)$ have the same factor $(x - a)$
+- Cancel the common factor
+- Hole at $x = a$ with $y$-coordinate found by evaluating simplified function
+
+## Examples
+
+**Example 1:** $f(x) = \\frac{x^2 - 4}{x^2 - 1}$
+
+Domain: $x \\neq \\pm 1$
+Vertical asymptotes: $x = 1, x = -1$
+Horizontal asymptote: $y = 1$ (same degree)
+Holes: None
+
+**Example 2:** $f(x) = \\frac{x^2 - 1}{x - 1}$
+
+$$f(x) = \\frac{(x+1)(x-1)}{x-1} = x + 1 \\text{ for } x \\neq 1$$
+
+Hole at $x = 1$ with $y$-coordinate $f(1) = 2$
+
+**Example 3:** $f(x) = \\frac{x^3 + 1}{x^2 - 1}$
+
+Long division gives: $f(x) = x + \\frac{x + 1}{x^2 - 1}$
+Oblique asymptote: $y = x$`,
+
+            'algebra2-radical-functions': `# Algebra 2: Radical Functions
+
+## Definition
+
+A radical function is a function containing a radical expression:
+$$f(x) = \\sqrt[n]{g(x)}$$
+where $n$ is the index and $g(x)$ is the radicand
+
+## Common Types
+
+**Square Root Function:**
+$$f(x) = \\sqrt{x}$$
+- Domain: $x \\geq 0$
+- Range: $y \\geq 0$
+
+**Cube Root Function:**
+$$f(x) = \\sqrt[3]{x}$$
+- Domain: All real numbers
+- Range: All real numbers
+
+**General nth Root:**
+$$f(x) = \\sqrt[n]{x}$$
+- If $n$ is even: Domain $x \\geq 0$, Range $y \\geq 0$
+- If $n$ is odd: Domain and Range are all real numbers
+
+## Rational Exponents
+
+**Definition:** $x^{1/n} = \\sqrt[n]{x}$
+
+**Properties:**
+- $x^{m/n} = (\\sqrt[n]{x})^m = \\sqrt[n]{x^m}$
+- $x^{-m/n} = \\frac{1}{x^{m/n}} = \\frac{1}{\\sqrt[n]{x^m}}$
+
+## Operations with Radicals
+
+**Product Rule:**
+$$\\sqrt[n]{a} \\cdot \\sqrt[n]{b} = \\sqrt[n]{ab}$$
+
+**Quotient Rule:**
+$$\\frac{\\sqrt[n]{a}}{\\sqrt[n]{b}} = \\sqrt[n]{\\frac{a}{b}}$$
+
+**Power Rule:**
+$$(\\sqrt[n]{a})^m = \\sqrt[n]{a^m}$$
+
+## Simplifying Radicals
+
+**Perfect Powers:** Extract perfect nth powers
+$$\\sqrt{72} = \\sqrt{36 \\cdot 2} = 6\\sqrt{2}$$
+
+**Rationalizing Denominators:**
+$$\\frac{1}{\\sqrt{3}} = \\frac{1}{\\sqrt{3}} \\cdot \\frac{\\sqrt{3}}{\\sqrt{3}} = \\frac{\\sqrt{3}}{3}$$
+
+**Conjugate Method:**
+$$\\frac{1}{2 + \\sqrt{3}} = \\frac{1}{2 + \\sqrt{3}} \\cdot \\frac{2 - \\sqrt{3}}{2 - \\sqrt{3}} = \\frac{2 - \\sqrt{3}}{4 - 3} = 2 - \\sqrt{3}$$
+
+## Solving Radical Equations
+
+**Method:**
+1. Isolate the radical
+2. Raise both sides to the power of the index
+3. Solve the resulting equation
+4. Check solutions in original equation
+
+**Example:** Solve $\\sqrt{x + 3} = x - 1$
+
+1. Square both sides: $x + 3 = (x - 1)^2$
+2. Expand: $x + 3 = x^2 - 2x + 1$
+3. Rearrange: $0 = x^2 - 3x - 2$
+4. Solve: $x = \\frac{3 \\pm \\sqrt{17}}{2}$
+5. Check: Only $x = \\frac{3 + \\sqrt{17}}{2}$ works
+
+## Transformations
+
+**Vertical Shift:** $f(x) + k$
+**Horizontal Shift:** $f(x - h)$
+**Vertical Stretch/Compression:** $af(x)$
+**Reflection:** $-f(x)$ or $f(-x)$
+
+## Examples
+
+**Simplify:** $\\sqrt[3]{54x^4y^7}$
+$$\\sqrt[3]{54x^4y^7} = \\sqrt[3]{27 \\cdot 2 \\cdot x^3 \\cdot x \\cdot y^6 \\cdot y}$$
+$$= 3xy^2\\sqrt[3]{2xy}$$
+
+**Solve:** $\\sqrt{x + 5} + \\sqrt{x} = 5$
+$$\\sqrt{x + 5} = 5 - \\sqrt{x}$$
+$$x + 5 = 25 - 10\\sqrt{x} + x$$
+$$-20 = -10\\sqrt{x}$$
+$$2 = \\sqrt{x}$$
+$$x = 4$$`,
+
+            'algebra2-exponential-logarithmic': `# Algebra 2: Exponential and Logarithmic Functions
+
+## Exponential Functions
+
+**Definition:** $f(x) = a^x$ where $a > 0, a \\neq 1$
+
+**Properties:**
+- Domain: All real numbers
+- Range: $(0, \\infty)$
+- Always positive
+- Horizontal asymptote: $y = 0$
+- Passes through $(0, 1)$
+
+**Growth vs Decay:**
+- If $a > 1$: exponential growth
+- If $0 < a < 1$: exponential decay
+
+## Logarithmic Functions
+
+**Definition:** $f(x) = \\log_a(x)$ where $a > 0, a \\neq 1$
+
+**Properties:**
+- Domain: $(0, \\infty)$
+- Range: All real numbers
+- Vertical asymptote: $x = 0$
+- Passes through $(1, 0)$
+
+**Common Logarithms:**
+- Base 10: $\\log(x) = \\log_{10}(x)$
+- Natural log: $\\ln(x) = \\log_e(x)$
+
+## Properties of Logarithms
+
+**Product Rule:**
+$$\\log_a(xy) = \\log_a(x) + \\log_a(y)$$
+
+**Quotient Rule:**
+$$\\log_a\\left(\\frac{x}{y}\\right) = \\log_a(x) - \\log_a(y)$$
+
+**Power Rule:**
+$$\\log_a(x^n) = n\\log_a(x)$$
+
+**Change of Base:**
+$$\\log_a(x) = \\frac{\\log_b(x)}{\\log_b(a)}$$
+
+**Special Values:**
+- $\\log_a(1) = 0$
+- $\\log_a(a) = 1$
+- $\\log_a(a^x) = x$
+- $a^{\\log_a(x)} = x$
+
+## Solving Exponential Equations
+
+**Method 1:** Same base
+$$2^x = 2^3 \\Rightarrow x = 3$$
+
+**Method 2:** Take logarithm
+$$3^x = 7 \\Rightarrow x\\log(3) = \\log(7) \\Rightarrow x = \\frac{\\log(7)}{\\log(3)}$$
+
+**Method 3:** Factor and solve
+$$e^{2x} - 3e^x + 2 = 0$$
+Let $u = e^x$: $u^2 - 3u + 2 = 0$
+$(u - 1)(u - 2) = 0$
+$u = 1$ or $u = 2$
+$e^x = 1$ or $e^x = 2$
+$x = 0$ or $x = \\ln(2)$
+
+## Solving Logarithmic Equations
+
+**Method 1:** Convert to exponential form
+$$\\log_2(x) = 3 \\Rightarrow x = 2^3 = 8$$
+
+**Method 2:** Use properties
+$$\\log(x) + \\log(x - 3) = 1$$
+$$\\log(x(x - 3)) = 1$$
+$$x(x - 3) = 10^1 = 10$$
+$$x^2 - 3x - 10 = 0$$
+$$(x - 5)(x + 2) = 0$$
+$$x = 5$$ (reject $x = -2$ since domain is $x > 0$)
+
+## Applications
+
+**Compound Interest:**
+$$A = P\\left(1 + \\frac{r}{n}\\right)^{nt}$$
+
+**Continuous Compound Interest:**
+$$A = Pe^{rt}$$
+
+**Population Growth:**
+$$P(t) = P_0e^{rt}$$
+
+**Half-Life:**
+$$A(t) = A_0\\left(\\frac{1}{2}\\right)^{t/h}$$
+
+## Examples
+
+**Solve:** $2^{x+1} = 8^{x-1}$
+$$2^{x+1} = (2^3)^{x-1} = 2^{3(x-1)}$$
+$$x + 1 = 3(x - 1) = 3x - 3$$
+$$4 = 2x$$
+$$x = 2$$
+
+**Solve:** $\\log_2(x^2 - 4) = 3$
+$$x^2 - 4 = 2^3 = 8$$
+$$x^2 = 12$$
+$$x = \\pm 2\\sqrt{3}$$`,
+
+            'algebra2-trigonometry': `# Algebra 2: Trigonometry
+
+## Unit Circle
+
+**Definition:** Circle with radius 1 centered at origin
+$$x^2 + y^2 = 1$$
+
+**Key Angles (in radians):**
+- $0$: $(1, 0)$
+- $\\frac{\\pi}{6}$: $(\\frac{\\sqrt{3}}{2}, \\frac{1}{2})$
+- $\\frac{\\pi}{4}$: $(\\frac{\\sqrt{2}}{2}, \\frac{\\sqrt{2}}{2})$
+- $\\frac{\\pi}{3}$: $(\\frac{1}{2}, \\frac{\\sqrt{3}}{2})$
+- $\\frac{\\pi}{2}$: $(0, 1)$
+
+## Trigonometric Functions
+
+**Definitions (using unit circle):**
+- $\\sin(\\theta) = y$-coordinate
+- $\\cos(\\theta) = x$-coordinate
+- $\\tan(\\theta) = \\frac{\\sin(\\theta)}{\\cos(\\theta)} = \\frac{y}{x}$
+
+**Reciprocal Functions:**
+- $\\csc(\\theta) = \\frac{1}{\\sin(\\theta)}$
+- $\\sec(\\theta) = \\frac{1}{\\cos(\\theta)}$
+- $\\cot(\\theta) = \\frac{1}{\\tan(\\theta)} = \\frac{\\cos(\\theta)}{\\sin(\\theta)}$
+
+## Fundamental Identities
+
+**Pythagorean Identities:**
+$$\\sin^2(\\theta) + \\cos^2(\\theta) = 1$$
+$$1 + \\tan^2(\\theta) = \\sec^2(\\theta)$$
+$$1 + \\cot^2(\\theta) = \\csc^2(\\theta)$$
+
+**Even/Odd Identities:**
+- $\\sin(-\\theta) = -\\sin(\\theta)$ (odd)
+- $\\cos(-\\theta) = \\cos(\\theta)$ (even)
+- $\\tan(-\\theta) = -\\tan(\\theta)$ (odd)
+
+**Cofunction Identities:**
+$$\\sin\\left(\\frac{\\pi}{2} - \\theta\\right) = \\cos(\\theta)$$
+$$\\cos\\left(\\frac{\\pi}{2} - \\theta\\right) = \\sin(\\theta)$$
+
+## Sum and Difference Formulas
+
+$$\\sin(A \\pm B) = \\sin(A)\\cos(B) \\pm \\cos(A)\\sin(B)$$
+$$\\cos(A \\pm B) = \\cos(A)\\cos(B) \\mp \\sin(A)\\sin(B)$$
+$$\\tan(A \\pm B) = \\frac{\\tan(A) \\pm \\tan(B)}{1 \\mp \\tan(A)\\tan(B)}$$
+
+## Double Angle Formulas
+
+$$\\sin(2\\theta) = 2\\sin(\\theta)\\cos(\\theta)$$
+$$\\cos(2\\theta) = \\cos^2(\\theta) - \\sin^2(\\theta) = 2\\cos^2(\\theta) - 1 = 1 - 2\\sin^2(\\theta)$$
+$$\\tan(2\\theta) = \\frac{2\\tan(\\theta)}{1 - \\tan^2(\\theta)}$$
+
+## Half Angle Formulas
+
+$$\\sin\\left(\\frac{\\theta}{2}\\right) = \\pm\\sqrt{\\frac{1 - \\cos(\\theta)}{2}}$$
+$$\\cos\\left(\\frac{\\theta}{2}\\right) = \\pm\\sqrt{\\frac{1 + \\cos(\\theta)}{2}}$$
+$$\\tan\\left(\\frac{\\theta}{2}\\right) = \\frac{1 - \\cos(\\theta)}{\\sin(\\theta)} = \\frac{\\sin(\\theta)}{1 + \\cos(\\theta)}$$
+
+## Inverse Trigonometric Functions
+
+**Definitions:**
+- $\\arcsin(x)$ or $\\sin^{-1}(x)$: angle whose sine is $x$
+- $\\arccos(x)$ or $\\cos^{-1}(x)$: angle whose cosine is $x$
+- $\\arctan(x)$ or $\\tan^{-1}(x)$: angle whose tangent is $x$
+
+**Domains and Ranges:**
+- $\\arcsin(x)$: Domain $[-1, 1]$, Range $[-\\frac{\\pi}{2}, \\frac{\\pi}{2}]$
+- $\\arccos(x)$: Domain $[-1, 1]$, Range $[0, \\pi]$
+- $\\arctan(x)$: Domain $(-\\infty, \\infty)$, Range $(-\\frac{\\pi}{2}, \\frac{\\pi}{2})$
+
+## Solving Trigonometric Equations
+
+**Basic Strategy:**
+1. Isolate the trigonometric function
+2. Find reference angles
+3. Consider all solutions in the given interval
+4. Check for extraneous solutions
+
+**Example:** Solve $2\\sin(x) - 1 = 0$ on $[0, 2\\pi]$
+$$2\\sin(x) = 1$$
+$$\\sin(x) = \\frac{1}{2}$$
+$$x = \\frac{\\pi}{6}, \\frac{5\\pi}{6}$$
+
+## Examples
+
+**Simplify:** $\\frac{\\sin^2(x) - 1}{\\cos(x)}$
+$$\\frac{\\sin^2(x) - 1}{\\cos(x)} = \\frac{-(1 - \\sin^2(x))}{\\cos(x)} = \\frac{-\\cos^2(x)}{\\cos(x)} = -\\cos(x)$$
+
+**Find exact value:** $\\sin(75°)$
+$$\\sin(75°) = \\sin(45° + 30°)$$
+$$= \\sin(45°)\\cos(30°) + \\cos(45°)\\sin(30°)$$
+$$= \\frac{\\sqrt{2}}{2} \\cdot \\frac{\\sqrt{3}}{2} + \\frac{\\sqrt{2}}{2} \\cdot \\frac{1}{2}$$
+$$= \\frac{\\sqrt{6} + \\sqrt{2}}{4}$$`,
+
+            'algebra2-sequences-series': `# Algebra 2: Sequences and Series
+
+## Sequences
+
+**Definition:** An ordered list of numbers: $a_1, a_2, a_3, \\ldots$
+
+**Explicit Formula:** $a_n = f(n)$
+**Recursive Formula:** $a_n = f(a_{n-1}, a_{n-2}, \\ldots)$
+
+## Arithmetic Sequences
+
+**Definition:** Each term differs from the previous by a constant $d$
+$$a_n = a_1 + (n-1)d$$
+
+**Properties:**
+- Common difference: $d = a_{n+1} - a_n$
+- Sum of first $n$ terms: $S_n = \\frac{n}{2}(a_1 + a_n) = \\frac{n}{2}[2a_1 + (n-1)d]$
+
+## Geometric Sequences
+
+**Definition:** Each term is multiplied by a constant ratio $r$
+$$a_n = a_1 \\cdot r^{n-1}$$
+
+**Properties:**
+- Common ratio: $r = \\frac{a_{n+1}}{a_n}$
+- Sum of first $n$ terms: $S_n = a_1 \\frac{1 - r^n}{1 - r}$ (if $r \\neq 1$)
+- Infinite sum: $S = \\frac{a_1}{1 - r}$ (if $|r| < 1$)
+
+## Sigma Notation
+
+**Definition:** $\\sum_{i=m}^{n} a_i = a_m + a_{m+1} + \\cdots + a_n$
+
+**Properties:**
+- $\\sum_{i=1}^{n} c = nc$ (constant)
+- $\\sum_{i=1}^{n} ca_i = c\\sum_{i=1}^{n} a_i$ (constant multiple)
+- $\\sum_{i=1}^{n} (a_i \\pm b_i) = \\sum_{i=1}^{n} a_i \\pm \\sum_{i=1}^{n} b_i$ (addition/subtraction)
+
+**Common Sums:**
+- $\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}$
+- $\\sum_{i=1}^{n} i^2 = \\frac{n(n+1)(2n+1)}{6}$
+- $\\sum_{i=1}^{n} i^3 = \\left[\\frac{n(n+1)}{2}\\right]^2$
+
+## Special Sequences
+
+**Fibonacci Sequence:** $F_n = F_{n-1} + F_{n-2}$ with $F_1 = F_2 = 1$
+$$1, 1, 2, 3, 5, 8, 13, 21, \\ldots$$
+
+**Factorial:** $n! = n \\cdot (n-1) \\cdot (n-2) \\cdots 2 \\cdot 1$
+- $0! = 1$
+- $n! = n \\cdot (n-1)!$
+
+## Examples
+
+**Arithmetic Example:** Find the 20th term of $3, 7, 11, 15, \\ldots$
+$$a_1 = 3, d = 4$$
+$$a_{20} = 3 + (20-1)(4) = 3 + 19(4) = 79$$
+
+**Geometric Example:** Find the sum of the first 10 terms of $2, 6, 18, 54, \\ldots$
+$$a_1 = 2, r = 3$$
+$$S_{10} = 2 \\cdot \\frac{1 - 3^{10}}{1 - 3} = 2 \\cdot \\frac{1 - 59049}{-2} = 59048$$
+
+**Sigma Example:** Evaluate $\\sum_{i=1}^{5} (2i + 1)$
+$$\\sum_{i=1}^{5} (2i + 1) = 2\\sum_{i=1}^{5} i + \\sum_{i=1}^{5} 1$$
+$$= 2 \\cdot \\frac{5(6)}{2} + 5 = 30 + 5 = 35$$`,
+
+            'algebra2-probability-statistics': `# Algebra 2: Probability and Statistics
+
+## Basic Probability
+
+**Definition:** $P(A) = \\frac{\\text{number of favorable outcomes}}{\\text{total number of outcomes}}$
+
+**Properties:**
+- $0 \\leq P(A) \\leq 1$
+- $P(A) + P(A') = 1$ where $A'$ is the complement of $A$
+- $P(A \\cup B) = P(A) + P(B) - P(A \\cap B)$
+
+## Permutations and Combinations
+
+**Permutations (order matters):**
+$$P(n,r) = \\frac{n!}{(n-r)!}$$
+
+**Combinations (order doesn't matter):**
+$$C(n,r) = \\binom{n}{r} = \\frac{n!}{r!(n-r)!}$$
+
+**Properties:**
+- $\\binom{n}{0} = \\binom{n}{n} = 1$
+- $\\binom{n}{r} = \\binom{n}{n-r}$ (symmetry)
+- $\\binom{n}{r} = \\binom{n-1}{r-1} + \\binom{n-1}{r}$ (Pascal's identity)
+
+## Conditional Probability
+
+**Definition:** $P(A|B) = \\frac{P(A \\cap B)}{P(B)}$
+
+**Independent Events:** $P(A|B) = P(A)$
+**Dependent Events:** $P(A|B) \\neq P(A)$
+
+## Bayes' Theorem
+
+$$P(A|B) = \\frac{P(B|A) \\cdot P(A)}{P(B)}$$
+
+## Descriptive Statistics
+
+**Measures of Central Tendency:**
+- Mean: $\\bar{x} = \\frac{1}{n}\\sum_{i=1}^{n} x_i$
+- Median: Middle value when data is ordered
+- Mode: Most frequent value
+
+**Measures of Spread:**
+- Range: $\\text{max} - \\text{min}$
+- Variance: $s^2 = \\frac{1}{n-1}\\sum_{i=1}^{n} (x_i - \\bar{x})^2$
+- Standard Deviation: $s = \\sqrt{s^2}$
+
+## Normal Distribution
+
+**Standard Normal:** $Z = \\frac{X - \\mu}{\\sigma}$
+- Mean: $\\mu = 0$
+- Standard deviation: $\\sigma = 1$
+
+**Empirical Rule (68-95-99.7):**
+- 68% of data within 1 standard deviation
+- 95% of data within 2 standard deviations
+- 99.7% of data within 3 standard deviations
+
+## Binomial Distribution
+
+**Definition:** $X \\sim B(n,p)$ where $n$ is number of trials, $p$ is probability of success
+
+**Probability Mass Function:**
+$$P(X = k) = \\binom{n}{k} p^k (1-p)^{n-k}$$
+
+**Mean:** $\\mu = np$
+**Variance:** $\\sigma^2 = np(1-p)$
+
+## Examples
+
+**Permutation:** How many ways to arrange 5 books on a shelf?
+$$P(5,5) = 5! = 120$$
+
+**Combination:** How many ways to choose 3 students from 10?
+$$C(10,3) = \\binom{10}{3} = \\frac{10!}{3!7!} = 120$$
+
+**Probability:** What's the probability of rolling a sum of 7 with two dice?
+Favorable outcomes: $(1,6), (2,5), (3,4), (4,3), (5,2), (6,1)$
+$$P(\\text{sum} = 7) = \\frac{6}{36} = \\frac{1}{6}$$
+
+**Normal Distribution:** If test scores are normally distributed with $\\mu = 75$ and $\\sigma = 10$, what percentage score above 85?
+$$Z = \\frac{85 - 75}{10} = 1$$
+$P(Z > 1) = 0.1587$ or about 16%`,
+
+            'algebra2-conic-sections': `# Algebra 2: Conic Sections
+
+## Circle
+
+**Standard Form:** $(x - h)^2 + (y - k)^2 = r^2$
+- Center: $(h, k)$
+- Radius: $r$
+
+**General Form:** $x^2 + y^2 + Dx + Ey + F = 0$
+
+**Converting to Standard Form:** Complete the square
+
+## Ellipse
+
+**Standard Form:** $\\frac{(x-h)^2}{a^2} + \\frac{(y-k)^2}{b^2} = 1$
+- Center: $(h, k)$
+- Major axis length: $2a$
+- Minor axis length: $2b$
+- Foci: $(h \\pm c, k)$ where $c^2 = a^2 - b^2$
+
+**If $a > b$:** Horizontal major axis
+**If $b > a$:** Vertical major axis
+
+## Parabola
+
+**Vertical Parabola:** $(x - h)^2 = 4p(y - k)$
+- Vertex: $(h, k)$
+- Focus: $(h, k + p)$
+- Directrix: $y = k - p$
+- Opens up if $p > 0$, down if $p < 0$
+
+**Horizontal Parabola:** $(y - k)^2 = 4p(x - h)$
+- Vertex: $(h, k)$
+- Focus: $(h + p, k)$
+- Directrix: $x = h - p$
+- Opens right if $p > 0$, left if $p < 0$
+
+## Hyperbola
+
+**Standard Form:** $\\frac{(x-h)^2}{a^2} - \\frac{(y-k)^2}{b^2} = 1$
+- Center: $(h, k)$
+- Transverse axis length: $2a$
+- Conjugate axis length: $2b$
+- Foci: $(h \\pm c, k)$ where $c^2 = a^2 + b^2$
+- Asymptotes: $y - k = \\pm\\frac{b}{a}(x - h)$
+
+**Vertical Hyperbola:** $\\frac{(y-k)^2}{a^2} - \\frac{(x-h)^2}{b^2} = 1$
+
+## Eccentricity
+
+**Definition:** $e = \\frac{c}{a}$ (for ellipses and hyperbolas)
+
+**Values:**
+- Circle: $e = 0$
+- Ellipse: $0 < e < 1$
+- Parabola: $e = 1$
+- Hyperbola: $e > 1$
+
+## Converting Between Forms
+
+**General to Standard Form:**
+1. Group like terms
+2. Complete the square for both $x$ and $y$
+3. Factor and simplify
+
+## Examples
+
+**Circle:** Find center and radius of $x^2 + y^2 - 6x + 4y - 3 = 0$
+$$x^2 - 6x + y^2 + 4y = 3$$
+$$(x^2 - 6x + 9) + (y^2 + 4y + 4) = 3 + 9 + 4$$
+$$(x - 3)^2 + (y + 2)^2 = 16$$
+Center: $(3, -2)$, Radius: $4$
+
+**Ellipse:** Graph $\\frac{x^2}{9} + \\frac{y^2}{4} = 1$
+- Center: $(0, 0)$
+- $a = 3$, $b = 2$
+- Major axis: horizontal, length $6$
+- Minor axis: vertical, length $4$
+- Foci: $(\\pm\\sqrt{5}, 0)$
+
+**Parabola:** Find focus and directrix of $(x-2)^2 = 8(y+1)$
+- Vertex: $(2, -1)$
+- $4p = 8$, so $p = 2$
+- Focus: $(2, -1 + 2) = (2, 1)$
+- Directrix: $y = -1 - 2 = -3$`,
+
+            'algebra2-matrices': `# Algebra 2: Matrices
+
+## Matrix Basics
+
+**Definition:** A rectangular array of numbers arranged in rows and columns
+$$A = \\begin{pmatrix} a_{11} & a_{12} & a_{13} \\\\ a_{21} & a_{22} & a_{23} \\end{pmatrix}$$
+
+**Dimensions:** $m \\times n$ where $m$ is number of rows, $n$ is number of columns
+
+## Matrix Operations
+
+**Addition:** Add corresponding elements
+$$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix} + \\begin{pmatrix} e & f \\\\ g & h \\end{pmatrix} = \\begin{pmatrix} a+e & b+f \\\\ c+g & d+h \\end{pmatrix}$$
+
+**Scalar Multiplication:** Multiply each element by the scalar
+$$k\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix} = \\begin{pmatrix} ka & kb \\\\ kc & kd \\end{pmatrix}$$
+
+**Matrix Multiplication:** $C = AB$ where $c_{ij} = \\sum_{k} a_{ik}b_{kj}$
+
+## Matrix Multiplication Rules
+
+- $A(B + C) = AB + AC$ (distributive)
+- $(A + B)C = AC + BC$ (distributive)
+- $A(BC) = (AB)C$ (associative)
+- $AB \\neq BA$ in general (not commutative)
+
+## Special Matrices
+
+**Identity Matrix:** $I = \\begin{pmatrix} 1 & 0 \\\\ 0 & 1 \\end{pmatrix}$
+- $AI = IA = A$
+
+**Zero Matrix:** All elements are zero
+- $A + O = A$
+
+**Transpose:** $A^T$ where $(A^T)_{ij} = A_{ji}$
+
+## Determinants
+
+**2×2 Matrix:**
+$$\\det\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix} = ad - bc$$
+
+**3×3 Matrix:** Use cofactor expansion
+$$\\det\\begin{pmatrix} a & b & c \\\\ d & e & f \\\\ g & h & i \\end{pmatrix} = a(ei - fh) - b(di - fg) + c(dh - eg)$$
+
+## Inverse of a Matrix
+
+**2×2 Matrix:**
+$$A^{-1} = \\frac{1}{\\det(A)}\\begin{pmatrix} d & -b \\\\ -c & a \\end{pmatrix}$$
+
+**Properties:**
+- $AA^{-1} = A^{-1}A = I$
+- $(AB)^{-1} = B^{-1}A^{-1}$
+- $(A^T)^{-1} = (A^{-1})^T$
+
+## Systems of Linear Equations
+
+**Matrix Form:** $AX = B$ where:
+- $A$ is coefficient matrix
+- $X$ is variable matrix
+- $B$ is constant matrix
+
+**Solution:** $X = A^{-1}B$ (if $A$ is invertible)
+
+**Cramer's Rule:** For system $ax + by = e$, $cx + dy = f$:
+$$x = \\frac{\\det\\begin{pmatrix} e & b \\\\ f & d \\end{pmatrix}}{\\det\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}}, \\quad y = \\frac{\\det\\begin{pmatrix} a & e \\\\ c & f \\end{pmatrix}}{\\det\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}}$$
+
+## Examples
+
+**Matrix Multiplication:**
+$$\\begin{pmatrix} 1 & 2 \\\\ 3 & 4 \\end{pmatrix}\\begin{pmatrix} 5 & 6 \\\\ 7 & 8 \\end{pmatrix} = \\begin{pmatrix} 1(5)+2(7) & 1(6)+2(8) \\\\ 3(5)+4(7) & 3(6)+4(8) \\end{pmatrix} = \\begin{pmatrix} 19 & 22 \\\\ 43 & 50 \\end{pmatrix}$$
+
+**Find Inverse:**
+$$A = \\begin{pmatrix} 2 & 1 \\\\ 3 & 2 \\end{pmatrix}$$
+$$\\det(A) = 2(2) - 1(3) = 1$$
+$$A^{-1} = \\frac{1}{1}\\begin{pmatrix} 2 & -1 \\\\ -3 & 2 \\end{pmatrix} = \\begin{pmatrix} 2 & -1 \\\\ -3 & 2 \\end{pmatrix}$$
+
+**Solve System:** $2x + y = 5$, $3x + 2y = 8$
+$$\\begin{pmatrix} 2 & 1 \\\\ 3 & 2 \\end{pmatrix}\\begin{pmatrix} x \\\\ y \\end{pmatrix} = \\begin{pmatrix} 5 \\\\ 8 \\end{pmatrix}$$
+$$\\begin{pmatrix} x \\\\ y \\end{pmatrix} = \\begin{pmatrix} 2 & -1 \\\\ -3 & 2 \\end{pmatrix}\\begin{pmatrix} 5 \\\\ 8 \\end{pmatrix} = \\begin{pmatrix} 2 \\\\ 1 \\end{pmatrix}$$
+Solution: $x = 2$, $y = 1$`
         };
         return templates[template] || '';
     }
