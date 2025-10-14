@@ -16,9 +16,11 @@
   <main>
     <form id="queryForm" autocomplete="off">
       <div>
-        <label for="preamble">Preamble:</label>
-        <button type="button" id="togglePreamble" style="margin-left: 0.5rem; font-size: 0.9rem; padding: 0.2rem 0.6rem;">Expand</button><br>
-        <textarea id="preamble" rows="6" cols="50" placeholder="Enter preamble..."></textarea>
+        <label for="preamble">Preamble:</label><br>
+        <div style="position: relative; display: inline-block; width: 100%;">
+          <textarea id="preamble" rows="6" cols="50" placeholder="Enter preamble..."></textarea>
+          <button type="button" id="togglePreamble">Expand</button>
+        </div>
       </div>
       <div>
         <label for="search">Search Query:</label><br>
