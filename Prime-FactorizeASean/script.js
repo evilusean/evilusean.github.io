@@ -184,59 +184,133 @@ function renderTreeASCII(node, depth = 0) {
 
 /**
  * Render tree with / and \ branches creating triangles
- * Format: number on one line, branches on next, children on following lines
+ * All nodes at the same level appear on the same line
+ * Each node appears only once
  */
 function renderFactorTree(node) {
     const result = [];
+    const levels = [];
+    const nodePos = new Map();
     
-    function buildTree(n, level = 0, isLeftChild = false) {
+    // Collect all nodes by level
+    function collect(n, level = 0) {
         if (!n) return;
+        if (!levels[level]) levels[level] = [];
+        levels[level].push(n);
+        if (n.left) collect(n.left, level + 1);
+        if (n.right) collect(n.right, level + 1);
+    }
+    collect(node);
+    
+    // Calculate positions bottom-up
+    for (let level = levels.length - 1; level >= 0; level--) {
+        const nodes = levels[level];
+        let pos = 0;
         
-        const value = n.value.toString();
-        const indent = '  '.repeat(level);
-        
-        // Add the number itself
-        result.push(indent + value);
-        
-        // If it has children, add branches and children
-        if (n.left || n.right) {
+        nodes.forEach((n, idx) => {
+            const val = n.value.toString();
+            const w = val.length;
+            let p = pos;
+            
+            // Position based on children
             if (n.left && n.right) {
-                // Both children: / and \
-                const leftValue = n.left.value.toString();
-                const rightValue = n.right.value.toString();
-                
-                // Create branch line with / and \
-                let branchLine = indent;
-                const centerPos = Math.floor(value.length / 2);
-                branchLine += ' '.repeat(centerPos) + '/' + ' '.repeat(leftValue.length) + '\\';
-                result.push(branchLine);
-                
-                // Add children on next line
-                const childrenLine = indent + leftValue + '   ' + rightValue;
-                result.push(childrenLine);
-                
-                // Recursively build children trees with proper indentation
-                buildTree(n.left, level + 2, true);
-                buildTree(n.right, level + 2 + leftValue.length + 3, false);
+                const lp = nodePos.get(n.left);
+                const rp = nodePos.get(n.right);
+                const lw = n.left.value.toString().length;
+                const rw = n.right.value.toString().length;
+                const lc = lp + Math.floor(lw / 2);
+                const rc = rp + Math.floor(rw / 2);
+                p = Math.max(p, Math.floor((lc + rc) / 2) - Math.floor(w / 2));
             } else if (n.left) {
-                // Only left child: /
-                let branchLine = indent + '/';
-                result.push(branchLine);
-                const childLine = indent + n.left.value.toString();
-                result.push(childLine);
-                buildTree(n.left, level + 1, true);
+                const lp = nodePos.get(n.left);
+                const lw = n.left.value.toString().length;
+                p = Math.max(p, lp + Math.floor(lw / 2) - Math.floor(w / 2));
             } else if (n.right) {
-                // Only right child: \
-                let branchLine = indent + ' '.repeat(value.length - 1) + '\\';
-                result.push(branchLine);
-                const childLine = indent + ' '.repeat(value.length) + n.right.value.toString();
-                result.push(childLine);
-                buildTree(n.right, level + value.length + 1, false);
+                const rp = nodePos.get(n.right);
+                const rw = n.right.value.toString().length;
+                p = Math.max(p, rp + Math.floor(rw / 2) - Math.floor(w / 2));
+            }
+            
+            // Spacing from previous node
+            if (idx > 0) {
+                const prev = nodes[idx - 1];
+                const prevP = nodePos.get(prev);
+                const prevW = prev.value.toString().length;
+                p = Math.max(p, prevP + prevW + 3);
+            }
+            
+            nodePos.set(n, p);
+            pos = p + w + 3;
+        });
+    }
+    
+    // Render each level - DO NOT show children in branch lines, only show them in next level
+    for (let level = 0; level < levels.length; level++) {
+        const nodes = levels[level];
+        const valLine = [];
+        
+        // Build value line - all nodes at this level (only show them once here)
+        nodes.forEach((n) => {
+            const val = n.value.toString();
+            const p = nodePos.get(n);
+            while (valLine.length < p) valLine.push(' ');
+            for (let i = 0; i < val.length; i++) {
+                if (p + i < valLine.length) {
+                    valLine[p + i] = val[i];
+                } else {
+                    valLine.push(val[i]);
+                }
+            }
+        });
+        result.push(valLine.join(''));
+        
+        // Build branches if not last level (but don't show children here - they'll show in next level)
+        if (level < levels.length - 1) {
+            const branchLine = [];
+            const nextLevelNodes = levels[level + 1];
+            
+            // Only draw branches for nodes that have children
+            nodes.forEach((n) => {
+                if (n.left || n.right) {
+                    const pPos = nodePos.get(n);
+                    const pW = n.value.toString().length;
+                    const pCenter = pPos + Math.floor(pW / 2);
+                    
+                    if (n.left && n.right) {
+                        const lPos = nodePos.get(n.left);
+                        const rPos = nodePos.get(n.right);
+                        const lW = n.left.value.toString().length;
+                        const rW = n.right.value.toString().length;
+                        const lCenter = lPos + Math.floor(lW / 2);
+                        const rCenter = rPos + Math.floor(rW / 2);
+                        
+                        // Branch line only - don't show children here
+                        while (branchLine.length <= lCenter) branchLine.push(' ');
+                        branchLine[lCenter] = '/';
+                        while (branchLine.length <= rCenter) branchLine.push(' ');
+                        branchLine[rCenter] = '\\';
+                    } else if (n.left) {
+                        const lPos = nodePos.get(n.left);
+                        const lW = n.left.value.toString().length;
+                        const lCenter = lPos + Math.floor(lW / 2);
+                        while (branchLine.length <= lCenter) branchLine.push(' ');
+                        branchLine[lCenter] = '/';
+                    } else if (n.right) {
+                        const rPos = nodePos.get(n.right);
+                        const rW = n.right.value.toString().length;
+                        const rCenter = rPos + Math.floor(rW / 2);
+                        while (branchLine.length <= rCenter) branchLine.push(' ');
+                        branchLine[rCenter] = '\\';
+                    }
+                }
+            });
+            
+            if (branchLine.some(c => c === '/' || c === '\\')) {
+                result.push(branchLine.join(''));
             }
         }
     }
     
-    buildTree(node);
     return result;
 }
 
@@ -278,58 +352,162 @@ function findNthPrime(n, progressCallback = null) {
 let screensaverInterval = null;
 let screensaverActive = true;
 let screensaverSpeed = 5;
+let maxMultiplier = 10;
 let primeRange = { start: 2, end: 20 };
 const screensaverContainer = document.getElementById('screensaver');
 const activeElements = new Set();
+let currentPrimeIndex = 0;
+let scrollingPrimes = [];
+let topbarPosition = 0;
 
 /**
- * Generate multiples for a prime number
- * @param {number} prime - Prime number
- * @returns {Array} - Array of multiples (prime * 1 to prime * 10)
+ * Create scrolling topbar with primes
  */
-function getPrimeMultiples(prime) {
-    const multiples = [];
-    for (let i = 1; i <= 10; i++) {
-        multiples.push(prime * i);
+function createTopbar() {
+    // Remove existing topbar if any
+    const existing = document.getElementById('prime-topbar');
+    if (existing) existing.remove();
+    
+    const topbar = document.createElement('div');
+    topbar.id = 'prime-topbar';
+    topbar.className = 'prime-topbar';
+    screensaverContainer.appendChild(topbar);
+    
+    // Get primes in range
+    scrollingPrimes = [];
+    for (let i = primeRange.start; i <= primeRange.end; i++) {
+        if (isPrime(i)) {
+            scrollingPrimes.push(i);
+        }
     }
-    return multiples;
+    
+    if (scrollingPrimes.length === 0) return;
+    
+    // Create prime elements in topbar
+    scrollingPrimes.forEach((prime, idx) => {
+        const primeEl = document.createElement('span');
+        primeEl.className = 'topbar-prime';
+        primeEl.textContent = prime.toString();
+        primeEl.dataset.prime = prime;
+        primeEl.dataset.index = idx;
+        topbar.appendChild(primeEl);
+    });
+    
+    // Start scrolling
+    topbarPosition = 0;
+    animateTopbar();
 }
 
 /**
- * Create a falling element for screensaver
- * @param {number} prime - Prime number
- * @param {number} multiple - Multiple value
- * @param {number} x - X position
+ * Animate scrolling topbar
  */
-function createFallingElement(prime, multiple, x) {
-    const element = document.createElement('div');
-    element.className = 'falling-element';
-    element.textContent = `${prime} × ${multiple / prime} = ${multiple}`;
-    element.style.left = x + 'px';
-    element.style.top = '-50px';
-    element.dataset.prime = prime;
-    element.dataset.multiple = multiple;
+function animateTopbar() {
+    if (!screensaverActive) return;
     
-    screensaverContainer.appendChild(element);
-    activeElements.add(element);
+    const topbar = document.getElementById('prime-topbar');
+    if (!topbar) return;
+    
+    topbarPosition -= screensaverSpeed;
+    topbar.style.transform = `translateX(${topbarPosition}px)`;
+    
+    // Check if a prime is visible and should drop
+    const primeElements = topbar.querySelectorAll('.topbar-prime');
+    primeElements.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        const prime = parseInt(el.dataset.prime);
+        
+        // If prime is at left edge (x position around 0-50px), start dropping
+        if (rect.left >= 0 && rect.left <= 50 && !el.dataset.dropping) {
+            el.dataset.dropping = 'true';
+            startDroppingMultiples(prime);
+        }
+    });
+    
+    // Reset position when scrolled past
+    const topbarWidth = topbar.scrollWidth;
+    if (Math.abs(topbarPosition) > topbarWidth + window.innerWidth) {
+        topbarPosition = window.innerWidth;
+    }
+    
+    if (screensaverActive) {
+        requestAnimationFrame(animateTopbar);
+    }
+}
+
+/**
+ * Start dropping multiples for a prime number
+ * @param {number} prime - Prime number
+ */
+function startDroppingMultiples(prime) {
+    const fallSpeed = screensaverSpeed * 2;
+    const multiples = [];
+    let currentMultiplier = 1;
+    
+    function createMultiple(multiplier) {
+        if (multiplier > maxMultiplier) return;
+        
+        const element = document.createElement('div');
+        element.className = 'falling-element';
+        const result = prime * multiplier;
+        element.textContent = `${prime} × ${multiplier} = ${result}`;
+        element.style.left = '20px';
+        element.style.top = '-30px';
+        element.dataset.prime = prime;
+        element.dataset.multiplier = multiplier;
+        element.style.opacity = Math.max(0.5, 1 - (multiplier - 1) * 0.1);
+        
+        screensaverContainer.appendChild(element);
+        activeElements.add(element);
+        
+        const multiple = {
+            element,
+            multiplier,
+            position: -30,
+            prime
+        };
+        multiples.push(multiple);
+        
+        // Create next multiple after delay
+        if (multiplier < maxMultiplier) {
+            setTimeout(() => {
+                createMultiple(multiplier + 1);
+            }, 200);
+        }
+    }
+    
+    // Start with first multiple
+    createMultiple(1);
     
     // Animate falling
-    const fallSpeed = screensaverSpeed * 2;
-    let position = -50;
-    
-    const animate = () => {
-        position += fallSpeed;
-        element.style.top = position + 'px';
+    function animate() {
+        if (!screensaverActive) {
+            multiples.forEach(m => m.element.remove());
+            return;
+        }
         
-        if (position > window.innerHeight + 50) {
-            element.remove();
-            activeElements.delete(element);
-        } else {
+        multiples.forEach((m, idx) => {
+            m.position += fallSpeed;
+            m.element.style.top = m.position + 'px';
+            
+            // Remove when reached max multiplier (they disappear at the 10th multiple)
+            if (m.multiplier >= maxMultiplier) {
+                m.element.remove();
+                activeElements.delete(m.element);
+                multiples.splice(idx, 1);
+            } else if (m.position > window.innerHeight + 50) {
+                // Also remove if off screen
+                m.element.remove();
+                activeElements.delete(m.element);
+                multiples.splice(idx, 1);
+            }
+        });
+        
+        if (screensaverActive && multiples.length > 0) {
             requestAnimationFrame(animate);
         }
-    };
+    }
     
-    requestAnimationFrame(animate);
+    animate();
 }
 
 /**
@@ -338,26 +516,12 @@ function createFallingElement(prime, multiple, x) {
 function startScreensaver() {
     if (!screensaverActive) return;
     
-    const primes = [];
-    for (let i = primeRange.start; i <= primeRange.end; i++) {
-        if (isPrime(i)) {
-            primes.push(i);
-        }
-    }
+    // Clear existing elements
+    activeElements.forEach(el => el.remove());
+    activeElements.clear();
     
-    if (primes.length === 0) return;
-    
-    // Create falling elements periodically
-    screensaverInterval = setInterval(() => {
-        if (!screensaverActive) return;
-        
-        const randomPrime = primes[Math.floor(Math.random() * primes.length)];
-        const multiples = getPrimeMultiples(randomPrime);
-        const randomMultiple = multiples[Math.floor(Math.random() * multiples.length)];
-        const randomX = Math.random() * (window.innerWidth - 200);
-        
-        createFallingElement(randomPrime, randomMultiple, randomX);
-    }, 1000 / screensaverSpeed);
+    // Create topbar
+    createTopbar();
 }
 
 /**
@@ -368,9 +532,11 @@ function stopScreensaver() {
         clearInterval(screensaverInterval);
         screensaverInterval = null;
     }
-    // Clear all falling elements
+    // Clear all elements
     activeElements.forEach(el => el.remove());
     activeElements.clear();
+    const topbar = document.getElementById('prime-topbar');
+    if (topbar) topbar.remove();
 }
 
 // ==================== DOM Event Handlers ====================
@@ -473,8 +639,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Screensaver Controls
     const updateScreensaverBtn = document.getElementById('update-screensaver-btn');
     const toggleScreensaverBtn = document.getElementById('toggle-screensaver-btn');
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    const exitFullscreenBtn = document.getElementById('exit-fullscreen-btn');
+    const fullscreenOverlay = document.getElementById('fullscreen-overlay');
+    const screensaverFullscreen = document.getElementById('screensaver-fullscreen');
     const screensaverSpeedInput = document.getElementById('screensaver-speed');
     const speedValue = document.getElementById('speed-value');
+    const maxMultiplierInput = document.getElementById('max-multiplier');
     const primeRangeStart = document.getElementById('prime-range-start');
     const primeRangeEnd = document.getElementById('prime-range-end');
     
@@ -484,6 +655,17 @@ document.addEventListener('DOMContentLoaded', function() {
         if (screensaverActive) {
             stopScreensaver();
             startScreensaver();
+        }
+    });
+    
+    maxMultiplierInput.addEventListener('change', (e) => {
+        const newMax = parseInt(e.target.value);
+        if (!isNaN(newMax) && newMax >= 1 && newMax <= 100) {
+            maxMultiplier = newMax;
+            if (screensaverActive) {
+                stopScreensaver();
+                startScreensaver();
+            }
         }
     });
     
@@ -512,6 +694,152 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleScreensaverBtn.textContent = 'Start Screensaver';
             stopScreensaver();
         }
+    });
+    
+    // Fullscreen functionality
+    let fullscreenScreensaverActive = false;
+    let fullscreenInterval = null;
+    
+    function startFullscreenScreensaver() {
+        if (fullscreenScreensaverActive) return;
+        fullscreenScreensaverActive = true;
+        
+        // Use same topbar approach for fullscreen
+        const topbar = document.createElement('div');
+        topbar.id = 'prime-topbar-fullscreen';
+        topbar.className = 'prime-topbar';
+        screensaverFullscreen.appendChild(topbar);
+        
+        const primes = [];
+        for (let i = primeRange.start; i <= primeRange.end; i++) {
+            if (isPrime(i)) {
+                primes.push(i);
+            }
+        }
+        
+        if (primes.length === 0) return;
+        
+        primes.forEach((prime, idx) => {
+            const primeEl = document.createElement('span');
+            primeEl.className = 'topbar-prime';
+            primeEl.textContent = prime.toString();
+            primeEl.dataset.prime = prime;
+            primeEl.dataset.index = idx;
+            topbar.appendChild(primeEl);
+        });
+        
+        let fullscreenTopbarPos = 0;
+        
+        function animateFullscreenTopbar() {
+            if (!fullscreenScreensaverActive) return;
+            
+            fullscreenTopbarPos -= screensaverSpeed;
+            topbar.style.transform = `translateX(${fullscreenTopbarPos}px)`;
+            
+            const primeElements = topbar.querySelectorAll('.topbar-prime');
+            primeElements.forEach((el) => {
+                const rect = el.getBoundingClientRect();
+                const prime = parseInt(el.dataset.prime);
+                
+                if (rect.left >= 0 && rect.left <= 50 && !el.dataset.dropping) {
+                    el.dataset.dropping = 'true';
+                    startDroppingMultiplesForContainer(prime, screensaverFullscreen);
+                }
+            });
+            
+            const topbarWidth = topbar.scrollWidth;
+            if (Math.abs(fullscreenTopbarPos) > topbarWidth + window.innerWidth) {
+                fullscreenTopbarPos = window.innerWidth;
+            }
+            
+            if (fullscreenScreensaverActive) {
+                requestAnimationFrame(animateFullscreenTopbar);
+            }
+        }
+        
+        animateFullscreenTopbar();
+    }
+    
+    function stopFullscreenScreensaver() {
+        fullscreenScreensaverActive = false;
+        if (fullscreenInterval) {
+            clearInterval(fullscreenInterval);
+            screensaverInterval = null;
+        }
+        screensaverFullscreen.innerHTML = '';
+    }
+    
+    function startDroppingMultiplesForContainer(prime, container) {
+        const fallSpeed = screensaverSpeed * 2;
+        const multiples = [];
+        
+        function createMultiple(multiplier) {
+            if (multiplier > maxMultiplier) return;
+            
+            const element = document.createElement('div');
+            element.className = 'falling-element';
+            const result = prime * multiplier;
+            element.textContent = `${prime} × ${multiplier} = ${result}`;
+            element.style.left = '20px';
+            element.style.top = '-30px';
+            element.style.opacity = Math.max(0.5, 1 - (multiplier - 1) * 0.1);
+            
+            container.appendChild(element);
+            
+            const multiple = {
+                element,
+                multiplier,
+                position: -30,
+                prime
+            };
+            multiples.push(multiple);
+            
+            if (multiplier < maxMultiplier) {
+                setTimeout(() => {
+                    createMultiple(multiplier + 1);
+                }, 200);
+            }
+        }
+        
+        createMultiple(1);
+        
+        function animate() {
+            if (!fullscreenScreensaverActive) {
+                multiples.forEach(m => m.element.remove());
+                return;
+            }
+            
+            multiples.forEach((m, idx) => {
+                m.position += fallSpeed;
+                m.element.style.top = m.position + 'px';
+                
+                if (m.multiplier >= maxMultiplier) {
+                    m.element.remove();
+                    multiples.splice(idx, 1);
+                } else if (m.position > window.innerHeight + 50) {
+                    m.element.remove();
+                    multiples.splice(idx, 1);
+                }
+            });
+            
+            if (fullscreenScreensaverActive && multiples.length > 0) {
+                requestAnimationFrame(animate);
+            }
+        }
+        
+        animate();
+    }
+    
+    fullscreenBtn.addEventListener('click', () => {
+        fullscreenOverlay.classList.remove('hidden');
+        document.body.classList.add('fullscreen-mode');
+        startFullscreenScreensaver();
+    });
+    
+    exitFullscreenBtn.addEventListener('click', () => {
+        stopFullscreenScreensaver();
+        fullscreenOverlay.classList.add('hidden');
+        document.body.classList.remove('fullscreen-mode');
     });
     
     // Helper function for ordinal suffixes
