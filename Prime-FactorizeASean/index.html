@@ -3,36 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A basic static website">
+    <meta name="description" content="Prime factorization tool with tree visualization, nth prime finder, and animated screensaver">
     <title>Prime Factorize A Sean</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Screensaver Background -->
+    <div id="screensaver" class="screensaver"></div>
+    
     <header>
         <h1>Prime Factorize A Sean</h1>
         <nav>
             <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
+                <li><a href="#factorize">Factorize</a></li>
+                <li><a href="#find-prime">Find Prime</a></li>
+                <li><a href="#screensaver-controls">Screensaver</a></li>
             </ul>
         </nav>
     </header>
 
     <main>
-        <section id="home">
-            <h2>Welcome</h2>
-            <p>This is a basic static HTML website template for GitHub Pages.</p>
+        <!-- Prime Factorization Tree Section -->
+        <section id="factorize" class="tool-section">
+            <h2>Prime Factorization Tree</h2>
+            <p>Enter a number to see its prime factors displayed as a tree with branches.</p>
+            <div class="input-group">
+                <input type="number" id="factorize-input" placeholder="Enter a number" min="2" step="1">
+                <button id="factorize-btn">Factorize</button>
+            </div>
+            <div id="factor-tree-container" class="tree-container"></div>
         </section>
 
-        <section id="about">
-            <h2>About</h2>
-            <p>Add your content here.</p>
+        <!-- Find Nth Prime Section -->
+        <section id="find-prime" class="tool-section">
+            <h2>Find Nth Prime Number</h2>
+            <p>Enter a position to find the prime number at that position (e.g., 182 for the 182nd prime).</p>
+            <div class="input-group">
+                <input type="number" id="prime-position-input" placeholder="Enter position (e.g., 182)" min="1" step="1">
+                <button id="find-prime-btn">Find Prime</button>
+            </div>
+            <div id="prime-result" class="result-display"></div>
+            <div id="prime-progress" class="progress-display"></div>
         </section>
 
-        <section id="contact">
-            <h2>Contact</h2>
-            <p>Get in touch!</p>
+        <!-- Screensaver Controls Section -->
+        <section id="screensaver-controls" class="tool-section">
+            <h2>Screensaver Controls</h2>
+            <p>Control the animated background showing prime numbers and their multiples.</p>
+            <div class="input-group">
+                <label for="prime-range-start">Start Prime:</label>
+                <input type="number" id="prime-range-start" placeholder="Start" min="2" value="2" step="1">
+                <label for="prime-range-end">End Prime:</label>
+                <input type="number" id="prime-range-end" placeholder="End" min="2" value="20" step="1">
+                <button id="update-screensaver-btn">Update Screensaver</button>
+            </div>
+            <div class="input-group">
+                <label for="screensaver-speed">Speed:</label>
+                <input type="range" id="screensaver-speed" min="1" max="10" value="5">
+                <span id="speed-value">5</span>
+            </div>
+            <div class="input-group">
+                <button id="toggle-screensaver-btn">Toggle Screensaver</button>
+            </div>
         </section>
     </main>
 
@@ -42,4 +74,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
