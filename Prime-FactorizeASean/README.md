@@ -115,3 +115,6 @@ This project is open source and available for use.
 - Add text glow to titles
 - maybe move the 'Find Nth Prime Number' to top bar, doesn't need to take up that much space
 - maybe move screensaver as well to top bar, also taking up tonnes of real estate
+- Add a calculator so user can quickly do math
+- Add a 2nd Tree and let the user quickly find the GCF greatest common factor between 2 terms
+- Maybe a compare with button? if I tree prime 2 big numbers, that's going to be very busy and take up a lot of space. 
