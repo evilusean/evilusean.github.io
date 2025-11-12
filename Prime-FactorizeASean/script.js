@@ -191,85 +191,166 @@ function renderFactorTree(node) {
     const result = [];
     const levels = [];
     const nodePos = new Map();
+    const parentMap = new Map();
     
-    // Collect all nodes by level
-    function collect(n, level = 0) {
+    // Collect all nodes by level and build parent map
+    function collect(n, level = 0, parent = null) {
         if (!n) return;
         if (!levels[level]) levels[level] = [];
         levels[level].push(n);
-        if (n.left) collect(n.left, level + 1);
-        if (n.right) collect(n.right, level + 1);
+        parentMap.set(n, parent);
+        if (n.left) collect(n.left, level + 1, n);
+        if (n.right) collect(n.right, level + 1, n);
     }
     collect(node);
     
-    // Calculate positions bottom-up
+    // Pass 1: Bottom-up - position parents above their children
     for (let level = levels.length - 1; level >= 0; level--) {
         const nodes = levels[level];
-        let pos = 0;
-        
-        nodes.forEach((n, idx) => {
-            const val = n.value.toString();
-            const w = val.length;
-            let p = pos;
-            
-            // Position based on children
-            if (n.left && n.right) {
-                const lp = nodePos.get(n.left);
-                const rp = nodePos.get(n.right);
-                const lw = n.left.value.toString().length;
-                const rw = n.right.value.toString().length;
-                const lc = lp + Math.floor(lw / 2);
-                const rc = rp + Math.floor(rw / 2);
-                p = Math.max(p, Math.floor((lc + rc) / 2) - Math.floor(w / 2));
-            } else if (n.left) {
-                const lp = nodePos.get(n.left);
-                const lw = n.left.value.toString().length;
-                p = Math.max(p, lp + Math.floor(lw / 2) - Math.floor(w / 2));
-            } else if (n.right) {
-                const rp = nodePos.get(n.right);
-                const rw = n.right.value.toString().length;
-                p = Math.max(p, rp + Math.floor(rw / 2) - Math.floor(w / 2));
+        nodes.forEach((n) => {
+            // Only position if node has children (parents)
+            if (n.left || n.right) {
+                const val = n.value.toString();
+                const w = val.length;
+                let pos = 0;
+                
+                if (n.left && n.right) {
+                    const lp = nodePos.get(n.left);
+                    const rp = nodePos.get(n.right);
+                    if (lp !== undefined && rp !== undefined) {
+                        const lw = n.left.value.toString().length;
+                        const rw = n.right.value.toString().length;
+                        const lc = lp + Math.floor(lw / 2);
+                        const rc = rp + Math.floor(rw / 2);
+                        pos = Math.floor((lc + rc) / 2) - Math.floor(w / 2);
+                        nodePos.set(n, Math.max(0, pos));
+                    }
+                } else if (n.left) {
+                    const lp = nodePos.get(n.left);
+                    if (lp !== undefined) {
+                        const lw = n.left.value.toString().length;
+                        pos = lp + Math.floor(lw / 2) - Math.floor(w / 2);
+                        nodePos.set(n, Math.max(0, pos));
+                    }
+                } else if (n.right) {
+                    const rp = nodePos.get(n.right);
+                    if (rp !== undefined) {
+                        const rw = n.right.value.toString().length;
+                        pos = rp + Math.floor(rw / 2) - Math.floor(w / 2);
+                        nodePos.set(n, Math.max(0, pos));
+                    }
+                }
             }
-            
-            // Spacing from previous node
-            if (idx > 0) {
-                const prev = nodes[idx - 1];
-                const prevP = nodePos.get(prev);
-                const prevW = prev.value.toString().length;
-                p = Math.max(p, prevP + prevW + 3);
-            }
-            
-            nodePos.set(n, p);
-            pos = p + w + 3;
         });
     }
     
-    // Render each level - DO NOT show children in branch lines, only show them in next level
+    // Pass 2: Top-down - position children relative to their parent
+    for (let level = 0; level < levels.length; level++) {
+        const nodes = levels[level];
+        
+        // Group by parent
+        const groups = new Map();
+        nodes.forEach(n => {
+            const parent = parentMap.get(n);
+            const key = parent || 'root';
+            if (!groups.has(key)) groups.set(key, []);
+            groups.get(key).push(n);
+        });
+        
+        // Process each group
+        groups.forEach((siblings, parent) => {
+            // Skip if already positioned (has children and was positioned in pass 1)
+            siblings.forEach(n => {
+                if (nodePos.has(n)) return; // Already positioned
+                
+                const val = n.value.toString();
+                const w = val.length;
+                let pos = 0;
+                
+                if (parent && parent !== 'root') {
+                    const parentPos = nodePos.get(parent);
+                    if (parentPos !== undefined) {
+                        const parentW = parent.value.toString().length;
+                        const parentCenter = parentPos + Math.floor(parentW / 2);
+                        
+                        if (siblings.length > 1) {
+                            // Calculate total width
+                            let totalW = siblings.reduce((sum, s) => {
+                                return sum + s.value.toString().length;
+                            }, 0);
+                            totalW += (siblings.length - 1) * 3;
+                            
+                            // Center under parent
+                            const groupStart = parentCenter - Math.floor(totalW / 2);
+                            const nodeIdx = siblings.indexOf(n);
+                            let x = groupStart;
+                            for (let i = 0; i < nodeIdx; i++) {
+                                x += siblings[i].value.toString().length + 3;
+                            }
+                            pos = x;
+                        } else {
+                            pos = parentCenter - Math.floor(w / 2);
+                        }
+                    }
+                }
+                
+                nodePos.set(n, Math.max(0, pos));
+            });
+        });
+        
+        // Prevent overlap between different parent groups
+        const sortedGroups = Array.from(groups.entries()).sort((a, b) => {
+            const aMin = Math.min(...a[1].map(n => nodePos.get(n) || 0));
+            const bMin = Math.min(...b[1].map(n => nodePos.get(n) || 0));
+            return aMin - bMin;
+        });
+        
+        let rightmost = 0;
+        sortedGroups.forEach(([parentKey, siblings]) => {
+            const groupLeft = Math.min(...siblings.map(n => nodePos.get(n) || 0));
+            
+            if (groupLeft < rightmost) {
+                const shift = rightmost - groupLeft;
+                siblings.forEach(n => {
+                    nodePos.set(n, (nodePos.get(n) || 0) + shift);
+                });
+            }
+            
+            siblings.forEach(n => {
+                const pos = nodePos.get(n) || 0;
+                const w = n.value.toString().length;
+                rightmost = Math.max(rightmost, pos + w + 3);
+            });
+        });
+    }
+    
+    // Render each level
     for (let level = 0; level < levels.length; level++) {
         const nodes = levels[level];
         const valLine = [];
         
-        // Build value line - all nodes at this level (only show them once here)
-        nodes.forEach((n) => {
+        // Sort nodes by position
+        const sortedNodes = [...nodes].sort((a, b) => {
+            return (nodePos.get(a) || 0) - (nodePos.get(b) || 0);
+        });
+        
+        // Build value line
+        sortedNodes.forEach((n) => {
             const val = n.value.toString();
             const p = nodePos.get(n);
-            while (valLine.length < p) valLine.push(' ');
+            while (valLine.length < p + val.length) {
+                valLine.push(' ');
+            }
             for (let i = 0; i < val.length; i++) {
-                if (p + i < valLine.length) {
-                    valLine[p + i] = val[i];
-                } else {
-                    valLine.push(val[i]);
-                }
+                valLine[p + i] = val[i];
             }
         });
         result.push(valLine.join(''));
         
-        // Build branches if not last level (but don't show children here - they'll show in next level)
+        // Build branch line if not last level
         if (level < levels.length - 1) {
             const branchLine = [];
-            const nextLevelNodes = levels[level + 1];
             
-            // Only draw branches for nodes that have children
             nodes.forEach((n) => {
                 if (n.left || n.right) {
                     const pPos = nodePos.get(n);
@@ -284,7 +365,6 @@ function renderFactorTree(node) {
                         const lCenter = lPos + Math.floor(lW / 2);
                         const rCenter = rPos + Math.floor(rW / 2);
                         
-                        // Branch line only - don't show children here
                         while (branchLine.length <= lCenter) branchLine.push(' ');
                         branchLine[lCenter] = '/';
                         while (branchLine.length <= rCenter) branchLine.push(' ');
