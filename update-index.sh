@@ -1,4 +1,6 @@
 #!/bin/bash
+#Future Sean : 'chmod +x update-index.sh' to make this script executable
+# './update-index.sh'
 
 # Get current date
 current_date=$(date +"%B %d, %Y")

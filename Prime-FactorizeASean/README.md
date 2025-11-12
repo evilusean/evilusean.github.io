@@ -106,3 +106,12 @@ To deploy this site to GitHub Pages:
 ## License
 
 This project is open source and available for use.
+
+## TODO / Future Sean Problems : 
+- Fix the screensaver prime drops, broken right now, make it so the it goes through all the whole number multiples of that prime number, and saves an after image until it goes to the next prime number, top bar scrolling is too quick
+- Z index of scrolling top bar for screensaver drops 
+- maybe make collapsable defaults with fullscreen mode for screensaver, first need to fix before adding features
+- Also, add animation to the prime tree as it fills it out
+- Add text glow to titles
+- maybe move the 'Find Nth Prime Number' to top bar, doesn't need to take up that much space
+- maybe move screensaver as well to top bar, also taking up tonnes of real estate
