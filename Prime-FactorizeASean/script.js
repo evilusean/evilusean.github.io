@@ -1140,7 +1140,7 @@ function startDroppingMultiples(prime) {
         const element = document.createElement('div');
         element.className = 'falling-element';
         const result = prime * multiplier;
-        element.textContent = `${multiplier} × ${prime} = ${result}`;
+        element.innerHTML = `<span class="multiplier-highlight">${multiplier}</span> × <span class="prime-highlight">${prime}</span> = <span class="result-highlight">${result}</span>`;
         element.style.left = columnLeft;
         element.style.top = '60px';
         element.style.opacity = '1';
@@ -1956,7 +1956,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const element = document.createElement('div');
             element.className = 'falling-element';
             const result = prime * multiplier;
-            element.textContent = `${multiplier} × ${prime} = ${result}`;
+            element.innerHTML = `<span class="multiplier-highlight">${multiplier}</span> × <span class="prime-highlight">${prime}</span> = <span class="result-highlight">${result}</span>`;
             element.style.left = columnLeft;
             element.style.top = '60px';
             element.style.opacity = '1';

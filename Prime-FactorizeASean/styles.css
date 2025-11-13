@@ -79,6 +79,24 @@ body {
     box-shadow: 0 0 5px rgba(255, 0, 0, 0.3);
 }
 
+.prime-highlight {
+    font-size: 1.3em;
+    font-weight: 900;
+    color: #000000;
+    text-shadow: 0 0 8px rgba(255, 0, 0, 1), 0 0 15px rgba(255, 50, 50, 0.8);
+}
+
+.result-highlight {
+    font-size: 1.3em;
+    font-weight: 900;
+    color: #ffff00;
+    text-shadow: 0 0 8px rgba(255, 255, 0, 1), 0 0 15px rgba(255, 200, 0, 0.8);
+}
+
+.multiplier-highlight {
+    text-shadow: 0 0 8px rgba(255, 255, 255, 1), 0 0 15px rgba(255, 255, 255, 0.6);
+}
+
 .falling-prime {
     position: absolute;
     padding: 15px 20px;
