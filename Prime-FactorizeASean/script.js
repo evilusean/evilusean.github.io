@@ -1098,9 +1098,10 @@ function getColumnPosition(columnIndex) {
 /**
  * Start dropping multiples for a prime number sequentially
  * @param {number} prime - Prime number
+ * @param {boolean} fromClick - Whether this was triggered by clicking a random prime
  */
-function startDroppingMultiples(prime) {
-    if (isProcessingPrime) return;
+function startDroppingMultiples(prime, fromClick = false) {
+    if (isProcessingPrime && !fromClick) return;
     isProcessingPrime = true;
     
     // Update the prime display at top
@@ -1110,6 +1111,7 @@ function startDroppingMultiples(prime) {
     let currentMultiplierIndex = 0;
     const elementSpacing = 50;
     const columnLeft = getColumnPosition(currentColumn);
+    const targetColumn = currentColumn;
     
     // Create array of multipliers in range (always sequential)
     const multipliers = [];
@@ -1119,18 +1121,28 @@ function startDroppingMultiples(prime) {
     
     function createAndDropNextMultiple() {
         if (currentMultiplierIndex >= multipliers.length) {
-            // All multiples done - move to next column and prime
+            // All multiples done
             isProcessingPrime = false;
-            currentColumn = (currentColumn + 1) % 4; // Cycle through 4 columns
             
-            // Clear the NEXT column before we start dropping into it
-            const nextColumn = currentColumn;
-            columnAfterimages[nextColumn].forEach(el => el.remove());
-            columnAfterimages[nextColumn] = [];
-            
-            setTimeout(() => {
-                processNextPrime();
-            }, 2000);
+            // If from click, clear this column after 3 seconds
+            if (fromClick) {
+                setTimeout(() => {
+                    columnAfterimages[targetColumn].forEach(el => el.remove());
+                    columnAfterimages[targetColumn] = [];
+                }, 3000);
+            } else {
+                // Normal flow - move to next column and prime
+                currentColumn = (currentColumn + 1) % 4; // Cycle through 4 columns
+                
+                // Clear the NEXT column before we start dropping into it
+                const nextColumn = currentColumn;
+                columnAfterimages[nextColumn].forEach(el => el.remove());
+                columnAfterimages[nextColumn] = [];
+                
+                setTimeout(() => {
+                    processNextPrime();
+                }, 2000);
+            }
             return;
         }
         
@@ -1156,7 +1168,8 @@ function startDroppingMultiples(prime) {
         let position = 60;
         
         function animate() {
-            if (!screensaverActive) {
+            // Only check screensaverActive if not from a click
+            if (!screensaverActive && !fromClick) {
                 element.remove();
                 isProcessingPrime = false;
                 return;
@@ -1171,7 +1184,7 @@ function startDroppingMultiples(prime) {
                 position = targetPosition;
                 element.style.top = position + 'px';
                 element.classList.add('afterimage');
-                columnAfterimages[currentColumn].push(element);
+                columnAfterimages[targetColumn].push(element);
                 
                 // Start next multiple after delay
                 setTimeout(() => {
@@ -1628,14 +1641,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    toggleScreensaverBtn.addEventListener('click', () => {
+    // Rename to toggle multipliers
+    const toggleMultipliersBtn = document.getElementById('toggle-multipliers-btn');
+    
+    toggleMultipliersBtn.addEventListener('click', () => {
         screensaverActive = !screensaverActive;
         if (screensaverActive) {
-            toggleScreensaverBtn.textContent = 'Stop Screensaver';
+            toggleMultipliersBtn.textContent = 'Stop Multipliers';
             startScreensaver();
+            // Also start fullscreen if in fullscreen mode
+            if (document.body.classList.contains('fullscreen-mode')) {
+                startFullscreenScreensaver();
+            }
         } else {
-            toggleScreensaverBtn.textContent = 'Start Screensaver';
+            toggleMultipliersBtn.textContent = 'Start Multipliers';
             stopScreensaver();
+            // Also stop fullscreen if in fullscreen mode
+            if (document.body.classList.contains('fullscreen-mode')) {
+                stopFullscreenScreensaver();
+            }
         }
     });
     
@@ -1648,15 +1672,19 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isDropping) {
             // Stop dropping
             isDropping = false;
-            dropRandomPrimesBtn.textContent = 'Drop Random Primes';
+            dropRandomPrimesBtn.textContent = 'Start Random Primes';
             if (randomPrimesInterval) {
                 clearInterval(randomPrimesInterval);
                 randomPrimesInterval = null;
             }
+            // Also stop fullscreen random primes if in fullscreen mode
+            if (document.body.classList.contains('fullscreen-mode')) {
+                stopFullscreenRandomPrimes();
+            }
         } else {
             // Start dropping
             isDropping = true;
-            dropRandomPrimesBtn.textContent = 'Stop Dropping';
+            dropRandomPrimesBtn.textContent = 'Stop Random Primes';
             
             // Get primes in range
             const primes = [];
@@ -1669,7 +1697,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (primes.length === 0) {
                 alert('No primes in the selected range!');
                 isDropping = false;
-                dropRandomPrimesBtn.textContent = 'Drop Random Primes';
+                dropRandomPrimesBtn.textContent = 'Start Random Primes';
                 return;
             }
             
@@ -1680,6 +1708,11 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Drop first one immediately
             dropRandomPrime(primes);
+            
+            // Also start fullscreen random primes if in fullscreen mode
+            if (document.body.classList.contains('fullscreen-mode')) {
+                startFullscreenRandomPrimes();
+            }
         }
     });
     
@@ -1768,9 +1801,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 columnAfterimages[currentColumn].forEach(el => el.remove());
                 columnAfterimages[currentColumn] = [];
                 
-                // Wait a bit then start dropping
+                // Wait a bit then start dropping (pass true for fromClick)
                 setTimeout(() => {
-                    startDroppingMultiples(prime);
+                    startDroppingMultiples(prime, true);
                 }, 200);
             }
         });
@@ -2004,7 +2037,11 @@ document.addEventListener('DOMContentLoaded', function() {
     fullscreenBtn.addEventListener('click', () => {
         fullscreenOverlay.classList.remove('hidden');
         document.body.classList.add('fullscreen-mode');
-        startFullscreenScreensaver();
+        
+        // Only start multipliers if they're active
+        if (screensaverActive) {
+            startFullscreenScreensaver();
+        }
         
         // Continue dropping random primes in fullscreen if it was active
         if (isDropping) {
@@ -2017,6 +2054,19 @@ document.addEventListener('DOMContentLoaded', function() {
         stopFullscreenRandomPrimes();
         fullscreenOverlay.classList.add('hidden');
         document.body.classList.remove('fullscreen-mode');
+        
+        // Update button texts to reflect current state
+        if (screensaverActive) {
+            toggleMultipliersBtn.textContent = 'Stop Multipliers';
+        } else {
+            toggleMultipliersBtn.textContent = 'Start Multipliers';
+        }
+        
+        if (isDropping) {
+            dropRandomPrimesBtn.textContent = 'Stop Random Primes';
+        } else {
+            dropRandomPrimesBtn.textContent = 'Start Random Primes';
+        }
     });
     
     // Helper function for ordinal suffixes
