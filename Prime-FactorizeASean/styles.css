@@ -716,6 +716,12 @@ body.fullscreen-mode .screensaver {
     .result-success {
         font-size: 1.1rem;
     }
+    
+    /* Ensure main content is visible above screensaver on small screens */
+    main {
+        position: relative;
+        z-index: 10;
+    }
 }
 
 /* Animation for falling elements */

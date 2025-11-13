@@ -1277,14 +1277,6 @@ function processNextPrime() {
 function startScreensaver() {
     if (!screensaverActive) return;
     
-    // Auto-disable on small screens
-    if (isScreenTooSmall()) {
-        screensaverActive = false;
-        const btn = document.getElementById('toggle-multipliers-btn');
-        if (btn) btn.textContent = 'Start Multipliers';
-        return;
-    }
-    
     // Update column count based on screen size
     numColumns = getResponsiveColumnCount();
     
@@ -2010,7 +2002,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 fullscreenForceStop = true;
                 
                 // Move to next column and clear it
-                fullscreenCurrentColumn = (fullscreenCurrentColumn + 1) % 8;
+                fullscreenCurrentColumn = (fullscreenCurrentColumn + 1) % fullscreenNumColumns;
                 
                 // Clear all active elements in the current column
                 const targetLeft = getFullscreenColumnPosition(fullscreenCurrentColumn);
@@ -2112,6 +2104,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let fullscreenPrimes = [];
     let fullscreenPrimeDropCount = 0;
     let fullscreenCurrentColumn = 0;
+    let fullscreenNumColumns = 8; // Number of columns in fullscreen (responsive)
     let fullscreenColumnAfterimages = [[], [], [], [], [], [], [], []]; // 8 columns for fullscreen
     let fullscreenForceStop = false;
     
@@ -2122,8 +2115,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    function getFullscreenColumnCount() {
+        // 2 columns on small screens, 8 on larger screens
+        return isScreenTooSmall() ? 2 : 8;
+    }
+    
     function getFullscreenColumnPosition(columnIndex) {
-        const columnWidth = window.innerWidth / 8;
+        const colCount = fullscreenNumColumns;
+        const columnWidth = window.innerWidth / colCount;
         return (columnIndex * columnWidth + 20) + 'px';
     }
     
@@ -2134,7 +2133,10 @@ document.addEventListener('DOMContentLoaded', function() {
         fullscreenIsProcessing = false;
         fullscreenAfterimages = [];
         fullscreenCurrentColumn = 0;
-        fullscreenColumnAfterimages = [[], [], [], [], [], [], [], []];
+        
+        // Set column count based on screen size
+        fullscreenNumColumns = getFullscreenColumnCount();
+        fullscreenColumnAfterimages = Array(fullscreenNumColumns).fill(null).map(() => []);
         
         // Create stationary prime display
         const topbar = document.createElement('div');
@@ -2176,7 +2178,8 @@ document.addEventListener('DOMContentLoaded', function() {
         fullscreenAfterimages = [];
         fullscreenPrimeDropCount = 0;
         fullscreenCurrentColumn = 0;
-        fullscreenColumnAfterimages = [[], [], [], [], [], [], [], []];
+        fullscreenNumColumns = getFullscreenColumnCount();
+        fullscreenColumnAfterimages = Array(fullscreenNumColumns).fill(null).map(() => []);
         screensaverFullscreen.innerHTML = '';
     }
     
@@ -2226,7 +2229,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (currentMultiplierIndex >= multipliers.length) {
                 // All multiples done - move to next column and prime
                 fullscreenIsProcessing = false;
-                fullscreenCurrentColumn = (fullscreenCurrentColumn + 1) % 8; // Cycle through 8 columns
+                fullscreenCurrentColumn = (fullscreenCurrentColumn + 1) % fullscreenNumColumns; // Cycle through columns
                 
                 // Clear the NEXT column before we start dropping into it
                 const nextColumn = fullscreenCurrentColumn;
@@ -2362,12 +2365,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Start screensaver on load
-    startScreensaver();
+    // Start screensaver on load (only on larger screens by default)
+    if (!isScreenTooSmall()) {
+        startScreensaver();
+    } else {
+        // On small screens, set to inactive by default but allow manual start
+        screensaverActive = false;
+        const btn = document.getElementById('toggle-multipliers-btn');
+        if (btn) btn.textContent = 'Start Multipliers';
+    }
     
-    // Auto-start Drop Random Primes on load
+    // Auto-start Drop Random Primes on load (only on larger screens)
     setTimeout(() => {
-        if (dropRandomPrimesBtn && !isDropping) {
+        if (dropRandomPrimesBtn && !isDropping && !isScreenTooSmall()) {
             dropRandomPrimesBtn.click();
         }
     }, 500);
@@ -2384,14 +2394,6 @@ window.addEventListener('resize', () => {
         if (newColumnCount !== numColumns && screensaverActive) {
             stopScreensaver();
             startScreensaver();
-        }
-        
-        // Auto-disable on small screens
-        if (isScreenTooSmall() && screensaverActive) {
-            screensaverActive = false;
-            const btn = document.getElementById('toggle-multipliers-btn');
-            if (btn) btn.textContent = 'Start Multipliers';
-            stopScreensaver();
         }
     }, 250);
 });
