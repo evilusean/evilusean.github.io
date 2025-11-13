@@ -6,6 +6,8 @@
     <meta name="description" content="Prime factorization tool with tree visualization, nth prime finder, and animated screensaver">
     <title>Prime Factorize A Sean</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
     <!-- Screensaver Background -->
@@ -22,6 +24,7 @@
         <nav>
             <ul>
                 <li><a href="#factorize">Factorize</a></li>
+                <li><a href="#polynomials">Polynomials</a></li>
                 <li><a href="#find-prime">Find Prime</a></li>
                 <li><a href="#screensaver-controls">Screensaver</a></li>
             </ul>
@@ -50,8 +53,31 @@
             <div id="compare-trees-container" class="compare-container"></div>
         </section>
 
+        <!-- Polynomial Factoring Section -->
+        <section id="polynomials" class="tool-section">
+            <h2>Polynomial Factoring</h2>
+            <p>Factor polynomials using standard notation. Use ^ for exponents or paste directly from MathJax.</p>
+            <p style="color: #ff9999; font-size: 0.9rem;">Examples: x^2 + 5x + 6 | x² + 5x + 6 | 2x^2 - 8 | x^2 - 4</p>
+            
+            <h3>Factor Single Polynomial</h3>
+            <div class="input-group">
+                <input type="text" id="polynomial-input" placeholder="Type or paste: x^2 + 5x + 6" style="width: 350px;">
+                <button id="factor-polynomial-btn">Factor</button>
+            </div>
+            <div id="polynomial-result" class="result-display"></div>
+            
+            <h3 style="margin-top: 2rem;">Compare Two Polynomials (GCF)</h3>
+            <p>Find the Greatest Common Factor of two polynomials.</p>
+            <div class="input-group">
+                <input type="text" id="poly-compare-1" placeholder="Type or paste: x^2 - 4" style="width: 280px;">
+                <input type="text" id="poly-compare-2" placeholder="Type or paste: x^2 - 2x" style="width: 280px;">
+                <button id="compare-poly-btn">Compare & Find GCF</button>
+            </div>
+            <div id="poly-compare-result" class="result-display"></div>
+        </section>
+
         <!-- Find Nth Prime Section -->
-        <section id="find-prime" class="tool-section">
+        <section id="find-prime" class="tool-section"></section>
             <h2>Find Nth Prime Number</h2>
             <p>Enter a position to find the prime number at that position (e.g., 182 for the 182nd prime).</p>
             <div class="input-group">

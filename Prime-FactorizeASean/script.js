@@ -80,6 +80,216 @@ function getGCF(a, b) {
     return a;
 }
 
+// ==================== Polynomial Functions ====================
+
+/**
+ * Parse polynomial string into terms
+ * @param {string} poly - Polynomial string (e.g., "x^2 + 5x + 6" or "x² + 5x + 6")
+ * @returns {Array} - Array of {coef, power} objects
+ */
+function parsePolynomial(poly) {
+    // Normalize the input - handle superscript characters and various formats
+    poly = poly.replace(/\s+/g, ''); // Remove spaces
+    poly = poly.toLowerCase();
+    
+    // Convert superscript numbers to ^notation
+    poly = poly.replace(/²/g, '^2');
+    poly = poly.replace(/³/g, '^3');
+    poly = poly.replace(/⁴/g, '^4');
+    poly = poly.replace(/⁵/g, '^5');
+    poly = poly.replace(/⁶/g, '^6');
+    poly = poly.replace(/⁷/g, '^7');
+    poly = poly.replace(/⁸/g, '^8');
+    poly = poly.replace(/⁹/g, '^9');
+    
+    // Handle ** as exponent (some systems use this)
+    poly = poly.replace(/\*\*/g, '^');
+    
+    const terms = [];
+    
+    // Split by + and - while keeping the sign
+    const parts = poly.split(/(?=[+-])/);
+    
+    for (let part of parts) {
+        if (!part || part.trim() === '') continue;
+        
+        part = part.trim();
+        
+        // Extract coefficient and power
+        let coef = 1;
+        let power = 0;
+        
+        // Check if it contains x
+        if (part.includes('x')) {
+            // Extract coefficient before x
+            const beforeX = part.split('x')[0];
+            
+            if (beforeX === '' || beforeX === '+') {
+                coef = 1;
+            } else if (beforeX === '-') {
+                coef = -1;
+            } else {
+                coef = parseFloat(beforeX);
+            }
+            
+            // Extract power after x
+            if (part.includes('^')) {
+                const afterCaret = part.split('^')[1];
+                power = parseInt(afterCaret);
+            } else {
+                power = 1; // x without exponent is x^1
+            }
+        } else {
+            // Constant term
+            coef = parseFloat(part);
+            power = 0;
+        }
+        
+        if (!isNaN(coef) && coef !== 0) {
+            // Check if we already have this power
+            const existing = terms.find(t => t.power === power);
+            if (existing) {
+                existing.coef += coef;
+            } else {
+                terms.push({ coef, power });
+            }
+        }
+    }
+    
+    return terms.sort((a, b) => b.power - a.power);
+}
+
+/**
+ * Factor quadratic polynomial (ax^2 + bx + c)
+ * @param {string} poly - Polynomial string
+ * @returns {Object} - Factored form and steps
+ */
+function factorQuadratic(poly) {
+    const terms = parsePolynomial(poly);
+    
+    if (terms.length === 0) return { success: false, message: "Invalid polynomial" };
+    
+    let a = 0, b = 0, c = 0;
+    terms.forEach(term => {
+        if (term.power === 2) a = term.coef;
+        else if (term.power === 1) b = term.coef;
+        else if (term.power === 0) c = term.coef;
+    });
+    
+    if (a === 0) {
+        // Linear or constant
+        if (b === 0) return { success: true, factored: `${c}`, original: poly };
+        const bStr = b === 1 ? '' : (b === -1 ? '-' : b);
+        const cStr = c >= 0 ? `+ ${c}` : `- ${Math.abs(c)}`;
+        return { success: true, factored: `${bStr}x ${cStr}`, original: poly };
+    }
+    
+    // Try to factor quadratic
+    const discriminant = b * b - 4 * a * c;
+    
+    if (discriminant < 0) {
+        return { success: true, factored: "Cannot factor over real numbers", original: poly };
+    }
+    
+    // Check for perfect square
+    if (discriminant === 0) {
+        const root = -b / (2 * a);
+        const aStr = a === 1 ? '' : a;
+        if (Number.isInteger(root)) {
+            const sign = root >= 0 ? '-' : '+';
+            return { 
+                success: true, 
+                factored: `${aStr}(x ${sign} ${Math.abs(root)})^2`,
+                original: poly 
+            };
+        }
+    }
+    
+    // Calculate roots
+    const r1 = (-b + Math.sqrt(discriminant)) / (2 * a);
+    const r2 = (-b - Math.sqrt(discriminant)) / (2 * a);
+    
+    // Check if roots are integers
+    const isInt1 = Number.isInteger(r1);
+    const isInt2 = Number.isInteger(r2);
+    
+    let factored = '';
+    
+    if (a !== 1 && a !== -1) {
+        factored = `${a}`;
+    } else if (a === -1) {
+        factored = '-';
+    }
+    
+    // Format factors
+    const formatFactor = (root) => {
+        if (Number.isInteger(root)) {
+            if (root === 0) return '(x)';
+            const sign = root > 0 ? '-' : '+';
+            return `(x ${sign} ${Math.abs(root)})`;
+        } else {
+            const sign = root > 0 ? '-' : '+';
+            return `(x ${sign} ${Math.abs(root).toFixed(2)})`;
+        }
+    };
+    
+    factored += formatFactor(r1) + formatFactor(r2);
+    
+    return { success: true, factored, original: poly };
+}
+
+/**
+ * Convert polynomial to LaTeX format
+ * @param {string} poly - Polynomial string
+ * @returns {string} - LaTeX formatted string
+ */
+function toLatex(poly) {
+    return poly.replace(/\^(\d+)/g, '^{$1}').replace(/\*/g, '\\cdot ');
+}
+
+/**
+ * Find GCF of two polynomials (simplified version)
+ * @param {string} poly1 - First polynomial
+ * @param {string} poly2 - Second polynomial
+ * @returns {Object} - GCF result
+ */
+function polynomialGCF(poly1, poly2) {
+    const terms1 = parsePolynomial(poly1);
+    const terms2 = parsePolynomial(poly2);
+    
+    if (terms1.length === 0 || terms2.length === 0) {
+        return { success: false, message: "Invalid polynomials" };
+    }
+    
+    // Find minimum power of x
+    const minPower1 = Math.min(...terms1.map(t => t.power));
+    const minPower2 = Math.min(...terms2.map(t => t.power));
+    const commonPower = Math.min(minPower1, minPower2);
+    
+    // Find GCF of coefficients
+    const coefs1 = terms1.map(t => Math.abs(t.coef));
+    const coefs2 = terms2.map(t => Math.abs(t.coef));
+    let gcfCoef = coefs1[0];
+    
+    [...coefs1, ...coefs2].forEach(c => {
+        gcfCoef = getGCF(gcfCoef, c);
+    });
+    
+    let gcf = gcfCoef === 1 ? '' : `${gcfCoef}`;
+    if (commonPower > 0) {
+        gcf += commonPower === 1 ? 'x' : `x^${commonPower}`;
+    }
+    
+    if (gcf === '') gcf = '1';
+    
+    return {
+        success: true,
+        gcf,
+        poly1: poly1,
+        poly2: poly2
+    };
+}
+
 // ==================== Tree Structure ====================
 
 /**
@@ -791,6 +1001,110 @@ document.addEventListener('DOMContentLoaded', function() {
     compareInput2.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             compareBtn.click();
+        }
+    });
+    
+    // Polynomial Factoring
+    const factorPolynomialBtn = document.getElementById('factor-polynomial-btn');
+    const polynomialInput = document.getElementById('polynomial-input');
+    const polynomialResult = document.getElementById('polynomial-result');
+    
+    factorPolynomialBtn.addEventListener('click', () => {
+        const poly = polynomialInput.value.trim();
+        
+        if (!poly) {
+            polynomialResult.innerHTML = '<p class="error">Please enter a polynomial.</p>';
+            return;
+        }
+        
+        polynomialResult.innerHTML = '<div class="loading">Factoring...</div>';
+        
+        setTimeout(() => {
+            const result = factorQuadratic(poly);
+            
+            if (!result.success) {
+                polynomialResult.innerHTML = `<p class="error">${result.message}</p>`;
+                return;
+            }
+            
+            let html = '<div class="result-success">';
+            html += `<p><strong>Original:</strong> \\(${toLatex(result.original)}\\)</p>`;
+            html += `<p><strong>Factored:</strong> \\(${toLatex(result.factored)}\\)</p>`;
+            html += '</div>';
+            
+            polynomialResult.innerHTML = html;
+            
+            // Render MathJax
+            if (window.MathJax) {
+                MathJax.typesetPromise([polynomialResult]).catch((err) => console.log(err));
+            }
+        }, 10);
+    });
+    
+    polynomialInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            factorPolynomialBtn.click();
+        }
+    });
+    
+    // Compare Polynomials
+    const comparePolyBtn = document.getElementById('compare-poly-btn');
+    const polyCompare1 = document.getElementById('poly-compare-1');
+    const polyCompare2 = document.getElementById('poly-compare-2');
+    const polyCompareResult = document.getElementById('poly-compare-result');
+    
+    comparePolyBtn.addEventListener('click', () => {
+        const poly1 = polyCompare1.value.trim();
+        const poly2 = polyCompare2.value.trim();
+        
+        if (!poly1 || !poly2) {
+            polyCompareResult.innerHTML = '<p class="error">Please enter two polynomials.</p>';
+            return;
+        }
+        
+        polyCompareResult.innerHTML = '<div class="loading">Calculating...</div>';
+        
+        setTimeout(() => {
+            const result = polynomialGCF(poly1, poly2);
+            
+            if (!result.success) {
+                polyCompareResult.innerHTML = `<p class="error">${result.message}</p>`;
+                return;
+            }
+            
+            const factor1 = factorQuadratic(poly1);
+            const factor2 = factorQuadratic(poly2);
+            
+            let html = '<div class="result-success">';
+            html += `<p><strong>Polynomial 1:</strong> \\(${toLatex(poly1)}\\)</p>`;
+            if (factor1.success) {
+                html += `<p style="margin-left: 2rem;"><strong>Factored:</strong> \\(${toLatex(factor1.factored)}\\)</p>`;
+            }
+            html += `<p><strong>Polynomial 2:</strong> \\(${toLatex(poly2)}\\)</p>`;
+            if (factor2.success) {
+                html += `<p style="margin-left: 2rem;"><strong>Factored:</strong> \\(${toLatex(factor2.factored)}\\)</p>`;
+            }
+            html += `<p><strong>GCF:</strong> \\(${toLatex(result.gcf)}\\)</p>`;
+            html += '</div>';
+            
+            polyCompareResult.innerHTML = html;
+            
+            // Render MathJax
+            if (window.MathJax) {
+                MathJax.typesetPromise([polyCompareResult]).catch((err) => console.log(err));
+            }
+        }, 10);
+    });
+    
+    polyCompare1.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            comparePolyBtn.click();
+        }
+    });
+    
+    polyCompare2.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            comparePolyBtn.click();
         }
     });
     
