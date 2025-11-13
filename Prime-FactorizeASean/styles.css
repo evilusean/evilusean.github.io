@@ -97,6 +97,194 @@ body {
     text-shadow: 0 0 8px rgba(255, 255, 255, 1), 0 0 15px rgba(255, 255, 255, 0.6);
 }
 
+/* Animated Tree on Screensaver */
+.animated-tree {
+    position: fixed;
+    top: 100px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #ff0000;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 18px;
+    color: #fff;
+    z-index: 20;
+    max-width: 45vw;
+    overflow: visible;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+}
+
+.animated-tree.left {
+    left: 20px;
+}
+
+.animated-tree.right {
+    right: 20px;
+}
+
+.animated-tree.single {
+    left: 20px;
+    max-width: 90vw;
+}
+
+.tree-title {
+    margin-bottom: 15px;
+    font-size: 32px;
+    font-weight: 900;
+    color: #ffffff;
+    animation: titlePulse 2s ease-in-out infinite;
+    text-shadow: 
+        0 0 5px rgba(255, 255, 255, 1),
+        0 0 10px rgba(255, 255, 255, 1),
+        0 0 20px rgba(255, 255, 255, 1),
+        0 0 40px rgba(255, 255, 255, 0.8),
+        0 0 60px rgba(255, 255, 255, 0.6),
+        0 0 80px rgba(255, 255, 255, 0.4),
+        0 0 100px rgba(255, 255, 255, 0.2),
+        3px 3px 6px rgba(0, 0, 0, 0.9);
+}
+
+.tree-node {
+    opacity: 0;
+    animation: fadeInGlow 0.5s forwards, pulse 2s ease-in-out infinite;
+    font-weight: 900;
+    font-size: 24px;
+    color: #ff0000;
+    text-shadow: 
+        0 0 5px rgba(255, 0, 0, 1),
+        0 0 10px rgba(255, 0, 0, 1),
+        0 0 20px rgba(255, 0, 0, 1),
+        0 0 40px rgba(255, 0, 0, 0.8),
+        0 0 60px rgba(255, 0, 0, 0.6),
+        0 0 80px rgba(255, 0, 0, 0.4),
+        2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.tree-node.tree-root {
+    font-size: 28px;
+    font-weight: 900;
+    color: #ffffff;
+    animation: fadeInGlow 0.5s forwards, titlePulse 2s ease-in-out infinite;
+    text-shadow: 
+        0 0 5px rgba(255, 255, 255, 1),
+        0 0 10px rgba(255, 255, 255, 1),
+        0 0 20px rgba(255, 255, 255, 1),
+        0 0 40px rgba(255, 255, 255, 0.8),
+        0 0 60px rgba(255, 255, 255, 0.6),
+        0 0 80px rgba(255, 255, 255, 0.4),
+        0 0 100px rgba(255, 255, 255, 0.2),
+        3px 3px 6px rgba(0, 0, 0, 0.9);
+}
+
+.tree-node.shared {
+    color: #00ff00;
+    font-weight: 900;
+    font-size: 18px;
+    text-shadow: 
+        0 0 5px rgba(0, 255, 0, 1),
+        0 0 10px rgba(0, 255, 0, 1),
+        0 0 20px rgba(0, 255, 0, 1),
+        0 0 40px rgba(0, 255, 0, 0.8),
+        0 0 60px rgba(0, 255, 0, 0.6),
+        0 0 80px rgba(0, 255, 0, 0.4),
+        2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.shared-prime {
+    color: #00ff00;
+    font-weight: 900;
+    font-size: 24px;
+    animation: greenPulse 1.5s ease-in-out infinite;
+    text-shadow: 
+        0 0 5px rgba(0, 255, 0, 1),
+        0 0 10px rgba(0, 255, 0, 1),
+        0 0 20px rgba(0, 255, 0, 1),
+        0 0 40px rgba(0, 255, 0, 1),
+        0 0 60px rgba(0, 255, 0, 0.8),
+        0 0 80px rgba(0, 255, 0, 0.6),
+        0 0 100px rgba(0, 255, 0, 0.4),
+        2px 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+@keyframes fadeInGlow {
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes titlePulse {
+    0%, 100% {
+        text-shadow: 
+            0 0 5px rgba(255, 255, 255, 1),
+            0 0 10px rgba(255, 255, 255, 1),
+            0 0 20px rgba(255, 255, 255, 1),
+            0 0 40px rgba(255, 255, 255, 0.8),
+            0 0 60px rgba(255, 255, 255, 0.6),
+            0 0 80px rgba(255, 255, 255, 0.4),
+            0 0 100px rgba(255, 255, 255, 0.2),
+            3px 3px 6px rgba(0, 0, 0, 0.9);
+    }
+    50% {
+        text-shadow: 
+            0 0 10px rgba(255, 255, 255, 1),
+            0 0 20px rgba(255, 255, 255, 1),
+            0 0 30px rgba(255, 255, 255, 1),
+            0 0 50px rgba(255, 255, 255, 1),
+            0 0 70px rgba(255, 255, 255, 0.8),
+            0 0 90px rgba(255, 255, 255, 0.6),
+            0 0 120px rgba(255, 255, 255, 0.4),
+            3px 3px 6px rgba(0, 0, 0, 0.9);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        text-shadow: 
+            0 0 5px rgba(255, 0, 0, 1),
+            0 0 10px rgba(255, 0, 0, 1),
+            0 0 20px rgba(255, 0, 0, 1),
+            0 0 40px rgba(255, 0, 0, 0.8),
+            0 0 60px rgba(255, 0, 0, 0.6),
+            0 0 80px rgba(255, 0, 0, 0.4),
+            2px 2px 4px rgba(0, 0, 0, 0.8);
+    }
+    50% {
+        text-shadow: 
+            0 0 10px rgba(255, 0, 0, 1),
+            0 0 20px rgba(255, 0, 0, 1),
+            0 0 30px rgba(255, 0, 0, 1),
+            0 0 50px rgba(255, 0, 0, 1),
+            0 0 70px rgba(255, 0, 0, 0.8),
+            0 0 90px rgba(255, 0, 0, 0.6),
+            2px 2px 4px rgba(0, 0, 0, 0.8);
+    }
+}
+
+@keyframes greenPulse {
+    0%, 100% {
+        text-shadow: 
+            0 0 5px rgba(0, 255, 0, 1),
+            0 0 10px rgba(0, 255, 0, 1),
+            0 0 20px rgba(0, 255, 0, 1),
+            0 0 40px rgba(0, 255, 0, 1),
+            0 0 60px rgba(0, 255, 0, 0.8),
+            0 0 80px rgba(0, 255, 0, 0.6),
+            0 0 100px rgba(0, 255, 0, 0.4),
+            2px 2px 4px rgba(0, 0, 0, 0.9);
+    }
+    50% {
+        text-shadow: 
+            0 0 10px rgba(0, 255, 0, 1),
+            0 0 20px rgba(0, 255, 0, 1),
+            0 0 30px rgba(0, 255, 0, 1),
+            0 0 50px rgba(0, 255, 0, 1),
+            0 0 70px rgba(0, 255, 0, 1),
+            0 0 90px rgba(0, 255, 0, 0.8),
+            0 0 120px rgba(0, 255, 0, 0.6),
+            2px 2px 4px rgba(0, 0, 0, 0.9);
+    }
+}
+
 .falling-prime {
     position: absolute;
     padding: 15px 20px;

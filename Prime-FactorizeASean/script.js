@@ -1040,6 +1040,7 @@ let afterimages = [];
 let primeDropCount = 0;
 let currentColumn = 0; // Track which column we're on (0-3)
 let columnAfterimages = [[], [], [], []]; // Separate afterimages for each column
+let isFirstLoad = true; // Track if this is the first page load
 
 /**
  * Create stationary prime display at top
@@ -1059,6 +1060,19 @@ function createTopbar() {
     for (let i = primeRange.start; i <= primeRange.end; i++) {
         if (isPrime(i)) {
             scrollingPrimes.push(i);
+        }
+    }
+    
+    // On first page load, prepend 9 at the start
+    // On subsequent loads, shuffle to get random order
+    if (isFirstLoad) {
+        scrollingPrimes.unshift(9); // Add 9 at the beginning
+        isFirstLoad = false; // Mark that we've done the first load
+    } else {
+        // Shuffle the array for random order on subsequent starts
+        for (let i = scrollingPrimes.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [scrollingPrimes[i], scrollingPrimes[j]] = [scrollingPrimes[j], scrollingPrimes[i]];
         }
     }
     
@@ -1152,7 +1166,11 @@ function startDroppingMultiples(prime, fromClick = false) {
         const element = document.createElement('div');
         element.className = 'falling-element';
         const result = prime * multiplier;
-        element.innerHTML = `<span class="multiplier-highlight">${multiplier}</span> × <span class="prime-highlight">${prime}</span> = <span class="result-highlight">${result}</span>`;
+        
+        // #IYKYK, 9 always returns to itself, also not prime.
+        const extraNine = (prime === 9) ? ' <span style="color: #ffffff;">= 9</span>' : '';
+        
+        element.innerHTML = `<span class="multiplier-highlight">${multiplier}</span> × <span class="prime-highlight">${prime}</span> = <span class="result-highlight">${result}</span>${extraNine}`;
         element.style.left = columnLeft;
         element.style.top = '60px';
         element.style.opacity = '1';
@@ -1239,10 +1257,12 @@ function startScreensaver() {
     // Create topbar
     createTopbar();
     
-    // Start dropping the first prime after a short delay
+    // Start dropping a prime after a short delay
     setTimeout(() => {
         if (scrollingPrimes.length > 0) {
-            startDroppingMultiples(scrollingPrimes[0]);
+            // First prime in array (which is 9 on first load, or a random prime otherwise)
+            const startPrime = scrollingPrimes[0];
+            startDroppingMultiples(startPrime);
         }
     }, 1000);
 }
@@ -1267,6 +1287,161 @@ function stopScreensaver() {
     isProcessingPrime = false;
     currentPrimeIndex = 0;
     currentColumn = 0;
+}
+
+// ==================== Animated Tree Functions ====================
+
+/**
+ * Animate factorization tree on screensaver background
+ * @param {number} num - Number being factored
+ * @param {Array} treeLines - Array of tree lines
+ * @param {string} position - 'left', 'right', or 'single'
+ * @param {Array} sharedFactors - Optional array of shared prime factors to highlight
+ * @param {number} gcf - The GCF value
+ */
+function animateTreeOnScreensaver(num, treeLines, position, sharedFactors = [], gcf = null, syncRemovalTime = null) {
+    // Remove existing tree at this position
+    const existing = document.querySelector(`.animated-tree.${position}`);
+    if (existing) existing.remove();
+    
+    const treeDiv = document.createElement('div');
+    treeDiv.className = `animated-tree ${position}`;
+    screensaverContainer.appendChild(treeDiv);
+    
+    // Calculate scale factor based on number size
+    const numDigits = num.toString().length;
+    let scaleFactor = 1;
+    if (numDigits > 5) {
+        // For numbers with more than 5 digits, scale down aggressively
+        scaleFactor = Math.max(0.25, 1 - ((numDigits - 5) * 0.12));
+    }
+    
+    // For very large numbers, also adjust positioning
+    if (numDigits > 7) {
+        if (position === 'left') {
+            treeDiv.style.left = '5px';
+        } else if (position === 'right') {
+            treeDiv.style.right = '5px';
+        }
+    }
+    
+    // Add title with special styling
+    const title = document.createElement('div');
+    title.className = 'tree-title';
+    title.textContent = `Factoring: ${num}`;
+    treeDiv.appendChild(title);
+    
+    // Count how many of each shared prime factor we need to highlight
+    const sharedFactorCounts = {};
+    sharedFactors.forEach(f => {
+        sharedFactorCounts[f] = (sharedFactorCounts[f] || 0) + 1;
+    });
+    
+    // Pre-process all lines to determine which numbers to highlight
+    // Process from BOTTOM to TOP so shared factors appear at the bottom
+    const processedLines = new Array(treeLines.length);
+    const highlightedCounts = {};
+    
+    // Process lines in reverse order (bottom to top)
+    for (let lineIndex = treeLines.length - 1; lineIndex >= 0; lineIndex--) {
+        const line = treeLines[lineIndex];
+        let processedLine = line;
+        
+        if (sharedFactors.length > 0) {
+            // Build a list of all positions and numbers in the line
+            const matches = [];
+            const regex = /\b(\d+)\b/g;
+            let match;
+            while ((match = regex.exec(line)) !== null) {
+                matches.push({
+                    value: parseInt(match[1]),
+                    str: match[1],
+                    index: match.index,
+                    length: match[1].length
+                });
+            }
+            
+            // Process matches in reverse order to preserve indices
+            for (let i = matches.length - 1; i >= 0; i--) {
+                const m = matches[i];
+                
+                // Is this a PRIME number AND a shared prime factor?
+                if (isPrime(m.value) && sharedFactorCounts[m.value]) {
+                    // Have we already highlighted enough of this factor?
+                    const alreadyHighlighted = highlightedCounts[m.value] || 0;
+                    if (alreadyHighlighted < sharedFactorCounts[m.value]) {
+                        // Replace this specific occurrence
+                        const before = processedLine.substring(0, m.index);
+                        const after = processedLine.substring(m.index + m.length);
+                        processedLine = before + `<span class="shared-prime">${m.str}</span>` + after;
+                        highlightedCounts[m.value] = alreadyHighlighted + 1;
+                    }
+                }
+            }
+        }
+        
+        processedLines[lineIndex] = processedLine;
+    }
+    
+    // Calculate additional scale based on tree width
+    const maxLineLength = Math.max(...treeLines.map(line => line.length));
+    let widthScaleFactor = 1;
+    if (maxLineLength > 30) {
+        // For very wide trees, scale down further and more aggressively
+        widthScaleFactor = Math.max(0.2, 1 - ((maxLineLength - 30) * 0.02));
+    }
+    
+    // Also consider tree height
+    let heightScaleFactor = 1;
+    if (treeLines.length > 10) {
+        heightScaleFactor = Math.max(0.3, 1 - ((treeLines.length - 10) * 0.03));
+    }
+    
+    // Apply the most restrictive scale factor
+    const finalScale = Math.min(scaleFactor, widthScaleFactor, heightScaleFactor);
+    if (finalScale < 1) {
+        treeDiv.style.transform = `scale(${finalScale})`;
+        // Single trees also scale from top left now
+        treeDiv.style.transformOrigin = (position === 'left' || position === 'single') ? 'top left' : 'top right';
+    }
+    
+    // Now animate the pre-processed lines with delay
+    processedLines.forEach((processedLine, index) => {
+        setTimeout(() => {
+            const lineDiv = document.createElement('div');
+            lineDiv.style.whiteSpace = 'pre';
+            lineDiv.style.fontFamily = 'Courier New, monospace';
+            // First line (root number) gets special white styling
+            lineDiv.className = index === 0 ? 'tree-node tree-root' : 'tree-node';
+            lineDiv.innerHTML = processedLine;
+            
+            treeDiv.appendChild(lineDiv);
+        }, index * 500);
+    });
+    
+    const totalDuration = (treeLines.length * 500) + 3000;
+    
+    // Use synchronized removal time if provided, otherwise use own duration
+    const removalTime = syncRemovalTime || totalDuration;
+    
+    // Remove after animation completes + 3 seconds
+    setTimeout(() => {
+        treeDiv.remove();
+        
+        // Restore multipliers after tree is removed
+        if (!screensaverActive && (position === 'right' || position === 'single')) {
+            setTimeout(() => {
+                screensaverActive = true;
+                const btn = document.getElementById('toggle-multipliers-btn');
+                if (btn) {
+                    btn.textContent = 'Stop Multipliers';
+                }
+                startScreensaver();
+            }, 100);
+        }
+    }, removalTime);
+    
+    return totalDuration;
 }
 
 // ==================== DOM Event Handlers ====================
@@ -1301,6 +1476,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         factorTreeContainer.innerHTML = '<div class="loading">Calculating...</div>';
         
+        // Stop multipliers
+        if (screensaverActive) {
+            screensaverActive = false;
+            toggleMultipliersBtn.textContent = 'Start Multipliers';
+            stopScreensaver();
+        }
+        
         // Use setTimeout to allow UI to update
         setTimeout(() => {
             const tree = buildFactorTree(num);
@@ -1316,6 +1498,19 @@ document.addEventListener('DOMContentLoaded', function() {
             html += `<div class="prime-factors">${num} = ${primeFactors.join(' × ')}</div>`;
             
             factorTreeContainer.innerHTML = html;
+            
+            // Animate on screensaver (no GCF highlighting for single factorization)
+            animateTreeOnScreensaver(num, treeLines, 'single', [], null);
+            
+            // Restore multipliers after animation
+            const totalDuration = (treeLines.length * 500) + 3000;
+            setTimeout(() => {
+                if (!screensaverActive) {
+                    screensaverActive = true;
+                    toggleMultipliersBtn.textContent = 'Stop Multipliers';
+                    startScreensaver();
+                }
+            }, totalDuration + 100);
         }, 10);
     });
     
@@ -1344,6 +1539,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         compareResult.innerHTML = '<div class="loading">Calculating...</div>';
         compareTreesContainer.innerHTML = '';
+        
+        // Stop multipliers
+        if (screensaverActive) {
+            screensaverActive = false;
+            toggleMultipliersBtn.textContent = 'Start Multipliers';
+            stopScreensaver();
+        }
         
         setTimeout(() => {
             const gcf = getGCF(num1, num2);
@@ -1389,6 +1591,15 @@ document.addEventListener('DOMContentLoaded', function() {
             html += '</div>';
             
             compareTreesContainer.innerHTML = html;
+            
+            // Animate both trees on screensaver - use SHARED factors for highlighting
+            // Calculate max duration so both trees disappear at the same time
+            const duration1 = (treeLines1.length * 500) + 3000;
+            const duration2 = (treeLines2.length * 500) + 3000;
+            const maxDuration = Math.max(duration1, duration2);
+            
+            animateTreeOnScreensaver(num1, treeLines1, 'left', sharedFactors, gcf, maxDuration);
+            animateTreeOnScreensaver(num2, treeLines2, 'right', sharedFactors, gcf, maxDuration);
         }, 10);
     });
     
@@ -1989,7 +2200,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const element = document.createElement('div');
             element.className = 'falling-element';
             const result = prime * multiplier;
-            element.innerHTML = `<span class="multiplier-highlight">${multiplier}</span> × <span class="prime-highlight">${prime}</span> = <span class="result-highlight">${result}</span>`;
+            
+            // #IYKYK, 9 always returns to itself, also not prime.
+            const extraNine = (prime === 9) ? ' <span style="color: #ffffff;">= 9</span>' : '';
+            
+            element.innerHTML = `<span class="multiplier-highlight">${multiplier}</span> × <span class="prime-highlight">${prime}</span> = <span class="result-highlight">${result}</span>${extraNine}`;
             element.style.left = columnLeft;
             element.style.top = '60px';
             element.style.opacity = '1';
