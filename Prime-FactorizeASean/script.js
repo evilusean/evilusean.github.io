@@ -439,6 +439,8 @@ const activeElements = new Set();
 let currentPrimeIndex = 0;
 let scrollingPrimes = [];
 let topbarPosition = 0;
+let isProcessingPrime = false;
+let afterimages = [];
 
 /**
  * Create scrolling topbar with primes
@@ -487,26 +489,18 @@ function animateTopbar() {
     const topbar = document.getElementById('prime-topbar');
     if (!topbar) return;
     
-    topbarPosition -= screensaverSpeed;
+    // Slower scrolling speed (divide by 3)
+    topbarPosition -= screensaverSpeed / 3;
     topbar.style.transform = `translateX(${topbarPosition}px)`;
-    
-    // Check if a prime is visible and should drop
-    const primeElements = topbar.querySelectorAll('.topbar-prime');
-    primeElements.forEach((el) => {
-        const rect = el.getBoundingClientRect();
-        const prime = parseInt(el.dataset.prime);
-        
-        // If prime is at left edge (x position around 0-50px), start dropping
-        if (rect.left >= 0 && rect.left <= 50 && !el.dataset.dropping) {
-            el.dataset.dropping = 'true';
-            startDroppingMultiples(prime);
-        }
-    });
     
     // Reset position when scrolled past
     const topbarWidth = topbar.scrollWidth;
     if (Math.abs(topbarPosition) > topbarWidth + window.innerWidth) {
         topbarPosition = window.innerWidth;
+        // Reset all dropping flags when loop restarts
+        const primeElements = topbar.querySelectorAll('.topbar-prime');
+        primeElements.forEach(el => el.dataset.dropping = 'false');
+        currentPrimeIndex = 0;
     }
     
     if (screensaverActive) {
@@ -515,26 +509,31 @@ function animateTopbar() {
 }
 
 /**
- * Start dropping multiples for a prime number
+ * Start dropping multiples for a prime number sequentially
  * @param {number} prime - Prime number
  */
 function startDroppingMultiples(prime) {
-    const fallSpeed = screensaverSpeed * 2;
+    if (isProcessingPrime) return;
+    isProcessingPrime = true;
+    
+    const fallSpeed = screensaverSpeed * 1.5;
     const multiples = [];
     let currentMultiplier = 1;
     
     function createMultiple(multiplier) {
-        if (multiplier > maxMultiplier) return;
+        if (multiplier > maxMultiplier) {
+            // All multiples created, wait for them to finish falling
+            return;
+        }
         
         const element = document.createElement('div');
         element.className = 'falling-element';
         const result = prime * multiplier;
-        element.textContent = `${prime} × ${multiplier} = ${result}`;
+        element.textContent = `${multiplier} × ${prime} = ${result}`;
         element.style.left = '20px';
-        element.style.top = '-30px';
+        element.style.top = '60px'; // Start below the topbar
         element.dataset.prime = prime;
         element.dataset.multiplier = multiplier;
-        element.style.opacity = Math.max(0.5, 1 - (multiplier - 1) * 0.1);
         
         screensaverContainer.appendChild(element);
         activeElements.add(element);
@@ -542,16 +541,17 @@ function startDroppingMultiples(prime) {
         const multiple = {
             element,
             multiplier,
-            position: -30,
-            prime
+            position: 60,
+            prime,
+            finalPosition: null
         };
         multiples.push(multiple);
         
-        // Create next multiple after delay
+        // Create next multiple after a short delay
         if (multiplier < maxMultiplier) {
             setTimeout(() => {
                 createMultiple(multiplier + 1);
-            }, 200);
+            }, 300);
         }
     }
     
@@ -562,32 +562,70 @@ function startDroppingMultiples(prime) {
     function animate() {
         if (!screensaverActive) {
             multiples.forEach(m => m.element.remove());
+            isProcessingPrime = false;
             return;
         }
         
+        let allSettled = true;
+        
         multiples.forEach((m, idx) => {
-            m.position += fallSpeed;
-            m.element.style.top = m.position + 'px';
-            
-            // Remove when reached max multiplier (they disappear at the 10th multiple)
-            if (m.multiplier >= maxMultiplier) {
-                m.element.remove();
-                activeElements.delete(m.element);
-                multiples.splice(idx, 1);
-            } else if (m.position > window.innerHeight + 50) {
-                // Also remove if off screen
-                m.element.remove();
-                activeElements.delete(m.element);
-                multiples.splice(idx, 1);
+            if (m.finalPosition === null) {
+                // Calculate target position for this multiplier (evenly spaced)
+                const availableHeight = window.innerHeight - 150; // Leave space at top and bottom
+                const spacing = availableHeight / maxMultiplier;
+                const targetPosition = 80 + (m.multiplier * spacing);
+                
+                // Still falling
+                if (m.position < targetPosition) {
+                    m.position += fallSpeed;
+                    m.element.style.top = m.position + 'px';
+                    allSettled = false;
+                    
+                    // Check if reached target position
+                    if (m.position >= targetPosition) {
+                        // Stop at target and convert to afterimage
+                        m.position = targetPosition;
+                        m.element.style.top = m.position + 'px';
+                        m.finalPosition = m.position;
+                        m.element.classList.add('afterimage');
+                        afterimages.push(m.element);
+                    }
+                } else {
+                    allSettled = false;
+                }
             }
         });
         
-        if (screensaverActive && multiples.length > 0) {
+        // If all multiples have settled, move to next prime
+        if (allSettled && multiples.length === maxMultiplier) {
+            isProcessingPrime = false;
+            // Trigger next prime after a delay
+            setTimeout(() => {
+                processNextPrime();
+            }, 1000);
+            return;
+        }
+        
+        if (screensaverActive) {
             requestAnimationFrame(animate);
         }
     }
     
     animate();
+}
+
+/**
+ * Process the next prime in sequence
+ */
+function processNextPrime() {
+    if (!screensaverActive || isProcessingPrime) return;
+    
+    if (scrollingPrimes.length === 0) return;
+    
+    currentPrimeIndex = (currentPrimeIndex + 1) % scrollingPrimes.length;
+    const nextPrime = scrollingPrimes[currentPrimeIndex];
+    
+    startDroppingMultiples(nextPrime);
 }
 
 /**
@@ -599,9 +637,20 @@ function startScreensaver() {
     // Clear existing elements
     activeElements.forEach(el => el.remove());
     activeElements.clear();
+    afterimages.forEach(el => el.remove());
+    afterimages = [];
+    currentPrimeIndex = 0;
+    isProcessingPrime = false;
     
     // Create topbar
     createTopbar();
+    
+    // Start dropping the first prime after a short delay
+    setTimeout(() => {
+        if (scrollingPrimes.length > 0) {
+            startDroppingMultiples(scrollingPrimes[0]);
+        }
+    }, 1000);
 }
 
 /**
@@ -615,8 +664,12 @@ function stopScreensaver() {
     // Clear all elements
     activeElements.forEach(el => el.remove());
     activeElements.clear();
+    afterimages.forEach(el => el.remove());
+    afterimages = [];
     const topbar = document.getElementById('prime-topbar');
     if (topbar) topbar.remove();
+    isProcessingPrime = false;
+    currentPrimeIndex = 0;
 }
 
 // ==================== DOM Event Handlers ====================
@@ -780,9 +833,17 @@ document.addEventListener('DOMContentLoaded', function() {
     let fullscreenScreensaverActive = false;
     let fullscreenInterval = null;
     
+    let fullscreenPrimeIndex = 0;
+    let fullscreenIsProcessing = false;
+    let fullscreenAfterimages = [];
+    let fullscreenPrimes = [];
+    
     function startFullscreenScreensaver() {
         if (fullscreenScreensaverActive) return;
         fullscreenScreensaverActive = true;
+        fullscreenPrimeIndex = 0;
+        fullscreenIsProcessing = false;
+        fullscreenAfterimages = [];
         
         // Use same topbar approach for fullscreen
         const topbar = document.createElement('div');
@@ -790,16 +851,16 @@ document.addEventListener('DOMContentLoaded', function() {
         topbar.className = 'prime-topbar';
         screensaverFullscreen.appendChild(topbar);
         
-        const primes = [];
+        fullscreenPrimes = [];
         for (let i = primeRange.start; i <= primeRange.end; i++) {
             if (isPrime(i)) {
-                primes.push(i);
+                fullscreenPrimes.push(i);
             }
         }
         
-        if (primes.length === 0) return;
+        if (fullscreenPrimes.length === 0) return;
         
-        primes.forEach((prime, idx) => {
+        fullscreenPrimes.forEach((prime, idx) => {
             const primeEl = document.createElement('span');
             primeEl.className = 'topbar-prime';
             primeEl.textContent = prime.toString();
@@ -813,23 +874,14 @@ document.addEventListener('DOMContentLoaded', function() {
         function animateFullscreenTopbar() {
             if (!fullscreenScreensaverActive) return;
             
-            fullscreenTopbarPos -= screensaverSpeed;
+            // Slower scrolling speed
+            fullscreenTopbarPos -= screensaverSpeed / 3;
             topbar.style.transform = `translateX(${fullscreenTopbarPos}px)`;
-            
-            const primeElements = topbar.querySelectorAll('.topbar-prime');
-            primeElements.forEach((el) => {
-                const rect = el.getBoundingClientRect();
-                const prime = parseInt(el.dataset.prime);
-                
-                if (rect.left >= 0 && rect.left <= 50 && !el.dataset.dropping) {
-                    el.dataset.dropping = 'true';
-                    startDroppingMultiplesForContainer(prime, screensaverFullscreen);
-                }
-            });
             
             const topbarWidth = topbar.scrollWidth;
             if (Math.abs(fullscreenTopbarPos) > topbarWidth + window.innerWidth) {
                 fullscreenTopbarPos = window.innerWidth;
+                fullscreenPrimeIndex = 0;
             }
             
             if (fullscreenScreensaverActive) {
@@ -838,19 +890,43 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         animateFullscreenTopbar();
+        
+        // Start dropping first prime
+        setTimeout(() => {
+            if (fullscreenPrimes.length > 0) {
+                startDroppingMultiplesForContainer(fullscreenPrimes[0], screensaverFullscreen);
+            }
+        }, 1000);
     }
     
     function stopFullscreenScreensaver() {
         fullscreenScreensaverActive = false;
         if (fullscreenInterval) {
             clearInterval(fullscreenInterval);
-            screensaverInterval = null;
+            fullscreenInterval = null;
         }
+        fullscreenIsProcessing = false;
+        fullscreenPrimeIndex = 0;
+        fullscreenAfterimages = [];
         screensaverFullscreen.innerHTML = '';
     }
     
+    function processNextFullscreenPrime() {
+        if (!fullscreenScreensaverActive || fullscreenIsProcessing) return;
+        
+        if (fullscreenPrimes.length === 0) return;
+        
+        fullscreenPrimeIndex = (fullscreenPrimeIndex + 1) % fullscreenPrimes.length;
+        const nextPrime = fullscreenPrimes[fullscreenPrimeIndex];
+        
+        startDroppingMultiplesForContainer(nextPrime, screensaverFullscreen);
+    }
+    
     function startDroppingMultiplesForContainer(prime, container) {
-        const fallSpeed = screensaverSpeed * 2;
+        if (fullscreenIsProcessing) return;
+        fullscreenIsProcessing = true;
+        
+        const fallSpeed = screensaverSpeed * 1.5;
         const multiples = [];
         
         function createMultiple(multiplier) {
@@ -859,25 +935,25 @@ document.addEventListener('DOMContentLoaded', function() {
             const element = document.createElement('div');
             element.className = 'falling-element';
             const result = prime * multiplier;
-            element.textContent = `${prime} × ${multiplier} = ${result}`;
+            element.textContent = `${multiplier} × ${prime} = ${result}`;
             element.style.left = '20px';
-            element.style.top = '-30px';
-            element.style.opacity = Math.max(0.5, 1 - (multiplier - 1) * 0.1);
+            element.style.top = '60px';
             
             container.appendChild(element);
             
             const multiple = {
                 element,
                 multiplier,
-                position: -30,
-                prime
+                position: 60,
+                prime,
+                finalPosition: null
             };
             multiples.push(multiple);
             
             if (multiplier < maxMultiplier) {
                 setTimeout(() => {
                     createMultiple(multiplier + 1);
-                }, 200);
+                }, 300);
             }
         }
         
@@ -886,23 +962,49 @@ document.addEventListener('DOMContentLoaded', function() {
         function animate() {
             if (!fullscreenScreensaverActive) {
                 multiples.forEach(m => m.element.remove());
+                fullscreenIsProcessing = false;
                 return;
             }
             
+            let allSettled = true;
+            
             multiples.forEach((m, idx) => {
-                m.position += fallSpeed;
-                m.element.style.top = m.position + 'px';
-                
-                if (m.multiplier >= maxMultiplier) {
-                    m.element.remove();
-                    multiples.splice(idx, 1);
-                } else if (m.position > window.innerHeight + 50) {
-                    m.element.remove();
-                    multiples.splice(idx, 1);
+                if (m.finalPosition === null) {
+                    // Calculate target position for this multiplier (evenly spaced)
+                    const availableHeight = window.innerHeight - 150;
+                    const spacing = availableHeight / maxMultiplier;
+                    const targetPosition = 80 + (m.multiplier * spacing);
+                    
+                    // Still falling
+                    if (m.position < targetPosition) {
+                        m.position += fallSpeed;
+                        m.element.style.top = m.position + 'px';
+                        allSettled = false;
+                        
+                        // Check if reached target position
+                        if (m.position >= targetPosition) {
+                            // Stop at target and convert to afterimage
+                            m.position = targetPosition;
+                            m.element.style.top = m.position + 'px';
+                            m.finalPosition = m.position;
+                            m.element.classList.add('afterimage');
+                            fullscreenAfterimages.push(m.element);
+                        }
+                    } else {
+                        allSettled = false;
+                    }
                 }
             });
             
-            if (fullscreenScreensaverActive && multiples.length > 0) {
+            if (allSettled && multiples.length === maxMultiplier) {
+                fullscreenIsProcessing = false;
+                setTimeout(() => {
+                    processNextFullscreenPrime();
+                }, 1000);
+                return;
+            }
+            
+            if (fullscreenScreensaverActive) {
                 requestAnimationFrame(animate);
             }
         }
