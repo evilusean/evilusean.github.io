@@ -79,6 +79,48 @@ body {
     box-shadow: 0 0 5px rgba(255, 0, 0, 0.3);
 }
 
+.falling-prime {
+    position: absolute;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #ff0000, #ff6600);
+    color: #fff;
+    border-radius: 8px;
+    font-size: 32px;
+    font-weight: bold;
+    white-space: nowrap;
+    box-shadow: 0 0 30px rgba(255, 100, 0, 0.9), 0 0 60px rgba(255, 0, 0, 0.6);
+    z-index: 15;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 1), 0 0 20px rgba(255, 200, 0, 0.8);
+    animation: glow 1.5s ease-in-out infinite alternate, fall linear forwards;
+    border: 3px solid rgba(255, 200, 0, 0.8);
+    cursor: pointer;
+    transition: transform 0.2s;
+    pointer-events: auto; /* Enable clicks even though parent has pointer-events: none */
+}
+
+.falling-prime:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 50px rgba(255, 150, 0, 1), 0 0 100px rgba(255, 50, 0, 0.9);
+}
+
+@keyframes glow {
+    from {
+        box-shadow: 0 0 20px rgba(255, 100, 0, 0.9), 0 0 40px rgba(255, 0, 0, 0.6);
+        text-shadow: 0 0 10px rgba(255, 255, 255, 1), 0 0 20px rgba(255, 200, 0, 0.8);
+    }
+    to {
+        box-shadow: 0 0 40px rgba(255, 150, 0, 1), 0 0 80px rgba(255, 50, 0, 0.8);
+        text-shadow: 0 0 15px rgba(255, 255, 255, 1), 0 0 30px rgba(255, 255, 0, 1);
+    }
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+}
+
 /* Fullscreen Overlay */
 .fullscreen-overlay {
     position: fixed;

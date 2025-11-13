@@ -1639,6 +1639,180 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // Drop Random Primes button
+    const dropRandomPrimesBtn = document.getElementById('drop-random-primes-btn');
+    let randomPrimesInterval = null;
+    let isDropping = false;
+    
+    dropRandomPrimesBtn.addEventListener('click', () => {
+        if (isDropping) {
+            // Stop dropping
+            isDropping = false;
+            dropRandomPrimesBtn.textContent = 'Drop Random Primes';
+            if (randomPrimesInterval) {
+                clearInterval(randomPrimesInterval);
+                randomPrimesInterval = null;
+            }
+        } else {
+            // Start dropping
+            isDropping = true;
+            dropRandomPrimesBtn.textContent = 'Stop Dropping';
+            
+            // Get primes in range
+            const primes = [];
+            for (let i = primeRange.start; i <= primeRange.end; i++) {
+                if (isPrime(i)) {
+                    primes.push(i);
+                }
+            }
+            
+            if (primes.length === 0) {
+                alert('No primes in the selected range!');
+                isDropping = false;
+                dropRandomPrimesBtn.textContent = 'Drop Random Primes';
+                return;
+            }
+            
+            // Drop a prime every 1500ms (slower)
+            randomPrimesInterval = setInterval(() => {
+                dropRandomPrime(primes);
+            }, 1500);
+            
+            // Drop first one immediately
+            dropRandomPrime(primes);
+        }
+    });
+    
+    function dropRandomPrime(primes, container = screensaverContainer) {
+        const prime = primes[Math.floor(Math.random() * primes.length)];
+        const element = document.createElement('div');
+        element.className = 'falling-prime';
+        element.textContent = prime;
+        
+        // Random horizontal position
+        const leftPos = Math.random() * (window.innerWidth - 100);
+        element.style.left = leftPos + 'px';
+        element.style.top = '-100px';
+        
+        // Random fall duration (4-7 seconds - slower)
+        const duration = 4 + Math.random() * 3;
+        element.style.animationDuration = `1.5s, ${duration}s`;
+        
+        // Add click handler to show multiples
+        const isFullscreen = container.id === 'screensaver-fullscreen';
+        
+        element.style.cursor = 'pointer';
+        element.addEventListener('click', (e) => {
+            e.stopPropagation();
+            // Flash effect
+            element.style.transform = 'scale(1.3)';
+            setTimeout(() => {
+                element.style.transform = 'scale(1)';
+            }, 200);
+            
+            if (isFullscreen) {
+                // Fullscreen mode
+                updateFullscreenPrimeDisplay(prime);
+                fullscreenPrimeIndex = fullscreenPrimes.indexOf(prime);
+                if (fullscreenPrimeIndex === -1) fullscreenPrimeIndex = 0;
+                
+                // FORCE stop current processing
+                fullscreenIsProcessing = false;
+                fullscreenForceStop = true;
+                
+                // Move to next column and clear it
+                fullscreenCurrentColumn = (fullscreenCurrentColumn + 1) % 8;
+                
+                // Clear all active elements in the current column
+                const targetLeft = getFullscreenColumnPosition(fullscreenCurrentColumn);
+                const elementsToRemove = screensaverFullscreen.querySelectorAll('.falling-element');
+                elementsToRemove.forEach(el => {
+                    const elLeft = el.style.left;
+                    if (elLeft === targetLeft) {
+                        el.remove();
+                    }
+                });
+                
+                // Clear afterimages in this column
+                fullscreenColumnAfterimages[fullscreenCurrentColumn].forEach(el => el.remove());
+                fullscreenColumnAfterimages[fullscreenCurrentColumn] = [];
+                
+                // Wait a bit then start dropping
+                setTimeout(() => {
+                    fullscreenForceStop = false;
+                    startDroppingMultiplesForContainer(prime, screensaverFullscreen);
+                }, 200);
+            } else {
+                // Main page mode (4 columns)
+                updatePrimeDisplay(prime);
+                currentPrimeIndex = scrollingPrimes.indexOf(prime);
+                if (currentPrimeIndex === -1) currentPrimeIndex = 0;
+                
+                // Stop current processing
+                isProcessingPrime = false;
+                
+                // Move to next column and clear it
+                currentColumn = (currentColumn + 1) % 4;
+                
+                // Clear all active elements in the current column
+                const targetLeft = getColumnPosition(currentColumn);
+                const elementsToRemove = screensaverContainer.querySelectorAll('.falling-element');
+                elementsToRemove.forEach(el => {
+                    const elLeft = el.style.left;
+                    if (elLeft === targetLeft) {
+                        el.remove();
+                    }
+                });
+                
+                // Clear afterimages in this column
+                columnAfterimages[currentColumn].forEach(el => el.remove());
+                columnAfterimages[currentColumn] = [];
+                
+                // Wait a bit then start dropping
+                setTimeout(() => {
+                    startDroppingMultiples(prime);
+                }, 200);
+            }
+        });
+        
+        container.appendChild(element);
+        
+        // Remove element after animation
+        setTimeout(() => {
+            element.remove();
+        }, duration * 1000);
+    }
+    
+    // Fullscreen random primes
+    let fullscreenRandomPrimesInterval = null;
+    
+    function startFullscreenRandomPrimes() {
+        if (fullscreenRandomPrimesInterval) return;
+        
+        const primes = [];
+        for (let i = primeRange.start; i <= primeRange.end; i++) {
+            if (isPrime(i)) {
+                primes.push(i);
+            }
+        }
+        
+        if (primes.length === 0) return;
+        
+        fullscreenRandomPrimesInterval = setInterval(() => {
+            dropRandomPrime(primes, screensaverFullscreen);
+        }, 1500);
+        
+        // Drop first one immediately
+        dropRandomPrime(primes, screensaverFullscreen);
+    }
+    
+    function stopFullscreenRandomPrimes() {
+        if (fullscreenRandomPrimesInterval) {
+            clearInterval(fullscreenRandomPrimesInterval);
+            fullscreenRandomPrimesInterval = null;
+        }
+    }
+    
     // Fullscreen functionality
     let fullscreenScreensaverActive = false;
     let fullscreenInterval = null;
@@ -1650,6 +1824,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let fullscreenPrimeDropCount = 0;
     let fullscreenCurrentColumn = 0;
     let fullscreenColumnAfterimages = [[], [], [], [], [], [], [], []]; // 8 columns for fullscreen
+    let fullscreenForceStop = false;
     
     function updateFullscreenPrimeDisplay(prime) {
         const display = document.getElementById('fullscreen-prime-display');
@@ -1753,6 +1928,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         function createAndDropNextMultiple() {
+            // Check if we should force stop
+            if (fullscreenForceStop) {
+                fullscreenIsProcessing = false;
+                return;
+            }
+            
             if (currentMultiplierIndex >= multipliers.length) {
                 // All multiples done - move to next column and prime
                 fullscreenIsProcessing = false;
@@ -1824,10 +2005,16 @@ document.addEventListener('DOMContentLoaded', function() {
         fullscreenOverlay.classList.remove('hidden');
         document.body.classList.add('fullscreen-mode');
         startFullscreenScreensaver();
+        
+        // Continue dropping random primes in fullscreen if it was active
+        if (isDropping) {
+            startFullscreenRandomPrimes();
+        }
     });
     
     exitFullscreenBtn.addEventListener('click', () => {
         stopFullscreenScreensaver();
+        stopFullscreenRandomPrimes();
         fullscreenOverlay.classList.add('hidden');
         document.body.classList.remove('fullscreen-mode');
     });
@@ -1867,4 +2054,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Start screensaver on load
     startScreensaver();
+    
+    // Auto-start Drop Random Primes on load
+    setTimeout(() => {
+        if (dropRandomPrimesBtn && !isDropping) {
+            dropRandomPrimesBtn.click();
+        }
+    }, 500);
 });
