@@ -80,6 +80,50 @@ function getGCF(a, b) {
     return a;
 }
 
+/**
+ * Find shared factors between two arrays of prime factors
+ * @param {Array} factors1 - First array of factors
+ * @param {Array} factors2 - Second array of factors
+ * @returns {Array} - Array of shared factors
+ */
+function findSharedFactors(factors1, factors2) {
+    const shared = [];
+    const factors2Copy = [...factors2];
+    
+    factors1.forEach(factor => {
+        const index = factors2Copy.indexOf(factor);
+        if (index !== -1) {
+            shared.push(factor);
+            factors2Copy.splice(index, 1);
+        }
+    });
+    
+    return shared;
+}
+
+/**
+ * Highlight shared factors in HTML
+ * @param {Array} factors - Array of all factors
+ * @param {Array} sharedFactors - Array of shared factors to highlight
+ * @returns {string} - HTML string with highlighted factors
+ */
+function highlightSharedFactors(factors, sharedFactors) {
+    const sharedCopy = [...sharedFactors];
+    const result = [];
+    
+    factors.forEach(factor => {
+        const sharedIndex = sharedCopy.indexOf(factor);
+        if (sharedIndex !== -1) {
+            result.push(`<span class="shared-factor">${factor}</span>`);
+            sharedCopy.splice(sharedIndex, 1);
+        } else {
+            result.push(factor);
+        }
+    });
+    
+    return result.join(' × ');
+}
+
 // ==================== Polynomial Functions ====================
 
 /**
@@ -711,7 +755,7 @@ let screensaverActive = true;
 let screensaverSpeed = 5;
 let minMultiplier = 1;
 let maxMultiplier = 10;
-let randomOrder = false;
+let randomOrder = true;
 let primeRange = { start: 10, end: 200 };
 const screensaverContainer = document.getElementById('screensaver');
 const activeElements = new Set();
@@ -770,10 +814,10 @@ function updatePrimeDisplay(prime) {
  */
 function getColumnPosition(columnIndex) {
     const positions = [
-        '0px',       // Left column 1 (touching left edge)
-        '200px',     // Left column 2
-        'calc(100% - 400px)', // Right column 1
-        'calc(100% - 200px)'  // Right column 2
+        '10px',      // Left column 1 (small margin from edge)
+        '220px',     // Left column 2
+        'calc(100vw - 420px)', // Right column 1 (using viewport width)
+        'calc(100vw - 210px)'  // Right column 2
     ];
     return positions[columnIndex];
 }
@@ -794,18 +838,10 @@ function startDroppingMultiples(prime) {
     const elementSpacing = 50;
     const columnLeft = getColumnPosition(currentColumn);
     
-    // Create array of multipliers in range
+    // Create array of multipliers in range (always sequential)
     const multipliers = [];
     for (let i = minMultiplier; i <= maxMultiplier; i++) {
         multipliers.push(i);
-    }
-    
-    // Shuffle if random order is enabled
-    if (randomOrder) {
-        for (let i = multipliers.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [multipliers[i], multipliers[j]] = [multipliers[j], multipliers[i]];
-        }
     }
     
     function createAndDropNextMultiple() {
@@ -879,16 +915,22 @@ function startDroppingMultiples(prime) {
 }
 
 /**
- * Process the next prime in sequence
+ * Process the next prime in sequence (or random if enabled)
  */
 function processNextPrime() {
     if (!screensaverActive || isProcessingPrime) return;
     
     if (scrollingPrimes.length === 0) return;
     
-    currentPrimeIndex = (currentPrimeIndex + 1) % scrollingPrimes.length;
-    const nextPrime = scrollingPrimes[currentPrimeIndex];
+    if (randomOrder) {
+        // Pick a random prime
+        currentPrimeIndex = Math.floor(Math.random() * scrollingPrimes.length);
+    } else {
+        // Sequential order
+        currentPrimeIndex = (currentPrimeIndex + 1) % scrollingPrimes.length;
+    }
     
+    const nextPrime = scrollingPrimes[currentPrimeIndex];
     startDroppingMultiples(nextPrime);
 }
 
@@ -1025,6 +1067,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const treeLines2 = renderFactorTree(tree2);
             const primeFactors1 = getPrimeFactors(num1);
             const primeFactors2 = getPrimeFactors(num2);
+            const gcfFactors = getPrimeFactors(gcf);
+            
+            // Find shared factors
+            const sharedFactors = findSharedFactors(primeFactors1, primeFactors2);
             
             // Display GCF result
             compareResult.innerHTML = `<div class="result-success">Greatest Common Factor (GCF) of ${num1} and ${num2} is: <strong>${gcf}</strong></div>`;
@@ -1040,8 +1086,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 html += `<div class="tree-line">${line.replace(/ /g, '&nbsp;')}</div>`;
             });
             html += '</div>';
-            html += `<div class="prime-factors">Prime factors: ${primeFactors1.join(' × ')}</div>`;
-            html += `<div class="prime-factors">${num1} = ${primeFactors1.join(' × ')}</div>`;
+            html += `<div class="prime-factors">Prime factors: ${highlightSharedFactors(primeFactors1, sharedFactors)}</div>`;
+            html += `<div class="prime-factors">${num1} = ${highlightSharedFactors(primeFactors1, sharedFactors)}</div>`;
             html += '</div>';
             
             // Second tree
@@ -1052,8 +1098,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 html += `<div class="tree-line">${line.replace(/ /g, '&nbsp;')}</div>`;
             });
             html += '</div>';
-            html += `<div class="prime-factors">Prime factors: ${primeFactors2.join(' × ')}</div>`;
-            html += `<div class="prime-factors">${num2} = ${primeFactors2.join(' × ')}</div>`;
+            html += `<div class="prime-factors">Prime factors: ${highlightSharedFactors(primeFactors2, sharedFactors)}</div>`;
+            html += `<div class="prime-factors">${num2} = ${highlightSharedFactors(primeFactors2, sharedFactors)}</div>`;
             html += '</div>';
             
             compareTreesContainer.innerHTML = html;
@@ -1380,7 +1426,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (fullscreenPrimes.length === 0) return;
         
-        fullscreenPrimeIndex = (fullscreenPrimeIndex + 1) % fullscreenPrimes.length;
+        if (randomOrder) {
+            // Pick a random prime
+            fullscreenPrimeIndex = Math.floor(Math.random() * fullscreenPrimes.length);
+        } else {
+            // Sequential order
+            fullscreenPrimeIndex = (fullscreenPrimeIndex + 1) % fullscreenPrimes.length;
+        }
+        
         const nextPrime = fullscreenPrimes[fullscreenPrimeIndex];
         
         startDroppingMultiplesForContainer(nextPrime, screensaverFullscreen);
@@ -1398,18 +1451,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const elementSpacing = 50;
         const columnLeft = getFullscreenColumnPosition(fullscreenCurrentColumn);
         
-        // Create array of multipliers in range
+        // Create array of multipliers in range (always sequential)
         const multipliers = [];
         for (let i = minMultiplier; i <= maxMultiplier; i++) {
             multipliers.push(i);
-        }
-        
-        // Shuffle if random order is enabled
-        if (randomOrder) {
-            for (let i = multipliers.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [multipliers[i], multipliers[j]] = [multipliers[j], multipliers[i]];
-            }
         }
         
         function createAndDropNextMultiple() {
@@ -1501,6 +1546,29 @@ document.addEventListener('DOMContentLoaded', function() {
         if (j === 3 && k !== 13) return 'rd';
         return 'th';
     }
+    
+    // Collapsible sections
+    const collapsibleHeaders = document.querySelectorAll('.collapsible-header');
+    console.log('Found collapsible headers:', collapsibleHeaders.length);
+    
+    collapsibleHeaders.forEach(header => {
+        header.addEventListener('click', (e) => {
+            console.log('Header clicked:', header.textContent);
+            e.preventDefault();
+            e.stopPropagation();
+            
+            header.classList.toggle('collapsed');
+            const content = header.nextElementSibling;
+            console.log('Next element:', content);
+            
+            if (content && content.classList.contains('collapsible-content')) {
+                content.classList.toggle('collapsed');
+                console.log('Toggled collapsed class');
+            } else {
+                console.log('Content element not found or wrong class');
+            }
+        });
+    });
     
     // Start screensaver on load
     startScreensaver();

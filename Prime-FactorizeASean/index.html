@@ -34,7 +34,8 @@
     <main class="content-main">
         <!-- Prime Factorization Tree Section -->
         <section id="factorize" class="tool-section">
-            <h2>Prime Factorization Tree</h2>
+            <h2 class="collapsible-header">Prime Factorization Tree <span class="collapse-icon">▼</span></h2>
+            <div class="collapsible-content">
             <p>Enter a number to see its prime factors displayed as a tree with branches.</p>
             <div class="input-group">
                 <input type="number" id="factorize-input" placeholder="Enter a number" min="2" step="1">
@@ -51,11 +52,13 @@
             </div>
             <div id="compare-result" class="result-display"></div>
             <div id="compare-trees-container" class="compare-container"></div>
+            </div>
         </section>
 
         <!-- Polynomial Factoring Section -->
         <section id="polynomials" class="tool-section">
-            <h2>Polynomial Factoring</h2>
+            <h2 class="collapsible-header">Polynomial Factoring <span class="collapse-icon">▼</span></h2>
+            <div class="collapsible-content">
             <p>Factor polynomials using standard notation. Use ^ for exponents or paste directly from MathJax.</p>
             <p style="color: #ff9999; font-size: 0.9rem;">Examples: x^2 + 5x + 6 | x² + 5x + 6 | 2x^2 - 8 | x^2 - 4</p>
             
@@ -74,11 +77,13 @@
                 <button id="compare-poly-btn">Compare & Find GCF</button>
             </div>
             <div id="poly-compare-result" class="result-display"></div>
+            </div>
         </section>
 
         <!-- Find Nth Prime Section -->
-        <section id="find-prime" class="tool-section"></section>
-            <h2>Find Nth Prime Number</h2>
+        <section id="find-prime" class="tool-section">
+            <h2 class="collapsible-header">Find Nth Prime Number <span class="collapse-icon">▼</span></h2>
+            <div class="collapsible-content">
             <p>Enter a position to find the prime number at that position (e.g., 182 for the 182nd prime).</p>
             <div class="input-group">
                 <input type="number" id="prime-position-input" placeholder="Enter position (e.g., 182)" min="1" step="1">
@@ -86,11 +91,13 @@
             </div>
             <div id="prime-result" class="result-display"></div>
             <div id="prime-progress" class="progress-display"></div>
+            </div>
         </section>
 
         <!-- Screensaver Controls Section -->
         <section id="screensaver-controls" class="tool-section">
-            <h2>Screensaver Controls</h2>
+            <h2 class="collapsible-header">Screensaver Controls <span class="collapse-icon">▼</span></h2>
+            <div class="collapsible-content">
             <p>Control the animated background showing prime numbers and their multiples.</p>
             <div class="input-group">
                 <label for="prime-range-start">Start Prime:</label>
@@ -112,14 +119,15 @@
             </div>
             <div class="input-group">
                 <label for="random-order">
-                    <input type="checkbox" id="random-order">
-                    Random Order
+                    <input type="checkbox" id="random-order" checked>
+                    Random Prime Order
                 </label>
-                <span style="color: #ff9999; font-size: 0.9rem;">(Drop multiples in random order instead of sequential)</span>
+                <span style="color: #ff9999; font-size: 0.9rem;">(Select prime numbers randomly instead of sequentially)</span>
             </div>
             <div class="input-group">
                 <button id="toggle-screensaver-btn">Toggle Screensaver</button>
                 <button id="fullscreen-btn">Fullscreen Screensaver</button>
+            </div>
             </div>
         </section>
     </main>

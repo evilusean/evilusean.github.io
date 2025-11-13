@@ -60,7 +60,7 @@ body {
 
 .falling-element {
     position: absolute;
-    padding: 8px 5px;
+    padding: 6px 8px;
     background: rgba(200, 0, 0, 0.9);
     color: #fff;
     border-radius: 4px;
@@ -192,6 +192,40 @@ main {
     margin-bottom: 1rem;
     font-size: 1.8rem;
     text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+}
+
+.collapsible-header {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: color 0.3s;
+}
+
+.collapsible-header:hover {
+    color: #ff6666;
+}
+
+.collapse-icon {
+    font-size: 1.2rem;
+    transition: transform 0.3s;
+}
+
+.collapsible-header.collapsed .collapse-icon {
+    transform: rotate(-90deg);
+}
+
+.collapsible-content {
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+    max-height: 5000px;
+    opacity: 1;
+}
+
+.collapsible-content.collapsed {
+    max-height: 0;
+    opacity: 0;
 }
 
 .tool-section p {
@@ -326,6 +360,14 @@ main {
     background-color: rgba(255, 0, 0, 0.1);
     border-radius: 4px;
     border-left: 4px solid #ff0000;
+}
+
+.shared-factor {
+    color: #00ff00;
+    background-color: rgba(0, 255, 0, 0.2);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: bold;
 }
 
 /* Result Display */
