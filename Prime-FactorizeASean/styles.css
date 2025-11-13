@@ -234,6 +234,17 @@ main {
     max-width: 200px;
 }
 
+.input-group input[type="checkbox"] {
+    margin-right: 0.5rem;
+    cursor: pointer;
+}
+
+.input-group label {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
 .input-group button {
     padding: 0.5rem 1.5rem;
     background-color: #cc0000;

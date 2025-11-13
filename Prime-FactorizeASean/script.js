@@ -83,11 +83,15 @@ function getGCF(a, b) {
 // ==================== Polynomial Functions ====================
 
 /**
- * Parse polynomial string into terms
- * @param {string} poly - Polynomial string (e.g., "x^2 + 5x + 6" or "x² + 5x + 6")
- * @returns {Array} - Array of {coef, power} objects
+ * Parse polynomial string into terms (supports multi-variable)
+ * @param {string} poly - Polynomial string (e.g., "x^2 + 5x + 6" or "18a^2b^3 + 27ab^4")
+ * @returns {Object} - Parsed polynomial info
  */
 function parsePolynomial(poly) {
+    // Remove MathJax delimiters
+    poly = poly.replace(/\$/g, '');
+    poly = poly.replace(/\\/g, '');
+    
     // Normalize the input - handle superscript characters and various formats
     poly = poly.replace(/\s+/g, ''); // Remove spaces
     poly = poly.toLowerCase();
@@ -115,48 +119,93 @@ function parsePolynomial(poly) {
         
         part = part.trim();
         
-        // Extract coefficient and power
+        // Parse term: coefficient and variables with powers
         let coef = 1;
-        let power = 0;
+        let variables = {}; // e.g., {a: 2, b: 3} for a^2b^3
         
-        // Check if it contains x
-        if (part.includes('x')) {
-            // Extract coefficient before x
-            const beforeX = part.split('x')[0];
-            
-            if (beforeX === '' || beforeX === '+') {
-                coef = 1;
-            } else if (beforeX === '-') {
-                coef = -1;
-            } else {
-                coef = parseFloat(beforeX);
-            }
-            
-            // Extract power after x
-            if (part.includes('^')) {
-                const afterCaret = part.split('^')[1];
-                power = parseInt(afterCaret);
-            } else {
-                power = 1; // x without exponent is x^1
-            }
-        } else {
-            // Constant term
-            coef = parseFloat(part);
-            power = 0;
+        // Extract coefficient (number at the beginning)
+        const coefMatch = part.match(/^([+-]?\d*\.?\d+)/);
+        if (coefMatch) {
+            coef = parseFloat(coefMatch[1]);
+            part = part.substring(coefMatch[0].length);
+        } else if (part.startsWith('-')) {
+            coef = -1;
+            part = part.substring(1);
+        } else if (part.startsWith('+')) {
+            coef = 1;
+            part = part.substring(1);
+        }
+        
+        // Parse variables and their powers
+        const varRegex = /([a-z])(\^(\d+))?/g;
+        let varMatch;
+        while ((varMatch = varRegex.exec(part)) !== null) {
+            const varName = varMatch[1];
+            const power = varMatch[3] ? parseInt(varMatch[3]) : 1;
+            variables[varName] = (variables[varName] || 0) + power;
         }
         
         if (!isNaN(coef) && coef !== 0) {
-            // Check if we already have this power
-            const existing = terms.find(t => t.power === power);
-            if (existing) {
-                existing.coef += coef;
-            } else {
-                terms.push({ coef, power });
-            }
+            terms.push({ coef, variables });
         }
     }
     
-    return terms.sort((a, b) => b.power - a.power);
+    return { terms, original: poly };
+}
+
+/**
+ * Calculate GCF of polynomial terms
+ * @param {Array} terms - Array of term objects
+ * @returns {Object} - GCF coefficient and variables
+ */
+function findPolynomialGCF(terms) {
+    if (terms.length === 0) return { coef: 1, variables: {} };
+    
+    // Find GCF of coefficients
+    let gcfCoef = Math.abs(terms[0].coef);
+    for (let i = 1; i < terms.length; i++) {
+        gcfCoef = getGCF(gcfCoef, Math.abs(terms[i].coef));
+    }
+    
+    // Find minimum power for each variable
+    const allVars = new Set();
+    terms.forEach(term => {
+        Object.keys(term.variables).forEach(v => allVars.add(v));
+    });
+    
+    const gcfVars = {};
+    allVars.forEach(varName => {
+        let minPower = Infinity;
+        terms.forEach(term => {
+            const power = term.variables[varName] || 0;
+            minPower = Math.min(minPower, power);
+        });
+        if (minPower > 0) {
+            gcfVars[varName] = minPower;
+        }
+    });
+    
+    return { coef: gcfCoef, variables: gcfVars };
+}
+
+/**
+ * Format polynomial term
+ * @param {Object} gcf - GCF object with coef and variables
+ * @returns {string} - Formatted string
+ */
+function formatPolynomialGCF(gcf) {
+    let result = gcf.coef === 1 ? '' : gcf.coef.toString();
+    
+    const sortedVars = Object.keys(gcf.variables).sort();
+    sortedVars.forEach(varName => {
+        const power = gcf.variables[varName];
+        result += varName;
+        if (power > 1) {
+            result += `^${power}`;
+        }
+    });
+    
+    return result || '1';
 }
 
 /**
@@ -165,15 +214,32 @@ function parsePolynomial(poly) {
  * @returns {Object} - Factored form and steps
  */
 function factorQuadratic(poly) {
-    const terms = parsePolynomial(poly);
+    const parsed = parsePolynomial(poly);
+    const terms = parsed.terms;
     
     if (terms.length === 0) return { success: false, message: "Invalid polynomial" };
     
+    // Check if it's a multi-variable polynomial
+    const hasMultipleVars = terms.some(term => Object.keys(term.variables).length > 1 || 
+                                               Object.keys(term.variables).some(v => v !== 'x'));
+    
+    if (hasMultipleVars) {
+        // Factor out GCF for multi-variable polynomials
+        const gcf = findPolynomialGCF(terms);
+        const gcfStr = formatPolynomialGCF(gcf);
+        return { 
+            success: true, 
+            factored: `GCF = ${gcfStr}`,
+            original: poly 
+        };
+    }
+    
     let a = 0, b = 0, c = 0;
     terms.forEach(term => {
-        if (term.power === 2) a = term.coef;
-        else if (term.power === 1) b = term.coef;
-        else if (term.power === 0) c = term.coef;
+        const xPower = term.variables['x'] || 0;
+        if (xPower === 2) a = term.coef;
+        else if (xPower === 1) b = term.coef;
+        else if (xPower === 0) c = term.coef;
     });
     
     if (a === 0) {
@@ -248,43 +314,29 @@ function toLatex(poly) {
 }
 
 /**
- * Find GCF of two polynomials (simplified version)
+ * Find GCF of two polynomials
  * @param {string} poly1 - First polynomial
  * @param {string} poly2 - Second polynomial
  * @returns {Object} - GCF result
  */
 function polynomialGCF(poly1, poly2) {
-    const terms1 = parsePolynomial(poly1);
-    const terms2 = parsePolynomial(poly2);
+    const parsed1 = parsePolynomial(poly1);
+    const parsed2 = parsePolynomial(poly2);
+    const terms1 = parsed1.terms;
+    const terms2 = parsed2.terms;
     
     if (terms1.length === 0 || terms2.length === 0) {
         return { success: false, message: "Invalid polynomials" };
     }
     
-    // Find minimum power of x
-    const minPower1 = Math.min(...terms1.map(t => t.power));
-    const minPower2 = Math.min(...terms2.map(t => t.power));
-    const commonPower = Math.min(minPower1, minPower2);
-    
-    // Find GCF of coefficients
-    const coefs1 = terms1.map(t => Math.abs(t.coef));
-    const coefs2 = terms2.map(t => Math.abs(t.coef));
-    let gcfCoef = coefs1[0];
-    
-    [...coefs1, ...coefs2].forEach(c => {
-        gcfCoef = getGCF(gcfCoef, c);
-    });
-    
-    let gcf = gcfCoef === 1 ? '' : `${gcfCoef}`;
-    if (commonPower > 0) {
-        gcf += commonPower === 1 ? 'x' : `x^${commonPower}`;
-    }
-    
-    if (gcf === '') gcf = '1';
+    // Combine all terms to find common GCF
+    const allTerms = [...terms1, ...terms2];
+    const gcf = findPolynomialGCF(allTerms);
+    const gcfStr = formatPolynomialGCF(gcf);
     
     return {
         success: true,
-        gcf,
+        gcf: gcfStr,
         poly1: poly1,
         poly2: poly2
     };
@@ -657,7 +709,9 @@ function findNthPrime(n, progressCallback = null) {
 let screensaverInterval = null;
 let screensaverActive = true;
 let screensaverSpeed = 5;
+let minMultiplier = 1;
 let maxMultiplier = 10;
+let randomOrder = false;
 let primeRange = { start: 10, end: 200 };
 const screensaverContainer = document.getElementById('screensaver');
 const activeElements = new Set();
@@ -740,8 +794,22 @@ function startDroppingMultiples(prime) {
     const elementSpacing = 50;
     const columnLeft = getColumnPosition(currentColumn);
     
+    // Create array of multipliers in range
+    const multipliers = [];
+    for (let i = minMultiplier; i <= maxMultiplier; i++) {
+        multipliers.push(i);
+    }
+    
+    // Shuffle if random order is enabled
+    if (randomOrder) {
+        for (let i = multipliers.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [multipliers[i], multipliers[j]] = [multipliers[j], multipliers[i]];
+        }
+    }
+    
     function createAndDropNextMultiple() {
-        if (currentMultiplierIndex >= maxMultiplier) {
+        if (currentMultiplierIndex >= multipliers.length) {
             // All multiples done - move to next column and prime
             isProcessingPrime = false;
             currentColumn = (currentColumn + 1) % 4; // Cycle through 4 columns
@@ -757,8 +825,8 @@ function startDroppingMultiples(prime) {
             return;
         }
         
+        const multiplier = multipliers[currentMultiplierIndex];
         currentMultiplierIndex++;
-        const multiplier = currentMultiplierIndex; // Normal order (smallest first)
         
         const element = document.createElement('div');
         element.className = 'falling-element';
@@ -1158,7 +1226,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const screensaverFullscreen = document.getElementById('screensaver-fullscreen');
     const screensaverSpeedInput = document.getElementById('screensaver-speed');
     const speedValue = document.getElementById('speed-value');
+    const minMultiplierInput = document.getElementById('min-multiplier');
     const maxMultiplierInput = document.getElementById('max-multiplier');
+    const randomOrderCheckbox = document.getElementById('random-order');
     const primeRangeStart = document.getElementById('prime-range-start');
     const primeRangeEnd = document.getElementById('prime-range-end');
     
@@ -1171,14 +1241,33 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    minMultiplierInput.addEventListener('change', (e) => {
+        const newMin = parseInt(e.target.value);
+        if (!isNaN(newMin) && newMin >= 1 && newMin <= maxMultiplier) {
+            minMultiplier = newMin;
+            if (screensaverActive) {
+                stopScreensaver();
+                startScreensaver();
+            }
+        }
+    });
+    
     maxMultiplierInput.addEventListener('change', (e) => {
         const newMax = parseInt(e.target.value);
-        if (!isNaN(newMax) && newMax >= 1 && newMax <= 100) {
+        if (!isNaN(newMax) && newMax >= minMultiplier && newMax <= 1000) {
             maxMultiplier = newMax;
             if (screensaverActive) {
                 stopScreensaver();
                 startScreensaver();
             }
+        }
+    });
+    
+    randomOrderCheckbox.addEventListener('change', (e) => {
+        randomOrder = e.target.checked;
+        if (screensaverActive) {
+            stopScreensaver();
+            startScreensaver();
         }
     });
     
@@ -1309,8 +1398,22 @@ document.addEventListener('DOMContentLoaded', function() {
         const elementSpacing = 50;
         const columnLeft = getFullscreenColumnPosition(fullscreenCurrentColumn);
         
+        // Create array of multipliers in range
+        const multipliers = [];
+        for (let i = minMultiplier; i <= maxMultiplier; i++) {
+            multipliers.push(i);
+        }
+        
+        // Shuffle if random order is enabled
+        if (randomOrder) {
+            for (let i = multipliers.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [multipliers[i], multipliers[j]] = [multipliers[j], multipliers[i]];
+            }
+        }
+        
         function createAndDropNextMultiple() {
-            if (currentMultiplierIndex >= maxMultiplier) {
+            if (currentMultiplierIndex >= multipliers.length) {
                 // All multiples done - move to next column and prime
                 fullscreenIsProcessing = false;
                 fullscreenCurrentColumn = (fullscreenCurrentColumn + 1) % 8; // Cycle through 8 columns
@@ -1326,8 +1429,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
+            const multiplier = multipliers[currentMultiplierIndex];
             currentMultiplierIndex++;
-            const multiplier = currentMultiplierIndex; // Normal order
             
             const element = document.createElement('div');
             element.className = 'falling-element';
