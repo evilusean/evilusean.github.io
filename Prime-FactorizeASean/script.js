@@ -358,6 +358,279 @@ function toLatex(poly) {
 }
 
 /**
+ * Factor a polynomial fraction
+ * @param {string} fraction - Fraction string (e.g., "\\frac{14x^3 - 7x^2}{21x^2 + 7x}")
+ * @returns {Object} - Factored form
+ */
+function factorFraction(fraction) {
+    // Remove $$ delimiters
+    fraction = fraction.replace(/\$\$/g, '').replace(/\$/g, '');
+    
+    let numerator = '';
+    let denominator = '';
+    
+    // Parse \frac{numerator}{denominator}
+    if (fraction.includes('\\frac')) {
+        const fracMatch = fraction.match(/\\frac\{([^}]+)\}\{([^}]+)\}/);
+        if (fracMatch) {
+            numerator = fracMatch[1];
+            denominator = fracMatch[2];
+        }
+    } else if (fraction.includes('/')) {
+        // Handle simple division
+        const parts = fraction.split('/');
+        if (parts.length === 2) {
+            numerator = parts[0].trim();
+            denominator = parts[1].trim();
+        }
+    }
+    
+    if (!numerator || !denominator) {
+        return { success: false, message: "Could not parse fraction" };
+    }
+    
+    // Expand any factored expressions in numerator
+    const numExpanded = expandFactoredExpression(numerator);
+    const denExpanded = expandFactoredExpression(denominator);
+    
+    // Parse both polynomials
+    const numParsed = parsePolynomial(numExpanded);
+    const denParsed = parsePolynomial(denExpanded);
+    
+    // Find GCF of numerator terms
+    const numGCF = findPolynomialGCF(numParsed.terms);
+    const numGCFStr = formatPolynomialGCF(numGCF);
+    
+    // Find GCF of denominator terms
+    const denGCF = findPolynomialGCF(denParsed.terms);
+    const denGCFStr = formatPolynomialGCF(denGCF);
+    
+    // Factor out GCF from denominator to see if it matches numerator factors
+    let denFactored = denGCFStr;
+    if (denGCF.coef > 1 || Object.keys(denGCF.variables).length > 0) {
+        const denSimplified = divideByGCF(denParsed.terms, denGCF);
+        const denRemaining = formatTerms(denSimplified);
+        denFactored = `${denGCFStr}(${denRemaining})`;
+    }
+    
+    // Find overall GCF (common to both numerator and denominator)
+    const overallGCF = findCommonGCF(numGCF, denGCF);
+    
+    // Check if numerator has common factors with denominator's factored form
+    let commonFactorStr = formatPolynomialGCF(overallGCF);
+    
+    // Check for common binomial factors
+    const numFactors = extractFactors(numerator);
+    const denFactors = extractFactors(denominator);
+    const commonBinomials = findCommonBinomials(numFactors, denFactors, denParsed.terms);
+    
+    if (commonBinomials.length > 0) {
+        commonFactorStr = commonBinomials.join(' \\cdot ');
+        if (overallGCF.coef > 1 || Object.keys(overallGCF.variables).length > 0) {
+            commonFactorStr = formatPolynomialGCF(overallGCF) + ' \\cdot ' + commonFactorStr;
+        }
+    }
+    
+    // Simplify if possible
+    let simplified = null;
+    if (overallGCF.coef > 1 || Object.keys(overallGCF.variables).length > 0 || commonBinomials.length > 0) {
+        // Factor out the GCF from both
+        const numSimplified = divideByGCF(numParsed.terms, overallGCF);
+        const denSimplified = divideByGCF(denParsed.terms, overallGCF);
+        
+        // Remove common binomial factors
+        let numStr = formatTerms(numSimplified);
+        let denStr = formatTerms(denSimplified);
+        
+        // If numerator was already factored, keep it simple
+        if (numFactors.length > 0 && commonBinomials.length > 0) {
+            numStr = numFactors.filter(f => !commonBinomials.includes(f)).join(' \\cdot ') || '1';
+        }
+        
+        simplified = `\\frac{${numStr}}{${denStr}}`;
+    }
+    
+    return {
+        success: true,
+        original: `\\frac{${numerator}}{${denominator}}`,
+        numGCF: numGCFStr,
+        denGCF: denFactored,
+        gcf: commonFactorStr,
+        simplified: simplified
+    };
+}
+
+/**
+ * Expand factored expressions like 5(a+3) to 5a+15
+ * @param {string} expr - Expression with factors
+ * @returns {string} - Expanded expression
+ */
+function expandFactoredExpression(expr) {
+    // Match pattern: number(polynomial)
+    const pattern = /(\d+)\s*\(([^)]+)\)/g;
+    
+    return expr.replace(pattern, (match, coef, inner) => {
+        const coefficient = parseInt(coef);
+        const innerParsed = parsePolynomial(inner);
+        
+        // Multiply each term by the coefficient
+        const expanded = innerParsed.terms.map(term => {
+            const newCoef = term.coef * coefficient;
+            return { coef: newCoef, variables: term.variables };
+        });
+        
+        return formatTerms(expanded);
+    });
+}
+
+/**
+ * Extract factors from expression (e.g., "5(a+3)" -> ["5", "(a+3)"])
+ * @param {string} expr - Expression
+ * @returns {Array} - Array of factors
+ */
+function extractFactors(expr) {
+    const factors = [];
+    
+    // Extract coefficient
+    const coefMatch = expr.match(/^(\d+)/);
+    if (coefMatch) {
+        factors.push(coefMatch[1]);
+    }
+    
+    // Extract parenthetical expressions
+    const parenMatches = expr.match(/\([^)]+\)/g);
+    if (parenMatches) {
+        factors.push(...parenMatches);
+    }
+    
+    return factors;
+}
+
+/**
+ * Find common binomial factors
+ * @param {Array} numFactors - Numerator factors
+ * @param {Array} denFactors - Denominator factors  
+ * @param {Array} denTerms - Denominator terms (expanded)
+ * @returns {Array} - Common binomial factors
+ */
+function findCommonBinomials(numFactors, denFactors, denTerms) {
+    const common = [];
+    
+    // Check if any numerator factor appears in denominator when factored
+    numFactors.forEach(factor => {
+        if (factor.startsWith('(') && factor.endsWith(')')) {
+            // This is a binomial like (a+3)
+            const binomial = factor.slice(1, -1); // Remove parentheses
+            const binomialParsed = parsePolynomial(binomial);
+            
+            // Check if this binomial divides the denominator evenly
+            // For now, check if it's explicitly in denFactors or if denominator is a multiple
+            if (denFactors.includes(factor)) {
+                common.push(factor);
+            } else {
+                // Check if denominator terms are multiples of this binomial
+                // This is a simplified check - could be more sophisticated
+                const denGCF = findPolynomialGCF(denTerms);
+                const denSimplified = divideByGCF(denTerms, denGCF);
+                const denStr = formatTerms(denSimplified);
+                
+                if (denStr === binomial || denStr === `(${binomial})`) {
+                    common.push(factor);
+                }
+            }
+        }
+    });
+    
+    return common;
+}
+
+/**
+ * Find common GCF between two GCF objects
+ * @param {Object} gcf1 - First GCF
+ * @param {Object} gcf2 - Second GCF
+ * @returns {Object} - Common GCF
+ */
+function findCommonGCF(gcf1, gcf2) {
+    const commonCoef = getGCF(gcf1.coef, gcf2.coef);
+    const commonVars = {};
+    
+    // Find minimum power for each variable present in both
+    const allVars = new Set([...Object.keys(gcf1.variables), ...Object.keys(gcf2.variables)]);
+    allVars.forEach(varName => {
+        const power1 = gcf1.variables[varName] || 0;
+        const power2 = gcf2.variables[varName] || 0;
+        const minPower = Math.min(power1, power2);
+        if (minPower > 0) {
+            commonVars[varName] = minPower;
+        }
+    });
+    
+    return { coef: commonCoef, variables: commonVars };
+}
+
+/**
+ * Divide polynomial terms by GCF
+ * @param {Array} terms - Array of terms
+ * @param {Object} gcf - GCF to divide by
+ * @returns {Array} - Simplified terms
+ */
+function divideByGCF(terms, gcf) {
+    return terms.map(term => {
+        const newCoef = term.coef / gcf.coef;
+        const newVars = {};
+        
+        Object.keys(term.variables).forEach(varName => {
+            const newPower = term.variables[varName] - (gcf.variables[varName] || 0);
+            if (newPower > 0) {
+                newVars[varName] = newPower;
+            }
+        });
+        
+        return { coef: newCoef, variables: newVars };
+    });
+}
+
+/**
+ * Format terms array back to string
+ * @param {Array} terms - Array of terms
+ * @returns {string} - Formatted string
+ */
+function formatTerms(terms) {
+    if (terms.length === 0) return '1';
+    
+    return terms.map((term, idx) => {
+        let str = '';
+        
+        // Add sign
+        if (idx > 0) {
+            str += term.coef >= 0 ? ' + ' : ' - ';
+        } else if (term.coef < 0) {
+            str += '-';
+        }
+        
+        const absCoef = Math.abs(term.coef);
+        const hasVars = Object.keys(term.variables).length > 0;
+        
+        // Add coefficient
+        if (absCoef !== 1 || !hasVars) {
+            str += absCoef;
+        }
+        
+        // Add variables
+        const sortedVars = Object.keys(term.variables).sort();
+        sortedVars.forEach(varName => {
+            const power = term.variables[varName];
+            str += varName;
+            if (power > 1) {
+                str += `^{${power}}`;
+            }
+        });
+        
+        return str;
+    }).join('');
+}
+
+/**
  * Find GCF of two polynomials
  * @param {string} poly1 - First polynomial
  * @param {string} poly2 - Second polynomial
@@ -1134,19 +1407,41 @@ document.addEventListener('DOMContentLoaded', function() {
         polynomialResult.innerHTML = '<div class="loading">Factoring...</div>';
         
         setTimeout(() => {
-            const result = factorQuadratic(poly);
-            
-            if (!result.success) {
-                polynomialResult.innerHTML = `<p class="error">${result.message}</p>`;
-                return;
+            // Check if it's a fraction
+            if (poly.includes('\\frac') || poly.includes('/')) {
+                const fractionResult = factorFraction(poly);
+                
+                if (!fractionResult.success) {
+                    polynomialResult.innerHTML = `<p class="error">${fractionResult.message}</p>`;
+                    return;
+                }
+                
+                let html = '<div class="result-success">';
+                html += `<p><strong>Original:</strong> \\(${fractionResult.original}\\)</p>`;
+                html += `<p><strong>Numerator GCF:</strong> \\(${fractionResult.numGCF}\\)</p>`;
+                html += `<p><strong>Denominator GCF:</strong> \\(${fractionResult.denGCF}\\)</p>`;
+                html += `<p><strong>Overall GCF:</strong> \\(${fractionResult.gcf}\\)</p>`;
+                if (fractionResult.simplified) {
+                    html += `<p><strong>Simplified:</strong> \\(${fractionResult.simplified}\\)</p>`;
+                }
+                html += '</div>';
+                
+                polynomialResult.innerHTML = html;
+            } else {
+                const result = factorQuadratic(poly);
+                
+                if (!result.success) {
+                    polynomialResult.innerHTML = `<p class="error">${result.message}</p>`;
+                    return;
+                }
+                
+                let html = '<div class="result-success">';
+                html += `<p><strong>Original:</strong> \\(${toLatex(result.original)}\\)</p>`;
+                html += `<p><strong>Factored:</strong> \\(${toLatex(result.factored)}\\)</p>`;
+                html += '</div>';
+                
+                polynomialResult.innerHTML = html;
             }
-            
-            let html = '<div class="result-success">';
-            html += `<p><strong>Original:</strong> \\(${toLatex(result.original)}\\)</p>`;
-            html += `<p><strong>Factored:</strong> \\(${toLatex(result.factored)}\\)</p>`;
-            html += '</div>';
-            
-            polynomialResult.innerHTML = html;
             
             // Render MathJax
             if (window.MathJax) {
