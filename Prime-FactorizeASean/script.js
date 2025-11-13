@@ -1038,9 +1038,28 @@ let topbarPosition = 0;
 let isProcessingPrime = false;
 let afterimages = [];
 let primeDropCount = 0;
-let currentColumn = 0; // Track which column we're on (0-3)
+let currentColumn = 0; // Track which column we're on
 let columnAfterimages = [[], [], [], []]; // Separate afterimages for each column
 let isFirstLoad = true; // Track if this is the first page load
+let numColumns = 4; // Number of columns (responsive)
+
+/**
+ * Get number of columns based on screen width
+ */
+function getResponsiveColumnCount() {
+    const width = window.innerWidth;
+    if (width < 600) return 1;
+    if (width < 900) return 2;
+    if (width < 1200) return 3;
+    return 4;
+}
+
+/**
+ * Check if screen is too small for screensaver
+ */
+function isScreenTooSmall() {
+    return window.innerWidth < 768;
+}
 
 /**
  * Create stationary prime display at top
@@ -1100,13 +1119,27 @@ function updatePrimeDisplay(prime) {
  * Get column position based on column index
  */
 function getColumnPosition(columnIndex) {
-    const positions = [
-        '10px',      // Left column 1 (small margin from edge)
-        '220px',     // Left column 2
-        'calc(100vw - 420px)', // Right column 1 (using viewport width)
-        'calc(100vw - 210px)'  // Right column 2
-    ];
-    return positions[columnIndex];
+    const width = window.innerWidth;
+    const colCount = numColumns;
+    
+    // Calculate positions based on number of columns
+    if (colCount === 1) {
+        return '50%'; // Center
+    } else if (colCount === 2) {
+        return columnIndex === 0 ? '10px' : 'calc(100vw - 210px)';
+    } else if (colCount === 3) {
+        const positions = ['10px', '50%', 'calc(100vw - 210px)'];
+        return positions[columnIndex];
+    } else {
+        // 4 columns (default)
+        const positions = [
+            '10px',      // Left column 1
+            '220px',     // Left column 2
+            'calc(100vw - 420px)', // Right column 1
+            'calc(100vw - 210px)'  // Right column 2
+        ];
+        return positions[columnIndex];
+    }
 }
 
 /**
@@ -1146,7 +1179,7 @@ function startDroppingMultiples(prime, fromClick = false) {
                 }, 3000);
             } else {
                 // Normal flow - move to next column and prime
-                currentColumn = (currentColumn + 1) % 4; // Cycle through 4 columns
+                currentColumn = (currentColumn + 1) % numColumns; // Cycle through columns
                 
                 // Clear the NEXT column before we start dropping into it
                 const nextColumn = currentColumn;
@@ -1244,12 +1277,24 @@ function processNextPrime() {
 function startScreensaver() {
     if (!screensaverActive) return;
     
+    // Auto-disable on small screens
+    if (isScreenTooSmall()) {
+        screensaverActive = false;
+        const btn = document.getElementById('toggle-multipliers-btn');
+        if (btn) btn.textContent = 'Start Multipliers';
+        return;
+    }
+    
+    // Update column count based on screen size
+    numColumns = getResponsiveColumnCount();
+    
     // Clear existing elements
     activeElements.forEach(el => el.remove());
     activeElements.clear();
     afterimages.forEach(el => el.remove());
     afterimages = [];
-    columnAfterimages = [[], [], [], []];
+    // Reinitialize column afterimages based on current column count
+    columnAfterimages = Array(numColumns).fill(null).map(() => []);
     currentPrimeIndex = 0;
     currentColumn = 0;
     isProcessingPrime = false;
@@ -1996,7 +2041,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 isProcessingPrime = false;
                 
                 // Move to next column and clear it
-                currentColumn = (currentColumn + 1) % 4;
+                currentColumn = (currentColumn + 1) % numColumns;
                 
                 // Clear all active elements in the current column
                 const targetLeft = getColumnPosition(currentColumn);
@@ -2326,4 +2371,27 @@ document.addEventListener('DOMContentLoaded', function() {
             dropRandomPrimesBtn.click();
         }
     }, 500);
+});
+
+// Handle window resize for responsive columns
+let resizeTimeout;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        const newColumnCount = getResponsiveColumnCount();
+        
+        // If column count changed and screensaver is active, restart it
+        if (newColumnCount !== numColumns && screensaverActive) {
+            stopScreensaver();
+            startScreensaver();
+        }
+        
+        // Auto-disable on small screens
+        if (isScreenTooSmall() && screensaverActive) {
+            screensaverActive = false;
+            const btn = document.getElementById('toggle-multipliers-btn');
+            if (btn) btn.textContent = 'Start Multipliers';
+            stopScreensaver();
+        }
+    }, 250);
 });
