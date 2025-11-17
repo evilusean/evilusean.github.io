@@ -118,3 +118,17 @@ This project is open source and available for use.
 - Add a calculator so user can quickly do math
 - Add a 2nd Tree and let the user quickly find the GCF greatest common factor between 2 terms
 - Maybe a compare with button? if I tree prime 2 big numbers, that's going to be very busy and take up a lot of space. 
+- Add Divisibilty 'Tricks' 
+Here are the common divisibility rules, which are useful "tricks" for prime factorization, as they quickly help identify smaller prime factors. 
+Divisor 	Divisibility Rule
+2	The number is even.
+3	The sum of the digits is divisible by 3.
+4	The number formed by the last two digits is divisible by 4.
+5	The last digit is a 0 or a 5.
+6	The number is divisible by both 2 and 3.
+7	Double the last digit and subtract it from the remaining digits; if the result is divisible by 7, the original number is too.
+8	The number formed by the last three digits is divisible by 8.
+9	The sum of the digits is divisible by 9.
+10	The last digit is 0.
+11	The alternating sum of the digits is divisible by 11.
+For additional divisibility rules for numbers like 13, 17, and 19, refer to GeeksforGeeks(https://www.geeksforgeeks.org/maths/divisibility-rules/) and Grayson College(https://www.grayson.edu/current-students/academic-resources/student-labs/math-hub-pdfs/Divisibility%20Rules.pdf). For composite numbers, you can check for divisibility by their prime factor
