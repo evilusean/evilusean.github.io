@@ -66,6 +66,81 @@ function getFactors(n) {
 }
 
 /**
+ * Explain why a number is divisible by a factor using divisibility tricks
+ * @param {number} n - The number being factored
+ * @param {number} factor - The factor being used
+ * @returns {string} - Explanation of the divisibility trick
+ */
+function explainDivisibility(n, factor) {
+    const digits = n.toString().split('').map(Number);
+    const lastDigit = digits[digits.length - 1];
+    const sumDigits = digits.reduce((a, b) => a + b, 0);
+    
+    switch(factor) {
+        case 2:
+            return `${n} is even (last digit is ${lastDigit}), so it's divisible by 2.`;
+        case 3:
+            return `Sum of digits of ${n} is ${sumDigits}, which is divisible by 3.`;
+        case 4:
+            if (n >= 100) {
+                const lastTwo = n % 100;
+                return `Last two digits (${lastTwo}) are divisible by 4.`;
+            }
+            return `${n} is divisible by 4.`;
+        case 5:
+            return `Last digit is ${lastDigit}, so ${n} is divisible by 5.`;
+        case 6:
+            return `${n} is even and sum of digits (${sumDigits}) is divisible by 3, so divisible by 6.`;
+        case 8:
+            if (n >= 1000) {
+                const lastThree = n % 1000;
+                return `Last three digits (${lastThree}) are divisible by 8.`;
+            }
+            return `${n} is divisible by 8.`;
+        case 9:
+            return `Sum of digits of ${n} is ${sumDigits}, which is divisible by 9.`;
+        case 10:
+            return `Last digit is 0, so ${n} is divisible by 10.`;
+        case 11:
+            const altSum = digits.reduce((sum, digit, i) => sum + (i % 2 === 0 ? digit : -digit), 0);
+            return `Alternating sum of digits is ${altSum}, which is divisible by 11.`;
+        default:
+            if (factor <= 20) {
+                return `${n} ÷ ${factor} = ${n / factor} (checked by division).`;
+            }
+            return `${n} is divisible by ${factor}.`;
+    }
+}
+
+/**
+ * Get the general divisibility rule for a number
+ * @param {number} divisor - The divisor
+ * @returns {string} - The divisibility rule
+ */
+function getDivisibilityRule(divisor) {
+    const rules = {
+        2: "The last digit should be even (0, 2, 4, 6, or 8).",
+        3: "The sum of the digits should be divisible by 3.",
+        4: "The number formed by the last two digits should be divisible by 4.",
+        5: "The last digit should either be 0 or 5.",
+        6: "The number should be divisible by both 2 and 3.",
+        7: "The double of the last digit, when subtracted from the rest of the number, the difference obtained should be divisible by 7.",
+        8: "The number formed by the last three digits should be divisible by 8.",
+        9: "The sum of the digits should be divisible by 9.",
+        10: "The last digit should be 0.",
+        11: "The difference of the alternating sum of digits should be divisible by 11.",
+        12: "The number should be divisible by both 3 and 4.",
+        13: "The four times of the last digit, when added to the rest of the number, the result obtained should be divisible by 13.",
+        14: "Upon adding the last two digits to twice the sum of the remaining digits, the result should be divisible by 14.",
+        15: "The number should be divisible by both 5 and 3.",
+        16: "The last four digits should be divisible by 16.",
+        17: "Five times the last digit, when subtracted from the rest of the number, should be divisible by 17.",
+        19: "Double the last digit, and add it to the rest of the number. If the result is divisible by 19, so is the original number."
+    };
+    return rules[divisor] || `Check if the number divides evenly by ${divisor}.`;
+}
+
+/**
  * Calculate Greatest Common Factor (GCF) of two numbers
  * @param {number} a - First number
  * @param {number} b - Second number
@@ -1503,6 +1578,31 @@ document.addEventListener('DOMContentLoaded', function() {
     const factorizeBtn = document.getElementById('factorize-btn');
     const factorizeInput = document.getElementById('factorize-input');
     const factorTreeContainer = document.getElementById('factor-tree-container');
+    const divisibilityModal = document.getElementById('divisibility-modal');
+    const modalClose = document.querySelector('.modal-close');
+    
+    // Divisibility Tricks Modal - Setup close handlers
+    if (divisibilityModal && modalClose) {
+        modalClose.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            divisibilityModal.style.display = 'none';
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === divisibilityModal) {
+                divisibilityModal.style.display = 'none';
+            }
+        });
+        
+        // Close modal when pressing ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && divisibilityModal.style.display === 'block') {
+                divisibilityModal.style.display = 'none';
+            }
+        });
+    }
     
     factorizeBtn.addEventListener('click', () => {
         const num = parseInt(factorizeInput.value);
@@ -1526,13 +1626,42 @@ document.addEventListener('DOMContentLoaded', function() {
             const treeLines = renderFactorTree(tree);
             const primeFactors = getPrimeFactors(num);
             
+            // Collect factorization steps with explanations
+            const explanations = [];
+            function collectExplanations(n) {
+                if (isPrime(n) || n < 2) return;
+                const factors = getFactors(n);
+                if (factors.length > 0) {
+                    const [left, right] = factors[0];
+                    explanations.push({
+                        number: n,
+                        factor: left,
+                        result: right,
+                        explanation: explainDivisibility(n, left)
+                    });
+                    collectExplanations(left);
+                    collectExplanations(right);
+                }
+            }
+            collectExplanations(num);
+            
             let html = '<div class="tree-display">';
             treeLines.forEach(line => {
                 html += `<div class="tree-line">${line.replace(/ /g, '&nbsp;')}</div>`;
             });
             html += '</div>';
+            
             html += `<div class="prime-factors">Prime factors: ${primeFactors.join(' × ')}</div>`;
             html += `<div class="prime-factors">${num} = ${primeFactors.join(' × ')}</div>`;
+            
+            // Add divisibility tricks section below prime factors
+            if (explanations.length > 0) {
+                html += '<div class="divisibility-tricks"><h4>Divisibility Tricks Used:</h4>';
+                explanations.forEach(exp => {
+                    html += `<div class="trick-explanation">• ${exp.explanation}</div>`;
+                });
+                html += '</div>';
+            }
             
             factorTreeContainer.innerHTML = html;
             
@@ -1550,6 +1679,97 @@ document.addEventListener('DOMContentLoaded', function() {
             }, totalDuration + 100);
         }, 10);
     });
+    
+    // Divisibility Check
+    const divisibilityCheckBtn = document.getElementById('divisibility-check-btn');
+    const divisibilityInput = document.getElementById('divisibility-input');
+    const divisibilityResultContainer = document.getElementById('divisibility-result-container');
+    
+    if (divisibilityCheckBtn && divisibilityInput && divisibilityResultContainer) {
+        divisibilityCheckBtn.addEventListener('click', () => {
+            const num = parseInt(divisibilityInput.value);
+            if (isNaN(num) || num < 1) {
+                divisibilityResultContainer.innerHTML = '<p class="error">Please enter a valid number greater than 0.</p>';
+                return;
+            }
+            
+            divisibilityResultContainer.innerHTML = '<div class="loading">Checking...</div>';
+            
+            setTimeout(() => {
+                const divisibleBy = [];
+                const notDivisibleBy = [];
+                
+                // Check divisibility for numbers 2-20
+                for (let i = 2; i <= 20; i++) {
+                    if (num % i === 0) {
+                        divisibleBy.push(i);
+                    } else {
+                        notDivisibleBy.push(i);
+                    }
+                }
+                
+                let html = '<div class="divisibility-results">';
+                html += `<h4>Divisibility Results for ${num}</h4>`;
+                
+                if (divisibleBy.length > 0) {
+                    html += '<div class="divisible-section">';
+                    html += '<h5 style="color: #00ff00;">✓ Divisible by:</h5>';
+                    html += '<div class="divisible-list">';
+                    divisibleBy.forEach(d => {
+                        html += `<span class="divisible-badge">${d}</span>`;
+                    });
+                    html += '</div>';
+                    
+                    // Show divisibility tricks for numbers it's divisible by
+                    html += '<div class="tricks-for-number">';
+                    html += '<h5 style="color: #66aaff; margin-top: 1.5rem;">Divisibility Tricks Applied:</h5>';
+                    divisibleBy.forEach(d => {
+                        const rule = getDivisibilityRule(d);
+                        const explanation = explainDivisibility(num, d);
+                        html += '<div class="trick-item">';
+                        html += `<div class="trick-header"><strong>Divisible by ${d}:</strong> ${rule}</div>`;
+                        html += `<div class="trick-application">→ ${explanation}</div>`;
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                    html += '</div>';
+                }
+                
+                if (notDivisibleBy.length > 0) {
+                    html += '<div class="not-divisible-section">';
+                    html += '<h5 style="color: #ff6666;">✗ Not divisible by:</h5>';
+                    html += '<div class="not-divisible-list">';
+                    notDivisibleBy.forEach(d => {
+                        html += `<span class="not-divisible-badge">${d}</span>`;
+                    });
+                    html += '</div>';
+                    html += '</div>';
+                }
+                
+                html += '<div style="margin-top: 1.5rem; text-align: center;">';
+                html += '<button id="show-tricks-from-result" class="secondary-btn">View All Divisibility Tricks</button>';
+                html += '</div>';
+                
+                html += '</div>';
+                
+                divisibilityResultContainer.innerHTML = html;
+                
+                // Add event listener to the new button
+                const showTricksBtn = document.getElementById('show-tricks-from-result');
+                if (showTricksBtn && divisibilityModal) {
+                    showTricksBtn.addEventListener('click', () => {
+                        divisibilityModal.style.display = 'block';
+                    });
+                }
+            }, 10);
+        });
+        
+        divisibilityInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                divisibilityCheckBtn.click();
+            }
+        });
+    }
     
     factorizeInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {

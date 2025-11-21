@@ -32,6 +32,19 @@
     </header>
 
     <main class="content-main">
+        <!-- Divisibility Check Section -->
+        <section id="divisibility-check" class="tool-section">
+            <h2 class="collapsible-header">Divisibility Check <span class="collapse-icon">▼</span></h2>
+            <div class="collapsible-content">
+            <p>Check what numbers divide evenly into your number.</p>
+            <div class="input-group">
+                <input type="number" id="divisibility-input" placeholder="Enter a number" min="1" step="1">
+                <button id="divisibility-check-btn">Check Divisibility</button>
+            </div>
+            <div id="divisibility-result-container"></div>
+            </div>
+        </section>
+
         <!-- Prime Factorization Tree Section -->
         <section id="factorize" class="tool-section">
             <h2 class="collapsible-header">Prime Factorization Tree <span class="collapse-icon">▼</span></h2>
@@ -138,6 +151,45 @@
     <footer class="content-footer">
         <p>&copy; 2024 Prime Factorize A Sean. All rights reserved.</p>
     </footer>
+    <!-- Divisibility Tricks Modal -->
+    <div id="divisibility-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2>Divisibility Rules Summary</h2>
+            <table class="divisibility-table">
+                <thead>
+                    <tr>
+                        <th>Number</th>
+                        <th>Divisibility Rule</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>2</td><td>The last digit should be even (0, 2, 4, 6, or 8).</td><td>12<span class="highlight-green">8</span> (last digit <span class="highlight-green">8</span>)</td></tr>
+                    <tr><td>3</td><td>The sum of the digits should be divisible by 3.</td><td>123 (<span class="highlight-green">1+2+3=6</span>)</td></tr>
+                    <tr><td>4</td><td>The number formed by the last two digits should be divisible by 4.</td><td>3<span class="highlight-green">16</span> (<span class="highlight-green">16÷4=4</span>)</td></tr>
+                    <tr><td>5</td><td>The last digit should either be 0 or 5.</td><td>12<span class="highlight-green">5</span> (last digit <span class="highlight-green">5</span>)</td></tr>
+                    <tr><td>6</td><td>The number should be divisible by both 2 and 3.</td><td>126 (<span class="highlight-green">even</span>, <span class="highlight-green">1+2+6=9</span>)</td></tr>
+                    <tr><td>7</td><td>The double of the last digit, when subtracted from the rest of the number, the difference obtained should be divisible by 7.</td><td>343 (<span class="highlight-green">34-6=28</span>)</td></tr>
+                    <tr><td>8</td><td>The number formed by the last three digits should be divisible by 8.</td><td>1<span class="highlight-green">024</span> (<span class="highlight-green">024÷8=3</span>)</td></tr>
+                    <tr><td>9</td><td>The sum of the digits should be divisible by 9.</td><td>729 (<span class="highlight-green">7+2+9=18</span>)</td></tr>
+                    <tr><td>10</td><td>The last digit should be 0.</td><td>15<span class="highlight-green">0</span> (last digit <span class="highlight-green">0</span>)</td></tr>
+                    <tr><td>11</td><td>The difference of the alternating sum of digits should be divisible by 11.</td><td>121 (<span class="highlight-green">1-2+1=0</span>)</td></tr>
+                    <tr><td>12</td><td>The number should be divisible by both 3 and 4.</td><td>144 (<span class="highlight-green">1+4+4=9</span>, <span class="highlight-green">44÷4=11</span>)</td></tr>
+                    <tr><td>13</td><td>The four times of the last digit, when added to the rest of the number, the result obtained should be divisible by 13.</td><td>169 (<span class="highlight-green">16+36=52</span>)</td></tr>
+                    <tr><td>14</td><td>Upon adding the last two digits to twice the sum of the remaining digits, the result should be divisible by 14.</td><td>154 (<span class="highlight-green">54+2=56</span>)</td></tr>
+                    <tr><td>15</td><td>The number should be divisible by both 5 and 3.</td><td>135 (<span class="highlight-green">ends in 5</span>, <span class="highlight-green">1+3+5=9</span>)</td></tr>
+                    <tr><td>16</td><td>The last four digits should be divisible by 16.</td><td><span class="highlight-green">2048</span> (<span class="highlight-green">2048÷16=128</span>)</td></tr>
+                    <tr><td>17</td><td>Five times the last digit, when subtracted from the rest of the number, should be divisible by 17.</td><td>221 (<span class="highlight-green">22-5=17</span>)</td></tr>
+                    <tr><td>19</td><td>Double the last digit, and add it to the rest of the number. If the result is divisible by 19, so is the original number.</td><td>209 (<span class="highlight-green">20+18=38</span>)</td></tr>
+                </tbody>
+            </table>
+            <div class="modal-sources">
+                <small>Sources: <a href="https://www.geeksforgeeks.org/maths/divisibility-rules/" target="_blank">GeeksforGeeks</a> | <a href="https://www.grayson.edu/current-students/academic-resources/student-labs/math-hub-pdfs/Divisibility%20Rules.pdf" target="_blank">Grayson College</a></small>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>

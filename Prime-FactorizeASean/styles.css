@@ -610,6 +610,27 @@ main {
     border-left: 4px solid #ff0000;
 }
 
+.divisibility-tricks {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: rgba(0, 100, 255, 0.1);
+    border-radius: 4px;
+    border-left: 4px solid #0066ff;
+}
+
+.divisibility-tricks h4 {
+    color: #66aaff;
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+}
+
+.trick-explanation {
+    color: #99ccff;
+    font-size: 1rem;
+    margin: 0.5rem 0;
+    padding-left: 0.5rem;
+}
+
 .shared-factor {
     color: #00ff00;
     background-color: rgba(0, 255, 0, 0.2);
@@ -736,4 +757,246 @@ body.fullscreen-mode .screensaver {
 
 .falling-element {
     animation: fadeIn 0.3s ease-in;
+}
+
+/* Divisibility Tricks Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.8);
+    animation: fadeIn 0.3s ease-in;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #1a0000, #330000);
+    margin: 5% auto;
+    padding: 2rem;
+    border: 2px solid #ff0000;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 800px;
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+    position: relative;
+}
+
+.modal-close {
+    color: #ff6666;
+    float: right;
+    font-size: 32px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.3s;
+}
+
+.modal-close:hover,
+.modal-close:focus {
+    color: #ff0000;
+}
+
+.modal-content h2 {
+    color: #ff0000;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.divisibility-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+}
+
+.divisibility-table thead {
+    background-color: rgba(255, 0, 0, 0.2);
+}
+
+.divisibility-table th {
+    color: #ff6666;
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 2px solid #ff0000;
+    font-weight: bold;
+}
+
+.divisibility-table td {
+    color: #ffcccc;
+    padding: 0.75rem;
+    border-bottom: 1px solid rgba(255, 0, 0, 0.2);
+}
+
+.divisibility-table td:first-child {
+    color: #ff0000;
+    font-weight: bold;
+    text-align: center;
+    width: 80px;
+}
+
+.divisibility-table tr:hover {
+    background-color: rgba(255, 0, 0, 0.1);
+}
+
+.modal-sources {
+    text-align: center;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 0, 0, 0.3);
+}
+
+.modal-sources small {
+    color: #666;
+    font-size: 0.85rem;
+}
+
+.modal-sources a {
+    color: #999;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.modal-sources a:hover {
+    color: #ff6666;
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+        padding: 1rem;
+    }
+    
+    .divisibility-table {
+        font-size: 0.9rem;
+    }
+    
+    .divisibility-table th,
+    .divisibility-table td {
+        padding: 0.5rem;
+    }
+}
+
+/* Divisibility Check Results */
+.divisibility-results {
+    margin-top: 1rem;
+    padding: 1.5rem;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    border: 2px solid #ff0000;
+}
+
+.divisibility-results h4 {
+    color: #ff0000;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-size: 1.3rem;
+}
+
+.divisibility-results h5 {
+    margin: 1rem 0 0.75rem 0;
+    font-size: 1.1rem;
+}
+
+.divisible-section,
+.not-divisible-section {
+    margin-bottom: 1.5rem;
+}
+
+.divisible-list,
+.not-divisible-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.divisible-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: rgba(0, 255, 0, 0.2);
+    color: #00ff00;
+    border: 2px solid #00ff00;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.not-divisible-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: rgba(255, 0, 0, 0.1);
+    color: #ff6666;
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.secondary-btn {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #0066ff, #0044cc);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: all 0.3s;
+    box-shadow: 0 2px 5px rgba(0, 100, 255, 0.3);
+}
+
+.secondary-btn:hover {
+    background: linear-gradient(135deg, #0088ff, #0066ff);
+    box-shadow: 0 4px 10px rgba(0, 100, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Update table to accommodate 3 columns */
+.divisibility-table td:first-child {
+    width: 60px;
+}
+
+.divisibility-table td:last-child {
+    color: #99ccff;
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+/* Green highlighting for examples in divisibility table */
+.highlight-green {
+    color: #00ff00;
+    font-weight: bold;
+    background-color: rgba(0, 255, 0, 0.15);
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+/* Divisibility tricks display in check results */
+.tricks-for-number {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: rgba(0, 100, 255, 0.1);
+    border-radius: 4px;
+    border-left: 4px solid #0066ff;
+}
+
+.trick-item {
+    margin: 1rem 0;
+    padding: 0.75rem;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+.trick-header {
+    color: #66aaff;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.trick-application {
+    color: #99ccff;
+    font-size: 0.95rem;
+    padding-left: 1rem;
+    font-style: italic;
 }
