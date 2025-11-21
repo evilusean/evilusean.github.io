@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     generateRussellSpiral();
     generateRussellHelixSineWave();
     initializeModal();
+    initializeScreensaver();
 });
 
 // Load elements data
@@ -453,6 +454,40 @@ function getRussellColor(element) {
     return '#ccc';
 }
 
+// Helper function to draw an element on the helix
+function drawHelixElement(svg, x, y, elementData) {
+    const circle = createSVGElement('circle', {
+        cx: x, cy: y, r: 12,
+        fill: elementData ? getRussellColor(elementData) : '#ccc',
+        stroke: '#000', 'stroke-width': 1.5,
+        cursor: 'pointer',
+        class: 'helix-element'
+    });
+    
+    if (elementData) {
+        circle.addEventListener('click', () => showElementModal(elementData));
+        circle.addEventListener('mouseenter', function() {
+            this.setAttribute('r', 15);
+            this.setAttribute('stroke-width', 2.5);
+        });
+        circle.addEventListener('mouseleave', function() {
+            this.setAttribute('r', 12);
+            this.setAttribute('stroke-width', 1.5);
+        });
+    }
+    
+    svg.appendChild(circle);
+    
+    const text = createSVGElement('text', {
+        x: x, y: y + 4,
+        'font-size': 10, 'font-weight': 'bold',
+        'text-anchor': 'middle', fill: '#000',
+        'pointer-events': 'none'
+    });
+    text.textContent = elementData ? elementData.symbol : '?';
+    svg.appendChild(text);
+}
+
 // Generate Walter Russell helical side view with sine wave
 function generateRussellHelixSineWave() {
     const svg = document.getElementById('verticalSineWave');
@@ -460,9 +495,9 @@ function generateRussellHelixSineWave() {
     
     svg.innerHTML = ''; // Clear existing
     
-    const width = 1200;
-    const height = 3000;
-    const centerX = 600;
+    const width = 1400;
+    const height = 3500;
+    const centerX = 700;
     const amplitude = 250;
     const octaveHeight = 220;
     const startY = 100; // Start at top instead of bottom
@@ -503,100 +538,239 @@ function generateRussellHelixSineWave() {
         });
     }
     
+    // Helper function to calculate height for an octave
+    const getOctaveHeight = (octaveIdx) => {
+        if (octaveIdx < 3) {
+            return octaveHeight + (octaveIdx * 10);
+        } else if (octaveIdx < 5) {
+            return octaveHeight + (octaveIdx * 12);
+        } else if (octaveIdx < 7) {
+            return octaveHeight + (octaveIdx * 20);
+        } else {
+            return octaveHeight + (octaveIdx * 15);
+        }
+    };
+    
     // Draw each octave
     octaveData.forEach((octave, idx) => {
-        // Increase amplitude and height for each successive octave
-        const currentAmplitude = amplitude + (idx * 20); // Gets wider
-        const currentHeight = octaveHeight + (idx * 10); // Gets taller
+        // Variable amplitude: each octave progressively larger
+        let currentAmplitude;
         
+        if (idx < 3) {
+            // First 3 octaves: smaller amplitude
+            currentAmplitude = 150 + (idx * 15);
+        } else if (idx === 3) {
+            // Octave 4: start increasing
+            currentAmplitude = 220;
+        } else if (idx === 4) {
+            // Octave 5: larger
+            currentAmplitude = 270;
+        } else if (idx === 5) {
+            // Octave 6: much larger for lanthanides
+            currentAmplitude = 340;
+        } else if (idx === 6) {
+            // Octave 7: largest for actinides
+            currentAmplitude = 430;
+        } else {
+            // Octaves 8+: very large
+            currentAmplitude = 520 + ((idx - 7) * 40);
+        }
+        
+        const currentHeight = getOctaveHeight(idx);
+        
+        // Calculate baseY by summing all previous octave heights
         const baseY = startY + octaveData.slice(0, idx).reduce((sum, _, i) => 
-            sum + octaveHeight + (i * 10), 0);
+            sum + getOctaveHeight(i), 0);
         const topY = baseY + currentHeight;
         const dir = octave.direction;
         
-        // Draw inertia line
+        // Draw inertia line (scaled to canvas width)
         const inertiaLine = createSVGElement('line', {
-            x1: 50, y1: topY, x2: 750, y2: topY,
+            x1: 50, y1: topY, x2: width - 50, y2: topY,
             stroke: '#999', 'stroke-width': 1, 'stroke-dasharray': '5,5'
         });
         svg.appendChild(inertiaLine);
         
-        // Octave label
+        // Octave label (scaled to canvas width)
         const ordinal = idx === 0 ? 'ST' : idx === 1 ? 'ND' : idx === 2 ? 'RD' : 'TH';
         const label = createSVGElement('text', {
-            x: 720, y: baseY - octaveHeight/2,
+            x: width - 180, y: baseY + currentHeight/2,
             'font-size': 11, 'font-weight': 'bold', 'text-anchor': 'start'
         });
         label.textContent = `${octave.num}${ordinal} OCTAVE`;
         svg.appendChild(label);
         
-        // Draw wave path for this octave
-        const pathSteps = 100;
-        let pathD = '';
-        for (let i = 0; i <= pathSteps; i++) {
-            const t = i / pathSteps;
-            const y = baseY + t * currentHeight;
-            const angle = t * Math.PI;
-            const x = centerX + dir * Math.sin(angle) * currentAmplitude;
-            pathD += (i === 0 ? 'M' : 'L') + ` ${x},${y} `;
-        }
+        // For octaves 6 and 7, draw TWO sine waves to separate lanthanides/actinides
+        const isDoubleWave = (idx === 5 || idx === 6); // Octaves 6 and 7
         
-        const wavePath = createSVGElement('path', {
-            d: pathD,
-            stroke: '#000',
-            'stroke-width': 3,
-            fill: 'none'
-        });
-        svg.appendChild(wavePath);
-        
-        // Place elements along the wave
-        octave.elements.forEach(el => {
-            const t = el.pos;
-            const y = baseY + t * currentHeight;
-            const angle = t * Math.PI;
-            const x = centerX + dir * Math.sin(angle) * currentAmplitude;
+        if (isDoubleWave) {
+            // Split THIS octave's elements into two groups
+            // If an element doesn't have classification, distribute by position
+            const allElements = octave.elements;
+            const midpoint = Math.floor(allElements.length / 2);
             
-            const elementData = el.element;
+            const generativeElements = allElements.filter((el, idx) => 
+                el.element && (el.element.russell_pressure_side === 'generative' || 
+                (!el.element.russell_pressure_side && idx < midpoint)));
+            const radiativeElements = allElements.filter((el, idx) => 
+                el.element && (el.element.russell_pressure_side === 'radiative' || 
+                (!el.element.russell_pressure_side && idx >= midpoint)));
             
-            // Element circle (clickable)
-            const circle = createSVGElement('circle', {
-                cx: x, cy: y, r: 12,
-                fill: elementData ? getRussellColor(elementData) : '#ccc',
-                stroke: '#000', 'stroke-width': 1.5,
-                cursor: 'pointer',
-                class: 'helix-element'
+            const pathSteps = 100;
+            
+            // For octave 7, swap the wave directions to maintain visual flow
+            const dir1 = (idx === 6) ? -dir : dir; // Octave 7 gets inverted
+            const dir2 = (idx === 6) ? dir : -dir; // Opposite of dir1
+            
+            // No gap - waves connect directly
+            const wave1Height = currentHeight / 2;
+            const wave2Height = currentHeight / 2;
+            
+            // Draw first wave (top portion) for generative elements
+            // Ends at center to transition to gap
+            let pathD1 = '';
+            for (let i = 0; i <= pathSteps; i++) {
+                const t = i / pathSteps;
+                const y = baseY + t * wave1Height;
+                const angle = t * Math.PI;
+                const x = centerX + dir1 * Math.sin(angle) * currentAmplitude;
+                pathD1 += (i === 0 ? 'M' : 'L') + ` ${x},${y} `;
+            }
+            // Connect to center at end of first wave
+            pathD1 += ` L ${centerX},${baseY + wave1Height}`;
+            
+            const wavePath1 = createSVGElement('path', {
+                d: pathD1,
+                stroke: '#c44',
+                'stroke-width': 2,
+                fill: 'none'
             });
+            svg.appendChild(wavePath1);
             
-            if (elementData) {
-                circle.addEventListener('click', () => showElementModal(elementData));
-                circle.addEventListener('mouseenter', function() {
-                    this.setAttribute('r', 15);
-                    this.setAttribute('stroke-width', 2.5);
+            // Draw second wave (bottom portion) for radiative elements
+            // Starts from center and curves out
+            let pathD2 = `M ${centerX},${baseY + wave1Height} `;
+            for (let i = 1; i <= pathSteps; i++) {
+                const t = i / pathSteps;
+                const y = baseY + wave1Height + t * wave2Height;
+                const angle = t * Math.PI;
+                const x = centerX + dir2 * Math.sin(angle) * currentAmplitude;
+                pathD2 += `L ${x},${y} `;
+            }
+            // End at center
+            pathD2 += `L ${centerX},${baseY + currentHeight}`;
+            
+            const wavePath2 = createSVGElement('path', {
+                d: pathD2,
+                stroke: '#44c',
+                'stroke-width': 2,
+                fill: 'none'
+            });
+            svg.appendChild(wavePath2);
+            
+            // Add explicit connecting line to next octave if this is octave 6
+            if (idx === 5) {
+                const nextOctaveBaseY = baseY + currentHeight;
+                const connectLine = createSVGElement('line', {
+                    x1: centerX,
+                    y1: baseY + currentHeight,
+                    x2: centerX,
+                    y2: nextOctaveBaseY + 1,
+                    stroke: '#000',
+                    'stroke-width': 3
                 });
-                circle.addEventListener('mouseleave', function() {
-                    this.setAttribute('r', 12);
-                    this.setAttribute('stroke-width', 1.5);
-                });
+                svg.appendChild(connectLine);
             }
             
-            svg.appendChild(circle);
-            
-            // Element symbol
-            const text = createSVGElement('text', {
-                x: x, y: y + 4,
-                'font-size': 10, 'font-weight': 'bold',
-                'text-anchor': 'middle', fill: '#000',
-                'pointer-events': 'none'
+            // Place generative elements on first wave - use full wave length
+            generativeElements.forEach((el, elIdx) => {
+                // Distribute across 95% of wave (small gap at end only)
+                const linearT = (elIdx / Math.max(generativeElements.length, 1)) * 0.95;
+                // Gentle easing to compensate for sine wave compression near peak
+                const t = linearT * (1 + 0.15 * linearT);
+                const clampedT = Math.min(t, 0.95);
+                
+                const y = baseY + clampedT * wave1Height;
+                const angle = clampedT * Math.PI;
+                const x = centerX + dir1 * Math.sin(angle) * currentAmplitude;
+                const elementData = el.element;
+                
+                drawHelixElement(svg, x, y, elementData);
             });
-            text.textContent = el.sym;
-            svg.appendChild(text);
-        });
+            
+            // Place radiative elements on second wave - use full wave length
+            radiativeElements.forEach((el, elIdx) => {
+                // Distribute across 95% of wave (small gap at end only)
+                const linearT = (elIdx / Math.max(radiativeElements.length, 1)) * 0.95;
+                // Gentle easing to compensate for sine wave compression near peak
+                const t = linearT * (1 + 0.15 * linearT);
+                const clampedT = Math.min(t, 0.95);
+                
+                const y = baseY + wave1Height + clampedT * wave2Height;
+                const angle = clampedT * Math.PI;
+                const x = centerX + dir2 * Math.sin(angle) * currentAmplitude;
+                const elementData = el.element;
+                
+                drawHelixElement(svg, x, y, elementData);
+            });
+            
+        } else {
+            // Normal single wave for other octaves
+            const pathSteps = 100;
+            let pathD = '';
+            
+            // If this is octave 7 (idx=6) coming after octave 6 (idx=5), ensure connection
+            if (idx === 6) {
+                // Explicitly start from where octave 6 ended
+                pathD = `M ${centerX},${baseY} `;
+            } else {
+                pathD = '';
+            }
+            
+            for (let i = 0; i <= pathSteps; i++) {
+                const t = i / pathSteps;
+                const y = baseY + t * currentHeight;
+                const angle = t * Math.PI;
+                const x = centerX + dir * Math.sin(angle) * currentAmplitude;
+                
+                if (i === 0 && pathD === '') {
+                    pathD += `M ${x},${y} `;
+                } else {
+                    pathD += `L ${x},${y} `;
+                }
+            }
+            
+            const wavePath = createSVGElement('path', {
+                d: pathD,
+                stroke: '#000',
+                'stroke-width': 3,
+                fill: 'none'
+            });
+            svg.appendChild(wavePath);
+            
+            // Place elements along the wave with arc-length compensation
+            octave.elements.forEach(el => {
+                let t = el.pos;
+                // Gentle easing to compensate for sine wave compression near peak
+                t = t * (1 + 0.15 * t);
+                if (t > 0.95) return;
+                
+                const y = baseY + t * currentHeight;
+                const angle = t * Math.PI;
+                const x = centerX + dir * Math.sin(angle) * currentAmplitude;
+                const elementData = el.element;
+                
+                drawHelixElement(svg, x, y, elementData);
+            });
+        }
         
-        // Noble gas at peak (clickable)
+        // Noble gas at END of octave (at the bottom/completion point)
+        // This is where the octave completes and returns to inertia
         const nobleData = elements.find(e => e.symbol === octave.inert);
+        const nobleY = topY + 5; // At the end of the octave (bottom)
         
         const nobleBox = createSVGElement('rect', {
-            x: centerX - 50, y: topY + 5,
+            x: centerX - 50, y: nobleY,
             width: 100, height: 30,
             fill: '#FFD700', stroke: '#000', 'stroke-width': 2,
             cursor: nobleData ? 'pointer' : 'default'
@@ -617,7 +791,7 @@ function generateRussellHelixSineWave() {
         svg.appendChild(nobleBox);
         
         const nobleText = createSVGElement('text', {
-            x: centerX, y: topY + 22,
+            x: centerX, y: nobleY + 17,
             'font-size': 14, 'font-weight': 'bold',
             'text-anchor': 'middle',
             'pointer-events': 'none'
@@ -626,7 +800,7 @@ function generateRussellHelixSineWave() {
         svg.appendChild(nobleText);
         
         const toneText = createSVGElement('text', {
-            x: centerX, y: topY + 32,
+            x: centerX, y: nobleY + 27,
             'font-size': 8, 'text-anchor': 'middle', fill: '#666',
             'pointer-events': 'none'
         });
@@ -634,31 +808,38 @@ function generateRussellHelixSineWave() {
         svg.appendChild(toneText);
     });
     
-    // Side labels
+    // Side labels (scaled to canvas size)
     const leftLabel = createSVGElement('text', {
-        x: 80, y: 1000,
+        x: 80, y: height / 2,
         'font-size': 11, 'font-weight': 'bold',
-        fill: '#c44', transform: 'rotate(-90 80 1000)'
+        fill: '#c44', transform: `rotate(-90 80 ${height / 2})`
     });
     leftLabel.textContent = 'GENERATIVE / MALE (+) / COMPRESSION';
     svg.appendChild(leftLabel);
     
     const rightLabel = createSVGElement('text', {
-        x: 720, y: 1000,
+        x: width - 80, y: height / 2,
         'font-size': 11, 'font-weight': 'bold',
-        fill: '#44c', transform: 'rotate(90 720 1000)'
+        fill: '#44c', transform: `rotate(90 ${width - 80} ${height / 2})`
     });
     rightLabel.textContent = 'RADIATIVE / FEMALE (−) / EXPANSION';
     svg.appendChild(rightLabel);
     
     // Title at top
     const title = createSVGElement('text', {
-        x: centerX, y: 30,
-        'font-size': 14, 'font-weight': 'bold',
+        x: centerX, y: 40,
+        'font-size': 16, 'font-weight': 'bold',
         'text-anchor': 'middle'
     });
     title.textContent = 'DIAGRAM SHOWING THE TEN OCTAVES OF INTEGRATING LIGHT';
     svg.appendChild(title);
+    
+    const subtitle = createSVGElement('text', {
+        x: centerX, y: 60,
+        'font-size': 11, 'text-anchor': 'middle', fill: '#666'
+    });
+    subtitle.textContent = 'Walter Russell - 1926';
+    svg.appendChild(subtitle);
 }
 
 // Generate Walter Russell helical side view
@@ -1207,4 +1388,216 @@ if (originalToggle) {
             generateRussellHelixSineWave();
         }, 100);
     });
+}
+
+// Screensaver functionality
+let screensaverActive = false;
+let screensaverInterval = null;
+let screensaverTimeout = null;
+let screensaverSpeed = 'normal'; // slow, normal, fast
+
+// Speed settings (in milliseconds)
+const speedSettings = {
+    slow: { number: 10000, symbol: 10000, info: 10000 },
+    normal: { number: 5000, symbol: 5000, info: 5000 },
+    fast: { number: 3000, symbol: 3000, info: 3000 }
+};
+
+function initializeScreensaver() {
+    const navButtons = document.querySelector('.nav-buttons');
+    
+    // Create container for screensaver controls
+    const screensaverContainer = document.createElement('div');
+    screensaverContainer.className = 'screensaver-controls';
+    
+    // Create screensaver button
+    const screensaverBtn = document.createElement('button');
+    screensaverBtn.id = 'screensaverBtn';
+    screensaverBtn.className = 'screensaver-toggle';
+    screensaverBtn.innerHTML = '🎬 Screensaver';
+    screensaverBtn.title = 'Start element screensaver';
+    
+    // Create speed dropdown
+    const speedSelect = document.createElement('select');
+    speedSelect.id = 'screensaverSpeed';
+    speedSelect.className = 'screensaver-speed';
+    speedSelect.innerHTML = `
+        <option value="slow">🐢 Slow</option>
+        <option value="normal" selected>⚡ Normal</option>
+        <option value="fast">🚀 Fast</option>
+    `;
+    speedSelect.title = 'Screensaver speed';
+    
+    speedSelect.addEventListener('change', (e) => {
+        screensaverSpeed = e.target.value;
+    });
+    
+    screensaverContainer.appendChild(screensaverBtn);
+    screensaverContainer.appendChild(speedSelect);
+    navButtons.appendChild(screensaverContainer);
+    
+    screensaverBtn.addEventListener('click', toggleScreensaver);
+    
+    // Stop screensaver on any click (except controls)
+    document.addEventListener('click', (e) => {
+        if (screensaverActive && !e.target.closest('.screensaver-controls')) {
+            stopScreensaver();
+        }
+    });
+}
+
+function toggleScreensaver() {
+    if (screensaverActive) {
+        stopScreensaver();
+    } else {
+        startScreensaver();
+    }
+}
+
+function startScreensaver() {
+    screensaverActive = true;
+    const btn = document.getElementById('screensaverBtn');
+    btn.innerHTML = '⏸️ Stop';
+    btn.classList.add('active');
+    
+    // Switch to classic view if not already there
+    const classicBtn = document.getElementById('classicBtn');
+    const russellBtn = document.getElementById('russellBtn');
+    const classicView = document.getElementById('classicView');
+    const russellView = document.getElementById('russellView');
+    
+    classicBtn.classList.add('active');
+    russellBtn.classList.remove('active');
+    classicView.classList.add('active');
+    russellView.classList.remove('active');
+    
+    // Start the cycle
+    cycleElement();
+}
+
+function stopScreensaver() {
+    screensaverActive = false;
+    const btn = document.getElementById('screensaverBtn');
+    btn.innerHTML = '🎬 Screensaver';
+    btn.classList.remove('active');
+    
+    if (screensaverInterval) {
+        clearInterval(screensaverInterval);
+        screensaverInterval = null;
+    }
+    
+    if (screensaverTimeout) {
+        clearTimeout(screensaverTimeout);
+        screensaverTimeout = null;
+    }
+    
+    // Remove any highlighting
+    document.querySelectorAll('.element.screensaver-highlight').forEach(el => {
+        el.classList.remove('screensaver-highlight');
+    });
+    
+    // Remove overlay if exists
+    const overlay = document.getElementById('screensaverOverlay');
+    if (overlay) {
+        overlay.remove();
+    }
+}
+
+function cycleElement() {
+    if (!screensaverActive) return;
+    
+    // Remove previous highlight
+    document.querySelectorAll('.element.screensaver-highlight').forEach(el => {
+        el.classList.remove('screensaver-highlight');
+    });
+    
+    // Pick random element
+    const randomElement = elements[Math.floor(Math.random() * elements.length)];
+    
+    // Find the element div in the table
+    const elementDiv = document.querySelector(`.element[data-number="${randomElement.number}"]`);
+    if (!elementDiv) {
+        // Try again with next element
+        screensaverTimeout = setTimeout(cycleElement, 100);
+        return;
+    }
+    
+    // Highlight the element
+    elementDiv.classList.add('screensaver-highlight');
+    
+    // Create or get overlay
+    let overlay = document.getElementById('screensaverOverlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'screensaverOverlay';
+        overlay.className = 'screensaver-overlay';
+        document.body.appendChild(overlay);
+    }
+    
+    overlay.innerHTML = '';
+    overlay.style.display = 'flex';
+    
+    // Progressive reveal
+    revealElementInfo(overlay, randomElement, elementDiv);
+}
+
+function revealElementInfo(overlay, element, elementDiv) {
+    const container = document.createElement('div');
+    container.className = 'screensaver-content';
+    overlay.appendChild(container);
+    
+    const speeds = speedSettings[screensaverSpeed];
+    
+    // Step 1: Show atomic number
+    const numberDiv = document.createElement('div');
+    numberDiv.className = 'screensaver-number fade-in';
+    numberDiv.textContent = element.number;
+    container.appendChild(numberDiv);
+    
+    // Step 2: Show symbol after delay
+    screensaverTimeout = setTimeout(() => {
+        if (!screensaverActive) return;
+        
+        const symbolDiv = document.createElement('div');
+        symbolDiv.className = 'screensaver-symbol fade-in';
+        symbolDiv.textContent = element.symbol;
+        symbolDiv.style.background = getCategoryColor(element.category);
+        container.appendChild(symbolDiv);
+        
+        // Step 3: Show full info after another delay
+        screensaverTimeout = setTimeout(() => {
+            if (!screensaverActive) return;
+            
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'screensaver-info fade-in';
+            infoDiv.innerHTML = `
+                <h2>${element.name}</h2>
+                <div class="info-grid">
+                    <div><strong>Atomic Mass:</strong> ${element.mass}</div>
+                    <div><strong>Category:</strong> ${formatCategory(element.category)}</div>
+                    <div><strong>Electron Config:</strong> ${element.electron_config}</div>
+                    <div><strong>Discovery:</strong> ${element.discovery}</div>
+                    <div><strong>Russell Octave:</strong> ${element.russell_octave || 'N/A'}</div>
+                    <div><strong>Russell Tone:</strong> ${element.russell_tone || 'N/A'}</div>
+                </div>
+            `;
+            container.appendChild(infoDiv);
+            
+            // Step 4: Hold for configured time, then move to next
+            screensaverTimeout = setTimeout(() => {
+                if (!screensaverActive) return;
+                
+                // Fade out
+                overlay.classList.add('fade-out');
+                elementDiv.classList.remove('screensaver-highlight');
+                
+                screensaverTimeout = setTimeout(() => {
+                    if (!screensaverActive) return;
+                    
+                    overlay.classList.remove('fade-out');
+                    cycleElement();
+                }, 500);
+            }, speeds.info);
+        }, speeds.symbol);
+    }, speeds.number);
 }
