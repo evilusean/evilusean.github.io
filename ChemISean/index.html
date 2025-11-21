@@ -13,6 +13,12 @@
             <div class="nav-buttons">
                 <button id="classicBtn" class="nav-btn active">Classic View</button>
                 <button id="russellBtn" class="nav-btn">Russell Spiral</button>
+                <button id="quizModeBtn" class="nav-btn quiz-toggle">
+                    🎯 Quiz Mode
+                </button>
+                <button id="savedElementsBtn" class="nav-btn saved-toggle">
+                    📚 Saved (<span id="savedCount">0</span>)
+                </button>
                 <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
                     <span class="sun">☀️</span>
                     <span class="moon">🌙</span>
@@ -78,6 +84,12 @@
             <!-- Filter Controls -->
             <div class="filter-panel">
                 <h3>Filter Elements</h3>
+                <div class="filter-info">
+                    <p>💡 <strong>Tip:</strong> Filters affect screensaver and quiz mode. Press <kbd>Space</kbd> during screensaver or while hovering to save elements.</p>
+                </div>
+                <div class="quiz-info" id="quizInfo" style="display: none;">
+                    <p>🎯 <strong>Quiz Mode Active:</strong> Click elements to reveal: 1st click = Atomic Number, 2nd click = Symbol, 3rd click = Full Info. Click "Quiz Mode" again to exit.</p>
+                </div>
                 <div class="filter-controls">
                     <div class="filter-group">
                         <label>Type:</label>
@@ -253,6 +265,21 @@
                     <a id="modalWiki" href="#" target="_blank" class="wiki-link">View on Wikipedia →</a>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Saved Elements Dropdown Panel -->
+    <div id="savedElementsPanel" class="saved-panel-dropdown">
+        <div class="saved-header">
+            <h3>📚 Saved Elements for Study</h3>
+            <div class="saved-actions">
+                <button id="exportSaved" class="saved-btn" title="Export list">📥 Export</button>
+                <button id="clearSaved" class="saved-btn" title="Clear all">🗑️ Clear</button>
+                <button id="closeSaved" class="saved-btn close-btn" title="Close">×</button>
+            </div>
+        </div>
+        <div id="savedElementsList" class="saved-list">
+            <p class="saved-empty">No elements saved yet. Press <kbd>Space</kbd> during screensaver or while hovering over elements to save them.</p>
         </div>
     </div>
 

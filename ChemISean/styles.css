@@ -364,15 +364,14 @@ main {
 }
 
 .period-labels {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: repeat(7, 1fr);
     gap: 4px;
     width: 40px;
     flex-shrink: 0;
 }
 
 .period-label {
-    aspect-ratio: 1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1107,4 +1106,350 @@ main {
         grid-template-columns: 1fr;
         font-size: 1rem;
     }
+}
+
+/* Filter Info */
+.filter-info {
+    background: var(--bg-tertiary);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--accent);
+}
+
+.filter-info p {
+    margin: 0;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.filter-info kbd {
+    background: var(--bg-primary);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    font-family: monospace;
+    font-size: 0.85rem;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+/* Saved Elements Toggle Button */
+.saved-toggle {
+    position: relative;
+}
+
+/* Saved Elements Dropdown Panel */
+.saved-panel-dropdown {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    width: 500px;
+    max-height: 400px;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px var(--shadow);
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    animation: slideDown 0.3s ease-out;
+}
+
+.saved-panel-dropdown.active {
+    display: flex;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.saved-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-tertiary);
+    border-radius: 12px 12px 0 0;
+}
+
+.saved-header h3 {
+    font-size: 1rem;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.saved-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.saved-btn {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.saved-btn:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
+.saved-btn.close-btn {
+    font-size: 1.5rem;
+    padding: 0.2rem 0.6rem;
+    line-height: 1;
+}
+
+.saved-btn.close-btn:hover {
+    background: #dc2626;
+}
+
+.saved-list {
+    padding: 1rem 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-content: flex-start;
+}
+
+.saved-empty {
+    color: var(--text-secondary);
+    font-style: italic;
+    margin: 0;
+}
+
+.saved-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    border: 2px solid var(--border);
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.saved-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--shadow);
+}
+
+.saved-number {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.saved-symbol {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #000;
+}
+
+.saved-name {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.remove-saved {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 0.5rem;
+    line-height: 1;
+    transition: all 0.2s;
+}
+
+.remove-saved:hover {
+    color: #dc2626;
+    transform: scale(1.2);
+}
+
+/* Save Notification */
+.save-notification {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    z-index: 1001;
+    opacity: 0;
+    transform: translateX(100px);
+    transition: all 0.3s ease-out;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.save-notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.save-notification.success {
+    background: #10b981;
+    color: white;
+}
+
+.save-notification.warning {
+    background: #f59e0b;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .saved-panel-dropdown {
+        right: 10px;
+        left: 10px;
+        width: auto;
+        max-height: 300px;
+        top: 60px;
+    }
+    
+    .saved-header {
+        padding: 0.75rem 1rem;
+    }
+    
+    .saved-header h3 {
+        font-size: 0.9rem;
+    }
+    
+    .saved-list {
+        padding: 0.75rem 1rem;
+    }
+    
+    .saved-item {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.6rem;
+    }
+    
+    .save-notification {
+        top: 60px;
+        right: 10px;
+        left: 10px;
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Quiz Mode Styles */
+.quiz-toggle.active {
+    background: #f59e0b;
+    border-color: #f59e0b;
+    color: white;
+    animation: pulse 2s infinite;
+}
+
+.quiz-info {
+    background: #fef3c7;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border-left: 4px solid #f59e0b;
+}
+
+[data-theme="dark"] .quiz-info {
+    background: #78350f;
+    border-left-color: #fbbf24;
+}
+
+.quiz-info p {
+    margin: 0;
+    color: #78350f;
+    line-height: 1.6;
+}
+
+[data-theme="dark"] .quiz-info p {
+    color: #fef3c7;
+}
+
+/* Quiz Mode Element States */
+.element.quiz-mode {
+    position: relative;
+    cursor: pointer;
+}
+
+.element.quiz-mode::before {
+    content: '?';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    opacity: 0.3;
+    z-index: 1;
+}
+
+.element.quiz-mode .atomic-number,
+.element.quiz-mode .symbol,
+.element.quiz-mode .name,
+.element.quiz-mode .mass {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Quiz Reveal State 1: Show atomic number */
+.element.quiz-mode.quiz-reveal-1 .atomic-number {
+    opacity: 1;
+    visibility: visible;
+    animation: revealPop 0.3s ease-out;
+}
+
+/* Quiz Reveal State 2: Show atomic number + symbol */
+.element.quiz-mode.quiz-reveal-2 .atomic-number,
+.element.quiz-mode.quiz-reveal-2 .symbol {
+    opacity: 1;
+    visibility: visible;
+    animation: revealPop 0.3s ease-out;
+}
+
+/* Quiz Reveal State 3: Show all */
+.element.quiz-mode.quiz-reveal-3 .atomic-number,
+.element.quiz-mode.quiz-reveal-3 .symbol,
+.element.quiz-mode.quiz-reveal-3 .name,
+.element.quiz-mode.quiz-reveal-3 .mass {
+    opacity: 1;
+    visibility: visible;
+    animation: revealPop 0.3s ease-out;
+}
+
+.element.quiz-mode.quiz-reveal-3::before {
+    display: none;
+}
+
+@keyframes revealPop {
+    from {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Quiz mode hover effect */
+.element.quiz-mode:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
 }

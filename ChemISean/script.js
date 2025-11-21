@@ -22,6 +22,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     generateRussellHelixSineWave();
     initializeModal();
     initializeScreensaver();
+    initializeSavedElements();
+    initializeSpacebarSave();
+    initializeQuizMode();
 });
 
 // Load elements data
@@ -266,7 +269,22 @@ function createElementDiv(element) {
         <div class="mass">${element.mass}</div>
     `;
     
-    div.addEventListener('click', () => showElementModal(element));
+    div.addEventListener('click', (e) => {
+        if (quizModeActive) {
+            handleQuizClick(element, div);
+        } else {
+            showElementModal(element);
+        }
+    });
+    
+    // Track hover for spacebar save
+    div.addEventListener('mouseenter', () => {
+        hoveredElement = element;
+    });
+    
+    div.addEventListener('mouseleave', () => {
+        hoveredElement = null;
+    });
     
     return div;
 }
@@ -1559,11 +1577,289 @@ if (originalToggle) {
     });
 }
 
+// Initialize saved elements panel
+function initializeSavedElements() {
+    const toggleBtn = document.getElementById('savedElementsBtn');
+    const panel = document.getElementById('savedElementsPanel');
+    const exportBtn = document.getElementById('exportSaved');
+    const clearBtn = document.getElementById('clearSaved');
+    const closeBtn = document.getElementById('closeSaved');
+    
+    toggleBtn.addEventListener('click', () => {
+        panel.classList.toggle('active');
+    });
+    
+    closeBtn.addEventListener('click', () => {
+        panel.classList.remove('active');
+    });
+    
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!panel.contains(e.target) && !toggleBtn.contains(e.target)) {
+            panel.classList.remove('active');
+        }
+    });
+    
+    exportBtn.addEventListener('click', exportSavedElements);
+    clearBtn.addEventListener('click', clearSavedElements);
+    
+    renderSavedElements();
+    updateSavedCount();
+}
+
+// Initialize spacebar save functionality
+function initializeSpacebarSave() {
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space') {
+            let elementToSave = null;
+            
+            // Priority: screensaver element > hovered element
+            if (screensaverActive && currentScreensaverElement) {
+                elementToSave = currentScreensaverElement;
+                e.preventDefault(); // Prevent page scroll during screensaver
+            } else if (hoveredElement) {
+                elementToSave = hoveredElement;
+                e.preventDefault(); // Prevent page scroll when hovering
+            }
+            
+            if (elementToSave) {
+                saveElement(elementToSave);
+            }
+        }
+    });
+}
+
+// Save an element to the list
+function saveElement(element) {
+    // Check if already saved
+    if (savedElements.some(e => e.number === element.number)) {
+        showSaveNotification(`${element.symbol} is already saved!`, 'warning');
+        return;
+    }
+    
+    savedElements.push({
+        number: element.number,
+        symbol: element.symbol,
+        name: element.name,
+        category: element.category
+    });
+    
+    // Save to localStorage
+    localStorage.setItem('savedElements', JSON.stringify(savedElements));
+    
+    renderSavedElements();
+    updateSavedCount();
+    showSaveNotification(`${element.symbol} - ${element.name} saved!`, 'success');
+}
+
+// Remove an element from saved list
+function removeSavedElement(elementNumber) {
+    savedElements = savedElements.filter(e => e.number !== elementNumber);
+    localStorage.setItem('savedElements', JSON.stringify(savedElements));
+    renderSavedElements();
+    updateSavedCount();
+}
+
+// Render saved elements list
+function renderSavedElements() {
+    const listContainer = document.getElementById('savedElementsList');
+    
+    if (savedElements.length === 0) {
+        listContainer.innerHTML = '<p class="saved-empty">No elements saved yet. Press <kbd>Space</kbd> during screensaver or while hovering over elements to save them.</p>';
+        return;
+    }
+    
+    // Sort by atomic number
+    const sorted = [...savedElements].sort((a, b) => a.number - b.number);
+    
+    listContainer.innerHTML = sorted.map(element => `
+        <div class="saved-item ${element.category}">
+            <span class="saved-number">${element.number}</span>
+            <span class="saved-symbol">${element.symbol}</span>
+            <span class="saved-name">${element.name}</span>
+            <button class="remove-saved" onclick="removeSavedElement(${element.number})" title="Remove">×</button>
+        </div>
+    `).join('');
+}
+
+// Export saved elements
+function exportSavedElements() {
+    if (savedElements.length === 0) {
+        alert('No elements to export!');
+        return;
+    }
+    
+    const sorted = [...savedElements].sort((a, b) => a.number - b.number);
+    const text = sorted.map(e => `${e.number}. ${e.symbol} - ${e.name}`).join('\n');
+    
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'saved-elements.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    showSaveNotification('List exported!', 'success');
+}
+
+// Clear all saved elements
+function clearSavedElements() {
+    if (savedElements.length === 0) return;
+    
+    if (confirm(`Clear all ${savedElements.length} saved elements?`)) {
+        savedElements = [];
+        localStorage.setItem('savedElements', JSON.stringify(savedElements));
+        renderSavedElements();
+        updateSavedCount();
+        showSaveNotification('List cleared!', 'success');
+    }
+}
+
+// Update saved count in button
+function updateSavedCount() {
+    const countSpan = document.getElementById('savedCount');
+    if (countSpan) {
+        countSpan.textContent = savedElements.length;
+    }
+}
+
+// Show save notification
+function showSaveNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `save-notification ${type}`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 10);
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+    }, 2000);
+}
+
+// Initialize quiz mode
+function initializeQuizMode() {
+    const quizBtn = document.getElementById('quizModeBtn');
+    const quizInfo = document.getElementById('quizInfo');
+    
+    quizBtn.addEventListener('click', () => {
+        quizModeActive = !quizModeActive;
+        
+        if (quizModeActive) {
+            quizBtn.classList.add('active');
+            quizInfo.style.display = 'block';
+            enterQuizMode();
+        } else {
+            quizBtn.classList.remove('active');
+            quizInfo.style.display = 'none';
+            exitQuizMode();
+        }
+    });
+}
+
+// Enter quiz mode - hide all element info
+function enterQuizMode() {
+    quizStates = {};
+    
+    const allElements = document.querySelectorAll('.element');
+    allElements.forEach(elementDiv => {
+        const elementNumber = parseInt(elementDiv.getAttribute('data-number'));
+        
+        // Skip filtered out elements
+        if (elementDiv.classList.contains('filtered-out')) {
+            return;
+        }
+        
+        // Initialize quiz state
+        quizStates[elementNumber] = 0; // 0 = hidden, 1 = number shown, 2 = symbol shown, 3 = all shown
+        
+        // Add quiz mode class and hide content
+        elementDiv.classList.add('quiz-mode');
+        updateQuizElementDisplay(elementDiv, elementNumber);
+    });
+}
+
+// Exit quiz mode - show all element info
+function exitQuizMode() {
+    const allElements = document.querySelectorAll('.element');
+    allElements.forEach(elementDiv => {
+        elementDiv.classList.remove('quiz-mode', 'quiz-reveal-1', 'quiz-reveal-2', 'quiz-reveal-3');
+    });
+    quizStates = {};
+}
+
+// Handle click in quiz mode
+function handleQuizClick(element, elementDiv) {
+    const currentState = quizStates[element.number] || 0;
+    const nextState = currentState + 1;
+    
+    if (nextState > 3) {
+        // After full reveal, show modal
+        showElementModal(element);
+        return;
+    }
+    
+    quizStates[element.number] = nextState;
+    updateQuizElementDisplay(elementDiv, element.number);
+}
+
+// Update element display based on quiz state
+function updateQuizElementDisplay(elementDiv, elementNumber) {
+    const state = quizStates[elementNumber] || 0;
+    
+    // Remove all reveal classes
+    elementDiv.classList.remove('quiz-reveal-1', 'quiz-reveal-2', 'quiz-reveal-3');
+    
+    // Add appropriate reveal class
+    if (state === 1) {
+        elementDiv.classList.add('quiz-reveal-1'); // Show atomic number
+    } else if (state === 2) {
+        elementDiv.classList.add('quiz-reveal-2'); // Show atomic number + symbol
+    } else if (state === 3) {
+        elementDiv.classList.add('quiz-reveal-3'); // Show all
+    }
+}
+
+// Apply filters also updates quiz mode
+const originalApplyFilters = applyFilters;
+applyFilters = function() {
+    originalApplyFilters();
+    
+    if (quizModeActive) {
+        // Reset quiz states for newly filtered elements
+        const allElements = document.querySelectorAll('.element');
+        allElements.forEach(elementDiv => {
+            const elementNumber = parseInt(elementDiv.getAttribute('data-number'));
+            
+            if (elementDiv.classList.contains('filtered-out')) {
+                elementDiv.classList.remove('quiz-mode', 'quiz-reveal-1', 'quiz-reveal-2', 'quiz-reveal-3');
+            } else if (!quizStates[elementNumber]) {
+                quizStates[elementNumber] = 0;
+                elementDiv.classList.add('quiz-mode');
+                updateQuizElementDisplay(elementDiv, elementNumber);
+            }
+        });
+    }
+};
+
 // Screensaver functionality
 let screensaverActive = false;
 let screensaverInterval = null;
 let screensaverTimeout = null;
 let screensaverSpeed = 'normal'; // slow, normal, fast
+let currentScreensaverElement = null;
+let hoveredElement = null;
+
+// Saved elements list
+let savedElements = JSON.parse(localStorage.getItem('savedElements') || '[]');
+
+// Quiz mode
+let quizModeActive = false;
+let quizStates = {}; // Track reveal state for each element
 
 // Speed settings (in milliseconds)
 const speedSettings = {
@@ -1706,6 +2002,9 @@ function cycleElement() {
     
     // Highlight the element
     elementDiv.classList.add('screensaver-highlight');
+    
+    // Set current screensaver element for spacebar save
+    currentScreensaverElement = randomElement;
     
     // Create or get overlay
     let overlay = document.getElementById('screensaverOverlay');
