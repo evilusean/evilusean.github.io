@@ -2082,12 +2082,18 @@ function revealElementInfo(overlay, element, elementDiv) {
             infoDiv.innerHTML = `
                 <h2>${element.name}</h2>
                 <div class="info-grid">
+                    <div><strong>Atomic Number:</strong> ${element.number}</div>
                     <div><strong>Atomic Mass:</strong> ${element.mass}</div>
                     <div><strong>Category:</strong> ${formatCategory(element.category)}</div>
+                    <div><strong>Group:</strong> ${element.group || 'N/A'}</div>
+                    <div><strong>Period:</strong> ${element.period || element.row}</div>
+                    <div><strong>Block:</strong> ${element.block ? element.block + '-block' : 'N/A'}</div>
                     <div><strong>Electron Config:</strong> ${element.electron_config}</div>
+                    <div><strong>Electronegativity:</strong> ${element.electronegativity !== null ? element.electronegativity : 'N/A'}</div>
+                    <div><strong>Ionization Energy:</strong> ${element.ionization_energy !== null ? element.ionization_energy + ' kJ/mol' : 'N/A'}</div>
+                    <div><strong>Atomic Radius:</strong> ${element.atomic_radius !== null ? element.atomic_radius + ' pm' : 'N/A'}</div>
+                    <div><strong>Oxidation States:</strong> ${element.oxidation_states ? element.oxidation_states.join(', ') : 'N/A'}</div>
                     <div><strong>Discovery:</strong> ${element.discovery}</div>
-                    <div><strong>Russell Octave:</strong> ${element.russell_octave || 'N/A'}</div>
-                    <div><strong>Russell Tone:</strong> ${element.russell_tone || 'N/A'}</div>
                 </div>
             `;
             container.appendChild(infoDiv);
