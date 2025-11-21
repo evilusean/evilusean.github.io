@@ -110,6 +110,3 @@ This project is open source and available for use.
 ## TODO / Future Sean Problems : 
 - Z index of scrolling top bar for screensaver drops 
 - Add text glow to titles
-- maybe move the 'Find Nth Prime Number' to top bar, doesn't need to take up that much space
-- maybe move screensaver as well to top bar, also taking up tonnes of real estate
-- Add a calculator so user can quickly do math

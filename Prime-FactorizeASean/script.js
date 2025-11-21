@@ -1596,10 +1596,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Close modal when pressing ESC key
+        // Close modals when pressing ESC key
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && divisibilityModal.style.display === 'block') {
-                divisibilityModal.style.display = 'none';
+            if (e.key === 'Escape') {
+                if (divisibilityModal.style.display === 'block') {
+                    divisibilityModal.style.display = 'none';
+                }
+                const calcModal = document.getElementById('calculator-modal');
+                if (calcModal && calcModal.style.display === 'block') {
+                    calcModal.style.display = 'none';
+                }
             }
         });
     }
@@ -2605,7 +2611,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Calculator functionality
     const calculatorBtn = document.getElementById('calculator-btn');
     const calculatorModal = document.getElementById('calculator-modal');
-    const calculatorClose = document.querySelector('.calculator-close');
     const calcDisplay = document.getElementById('calc-display');
     
     let calcCurrentValue = '0';
@@ -2618,32 +2623,32 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    if (calculatorBtn && calculatorModal) {
-        calculatorBtn.addEventListener('click', () => {
+    if (calculatorBtn && calculatorModal && calcDisplay) {
+        calculatorBtn.addEventListener('click', (e) => {
+            e.preventDefault();
             calculatorModal.style.display = 'block';
             calcCurrentValue = '0';
             updateCalcDisplay();
         });
         
+        // Get close button specifically from calculator modal
+        const calculatorClose = calculatorModal.querySelector('.modal-close');
         if (calculatorClose) {
-            calculatorClose.addEventListener('click', () => {
+            calculatorClose.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 calculatorModal.style.display = 'none';
             });
         }
         
-        // Close when clicking outside
-        window.addEventListener('click', (e) => {
+        // Close when clicking outside (use separate listener for calculator)
+        calculatorModal.addEventListener('click', (e) => {
             if (e.target === calculatorModal) {
                 calculatorModal.style.display = 'none';
             }
         });
         
-        // Close with ESC key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && calculatorModal.style.display === 'block') {
-                calculatorModal.style.display = 'none';
-            }
-        });
+        // ESC key handled by existing listener
         
         // Calculator button handlers
         const calcButtons = document.querySelectorAll('.calc-btn');
