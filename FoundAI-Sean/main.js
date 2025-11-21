@@ -56,6 +56,32 @@ document.getElementById('searchGemini').addEventListener('click', function() {
   }
 });
 
+// When the user clicks the 'Copy and GrokAI' button:
+// 1. Copy the combined query to the clipboard
+// 2. Open Grok in a new tab
+document.getElementById('searchGrok').addEventListener('click', function() {
+  const combined = document.getElementById('combined');
+  if (combined.value.trim()) {
+    combined.select();
+    document.execCommand('copy');
+    window.open('https://x.com/i/grok', '_blank');
+  }
+});
+
+// When the user clicks the 'Copy and ClosedAI' button:
+// 1. Copy the combined query to the clipboard
+// 2. Open ChatGPT in a new tab
+/*
+document.getElementById('searchClosed').addEventListener('click', function() {
+  const combined = document.getElementById('combined');
+  if (combined.value.trim()) {
+    combined.select();
+    document.execCommand('copy');
+    window.open('https://chat.openai.com/', '_blank');
+  }
+});
+*/
+
 // On page load, check if the URL has preamble or search parameters
 // If so, populate the corresponding fields and update the combined output and URL
 window.addEventListener('DOMContentLoaded', function() {
