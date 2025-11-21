@@ -1,0 +1,106 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    color: white;
+    margin-bottom: 30px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+main {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.element-info {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.element-info.hidden {
+    display: none;
+}
+
+.periodic-table {
+    display: grid;
+    grid-template-columns: repeat(18, 1fr);
+    gap: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.element {
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.element:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+.element .atomic-number {
+    font-size: 0.7rem;
+    color: #666;
+}
+
+.element .symbol {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.element .name {
+    font-size: 0.6rem;
+    color: #888;
+}
+
+.element .mass {
+    font-size: 0.6rem;
+    color: #999;
+}
+
+/* Element categories */
+.element.alkali-metal { background: #ff6b6b; }
+.element.alkaline-earth { background: #ffd93d; }
+.element.transition-metal { background: #ffa07a; }
+.element.post-transition { background: #95e1d3; }
+.element.metalloid { background: #a8e6cf; }
+.element.nonmetal { background: #c7ceea; }
+.element.halogen { background: #ff9ff3; }
+.element.noble-gas { background: #dda0dd; }
+.element.lanthanide { background: #ffccbc; }
+.element.actinide { background: #f8bbd0; }
+
+footer {
+    text-align: center;
+    color: white;
+    margin-top: 30px;
+    font-size: 0.9rem;
+}
