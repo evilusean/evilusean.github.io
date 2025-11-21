@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Load elements data
 async function loadElements() {
     try {
-        const response = await fetch('elements.json');
+        const response = await fetch('assets/data/elements.json');
         elements = await response.json();
         console.log(`Loaded ${elements.length} elements`);
     } catch (error) {

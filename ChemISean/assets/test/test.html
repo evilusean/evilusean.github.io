@@ -52,7 +52,7 @@
             
             try {
                 // Load elements
-                const response = await fetch('elements.json');
+                const response = await fetch('../data/elements.json');
                 const elements = await response.json();
                 
                 log(`✓ Successfully loaded elements.json`, 'pass');

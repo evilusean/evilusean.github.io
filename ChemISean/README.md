@@ -5,6 +5,32 @@ An interactive web application featuring two distinct views of the periodic tabl
 1. **Classic Periodic Table** - The standard modern long-form periodic table with all 118 elements
 2. **Walter Russell Spiral Table** - A revolutionary 1926-1953 design showing elements in 9 octaves following musical wave patterns
 
+## Project Structure
+
+```
+├── assets/
+│   ├── data/           # Element data (elements.json)
+│   ├── images/         # Images and SVG files
+│   └── test/           # Test files
+├── docs/               # Documentation
+│   ├── FEATURES.md
+│   ├── DEPLOYMENT.md
+│   ├── CONTRIBUTING.md
+│   └── QUICKSTART.md
+├── index.html          # Main application
+├── script.js           # Application logic
+├── styles.css          # Styling
+└── README.md
+```
+
+## Documentation
+
+For detailed information, see the [docs](./docs/) folder:
+- [Features](./docs/FEATURES.md) - Complete feature list
+- [Deployment](./docs/DEPLOYMENT.md) - Deployment guide
+- [Contributing](./docs/CONTRIBUTING.md) - Contribution guidelines
+- [Quick Start](./docs/QUICKSTART.md) - Quick start guide
+
 ## Features
 
 ### Classic View
