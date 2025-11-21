@@ -104,22 +104,63 @@ function createElementDiv(element) {
 // Generate Walter Russell spiral periodic table
 function generateRussellSpiral() {
     const svg = document.getElementById('russellSpiral');
-    const centerX = 600;
-    const centerY = 600;
+    const centerX = 700;
+    const centerY = 700;
     
     // Clear existing content
     svg.innerHTML = '';
     
-    // Add background circle
-    const bgCircle = createSVGElement('circle', {
-        cx: centerX,
-        cy: centerY,
-        r: 550,
-        fill: 'none',
-        stroke: currentTheme === 'dark' ? '#2a2f4a' : '#e8ecf1',
-        'stroke-width': 2
+    // Octave colors (different shades)
+    const octaveColors = [
+        '#FFE5E5', // Octave 1 - light red
+        '#FFE5CC', // Octave 2 - light orange
+        '#FFFFE5', // Octave 3 - light yellow
+        '#E5FFE5', // Octave 4 - light green
+        '#E5F5FF', // Octave 5 - light blue
+        '#E5E5FF', // Octave 6 - light indigo
+        '#F5E5FF', // Octave 7 - light violet
+        '#FFE5F5', // Octave 8 - light pink
+        '#F0F0F0', // Octave 9 - light gray
+        '#E8E8E8'  // Octave 10 - lighter gray
+    ];
+    
+    // Draw octave background rings
+    for (let octave = 10; octave >= 1; octave--) {
+        const radius = 50 + (octave - 1) * 60;
+        const ring = createSVGElement('circle', {
+            cx: centerX,
+            cy: centerY,
+            r: radius,
+            fill: octaveColors[octave - 1],
+            opacity: 0.3,
+            stroke: '#999',
+            'stroke-width': 1,
+            'stroke-dasharray': '5,5'
+        });
+        svg.appendChild(ring);
+    }
+    
+    // Sort elements by atomic number to ensure correct spiral order
+    const sortedElements = [...elements].sort((a, b) => a.number - b.number);
+    
+    // Calculate positions for all elements in atomic number order
+    const positions = [];
+    sortedElements.forEach((element, index) => {
+        const position = calculateSpiralPosition(element, index, centerX, centerY, sortedElements);
+        positions.push({ element, position });
     });
-    svg.appendChild(bgCircle);
+    
+    // Draw connecting spiral line
+    const spiralPath = createSVGElement('path', {
+        d: positions.map((p, i) => 
+            `${i === 0 ? 'M' : 'L'} ${p.position.x},${p.position.y}`
+        ).join(' '),
+        stroke: '#666',
+        'stroke-width': 2,
+        fill: 'none',
+        opacity: 0.5
+    });
+    svg.appendChild(spiralPath);
     
     // Add center point (stillness)
     const centerPoint = createSVGElement('circle', {
@@ -144,9 +185,8 @@ function generateRussellSpiral() {
     centerLabel.textContent = 'Zero Point';
     svg.appendChild(centerLabel);
     
-    // Generate spiral path for elements
-    elements.forEach((element, index) => {
-        const position = calculateSpiralPosition(element, index, centerX, centerY);
+    // Draw elements on top of the line
+    positions.forEach(({ element, position }) => {
         const elementGroup = createRussellElement(element, position);
         svg.appendChild(elementGroup);
     });
@@ -156,38 +196,46 @@ function generateRussellSpiral() {
 }
 
 // Calculate spiral position for Russell table
-function calculateSpiralPosition(element, index, centerX, centerY) {
-    // Spiral parameters
-    const octave = element.russell_octave || 1;
-    const baseRadius = 50;
-    const radiusIncrement = 60;
+function calculateSpiralPosition(element, index, centerX, centerY, allElements) {
+    // Non-linear spiral: MUCH more space for first 2 octaves, then gradually tighten
+    const baseRadius = 60;
     
-    // Calculate radius based on octave
-    const radius = baseRadius + (octave - 1) * radiusIncrement;
+    // Calculate cumulative radius with variable growth
+    let radius = baseRadius;
+    for (let i = 0; i < index; i++) {
+        let growth;
+        if (i < 10) {
+            // First 2 octaves: HUGE spacing (10 elements)
+            growth = 10 - (i * 0.3); // Start at 10, decrease to 7
+        } else if (i < 20) {
+            // Octave 3: Medium spacing
+            growth = 7 - ((i - 10) * 0.2); // 7 down to 5
+        } else if (i < 40) {
+            // Octaves 4-5: Moderate spacing
+            growth = 5 - ((i - 20) * 0.05); // 5 down to 4
+        } else {
+            // Later octaves: Tight spacing
+            growth = 4 - ((i - 40) * 0.01); // 4 down to ~3.2
+        }
+        radius += growth;
+    }
     
-    // Calculate angle based on tone position
-    let angleOffset = 0;
-    const tone = element.russell_tone || '1+';
-    
-    // Map tones to angles (musical wave pattern)
-    const toneAngles = {
-        '1+': 0,
-        '2+': 45,
-        '3+': 90,
-        '4+': 135,
-        '4++': 180,  // Peak (noble gases)
-        '4-': 225,
-        '3-': 270,
-        '2-': 315,
-        '1-': 360,
-        '0': 90  // Carbon at center/balance
-    };
-    
-    angleOffset = toneAngles[tone] || (index * 15);
-    
-    // Add octave rotation
-    const octaveRotation = (octave - 1) * 40;
-    const totalAngle = (angleOffset + octaveRotation) * (Math.PI / 180);
+    // Calculate cumulative angle with variable turn rate
+    let totalAngle = 0;
+    for (let i = 0; i < index; i++) {
+        let turn;
+        if (i < 10) {
+            // First 2 octaves: Wide turns
+            turn = 0.35 - (i * 0.01); // Start at 0.35, decrease
+        } else if (i < 20) {
+            // Octave 3: Medium turns
+            turn = 0.25 - ((i - 10) * 0.005);
+        } else {
+            // Later octaves: Tighter turns
+            turn = 0.20 - ((i - 20) * 0.001);
+        }
+        totalAngle += turn;
+    }
     
     // Calculate position
     const x = centerX + radius * Math.cos(totalAngle);
@@ -253,8 +301,22 @@ function createRussellElement(element, position) {
     numberText.textContent = element.number;
     group.appendChild(numberText);
     
-    // Add click handler
+    // Add hover and click handlers
     group.style.cursor = 'pointer';
+    group.style.transition = 'transform 0.2s ease';
+    
+    group.addEventListener('mouseenter', function() {
+        // Use transform instead of changing radius to avoid position shift
+        this.style.transform = 'scale(1.2)';
+        this.style.transformOrigin = `${position.x}px ${position.y}px`;
+        circle.setAttribute('stroke-width', 3);
+    });
+    
+    group.addEventListener('mouseleave', function() {
+        this.style.transform = 'scale(1)';
+        circle.setAttribute('stroke-width', 2);
+    });
+    
     group.addEventListener('click', () => showElementModal(element));
     
     return group;
