@@ -299,6 +299,22 @@ main {
     margin: 0 auto;
 }
 
+.russell-section {
+    margin-bottom: 3rem;
+}
+
+.russell-section h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    color: var(--accent);
+}
+
+.helix-description {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    font-style: italic;
+}
+
 .russell-container {
     background: var(--bg-secondary);
     padding: 2rem;
@@ -310,7 +326,27 @@ main {
     align-items: center;
 }
 
+.helix-container {
+    background: #ffffff;
+    padding: 3rem 2rem;
+    min-height: 1400px;
+    position: relative;
+}
+
+[data-theme="dark"] .helix-container {
+    background: #f8f8f8;
+}
+
+.russell-section h3 {
+    text-align: center;
+}
+
 #russellSpiral {
+    max-width: 100%;
+    height: auto;
+}
+
+#russellHelix {
     max-width: 100%;
     height: auto;
 }

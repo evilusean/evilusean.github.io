@@ -15,14 +15,20 @@ An interactive web application featuring two distinct views of the periodic tabl
 - Click any element for detailed information
 
 ### Walter Russell Spiral View
-- Spiral layout with elements arranged in 9 octaves
+- **Overhead Spiral**: Elements arranged in 9 octaves spiraling from center
+- **Helical Side View**: Classic "Ten Octaves of Integrating Light" diagram
+  - Rising conical helix from Hydrogen at bottom
+  - 10 octaves shown as elliptical wave loops
+  - Noble gases at wave peaks (4++ keynote)
+  - Inertia lines separating octaves
+  - Enlarged inset of first three octaves
 - Musical wave pattern with noble gases at amplitude peaks
 - Color-coded by Russell's pressure classification:
-  - **Generative (Red-Orange)**: Male/positive/compression side
-  - **Radiative (Blue)**: Female/negative/expansion side
+  - **Generative (Red)**: Male/positive/compression side (left)
+  - **Radiative (Blue)**: Female/negative/expansion side (right)
   - **Inert (Gold)**: Noble gases at wave peaks
   - **Balance (White)**: Carbon at perfect equilibrium
-- Octave rings showing the progression from hydrogen outward
+- Faithful recreation of Russell's 1926-1953 original diagrams
 
 ### Shared Features
 - **Rich Element Modal**: Click any element in either view to see:

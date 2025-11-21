@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initializeNavigation();
     generateClassicTable();
     generateRussellSpiral();
+    generateRussellHelix();
     initializeModal();
 });
 
@@ -381,12 +382,550 @@ function formatPosition(position) {
     ).join(' ');
 }
 
+// Generate Walter Russell helical side view
+function generateRussellHelix() {
+    const svg = document.getElementById('russellHelix');
+    if (!svg) return;
+    
+    const width = 1000;
+    const height = 1400;
+    const centerX = width / 2;
+    
+    // Clear existing content
+    svg.innerHTML = '';
+    
+    // Add title at bottom
+    const title = createSVGElement('text', {
+        x: centerX,
+        y: height - 20,
+        'text-anchor': 'middle',
+        fill: '#000',
+        'font-size': '14',
+        'font-weight': 'bold',
+        'font-family': 'serif'
+    });
+    title.textContent = 'DIAGRAM SHOWING THE TEN OCTAVES OF INTEGRATING LIGHT';
+    svg.appendChild(title);
+    
+    // Define octave data based on Russell's original
+    const octaves = [
+        { num: 1, y: 1250, elements: ['H', 'He'], label: '1ST OCTAVE', inert: 'He' },
+        { num: 2, y: 1150, elements: ['Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne'], label: '2ND OCTAVE', inert: 'Ne' },
+        { num: 3, y: 1050, elements: ['Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar'], label: '3RD OCTAVE', inert: 'Ar' },
+        { num: 4, y: 950, elements: ['K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr'], label: '4TH OCTAVE', inert: 'Kr' },
+        { num: 5, y: 850, elements: ['Rb', 'Sr', 'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I', 'Xe'], label: '5TH OCTAVE', inert: 'Xe' },
+        { num: 6, y: 700, elements: ['Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn'], label: '6TH OCTAVE', inert: 'Rn' },
+        { num: 7, y: 500, elements: ['Fr', 'Ra', 'Ac', 'Th', 'Pa', 'U', 'Np', 'Pu', 'Am', 'Cm', 'Bk', 'Cf', 'Es', 'Fm', 'Md', 'No', 'Lr', 'Rf', 'Db', 'Sg', 'Bh', 'Hs', 'Mt', 'Ds', 'Rg', 'Cn', 'Nh', 'Fl', 'Mc', 'Lv', 'Ts', 'Og'], label: '7TH OCTAVE', inert: 'Og' },
+        { num: 8, y: 350, elements: [], label: '8TH OCTAVE', inert: 'Nt' },
+        { num: 9, y: 200, elements: [], label: '9TH OCTAVE', inert: '' },
+        { num: 10, y: 50, elements: [], label: '10TH OCTAVE', inert: '' }
+    ];
+    
+    // Draw continuous helix path
+    const helixPath = createContinuousHelixPath(octaves, centerX, width);
+    const mainPath = createSVGElement('path', {
+        d: helixPath,
+        fill: 'none',
+        stroke: '#000',
+        'stroke-width': 3,
+        'stroke-linecap': 'round',
+        'stroke-linejoin': 'round'
+    });
+    svg.appendChild(mainPath);
+    
+    // Add shadow for 3D effect
+    const shadowPath = createSVGElement('path', {
+        d: helixPath,
+        fill: 'none',
+        stroke: '#999',
+        'stroke-width': 5,
+        'stroke-linecap': 'round',
+        'stroke-linejoin': 'round',
+        opacity: 0.3,
+        transform: 'translate(2, 2)'
+    });
+    svg.insertBefore(shadowPath, mainPath);
+    
+    // Draw octave annotations and elements
+    octaves.forEach((octave, index) => {
+        drawHelixOctaveAnnotations(svg, octave, centerX, width, index);
+    });
+    
+    // Add inertia lines
+    octaves.forEach(octave => {
+        const line = createSVGElement('line', {
+            x1: 50,
+            x2: width - 50,
+            y1: octave.y + 50,
+            y2: octave.y + 50,
+            stroke: '#666',
+            'stroke-width': 1,
+            'stroke-dasharray': '5,5'
+        });
+        svg.appendChild(line);
+        
+        // Inertia line label
+        const label = createSVGElement('text', {
+            x: width - 100,
+            y: octave.y + 45,
+            'text-anchor': 'end',
+            fill: '#666',
+            'font-size': '10',
+            'font-style': 'italic'
+        });
+        label.textContent = 'INERTIA LINE';
+        svg.appendChild(label);
+    });
+    
+    // Add central axis
+    const axis = createSVGElement('line', {
+        x1: centerX,
+        x2: centerX,
+        y1: 30,
+        y2: height - 80,
+        stroke: '#999',
+        'stroke-width': 2,
+        'stroke-dasharray': '10,5'
+    });
+    svg.appendChild(axis);
+    
+    // Add "THE END AND THE BEGINNING" at bottom
+    const endBegin = createSVGElement('text', {
+        x: centerX,
+        y: height - 50,
+        'text-anchor': 'middle',
+        fill: '#000',
+        'font-size': '12',
+        'font-weight': 'bold'
+    });
+    endBegin.textContent = 'THE END AND THE BEGINNING';
+    svg.appendChild(endBegin);
+    
+    // Add copyright
+    const copyright = createSVGElement('text', {
+        x: 50,
+        y: height - 10,
+        'text-anchor': 'start',
+        fill: '#666',
+        'font-size': '10'
+    });
+    copyright.textContent = '© Walter Russell 1926';
+    svg.appendChild(copyright);
+    
+    // Add inset diagram for first three octaves (enlarged view)
+    addInsetDiagram(svg, octaves.slice(0, 3));
+    
+    // Add annotations
+    addHelixAnnotations(svg, width, height);
+}
+
+// Add inset diagram showing first octaves enlarged
+function addInsetDiagram(svg, firstOctaves) {
+    const insetX = 80;
+    const insetY = 1100;
+    const insetWidth = 200;
+    const insetHeight = 250;
+    
+    // Inset background
+    const insetBg = createSVGElement('rect', {
+        x: insetX - 10,
+        y: insetY - 10,
+        width: insetWidth + 20,
+        height: insetHeight + 20,
+        fill: '#fff',
+        stroke: '#000',
+        'stroke-width': 2
+    });
+    svg.appendChild(insetBg);
+    
+    // Inset title
+    const insetTitle = createSVGElement('text', {
+        x: insetX + insetWidth/2,
+        y: insetY + 15,
+        'text-anchor': 'middle',
+        fill: '#000',
+        'font-size': '11',
+        'font-weight': 'bold'
+    });
+    insetTitle.textContent = 'ENLARGED DIAGRAM OF';
+    svg.appendChild(insetTitle);
+    
+    const insetTitle2 = createSVGElement('text', {
+        x: insetX + insetWidth/2,
+        y: insetY + 28,
+        'text-anchor': 'middle',
+        fill: '#000',
+        'font-size': '11',
+        'font-weight': 'bold'
+    });
+    insetTitle2.textContent = 'THE FIRST THREE';
+    svg.appendChild(insetTitle2);
+    
+    const insetTitle3 = createSVGElement('text', {
+        x: insetX + insetWidth/2,
+        y: insetY + 41,
+        'text-anchor': 'middle',
+        fill: '#000',
+        'font-size': '11',
+        'font-weight': 'bold'
+    });
+    insetTitle3.textContent = 'OCTAVES WITHIN THE OTHER';
+    svg.appendChild(insetTitle3);
+    
+    // Draw simplified first octaves
+    firstOctaves.forEach((octave, i) => {
+        const y = insetY + 80 + (i * 60);
+        const centerX = insetX + insetWidth/2;
+        
+        // Simple wave
+        const path = createSVGElement('path', {
+            d: createHelixWavePath(centerX, y, 140, 40),
+            fill: 'none',
+            stroke: '#000',
+            'stroke-width': 1.5
+        });
+        svg.appendChild(path);
+        
+        // Inert gas
+        if (octave.inert) {
+            const inertCircle = createSVGElement('circle', {
+                cx: centerX,
+                cy: y - 20,
+                r: 12,
+                fill: '#FFD700',
+                stroke: '#000',
+                'stroke-width': 1.5
+            });
+            svg.appendChild(inertCircle);
+            
+            const inertText = createSVGElement('text', {
+                x: centerX,
+                y: y - 16,
+                'text-anchor': 'middle',
+                fill: '#000',
+                'font-size': '9',
+                'font-weight': 'bold'
+            });
+            inertText.textContent = octave.inert;
+            svg.appendChild(inertText);
+        }
+        
+        // Octave label
+        const label = createSVGElement('text', {
+            x: insetX + insetWidth + 5,
+            y: y + 3,
+            'text-anchor': 'start',
+            fill: '#000',
+            'font-size': '9',
+            'font-weight': 'bold'
+        });
+        label.textContent = octave.label;
+        svg.appendChild(label);
+    });
+}
+
+// Add annotations to helix
+function addHelixAnnotations(svg, width, height) {
+    // Add "GENERATIVE" label on left
+    const genLabel = createSVGElement('text', {
+        x: 150,
+        y: 700,
+        'text-anchor': 'middle',
+        fill: '#b91c1c',
+        'font-size': '12',
+        'font-weight': 'bold',
+        transform: 'rotate(-90 150 700)'
+    });
+    genLabel.textContent = 'GENERATIVE / MALE / + / COMPRESSION';
+    svg.appendChild(genLabel);
+    
+    // Add "RADIATIVE" label on right
+    const radLabel = createSVGElement('text', {
+        x: width - 150,
+        y: 700,
+        'text-anchor': 'middle',
+        fill: '#1e40af',
+        'font-size': '12',
+        'font-weight': 'bold',
+        transform: `rotate(90 ${width - 150} 700)`
+    });
+    radLabel.textContent = 'RADIATIVE / FEMALE / - / EXPANSION';
+    svg.appendChild(radLabel);
+    
+    // Add note about Carbon at center
+    const carbonNote = createSVGElement('text', {
+        x: width - 200,
+        y: 850,
+        'text-anchor': 'start',
+        fill: '#666',
+        'font-size': '10',
+        'font-style': 'italic'
+    });
+    carbonNote.textContent = 'Carbon at perfect';
+    svg.appendChild(carbonNote);
+    
+    const carbonNote2 = createSVGElement('text', {
+        x: width - 200,
+        y: 863,
+        'text-anchor': 'start',
+        fill: '#666',
+        'font-size': '10',
+        'font-style': 'italic'
+    });
+    carbonNote2.textContent = 'balance point';
+    svg.appendChild(carbonNote2);
+    
+    // Add stars for undiscovered elements
+    const starNote = createSVGElement('text', {
+        x: 50,
+        y: 250,
+        'text-anchor': 'start',
+        fill: '#666',
+        'font-size': '9'
+    });
+    starNote.textContent = '★ ★ ★ INDICATE MASTER-TONES';
+    svg.appendChild(starNote);
+    
+    const starNote2 = createSVGElement('text', {
+        x: 50,
+        y: 262,
+        'text-anchor': 'start',
+        fill: '#666',
+        'font-size': '9'
+    });
+    starNote2.textContent = 'STARS INDICATE UNDISCOVERED ELEMENTS';
+    svg.appendChild(starNote2);
+}
+
+// Create continuous helix path through all octaves
+function createContinuousHelixPath(octaves, centerX, width) {
+    let path = '';
+    const waveWidth = 350;
+    const pointsPerWave = 60;
+    
+    octaves.forEach((octave, octaveIndex) => {
+        const y = octave.y;
+        
+        // Determine if this octave goes left or right
+        // Even octaves: start left, arc to center
+        // Odd octaves: start right, arc to center
+        const isEven = octaveIndex % 2 === 0;
+        
+        for (let i = 0; i <= pointsPerWave; i++) {
+            const t = i / pointsPerWave; // 0 to 1
+            
+            // Create smooth arc using sine wave
+            // For even octaves: go from left (-1) to center (0)
+            // For odd octaves: go from right (+1) to center (0)
+            let x, yOffset;
+            
+            if (isEven) {
+                // Left to center arc
+                x = centerX - waveWidth * (1 - t);
+                yOffset = Math.sin(t * Math.PI) * 40; // Arc height
+            } else {
+                // Right to center arc (coming from previous octave)
+                x = centerX + waveWidth * (1 - t);
+                yOffset = Math.sin(t * Math.PI) * 40; // Arc height
+            }
+            
+            const yPos = y - yOffset;
+            
+            if (octaveIndex === 0 && i === 0) {
+                path += `M ${x} ${yPos}`;
+            } else {
+                path += ` L ${x} ${yPos}`;
+            }
+        }
+    });
+    
+    return path;
+}
+
+// Draw octave annotations (labels, elements, etc.)
+function drawHelixOctaveAnnotations(svg, octave, centerX, width, index) {
+    const y = octave.y;
+    const waveHeight = 80;
+    const waveWidth = 400;
+    
+    // Add octave label on right
+    const labelBox = createSVGElement('rect', {
+        x: width - 180,
+        y: y - 15,
+        width: 120,
+        height: 30,
+        fill: 'none',
+        stroke: '#000',
+        'stroke-width': 2
+    });
+    svg.appendChild(labelBox);
+    
+    const label = createSVGElement('text', {
+        x: width - 120,
+        y: y + 5,
+        'text-anchor': 'middle',
+        fill: '#000',
+        'font-size': '14',
+        'font-weight': 'bold'
+    });
+    label.textContent = octave.label;
+    svg.appendChild(label);
+    
+    // Add inert gas at peak (center of wave) - the 4++ keynote
+    if (octave.inert) {
+        // Position at the peak of the arc (where sin(0.5π) = 1)
+        const peakY = y - 40; // At the highest point of the arc
+        
+        const inertBox = createSVGElement('rect', {
+            x: centerX - 50,
+            y: peakY - 40,
+            width: 100,
+            height: 28,
+            fill: '#FFD700',
+            stroke: '#000',
+            'stroke-width': 3,
+            rx: 4
+        });
+        svg.appendChild(inertBox);
+        
+        const inertText = createSVGElement('text', {
+            x: centerX,
+            y: peakY - 18,
+            'text-anchor': 'middle',
+            fill: '#000',
+            'font-size': '14',
+            'font-weight': 'bold',
+            'font-family': 'serif'
+        });
+        inertText.textContent = octave.inert.toUpperCase();
+        svg.appendChild(inertText);
+        
+        // Add 4++ marker
+        const keynote = createSVGElement('text', {
+            x: centerX,
+            y: peakY - 48,
+            'text-anchor': 'middle',
+            fill: '#666',
+            'font-size': '10',
+            'font-weight': 'bold'
+        });
+        keynote.textContent = '4++';
+        svg.appendChild(keynote);
+    }
+    
+    // Add elements along the continuous helix path
+    if (octave.elements.length > 0) {
+        // Alternate direction for each octave
+        const isEven = index % 2 === 0;
+        
+        octave.elements.forEach((el, i) => {
+            const progress = i / octave.elements.length; // 0 to 1
+            
+            // Calculate position on arc
+            let x, yOffset;
+            
+            if (isEven) {
+                // Left to center arc
+                x = centerX - waveWidth * (1 - progress);
+                yOffset = Math.sin(progress * Math.PI) * 40;
+            } else {
+                // Right to center arc
+                x = centerX + waveWidth * (1 - progress);
+                yOffset = Math.sin(progress * Math.PI) * 40;
+            }
+            
+            const yPos = y - yOffset;
+            
+            // Determine if on left (generative) or right (radiative) side
+            // Elements before the peak are generative, after are radiative
+            const isLeft = isEven ? (progress < 0.5) : (progress >= 0.5);
+            const color = isLeft ? '#b91c1c' : '#1e40af';
+            const anchor = isLeft ? 'end' : 'start';
+            const offset = isLeft ? -10 : 10;
+            
+            const elementData = elements.find(e => e.symbol === el);
+            if (elementData) {
+                const text = createSVGElement('text', {
+                    x: x + offset,
+                    y: yPos + 4,
+                    'text-anchor': anchor,
+                    fill: color,
+                    'font-size': '9',
+                    'font-weight': 'bold',
+                    'font-family': 'sans-serif',
+                    style: 'cursor: pointer'
+                });
+                text.textContent = el.toUpperCase();
+                text.addEventListener('click', () => showElementModal(elementData));
+                svg.appendChild(text);
+            }
+        });
+    }
+    
+    // Add tone markers along the helix
+    const isEven = index % 2 === 0;
+    const tonePositions = [
+        { tone: '1+', pos: 0 },
+        { tone: '2+', pos: 0.25 },
+        { tone: '3+', pos: 0.4 },
+        { tone: '4+', pos: 0.48 },
+        { tone: '4++', pos: 0.5 },  // Peak
+        { tone: '4-', pos: 0.52 },
+        { tone: '3-', pos: 0.6 },
+        { tone: '2-', pos: 0.75 },
+        { tone: '1-', pos: 1 }
+    ];
+    
+    tonePositions.forEach(({ tone, pos }) => {
+        let x, yOffset;
+        
+        if (isEven) {
+            x = centerX - waveWidth * (1 - pos);
+            yOffset = Math.sin(pos * Math.PI) * 40;
+        } else {
+            x = centerX + waveWidth * (1 - pos);
+            yOffset = Math.sin(pos * Math.PI) * 40;
+        }
+        
+        const yPos = y - yOffset;
+        
+        const toneText = createSVGElement('text', {
+            x: x,
+            y: yPos + 22,
+            'text-anchor': 'middle',
+            fill: '#888',
+            'font-size': '8',
+            'font-family': 'monospace'
+        });
+        toneText.textContent = tone;
+        svg.appendChild(toneText);
+    });
+}
+
+// Create wave path for helix
+function createHelixWavePath(centerX, y, width, height) {
+    const startX = centerX - width/2;
+    const endX = centerX + width/2;
+    
+    // Create elliptical wave using quadratic bezier curves
+    let path = `M ${startX} ${y}`;
+    
+    // Rising part (left side)
+    path += ` Q ${centerX - width/4} ${y - height/2}, ${centerX} ${y - height/2}`;
+    
+    // Falling part (right side)
+    path += ` Q ${centerX + width/4} ${y - height/2}, ${endX} ${y}`;
+    
+    return path;
+}
+
 // Regenerate Russell spiral on theme change
 const originalToggle = document.getElementById('themeToggle');
 if (originalToggle) {
     originalToggle.addEventListener('click', () => {
         setTimeout(() => {
             generateRussellSpiral();
+            generateRussellHelix();
         }, 100);
     });
 }

@@ -131,13 +131,24 @@ Each of 118 elements includes:
 
 ## 🔬 Walter Russell Implementation
 
-### Spiral Design
+### Overhead Spiral Design
 - **Center Point**: Hydrogen at origin (zero point)
 - **9 Octaves**: Concentric rings spiraling outward
 - **Musical Tones**: Elements positioned by tone (1+, 2+, 3+, 4++, etc.)
 - **Noble Gases**: At wave peaks (4++ position)
 - **Bilateral Symmetry**: Generative vs. Radiative sides
 - **Carbon**: At perfect balance point (octave 5, tone 0)
+
+### Helical Side View Design (NEW!)
+- **Classic Diagram**: "Ten Octaves of Integrating Light"
+- **Rising Helix**: Conical spiral ascending from Hydrogen at bottom
+- **10 Octaves**: Elliptical wave loops stacked vertically
+- **Side Perspective**: 30-45° angled view showing 3D depth
+- **Inert Gases**: Positioned at wave crests (4++ keynote)
+- **Inertia Lines**: Horizontal planes separating each octave
+- **Color Coding**: Red (generative/left), Blue (radiative/right), Gold (inert)
+- **Annotations**: Octave labels, tone markers, enlarged inset diagram
+- **Faithful Recreation**: Based on Russell's 1926-1953 original charts
 
 ### Octave Structure
 1. Octave 1: H → He
