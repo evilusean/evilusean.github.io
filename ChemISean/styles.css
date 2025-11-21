@@ -155,6 +155,171 @@ main {
     display: block;
 }
 
+/* Info Panel */
+.info-panel {
+    background: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px var(--shadow);
+    margin-bottom: 2rem;
+}
+
+.info-panel h3 {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    color: var(--accent);
+}
+
+.info-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.info-section h4 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.info-section p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+}
+
+.info-section ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.info-section li {
+    color: var(--text-secondary);
+    line-height: 1.8;
+    padding-left: 1rem;
+    position: relative;
+}
+
+.info-section li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+}
+
+/* Filter Panel */
+.filter-panel {
+    background: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px var(--shadow);
+    margin-bottom: 2rem;
+}
+
+.filter-panel h3 {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    color: var(--accent);
+}
+
+.filter-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filter-group label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.range-group {
+    min-width: 250px;
+}
+
+.range-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.range-input {
+    padding: 0.5rem;
+    border: 2px solid var(--border);
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    width: 80px;
+    transition: all 0.3s;
+}
+
+.range-input:hover {
+    border-color: var(--accent);
+}
+
+.range-input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.range-separator {
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.filter-select {
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--border);
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    min-width: 180px;
+    transition: all 0.3s;
+}
+
+.filter-select:hover {
+    border-color: var(--accent);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.reset-btn {
+    padding: 0.5rem 1.5rem;
+    border: 2px solid var(--border);
+    background: var(--accent);
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.reset-btn:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+}
+
+.filter-stats {
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+
 /* Classic Periodic Table */
 .table-container {
     background: var(--bg-secondary);
@@ -162,6 +327,58 @@ main {
     border-radius: 12px;
     box-shadow: 0 4px 12px var(--shadow);
     margin-bottom: 2rem;
+}
+
+.table-wrapper {
+    position: relative;
+}
+
+.group-labels-container {
+    display: flex;
+    margin-bottom: 0.5rem;
+}
+
+.period-spacer {
+    width: 40px;
+    flex-shrink: 0;
+}
+
+.group-labels {
+    display: grid;
+    grid-template-columns: repeat(18, 1fr);
+    gap: 4px;
+    flex: 1;
+}
+
+.group-label {
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent);
+    padding: 0.25rem;
+}
+
+.table-with-periods {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.period-labels {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 40px;
+    flex-shrink: 0;
+}
+
+.period-label {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent);
 }
 
 .periodic-table {
@@ -233,15 +450,31 @@ main {
 /* Lanthanides and Actinides */
 .lanthanides-actinides {
     margin-top: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem 1rem;
+    align-items: center;
+}
+
+.series-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-align: right;
+    padding-right: 0.5rem;
 }
 
 .series-row {
     display: grid;
     grid-template-columns: repeat(15, 1fr);
     gap: 4px;
+}
+
+/* Filtered out elements */
+.element.filtered-out {
+    opacity: 0.15;
+    pointer-events: none;
+    filter: grayscale(100%);
 }
 
 /* Legend */
@@ -268,6 +501,24 @@ main {
     align-items: center;
     gap: 0.5rem;
     font-size: 0.9rem;
+}
+
+.legend-item.clickable {
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.legend-item.clickable:hover {
+    background: var(--bg-tertiary);
+    transform: translateX(5px);
+}
+
+.legend-item.clickable.active {
+    background: var(--accent);
+    color: white;
+    font-weight: 600;
 }
 
 .color-box {
@@ -559,9 +810,56 @@ main {
         padding: 0 1rem;
     }
     
+    .info-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .filter-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-group {
+        width: 100%;
+    }
+    
+    .filter-select {
+        width: 100%;
+    }
+    
+    .range-group {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    .range-inputs {
+        flex-wrap: wrap;
+    }
+    
+    .range-input {
+        flex: 1;
+        min-width: 70px;
+    }
+    
     .table-container {
         padding: 1rem;
         overflow-x: auto;
+    }
+    
+    .period-spacer {
+        width: 30px;
+    }
+    
+    .period-labels {
+        width: 30px;
+    }
+    
+    .period-label {
+        font-size: 0.75rem;
+    }
+    
+    .group-label {
+        font-size: 0.75rem;
     }
     
     .periodic-table {
@@ -580,6 +878,16 @@ main {
     .modal-header {
         flex-direction: column;
         text-align: center;
+    }
+    
+    .screensaver-controls {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .screensaver-toggle,
+    .screensaver-speed {
+        width: 100%;
     }
 }
 

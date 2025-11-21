@@ -2,11 +2,21 @@
 let elements = [];
 let currentTheme = 'dark';
 
+// Filter state
+let activeFilters = {
+    categories: [], // Array for multiple categories
+    type: 'all',
+    block: 'all',
+    minAtomic: null,
+    maxAtomic: null
+};
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', async () => {
     await loadElements();
     initializeTheme();
     initializeNavigation();
+    initializeFilters();
     generateClassicTable();
     generateRussellSpiral();
     generateRussellHelixSineWave();
@@ -59,6 +69,165 @@ function initializeNavigation() {
         russellView.classList.add('active');
         classicView.classList.remove('active');
     });
+}
+
+// Initialize filters
+function initializeFilters() {
+    const typeFilter = document.getElementById('typeFilter');
+    const blockFilter = document.getElementById('blockFilter');
+    const minAtomic = document.getElementById('minAtomic');
+    const maxAtomic = document.getElementById('maxAtomic');
+    const resetBtn = document.getElementById('resetFilters');
+    
+    typeFilter.addEventListener('change', (e) => {
+        activeFilters.type = e.target.value;
+        applyFilters();
+    });
+    
+    blockFilter.addEventListener('change', (e) => {
+        activeFilters.block = e.target.value;
+        applyFilters();
+    });
+    
+    minAtomic.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value);
+        activeFilters.minAtomic = isNaN(val) ? null : val;
+        applyFilters();
+    });
+    
+    maxAtomic.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value);
+        activeFilters.maxAtomic = isNaN(val) ? null : val;
+        applyFilters();
+    });
+    
+    resetBtn.addEventListener('click', () => {
+        activeFilters = { categories: [], type: 'all', block: 'all', minAtomic: null, maxAtomic: null };
+        typeFilter.value = 'all';
+        blockFilter.value = 'all';
+        minAtomic.value = '';
+        maxAtomic.value = '';
+        updateLegendHighlight();
+        applyFilters();
+    });
+    
+    // Make legend items clickable for multi-select
+    const legendItems = document.querySelectorAll('.legend-item.clickable');
+    legendItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const category = item.getAttribute('data-category');
+            
+            // Toggle category in array
+            const index = activeFilters.categories.indexOf(category);
+            if (index > -1) {
+                // Remove if already selected
+                activeFilters.categories.splice(index, 1);
+            } else {
+                // Add if not selected
+                activeFilters.categories.push(category);
+            }
+            
+            updateLegendHighlight();
+            applyFilters();
+        });
+    });
+    
+    updateFilterStats();
+}
+
+// Update legend item highlighting
+function updateLegendHighlight() {
+    const legendItems = document.querySelectorAll('.legend-item.clickable');
+    legendItems.forEach(item => {
+        const category = item.getAttribute('data-category');
+        if (activeFilters.categories.includes(category)) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
+    });
+}
+
+// Apply filters to elements
+function applyFilters() {
+    const allElements = document.querySelectorAll('.element');
+    let visibleCount = 0;
+    
+    allElements.forEach(elementDiv => {
+        const elementNumber = parseInt(elementDiv.getAttribute('data-number'));
+        const element = elements.find(e => e.number === elementNumber);
+        
+        if (!element) return;
+        
+        let visible = true;
+        
+        // Category filter (multiple selection)
+        if (activeFilters.categories.length > 0) {
+            if (!activeFilters.categories.includes(element.category)) {
+                visible = false;
+            }
+        }
+        
+        // Type filter (metal/nonmetal/metalloid)
+        if (activeFilters.type !== 'all') {
+            const elementType = getElementType(element);
+            if (elementType !== activeFilters.type) {
+                visible = false;
+            }
+        }
+        
+        // Block filter
+        if (activeFilters.block !== 'all' && element.block !== activeFilters.block) {
+            visible = false;
+        }
+        
+        // Atomic number range filter
+        if (activeFilters.minAtomic !== null && element.number < activeFilters.minAtomic) {
+            visible = false;
+        }
+        if (activeFilters.maxAtomic !== null && element.number > activeFilters.maxAtomic) {
+            visible = false;
+        }
+        
+        if (visible) {
+            elementDiv.classList.remove('filtered-out');
+            visibleCount++;
+        } else {
+            elementDiv.classList.add('filtered-out');
+        }
+    });
+    
+    updateFilterStats(visibleCount);
+}
+
+// Get element type (metal, nonmetal, metalloid)
+function getElementType(element) {
+    if (element.category === 'metalloid') return 'metalloid';
+    
+    const nonmetals = ['nonmetal', 'halogen', 'noble-gas'];
+    if (nonmetals.includes(element.category)) return 'nonmetal';
+    
+    return 'metal';
+}
+
+// Update filter statistics
+function updateFilterStats(visibleCount = null) {
+    const statsDiv = document.getElementById('filterStats');
+    
+    if (visibleCount === null) {
+        visibleCount = elements.length;
+    }
+    
+    const totalCount = elements.length;
+    statsDiv.textContent = `Showing ${visibleCount} of ${totalCount} elements`;
+    
+    if (visibleCount < totalCount) {
+        statsDiv.style.color = 'var(--accent)';
+        statsDiv.style.fontWeight = 'bold';
+    } else {
+        statsDiv.style.color = 'var(--text-secondary)';
+        statsDiv.style.fontWeight = 'normal';
+    }
 }
 
 // Generate classic periodic table
@@ -1511,8 +1680,21 @@ function cycleElement() {
         el.classList.remove('screensaver-highlight');
     });
     
-    // Pick random element
-    const randomElement = elements[Math.floor(Math.random() * elements.length)];
+    // Get only visible (non-filtered) elements
+    const visibleElements = elements.filter(element => {
+        const elementDiv = document.querySelector(`.element[data-number="${element.number}"]`);
+        return elementDiv && !elementDiv.classList.contains('filtered-out');
+    });
+    
+    if (visibleElements.length === 0) {
+        // No visible elements, stop screensaver
+        stopScreensaver();
+        alert('No elements visible with current filters. Please adjust filters or reset them.');
+        return;
+    }
+    
+    // Pick random element from visible ones
+    const randomElement = visibleElements[Math.floor(Math.random() * visibleElements.length)];
     
     // Find the element div in the table
     const elementDiv = document.querySelector(`.element[data-number="${randomElement.number}"]`);

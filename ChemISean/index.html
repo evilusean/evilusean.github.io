@@ -25,25 +25,157 @@
         <!-- Classic Periodic Table View -->
         <div id="classicView" class="view active">
             <div class="table-container">
-                <div id="periodicTable" class="periodic-table"></div>
+                <div class="table-wrapper">
+                    <!-- Group labels (top) -->
+                    <div class="group-labels-container">
+                        <div class="period-spacer"></div>
+                        <div class="group-labels">
+                            <div class="group-label">1</div>
+                            <div class="group-label">2</div>
+                            <div class="group-label">3</div>
+                            <div class="group-label">4</div>
+                            <div class="group-label">5</div>
+                            <div class="group-label">6</div>
+                            <div class="group-label">7</div>
+                            <div class="group-label">8</div>
+                            <div class="group-label">9</div>
+                            <div class="group-label">10</div>
+                            <div class="group-label">11</div>
+                            <div class="group-label">12</div>
+                            <div class="group-label">13</div>
+                            <div class="group-label">14</div>
+                            <div class="group-label">15</div>
+                            <div class="group-label">16</div>
+                            <div class="group-label">17</div>
+                            <div class="group-label">18</div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-with-periods">
+                        <!-- Period labels (left) -->
+                        <div class="period-labels">
+                            <div class="period-label">1</div>
+                            <div class="period-label">2</div>
+                            <div class="period-label">3</div>
+                            <div class="period-label">4</div>
+                            <div class="period-label">5</div>
+                            <div class="period-label">6</div>
+                            <div class="period-label">7</div>
+                        </div>
+                        
+                        <div id="periodicTable" class="periodic-table"></div>
+                    </div>
+                </div>
+                
                 <div class="lanthanides-actinides">
+                    <div class="series-label">Lanthanides</div>
                     <div id="lanthanides" class="series-row"></div>
+                    <div class="series-label">Actinides</div>
                     <div id="actinides" class="series-row"></div>
                 </div>
             </div>
+
+            <!-- Filter Controls -->
+            <div class="filter-panel">
+                <h3>Filter Elements</h3>
+                <div class="filter-controls">
+                    <div class="filter-group">
+                        <label>Type:</label>
+                        <select id="typeFilter" class="filter-select">
+                            <option value="all">All Types</option>
+                            <option value="metal">Metals</option>
+                            <option value="nonmetal">Nonmetals</option>
+                            <option value="metalloid">Metalloids</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Block:</label>
+                        <select id="blockFilter" class="filter-select">
+                            <option value="all">All Blocks</option>
+                            <option value="s">s-block</option>
+                            <option value="p">p-block</option>
+                            <option value="d">d-block</option>
+                            <option value="f">f-block</option>
+                        </select>
+                    </div>
+                    <div class="filter-group range-group">
+                        <label>Atomic Number Range:</label>
+                        <div class="range-inputs">
+                            <input type="number" id="minAtomic" class="range-input" min="1" max="118" placeholder="Min (1)" />
+                            <span class="range-separator">to</span>
+                            <input type="number" id="maxAtomic" class="range-input" min="1" max="118" placeholder="Max (118)" />
+                        </div>
+                    </div>
+                    <button id="resetFilters" class="reset-btn">Reset Filters</button>
+                </div>
+                <div id="filterStats" class="filter-stats"></div>
+            </div>
+            
             <div class="legend">
-                <h3>Element Categories</h3>
+                <h3>Element Categories (Click to Select Multiple)</h3>
                 <div class="legend-grid">
-                    <div class="legend-item"><span class="color-box alkali-metal"></span> Alkali Metals</div>
-                    <div class="legend-item"><span class="color-box alkaline-earth"></span> Alkaline Earth</div>
-                    <div class="legend-item"><span class="color-box transition-metal"></span> Transition Metals</div>
-                    <div class="legend-item"><span class="color-box post-transition"></span> Post-transition</div>
-                    <div class="legend-item"><span class="color-box metalloid"></span> Metalloids</div>
-                    <div class="legend-item"><span class="color-box nonmetal"></span> Nonmetals</div>
-                    <div class="legend-item"><span class="color-box halogen"></span> Halogens</div>
-                    <div class="legend-item"><span class="color-box noble-gas"></span> Noble Gases</div>
-                    <div class="legend-item"><span class="color-box lanthanide"></span> Lanthanides</div>
-                    <div class="legend-item"><span class="color-box actinide"></span> Actinides</div>
+                    <div class="legend-item clickable" data-category="alkali-metal">
+                        <span class="color-box alkali-metal"></span> Alkali Metals
+                    </div>
+                    <div class="legend-item clickable" data-category="alkaline-earth">
+                        <span class="color-box alkaline-earth"></span> Alkaline Earth Metals
+                    </div>
+                    <div class="legend-item clickable" data-category="transition-metal">
+                        <span class="color-box transition-metal"></span> Transition Metals
+                    </div>
+                    <div class="legend-item clickable" data-category="post-transition">
+                        <span class="color-box post-transition"></span> Post-transition Metals
+                    </div>
+                    <div class="legend-item clickable" data-category="metalloid">
+                        <span class="color-box metalloid"></span> Metalloids
+                    </div>
+                    <div class="legend-item clickable" data-category="nonmetal">
+                        <span class="color-box nonmetal"></span> Nonmetals
+                    </div>
+                    <div class="legend-item clickable" data-category="halogen">
+                        <span class="color-box halogen"></span> Halogens
+                    </div>
+                    <div class="legend-item clickable" data-category="noble-gas">
+                        <span class="color-box noble-gas"></span> Noble Gases
+                    </div>
+                    <div class="legend-item clickable" data-category="lanthanide">
+                        <span class="color-box lanthanide"></span> Lanthanides (f-block)
+                    </div>
+                    <div class="legend-item clickable" data-category="actinide">
+                        <span class="color-box actinide"></span> Actinides (f-block)
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chemistry Information Panel -->
+            <div class="info-panel">
+                <h3>Understanding the Periodic Table</h3>
+                <div class="info-content">
+                    <div class="info-section">
+                        <h4>Groups (Columns)</h4>
+                        <p>Elements in the same group share similar chemical properties and have the same number of valence electrons. Groups are numbered 1-18.</p>
+                        <ul>
+                            <li><strong>Group 1:</strong> Alkali Metals (highly reactive)</li>
+                            <li><strong>Group 2:</strong> Alkaline Earth Metals</li>
+                            <li><strong>Groups 3-12:</strong> Transition Metals</li>
+                            <li><strong>Group 17:</strong> Halogens (very reactive nonmetals)</li>
+                            <li><strong>Group 18:</strong> Noble Gases (inert)</li>
+                        </ul>
+                    </div>
+                    <div class="info-section">
+                        <h4>Periods (Rows)</h4>
+                        <p>Elements in the same period have the same number of electron shells. Period number = number of electron shells.</p>
+                    </div>
+                    <div class="info-section">
+                        <h4>Blocks (s, p, d, f)</h4>
+                        <p>Blocks indicate which orbital is being filled with electrons:</p>
+                        <ul>
+                            <li><strong>s-block:</strong> Groups 1-2 (valence electrons in s orbital)</li>
+                            <li><strong>p-block:</strong> Groups 13-18 (filling p orbitals)</li>
+                            <li><strong>d-block:</strong> Groups 3-12 (transition metals, filling d orbitals)</li>
+                            <li><strong>f-block:</strong> Lanthanides & Actinides (filling f orbitals)</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
