@@ -27,6 +27,7 @@
                 <li><a href="#polynomials">Polynomials</a></li>
                 <li><a href="#find-prime">Find Prime</a></li>
                 <li><a href="#screensaver-controls">Screensaver</a></li>
+                <li><button id="calculator-btn" class="nav-btn">🧮 Calculator</button></li>
             </ul>
         </nav>
     </header>
@@ -151,6 +152,41 @@
     <footer class="content-footer">
         <p>&copy; 2024 Prime Factorize A Sean. All rights reserved.</p>
     </footer>
+    <!-- Calculator Modal -->
+    <div id="calculator-modal" class="modal">
+        <div class="modal-content calculator-content">
+            <span class="modal-close calculator-close">&times;</span>
+            <h2>Quick Calculator</h2>
+            <div class="calculator">
+                <input type="text" id="calc-display" class="calc-display" readonly>
+                <div class="calc-buttons">
+                    <button class="calc-btn calc-clear">C</button>
+                    <button class="calc-btn calc-delete">⌫</button>
+                    <button class="calc-btn calc-operator">÷</button>
+                    <button class="calc-btn calc-operator">×</button>
+                    
+                    <button class="calc-btn calc-number">7</button>
+                    <button class="calc-btn calc-number">8</button>
+                    <button class="calc-btn calc-number">9</button>
+                    <button class="calc-btn calc-operator">-</button>
+                    
+                    <button class="calc-btn calc-number">4</button>
+                    <button class="calc-btn calc-number">5</button>
+                    <button class="calc-btn calc-number">6</button>
+                    <button class="calc-btn calc-operator">+</button>
+                    
+                    <button class="calc-btn calc-number">1</button>
+                    <button class="calc-btn calc-number">2</button>
+                    <button class="calc-btn calc-number">3</button>
+                    <button class="calc-btn calc-equals">=</button>
+                    
+                    <button class="calc-btn calc-number calc-zero">0</button>
+                    <button class="calc-btn calc-decimal">.</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Divisibility Tricks Modal -->
     <div id="divisibility-modal" class="modal">
         <div class="modal-content">

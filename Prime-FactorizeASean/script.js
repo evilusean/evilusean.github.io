@@ -2601,6 +2601,126 @@ document.addEventListener('DOMContentLoaded', function() {
             dropRandomPrimesBtn.click();
         }
     }, 500);
+    
+    // Calculator functionality
+    const calculatorBtn = document.getElementById('calculator-btn');
+    const calculatorModal = document.getElementById('calculator-modal');
+    const calculatorClose = document.querySelector('.calculator-close');
+    const calcDisplay = document.getElementById('calc-display');
+    
+    let calcCurrentValue = '0';
+    let calcPreviousValue = '';
+    let calcOperation = null;
+    
+    function updateCalcDisplay() {
+        if (calcDisplay) {
+            calcDisplay.value = calcCurrentValue;
+        }
+    }
+    
+    if (calculatorBtn && calculatorModal) {
+        calculatorBtn.addEventListener('click', () => {
+            calculatorModal.style.display = 'block';
+            calcCurrentValue = '0';
+            updateCalcDisplay();
+        });
+        
+        if (calculatorClose) {
+            calculatorClose.addEventListener('click', () => {
+                calculatorModal.style.display = 'none';
+            });
+        }
+        
+        // Close when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === calculatorModal) {
+                calculatorModal.style.display = 'none';
+            }
+        });
+        
+        // Close with ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && calculatorModal.style.display === 'block') {
+                calculatorModal.style.display = 'none';
+            }
+        });
+        
+        // Calculator button handlers
+        const calcButtons = document.querySelectorAll('.calc-btn');
+        calcButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const btnText = btn.textContent;
+                
+                if (btn.classList.contains('calc-number')) {
+                    if (calcCurrentValue === '0') {
+                        calcCurrentValue = btnText;
+                    } else {
+                        calcCurrentValue += btnText;
+                    }
+                    updateCalcDisplay();
+                }
+                else if (btn.classList.contains('calc-decimal')) {
+                    if (!calcCurrentValue.includes('.')) {
+                        calcCurrentValue += '.';
+                        updateCalcDisplay();
+                    }
+                }
+                else if (btn.classList.contains('calc-operator')) {
+                    if (calcPreviousValue && calcOperation) {
+                        calculate();
+                    }
+                    calcPreviousValue = calcCurrentValue;
+                    calcCurrentValue = '0';
+                    calcOperation = btnText;
+                }
+                else if (btn.classList.contains('calc-equals')) {
+                    calculate();
+                }
+                else if (btn.classList.contains('calc-clear')) {
+                    calcCurrentValue = '0';
+                    calcPreviousValue = '';
+                    calcOperation = null;
+                    updateCalcDisplay();
+                }
+                else if (btn.classList.contains('calc-delete')) {
+                    if (calcCurrentValue.length > 1) {
+                        calcCurrentValue = calcCurrentValue.slice(0, -1);
+                    } else {
+                        calcCurrentValue = '0';
+                    }
+                    updateCalcDisplay();
+                }
+            });
+        });
+        
+        function calculate() {
+            if (!calcPreviousValue || !calcOperation) return;
+            
+            const prev = parseFloat(calcPreviousValue);
+            const current = parseFloat(calcCurrentValue);
+            let result = 0;
+            
+            switch(calcOperation) {
+                case '+':
+                    result = prev + current;
+                    break;
+                case '-':
+                    result = prev - current;
+                    break;
+                case '×':
+                    result = prev * current;
+                    break;
+                case '÷':
+                    result = current !== 0 ? prev / current : 'Error';
+                    break;
+            }
+            
+            calcCurrentValue = result.toString();
+            calcPreviousValue = '';
+            calcOperation = null;
+            updateCalcDisplay();
+        }
+    }
 });
 
 // Handle window resize for responsive columns
