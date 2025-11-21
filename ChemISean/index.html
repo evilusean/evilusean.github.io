@@ -13,6 +13,12 @@
             <div class="nav-buttons">
                 <button id="classicBtn" class="nav-btn active">Classic View</button>
                 <button id="russellBtn" class="nav-btn">Russell Spiral</button>
+                <button id="trendsBtn" class="nav-btn trends-toggle">
+                    📊 Trends
+                </button>
+                <button id="compareBtn" class="nav-btn compare-toggle">
+                    ⚖️ Compare
+                </button>
                 <button id="quizModeBtn" class="nav-btn quiz-toggle">
                     🎯 Quiz Mode
                 </button>
@@ -251,6 +257,13 @@
                     <p><strong>Discovery:</strong> <span id="modalDiscovery"></span></p>
                 </div>
                 <div class="modal-section">
+                    <h3>Chemical Properties</h3>
+                    <p><strong>Electronegativity (Pauling):</strong> <span id="modalElectronegativity"></span></p>
+                    <p><strong>1st Ionization Energy:</strong> <span id="modalIonization"></span> kJ/mol</p>
+                    <p><strong>Atomic Radius:</strong> <span id="modalRadius"></span> pm</p>
+                    <p><strong>Common Oxidation States:</strong> <span id="modalOxidation"></span></p>
+                </div>
+                <div class="modal-section">
                     <h3>Description</h3>
                     <p id="modalSummary"></p>
                 </div>
@@ -280,6 +293,46 @@
         </div>
         <div id="savedElementsList" class="saved-list">
             <p class="saved-empty">No elements saved yet. Press <kbd>Space</kbd> during screensaver or while hovering over elements to save them.</p>
+        </div>
+    </div>
+
+    <!-- Trends Panel -->
+    <div id="trendsPanel" class="trends-panel-dropdown">
+        <div class="trends-header">
+            <h3>📊 Periodic Trends Visualization</h3>
+            <button id="closeTrends" class="saved-btn close-btn" title="Close">×</button>
+        </div>
+        <div class="trends-content">
+            <div class="trend-options">
+                <button class="trend-btn" data-trend="electronegativity">Electronegativity</button>
+                <button class="trend-btn" data-trend="ionization">Ionization Energy</button>
+                <button class="trend-btn" data-trend="radius">Atomic Radius</button>
+                <button class="trend-btn" data-trend="none">Reset Colors</button>
+            </div>
+            <div id="trendLegend" class="trend-legend"></div>
+            <div id="trendGraph" class="trend-graph"></div>
+        </div>
+    </div>
+
+    <!-- Comparison Panel -->
+    <div id="comparePanel" class="compare-panel-dropdown">
+        <div class="compare-header">
+            <h3>⚖️ Element Comparison</h3>
+            <button id="closeCompare" class="saved-btn close-btn" title="Close">×</button>
+        </div>
+        <div class="compare-content">
+            <div class="compare-instructions">
+                <p>Click on two elements to compare them side-by-side</p>
+            </div>
+            <div id="compareDisplay" class="compare-display">
+                <div class="compare-slot" id="compareSlot1">
+                    <p class="compare-empty">Click an element</p>
+                </div>
+                <div class="compare-divider">VS</div>
+                <div class="compare-slot" id="compareSlot2">
+                    <p class="compare-empty">Click an element</p>
+                </div>
+            </div>
         </div>
     </div>
 

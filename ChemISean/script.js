@@ -25,14 +25,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     initializeSavedElements();
     initializeSpacebarSave();
     initializeQuizMode();
+    initializeTrends();
+    initializeComparison();
 });
 
 // Load elements data
 async function loadElements() {
     try {
-        const response = await fetch('assets/data/elements.json');
-        elements = await response.json();
-        console.log(`Loaded ${elements.length} elements`);
+        const [elementsResponse, propertiesResponse] = await Promise.all([
+            fetch('assets/data/elements.json'),
+            fetch('assets/data/chemical-properties.json')
+        ]);
+        
+        elements = await elementsResponse.json();
+        const chemicalProperties = await propertiesResponse.json();
+        
+        // Merge chemical properties into elements
+        elements = elements.map(element => ({
+            ...element,
+            ...chemicalProperties[element.number.toString()]
+        }));
+        
+        console.log(`Loaded ${elements.length} elements with chemical properties`);
     } catch (error) {
         console.error('Error loading elements:', error);
     }
@@ -583,6 +597,12 @@ function showElementModal(element) {
     document.getElementById('modalElectronConfig').textContent = element.electron_config;
     document.getElementById('modalDiscovery').textContent = element.discovery;
     document.getElementById('modalSummary').textContent = element.summary;
+    
+    // Chemical properties
+    document.getElementById('modalElectronegativity').textContent = element.electronegativity !== null ? element.electronegativity : 'N/A';
+    document.getElementById('modalIonization').textContent = element.ionization_energy !== null ? element.ionization_energy : 'N/A';
+    document.getElementById('modalRadius').textContent = element.atomic_radius !== null ? element.atomic_radius : 'N/A';
+    document.getElementById('modalOxidation').textContent = element.oxidation_states ? element.oxidation_states.join(', ') : 'N/A';
     
     // Russell-specific info
     document.getElementById('modalOctave').textContent = element.russell_octave || 'N/A';
@@ -1861,6 +1881,14 @@ let savedElements = JSON.parse(localStorage.getItem('savedElements') || '[]');
 let quizModeActive = false;
 let quizStates = {}; // Track reveal state for each element
 
+// Trends mode
+let trendsMode = false;
+let activeTrend = 'none';
+
+// Comparison mode
+let compareMode = false;
+let compareElements = [null, null];
+
 // Speed settings (in milliseconds)
 const speedSettings = {
     slow: { number: 10000, symbol: 10000, info: 10000 },
@@ -2082,3 +2110,298 @@ function revealElementInfo(overlay, element, elementDiv) {
         }, speeds.symbol);
     }, speeds.number);
 }
+
+// Initialize trends mode
+function initializeTrends() {
+    const trendsBtn = document.getElementById('trendsBtn');
+    const trendsPanel = document.getElementById('trendsPanel');
+    const closeTrends = document.getElementById('closeTrends');
+    const trendButtons = document.querySelectorAll('.trend-btn');
+    
+    trendsBtn.addEventListener('click', () => {
+        trendsPanel.classList.toggle('active');
+    });
+    
+    closeTrends.addEventListener('click', () => {
+        trendsPanel.classList.remove('active');
+    });
+    
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!trendsPanel.contains(e.target) && !trendsBtn.contains(e.target)) {
+            trendsPanel.classList.remove('active');
+        }
+    });
+    
+    trendButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const trend = btn.getAttribute('data-trend');
+            activeTrend = trend;
+            
+            // Update active button
+            trendButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            applyTrendColors(trend);
+            updateTrendLegend(trend);
+            updateTrendGraph(trend);
+        });
+    });
+}
+
+// Apply trend-based colors to elements
+function applyTrendColors(trend) {
+    const allElements = document.querySelectorAll('.element');
+    
+    if (trend === 'none') {
+        // Reset to category colors
+        allElements.forEach(elementDiv => {
+            elementDiv.style.removeProperty('background');
+        });
+        return;
+    }
+    
+    // Get property values for color mapping
+    const values = elements
+        .map(e => getTrendValue(e, trend))
+        .filter(v => v !== null);
+    
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    
+    allElements.forEach(elementDiv => {
+        const elementNumber = parseInt(elementDiv.getAttribute('data-number'));
+        const element = elements.find(e => e.number === elementNumber);
+        const value = getTrendValue(element, trend);
+        
+        if (value === null) {
+            elementDiv.style.background = '#666';
+        } else {
+            const color = getHeatmapColor(value, min, max);
+            elementDiv.style.background = color;
+        }
+    });
+}
+
+// Get trend value for an element
+function getTrendValue(element, trend) {
+    switch(trend) {
+        case 'electronegativity':
+            return element.electronegativity;
+        case 'ionization':
+            return element.ionization_energy;
+        case 'radius':
+            return element.atomic_radius;
+        default:
+            return null;
+    }
+}
+
+// Get heatmap color (blue = low, red = high)
+function getHeatmapColor(value, min, max) {
+    const normalized = (value - min) / (max - min);
+    
+    // Blue to cyan to green to yellow to red
+    if (normalized < 0.25) {
+        const t = normalized / 0.25;
+        return `rgb(${Math.round(0 + 0*t)}, ${Math.round(0 + 255*t)}, ${Math.round(255)})`;
+    } else if (normalized < 0.5) {
+        const t = (normalized - 0.25) / 0.25;
+        return `rgb(${Math.round(0)}, ${Math.round(255)}, ${Math.round(255 - 255*t)})`;
+    } else if (normalized < 0.75) {
+        const t = (normalized - 0.5) / 0.25;
+        return `rgb(${Math.round(0 + 255*t)}, ${Math.round(255)}, ${Math.round(0)})`;
+    } else {
+        const t = (normalized - 0.75) / 0.25;
+        return `rgb(${Math.round(255)}, ${Math.round(255 - 255*t)}, ${Math.round(0)})`;
+    }
+}
+
+// Update trend legend
+function updateTrendLegend(trend) {
+    const legendDiv = document.getElementById('trendLegend');
+    
+    if (trend === 'none') {
+        legendDiv.innerHTML = '';
+        return;
+    }
+    
+    const values = elements
+        .map(e => getTrendValue(e, trend))
+        .filter(v => v !== null);
+    
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    
+    const trendNames = {
+        electronegativity: 'Electronegativity (Pauling)',
+        ionization: 'Ionization Energy (kJ/mol)',
+        radius: 'Atomic Radius (pm)'
+    };
+    
+    legendDiv.innerHTML = `
+        <div class="legend-title">${trendNames[trend]}</div>
+        <div class="legend-gradient">
+            <span class="legend-min">${min.toFixed(1)}</span>
+            <div class="gradient-bar"></div>
+            <span class="legend-max">${max.toFixed(1)}</span>
+        </div>
+    `;
+}
+
+// Update trend graph
+function updateTrendGraph(trend) {
+    const graphDiv = document.getElementById('trendGraph');
+    
+    if (trend === 'none') {
+        graphDiv.innerHTML = '';
+        return;
+    }
+    
+    const trendNames = {
+        electronegativity: 'Electronegativity',
+        ionization: 'Ionization Energy',
+        radius: 'Atomic Radius'
+    };
+    
+    // Create simple period-based graph
+    const periods = [1, 2, 3, 4, 5, 6, 7];
+    const periodData = periods.map(period => {
+        const periodElements = elements.filter(e => e.row === period);
+        const values = periodElements
+            .map(e => getTrendValue(e, trend))
+            .filter(v => v !== null);
+        
+        return {
+            period,
+            avg: values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0
+        };
+    });
+    
+    const maxAvg = Math.max(...periodData.map(d => d.avg));
+    
+    graphDiv.innerHTML = `
+        <div class="graph-title">Average ${trendNames[trend]} by Period</div>
+        <div class="graph-bars">
+            ${periodData.map(d => `
+                <div class="graph-bar-container">
+                    <div class="graph-bar" style="height: ${(d.avg / maxAvg * 100)}%"></div>
+                    <div class="graph-label">P${d.period}</div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+// Initialize comparison mode
+function initializeComparison() {
+    const compareBtn = document.getElementById('compareBtn');
+    const comparePanel = document.getElementById('comparePanel');
+    const closeCompare = document.getElementById('closeCompare');
+    
+    compareBtn.addEventListener('click', () => {
+        compareMode = !compareMode;
+        
+        if (compareMode) {
+            compareBtn.classList.add('active');
+            comparePanel.classList.add('active');
+            compareElements = [null, null];
+            updateCompareDisplay();
+        } else {
+            compareBtn.classList.remove('active');
+            comparePanel.classList.remove('active');
+        }
+    });
+    
+    closeCompare.addEventListener('click', () => {
+        compareMode = false;
+        compareBtn.classList.remove('active');
+        comparePanel.classList.remove('active');
+    });
+}
+
+// Handle element click in comparison mode
+function handleCompareClick(element) {
+    if (compareElements[0] === null) {
+        compareElements[0] = element;
+    } else if (compareElements[1] === null) {
+        compareElements[1] = element;
+    } else {
+        // Reset and start over
+        compareElements = [element, null];
+    }
+    
+    updateCompareDisplay();
+}
+
+// Update comparison display
+function updateCompareDisplay() {
+    const slot1 = document.getElementById('compareSlot1');
+    const slot2 = document.getElementById('compareSlot2');
+    
+    slot1.innerHTML = compareElements[0] ? createCompareCard(compareElements[0]) : '<p class="compare-empty">Click an element</p>';
+    slot2.innerHTML = compareElements[1] ? createCompareCard(compareElements[1]) : '<p class="compare-empty">Click an element</p>';
+}
+
+// Create comparison card
+function createCompareCard(element) {
+    return `
+        <div class="compare-card">
+            <div class="compare-symbol" style="background: ${getCategoryColor(element.category)}">${element.symbol}</div>
+            <h3>${element.name}</h3>
+            <div class="compare-props">
+                <div class="compare-prop">
+                    <span class="prop-label">Atomic Number:</span>
+                    <span class="prop-value">${element.number}</span>
+                </div>
+                <div class="compare-prop">
+                    <span class="prop-label">Atomic Mass:</span>
+                    <span class="prop-value">${element.mass}</span>
+                </div>
+                <div class="compare-prop">
+                    <span class="prop-label">Category:</span>
+                    <span class="prop-value">${formatCategory(element.category)}</span>
+                </div>
+                <div class="compare-prop">
+                    <span class="prop-label">Electronegativity:</span>
+                    <span class="prop-value">${element.electronegativity !== null ? element.electronegativity : 'N/A'}</span>
+                </div>
+                <div class="compare-prop">
+                    <span class="prop-label">Ionization Energy:</span>
+                    <span class="prop-value">${element.ionization_energy !== null ? element.ionization_energy + ' kJ/mol' : 'N/A'}</span>
+                </div>
+                <div class="compare-prop">
+                    <span class="prop-label">Atomic Radius:</span>
+                    <span class="prop-value">${element.atomic_radius !== null ? element.atomic_radius + ' pm' : 'N/A'}</span>
+                </div>
+                <div class="compare-prop">
+                    <span class="prop-label">Oxidation States:</span>
+                    <span class="prop-value">${element.oxidation_states ? element.oxidation_states.join(', ') : 'N/A'}</span>
+                </div>
+                <div class="compare-prop">
+                    <span class="prop-label">Electron Config:</span>
+                    <span class="prop-value">${element.electron_config}</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Update element click handler to support comparison mode
+const originalCreateElementDiv = createElementDiv;
+createElementDiv = function(element) {
+    const div = originalCreateElementDiv(element);
+    
+    // Override click handler
+    div.addEventListener('click', (e) => {
+        if (compareMode) {
+            handleCompareClick(element);
+        } else if (quizModeActive) {
+            handleQuizClick(element, div);
+        } else {
+            showElementModal(element);
+        }
+    }, true); // Use capture to override previous handler
+    
+    return div;
+};

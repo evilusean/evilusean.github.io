@@ -331,23 +331,27 @@ main {
 
 .table-wrapper {
     position: relative;
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 0.5rem;
 }
 
 .group-labels-container {
-    display: flex;
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 0.5rem;
     margin-bottom: 0.5rem;
 }
 
 .period-spacer {
-    width: 40px;
-    flex-shrink: 0;
+    /* Empty spacer to align with period labels */
 }
 
 .group-labels {
     display: grid;
     grid-template-columns: repeat(18, 1fr);
     gap: 4px;
-    flex: 1;
 }
 
 .group-label {
@@ -355,20 +359,17 @@ main {
     font-size: 0.85rem;
     font-weight: 700;
     color: var(--accent);
-    padding: 0.25rem;
 }
 
 .table-with-periods {
-    display: flex;
-    gap: 0.5rem;
+    grid-column: 1 / -1;
+    display: contents;
 }
 
 .period-labels {
     display: grid;
     grid-template-rows: repeat(7, 1fr);
     gap: 4px;
-    width: 40px;
-    flex-shrink: 0;
 }
 
 .period-label {
@@ -845,12 +846,12 @@ main {
         overflow-x: auto;
     }
     
-    .period-spacer {
-        width: 30px;
+    .table-wrapper {
+        grid-template-columns: 30px 1fr;
     }
     
-    .period-labels {
-        width: 30px;
+    .group-labels-container {
+        grid-template-columns: 30px 1fr;
     }
     
     .period-label {
@@ -1452,4 +1453,324 @@ main {
 .element.quiz-mode:hover {
     transform: scale(1.1);
     box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+}
+
+/* Trends Panel */
+.trends-panel-dropdown {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    width: 600px;
+    max-height: 600px;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px var(--shadow);
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    animation: slideDown 0.3s ease-out;
+}
+
+.trends-panel-dropdown.active {
+    display: flex;
+}
+
+.trends-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-tertiary);
+    border-radius: 12px 12px 0 0;
+}
+
+.trends-header h3 {
+    font-size: 1rem;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.trends-content {
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.trend-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.trend-btn {
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border);
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.trend-btn:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}
+
+.trend-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+
+.trend-legend {
+    margin-bottom: 1.5rem;
+}
+
+.legend-title {
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+}
+
+.legend-gradient {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.legend-min, .legend-max {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.gradient-bar {
+    flex: 1;
+    height: 30px;
+    border-radius: 6px;
+    background: linear-gradient(to right, 
+        rgb(0, 0, 255),
+        rgb(0, 255, 255),
+        rgb(0, 255, 0),
+        rgb(255, 255, 0),
+        rgb(255, 0, 0)
+    );
+    border: 1px solid var(--border);
+}
+
+.trend-graph {
+    background: var(--bg-tertiary);
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.graph-title {
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-align: center;
+    color: var(--text-primary);
+}
+
+.graph-bars {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    height: 150px;
+    gap: 0.5rem;
+}
+
+.graph-bar-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+.graph-bar {
+    width: 100%;
+    background: var(--accent);
+    border-radius: 4px 4px 0 0;
+    transition: height 0.3s ease;
+    min-height: 2px;
+}
+
+.graph-label {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+/* Comparison Panel */
+.compare-panel-dropdown {
+    position: fixed;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 900px;
+    max-width: 95vw;
+    max-height: 80vh;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px var(--shadow);
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    animation: slideDown 0.3s ease-out;
+}
+
+.compare-panel-dropdown.active {
+    display: flex;
+}
+
+.compare-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-tertiary);
+    border-radius: 12px 12px 0 0;
+}
+
+.compare-header h3 {
+    font-size: 1rem;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.compare-content {
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.compare-instructions {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.compare-display {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.compare-slot {
+    background: var(--bg-tertiary);
+    border-radius: 12px;
+    padding: 1.5rem;
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.compare-empty {
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.compare-divider {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.compare-card {
+    width: 100%;
+}
+
+.compare-symbol {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    border-radius: 12px;
+    border: 3px solid var(--border);
+    color: #000;
+}
+
+.compare-card h3 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}
+
+.compare-props {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.compare-prop {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem;
+    background: var(--bg-secondary);
+    border-radius: 6px;
+}
+
+.prop-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.prop-value {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.compare-toggle.active {
+    background: #10b981;
+    border-color: #10b981;
+    color: white;
+}
+
+.trends-toggle.active {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .trends-panel-dropdown {
+        right: 10px;
+        left: 10px;
+        width: auto;
+        max-height: 70vh;
+    }
+    
+    .trend-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .compare-panel-dropdown {
+        width: 95vw;
+    }
+    
+    .compare-display {
+        grid-template-columns: 1fr;
+    }
+    
+    .compare-divider {
+        transform: rotate(90deg);
+        font-size: 1.5rem;
+    }
 }
