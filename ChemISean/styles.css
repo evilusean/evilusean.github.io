@@ -1,3 +1,45 @@
+:root {
+    --bg-primary: #0a0e27;
+    --bg-secondary: #1a1f3a;
+    --bg-tertiary: #2a2f4a;
+    --text-primary: #e0e6ed;
+    --text-secondary: #a0a6b0;
+    --accent: #6366f1;
+    --accent-hover: #818cf8;
+    --border: #3a3f5a;
+    --shadow: rgba(0, 0, 0, 0.3);
+    
+    /* Element colors */
+    --alkali-metal: #ff6b6b;
+    --alkaline-earth: #ffd93d;
+    --transition-metal: #ffa07a;
+    --post-transition: #95e1d3;
+    --metalloid: #a8e6cf;
+    --nonmetal: #c7ceea;
+    --halogen: #ff9ff3;
+    --noble-gas: #dda0dd;
+    --lanthanide: #ffccbc;
+    --actinide: #f8bbd0;
+    
+    /* Russell colors */
+    --russell-generative: #ff6b4a;
+    --russell-radiative: #4a9eff;
+    --russell-inert: #ffd700;
+    --russell-balance: #ffffff;
+}
+
+[data-theme="light"] {
+    --bg-primary: #f5f7fa;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #e8ecf1;
+    --text-primary: #1a1f3a;
+    --text-secondary: #5a5f7a;
+    --accent: #4f46e5;
+    --accent-hover: #6366f1;
+    --border: #d0d5dd;
+    --shadow: rgba(0, 0, 0, 0.1);
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -5,102 +47,502 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
     min-height: 100vh;
-    padding: 20px;
+    transition: background 0.3s, color 0.3s;
 }
 
-header {
-    text-align: center;
-    color: white;
-    margin-bottom: 30px;
+/* Navigation */
+.main-nav {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px var(--shadow);
 }
 
-h1 {
-    font-size: 2.5rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-main {
+.nav-container {
     max-width: 1400px;
     margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
-.element-info {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+.nav-container h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
-.element-info.hidden {
+.nav-buttons {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.nav-btn {
+    padding: 0.5rem 1.5rem;
+    border: 2px solid var(--border);
+    background: transparent;
+    color: var(--text-primary);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.nav-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.nav-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+
+.theme-toggle {
+    padding: 0.5rem;
+    border: 2px solid var(--border);
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-toggle:hover {
+    border-color: var(--accent);
+    transform: rotate(20deg);
+}
+
+[data-theme="light"] .moon {
     display: none;
+}
+
+[data-theme="dark"] .sun,
+body:not([data-theme]) .sun {
+    display: none;
+}
+
+/* Main Content */
+main {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+.view {
+    display: none;
+}
+
+.view.active {
+    display: block;
+}
+
+/* Classic Periodic Table */
+.table-container {
+    background: var(--bg-secondary);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px var(--shadow);
+    margin-bottom: 2rem;
 }
 
 .periodic-table {
     display: grid;
     grid-template-columns: repeat(18, 1fr);
-    gap: 5px;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 20px;
-    border-radius: 10px;
+    gap: 4px;
+    margin-bottom: 1rem;
 }
 
 .element {
-    background: white;
-    border: 2px solid #ddd;
-    border-radius: 5px;
-    padding: 10px;
+    aspect-ratio: 1;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    padding: 0.5rem;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     text-align: center;
+    position: relative;
+    background: var(--bg-tertiary);
 }
 
 .element:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: scale(1.15);
     z-index: 10;
+    box-shadow: 0 8px 16px var(--shadow);
 }
 
 .element .atomic-number {
-    font-size: 0.7rem;
-    color: #666;
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    position: absolute;
+    top: 2px;
+    left: 4px;
 }
 
 .element .symbol {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin: 5px 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0.2rem 0;
 }
 
 .element .name {
-    font-size: 0.6rem;
-    color: #888;
+    font-size: 0.55rem;
+    color: var(--text-secondary);
+    margin-top: 0.1rem;
 }
 
 .element .mass {
-    font-size: 0.6rem;
-    color: #999;
+    font-size: 0.5rem;
+    color: var(--text-secondary);
 }
 
-/* Element categories */
-.element.alkali-metal { background: #ff6b6b; }
-.element.alkaline-earth { background: #ffd93d; }
-.element.transition-metal { background: #ffa07a; }
-.element.post-transition { background: #95e1d3; }
-.element.metalloid { background: #a8e6cf; }
-.element.nonmetal { background: #c7ceea; }
-.element.halogen { background: #ff9ff3; }
-.element.noble-gas { background: #dda0dd; }
-.element.lanthanide { background: #ffccbc; }
-.element.actinide { background: #f8bbd0; }
+/* Element category colors */
+.element.alkali-metal { background: var(--alkali-metal); color: #000; }
+.element.alkaline-earth { background: var(--alkaline-earth); color: #000; }
+.element.transition-metal { background: var(--transition-metal); color: #000; }
+.element.post-transition { background: var(--post-transition); color: #000; }
+.element.metalloid { background: var(--metalloid); color: #000; }
+.element.nonmetal { background: var(--nonmetal); color: #000; }
+.element.halogen { background: var(--halogen); color: #000; }
+.element.noble-gas { background: var(--noble-gas); color: #000; }
+.element.lanthanide { background: var(--lanthanide); color: #000; }
+.element.actinide { background: var(--actinide); color: #000; }
 
-footer {
-    text-align: center;
-    color: white;
-    margin-top: 30px;
+/* Lanthanides and Actinides */
+.lanthanides-actinides {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.series-row {
+    display: grid;
+    grid-template-columns: repeat(15, 1fr);
+    gap: 4px;
+}
+
+/* Legend */
+.legend {
+    background: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.legend h3 {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.legend-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.75rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     font-size: 0.9rem;
+}
+
+.color-box {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+}
+
+/* Russell Spiral View */
+.russell-info {
+    background: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px var(--shadow);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.russell-info h2 {
+    margin-bottom: 0.75rem;
+    font-size: 1.5rem;
+}
+
+.russell-info p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.russell-container {
+    background: var(--bg-secondary);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px var(--shadow);
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#russellSpiral {
+    max-width: 100%;
+    height: auto;
+}
+
+.russell-element {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.russell-element:hover {
+    transform: scale(1.2);
+    filter: brightness(1.2);
+}
+
+.russell-element circle {
+    transition: all 0.2s;
+}
+
+.russell-element:hover circle {
+    stroke-width: 3;
+}
+
+.russell-legend {
+    background: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.russell-legend h3 {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.russell-legend-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.75rem;
+}
+
+.russell-generative { background: var(--russell-generative); }
+.russell-radiative { background: var(--russell-radiative); }
+.russell-inert { background: var(--russell-inert); }
+.russell-balance { background: var(--russell-balance); border: 2px solid #000; }
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+}
+
+.modal.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    position: relative;
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.close {
+    position: absolute;
+    right: 1.5rem;
+    top: 1.5rem;
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color 0.2s;
+    line-height: 1;
+}
+
+.close:hover {
+    color: var(--text-primary);
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-symbol {
+    font-size: 4rem;
+    font-weight: 700;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    border: 3px solid var(--border);
+}
+
+.modal-title h2 {
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+}
+
+.modal-title p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+.modal-section {
+    margin-bottom: 1.5rem;
+}
+
+.modal-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+    color: var(--accent);
+}
+
+.modal-section p {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+.modal-section strong {
+    color: var(--text-primary);
+}
+
+.russell-section {
+    background: var(--bg-tertiary);
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--accent);
+}
+
+.wiki-link {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.wiki-link:hover {
+    background: var(--accent-hover);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .periodic-table {
+        gap: 2px;
+    }
+    
+    .element {
+        padding: 0.3rem;
+    }
+    
+    .element .symbol {
+        font-size: 1rem;
+    }
+    
+    .element .name,
+    .element .mass {
+        font-size: 0.45rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-container {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .nav-container h1 {
+        font-size: 1.2rem;
+    }
+    
+    main {
+        padding: 0 1rem;
+    }
+    
+    .table-container {
+        padding: 1rem;
+        overflow-x: auto;
+    }
+    
+    .periodic-table {
+        min-width: 600px;
+    }
+    
+    .legend-grid,
+    .russell-legend-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-content {
+        width: 95%;
+    }
+    
+    .modal-header {
+        flex-direction: column;
+        text-align: center;
+    }
 }

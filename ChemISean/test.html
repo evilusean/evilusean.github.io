@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Integrity Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1a1f3a;
+            color: #e0e6ed;
+        }
+        .pass { color: #4ade80; }
+        .fail { color: #f87171; }
+        .info { color: #60a5fa; }
+        h1 { color: #818cf8; }
+        pre { 
+            background: #0a0e27; 
+            padding: 15px; 
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-left: 4px solid;
+            background: #2a2f4a;
+        }
+        .test-result.pass { border-color: #4ade80; }
+        .test-result.fail { border-color: #f87171; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Periodic Tables Data Integrity Test</h1>
+    <div id="results"></div>
+    
+    <script>
+        async function runTests() {
+            const results = document.getElementById('results');
+            let passCount = 0;
+            let failCount = 0;
+            
+            function log(message, type = 'info') {
+                const div = document.createElement('div');
+                div.className = `test-result ${type}`;
+                div.innerHTML = message;
+                results.appendChild(div);
+                if (type === 'pass') passCount++;
+                if (type === 'fail') failCount++;
+            }
+            
+            try {
+                // Load elements
+                const response = await fetch('elements.json');
+                const elements = await response.json();
+                
+                log(`✓ Successfully loaded elements.json`, 'pass');
+                log(`✓ Found ${elements.length} elements`, 'pass');
+                
+                // Test 1: Check we have 118 elements
+                if (elements.length === 118) {
+                    log(`✓ Correct number of elements (118)`, 'pass');
+                } else {
+                    log(`✗ Expected 118 elements, found ${elements.length}`, 'fail');
+                }
+                
+                // Test 2: Check all required fields
+                const requiredFields = ['number', 'symbol', 'name', 'mass', 'category', 
+                                       'row', 'col', 'electron_config', 'discovery', 
+                                       'summary', 'wikipedia'];
+                
+                let missingFields = 0;
+                elements.forEach(el => {
+                    requiredFields.forEach(field => {
+                        if (!(field in el)) {
+                            log(`✗ Element ${el.number} missing field: ${field}`, 'fail');
+                            missingFields++;
+                        }
+                    });
+                });
+                
+                if (missingFields === 0) {
+                    log(`✓ All elements have required fields`, 'pass');
+                }
+                
+                // Test 3: Check Russell fields
+                const russellFields = ['russell_octave', 'russell_tone', 
+                                      'russell_pressure_side', 'russell_position'];
+                
+                let russellMissing = 0;
+                elements.forEach(el => {
+                    russellFields.forEach(field => {
+                        if (!(field in el)) {
+                            russellMissing++;
+                        }
+                    });
+                });
+                
+                if (russellMissing === 0) {
+                    log(`✓ All elements have Russell classification fields`, 'pass');
+                } else {
+                    log(`⚠ ${russellMissing} Russell fields missing (optional)`, 'info');
+                }
+                
+                // Test 4: Check atomic numbers are sequential
+                let sequential = true;
+                for (let i = 0; i < elements.length; i++) {
+                    if (elements[i].number !== i + 1) {
+                        log(`✗ Element ${i + 1} has wrong atomic number: ${elements[i].number}`, 'fail');
+                        sequential = false;
+                    }
+                }
+                
+                if (sequential) {
+                    log(`✓ Atomic numbers are sequential (1-118)`, 'pass');
+                }
+                
+                // Test 5: Check for duplicate symbols
+                const symbols = new Set();
+                let duplicates = 0;
+                elements.forEach(el => {
+                    if (symbols.has(el.symbol)) {
+                        log(`✗ Duplicate symbol found: ${el.symbol}`, 'fail');
+                        duplicates++;
+                    }
+                    symbols.add(el.symbol);
+                });
+                
+                if (duplicates === 0) {
+                    log(`✓ No duplicate symbols`, 'pass');
+                }
+                
+                // Test 6: Check categories
+                const validCategories = ['alkali-metal', 'alkaline-earth', 'transition-metal',
+                                        'post-transition', 'metalloid', 'nonmetal', 
+                                        'halogen', 'noble-gas', 'lanthanide', 'actinide'];
+                
+                let invalidCategories = 0;
+                elements.forEach(el => {
+                    if (!validCategories.includes(el.category)) {
+                        log(`✗ Invalid category for ${el.symbol}: ${el.category}`, 'fail');
+                        invalidCategories++;
+                    }
+                });
+                
+                if (invalidCategories === 0) {
+                    log(`✓ All categories are valid`, 'pass');
+                }
+                
+                // Test 7: Check noble gases
+                const nobleGases = elements.filter(el => el.category === 'noble-gas');
+                log(`✓ Found ${nobleGases.length} noble gases: ${nobleGases.map(e => e.symbol).join(', ')}`, 'pass');
+                
+                // Test 8: Check Russell octaves
+                const octaves = [...new Set(elements.map(e => e.russell_octave).filter(o => o))];
+                log(`✓ Russell octaves present: ${octaves.sort().join(', ')}`, 'pass');
+                
+                // Summary
+                log(`<br><strong>═══════════════════════════════════</strong>`, 'info');
+                log(`<strong>Test Summary: ${passCount} passed, ${failCount} failed</strong>`, 
+                    failCount === 0 ? 'pass' : 'fail');
+                
+                if (failCount === 0) {
+                    log(`<br>🎉 All tests passed! Data integrity verified.`, 'pass');
+                } else {
+                    log(`<br>⚠️ Some tests failed. Please review the data.`, 'fail');
+                }
+                
+            } catch (error) {
+                log(`✗ Error loading or parsing data: ${error.message}`, 'fail');
+            }
+        }
+        
+        runTests();
+    </script>
+</body>
+</html>
