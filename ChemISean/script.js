@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initializeNavigation();
     generateClassicTable();
     generateRussellSpiral();
-    generateRussellHelix();
+    generateRussellHelixSineWave();
     initializeModal();
 });
 
@@ -380,6 +380,223 @@ function formatPosition(position) {
     return position.split('_').map(word => 
         word.charAt(0).toUpperCase() + word.slice(1)
     ).join(' ');
+}
+
+// Helper function to get Russell color for element
+function getRussellColor(element) {
+    if (element.category === 'noble-gas') return '#FFD700';
+    if (element.russell_pressure_side === 'generative') return '#e88';
+    if (element.russell_pressure_side === 'radiative') return '#88e';
+    if (element.russell_pressure_side === 'balance') return '#8e8';
+    return '#ccc';
+}
+
+// Generate Walter Russell helical side view with sine wave
+function generateRussellHelixSineWave() {
+    const svg = document.getElementById('verticalSineWave');
+    if (!svg) return;
+    
+    svg.innerHTML = ''; // Clear existing
+    
+    const width = 1200;
+    const height = 3000;
+    const centerX = 600;
+    const amplitude = 250;
+    const octaveHeight = 220;
+    const startY = 100; // Start at top instead of bottom
+    
+    // Background
+    const bg = createSVGElement('rect', {
+        width: width,
+        height: height,
+        fill: 'white'
+    });
+    svg.appendChild(bg);
+    
+    // Center line
+    const centerLine = createSVGElement('line', {
+        x1: centerX, y1: 0, x2: centerX, y2: height,
+        stroke: '#ddd', 'stroke-width': 1, 'stroke-dasharray': '5,5'
+    });
+    svg.appendChild(centerLine);
+    
+    // Build octave data from actual element data
+    const octaveData = [];
+    for (let octaveNum = 1; octaveNum <= 10; octaveNum++) {
+        const octaveElements = elements.filter(e => e.russell_octave === octaveNum && e.category !== 'noble-gas');
+        const nobleGas = elements.find(e => e.russell_octave === octaveNum && e.category === 'noble-gas');
+        
+        // Distribute elements along the wave (0 to 1)
+        const elementPositions = octaveElements.map((el, idx) => ({
+            sym: el.symbol,
+            pos: idx / Math.max(octaveElements.length - 1, 1),
+            element: el
+        }));
+        
+        octaveData.push({
+            num: octaveNum,
+            elements: elementPositions,
+            inert: nobleGas ? nobleGas.symbol : '?',
+            direction: octaveNum % 2 === 1 ? -1 : 1 // Odd left, even right
+        });
+    }
+    
+    // Draw each octave
+    octaveData.forEach((octave, idx) => {
+        // Increase amplitude and height for each successive octave
+        const currentAmplitude = amplitude + (idx * 20); // Gets wider
+        const currentHeight = octaveHeight + (idx * 10); // Gets taller
+        
+        const baseY = startY + octaveData.slice(0, idx).reduce((sum, _, i) => 
+            sum + octaveHeight + (i * 10), 0);
+        const topY = baseY + currentHeight;
+        const dir = octave.direction;
+        
+        // Draw inertia line
+        const inertiaLine = createSVGElement('line', {
+            x1: 50, y1: topY, x2: 750, y2: topY,
+            stroke: '#999', 'stroke-width': 1, 'stroke-dasharray': '5,5'
+        });
+        svg.appendChild(inertiaLine);
+        
+        // Octave label
+        const ordinal = idx === 0 ? 'ST' : idx === 1 ? 'ND' : idx === 2 ? 'RD' : 'TH';
+        const label = createSVGElement('text', {
+            x: 720, y: baseY - octaveHeight/2,
+            'font-size': 11, 'font-weight': 'bold', 'text-anchor': 'start'
+        });
+        label.textContent = `${octave.num}${ordinal} OCTAVE`;
+        svg.appendChild(label);
+        
+        // Draw wave path for this octave
+        const pathSteps = 100;
+        let pathD = '';
+        for (let i = 0; i <= pathSteps; i++) {
+            const t = i / pathSteps;
+            const y = baseY + t * currentHeight;
+            const angle = t * Math.PI;
+            const x = centerX + dir * Math.sin(angle) * currentAmplitude;
+            pathD += (i === 0 ? 'M' : 'L') + ` ${x},${y} `;
+        }
+        
+        const wavePath = createSVGElement('path', {
+            d: pathD,
+            stroke: '#000',
+            'stroke-width': 3,
+            fill: 'none'
+        });
+        svg.appendChild(wavePath);
+        
+        // Place elements along the wave
+        octave.elements.forEach(el => {
+            const t = el.pos;
+            const y = baseY + t * currentHeight;
+            const angle = t * Math.PI;
+            const x = centerX + dir * Math.sin(angle) * currentAmplitude;
+            
+            const elementData = el.element;
+            
+            // Element circle (clickable)
+            const circle = createSVGElement('circle', {
+                cx: x, cy: y, r: 12,
+                fill: elementData ? getRussellColor(elementData) : '#ccc',
+                stroke: '#000', 'stroke-width': 1.5,
+                cursor: 'pointer',
+                class: 'helix-element'
+            });
+            
+            if (elementData) {
+                circle.addEventListener('click', () => showElementModal(elementData));
+                circle.addEventListener('mouseenter', function() {
+                    this.setAttribute('r', 15);
+                    this.setAttribute('stroke-width', 2.5);
+                });
+                circle.addEventListener('mouseleave', function() {
+                    this.setAttribute('r', 12);
+                    this.setAttribute('stroke-width', 1.5);
+                });
+            }
+            
+            svg.appendChild(circle);
+            
+            // Element symbol
+            const text = createSVGElement('text', {
+                x: x, y: y + 4,
+                'font-size': 10, 'font-weight': 'bold',
+                'text-anchor': 'middle', fill: '#000',
+                'pointer-events': 'none'
+            });
+            text.textContent = el.sym;
+            svg.appendChild(text);
+        });
+        
+        // Noble gas at peak (clickable)
+        const nobleData = elements.find(e => e.symbol === octave.inert);
+        
+        const nobleBox = createSVGElement('rect', {
+            x: centerX - 50, y: topY + 5,
+            width: 100, height: 30,
+            fill: '#FFD700', stroke: '#000', 'stroke-width': 2,
+            cursor: nobleData ? 'pointer' : 'default'
+        });
+        
+        if (nobleData) {
+            nobleBox.addEventListener('click', () => showElementModal(nobleData));
+            nobleBox.addEventListener('mouseenter', function() {
+                this.setAttribute('stroke-width', 3);
+                this.setAttribute('fill', '#FFE44D');
+            });
+            nobleBox.addEventListener('mouseleave', function() {
+                this.setAttribute('stroke-width', 2);
+                this.setAttribute('fill', '#FFD700');
+            });
+        }
+        
+        svg.appendChild(nobleBox);
+        
+        const nobleText = createSVGElement('text', {
+            x: centerX, y: topY + 22,
+            'font-size': 14, 'font-weight': 'bold',
+            'text-anchor': 'middle',
+            'pointer-events': 'none'
+        });
+        nobleText.textContent = octave.inert;
+        svg.appendChild(nobleText);
+        
+        const toneText = createSVGElement('text', {
+            x: centerX, y: topY + 32,
+            'font-size': 8, 'text-anchor': 'middle', fill: '#666',
+            'pointer-events': 'none'
+        });
+        toneText.textContent = '4++';
+        svg.appendChild(toneText);
+    });
+    
+    // Side labels
+    const leftLabel = createSVGElement('text', {
+        x: 80, y: 1000,
+        'font-size': 11, 'font-weight': 'bold',
+        fill: '#c44', transform: 'rotate(-90 80 1000)'
+    });
+    leftLabel.textContent = 'GENERATIVE / MALE (+) / COMPRESSION';
+    svg.appendChild(leftLabel);
+    
+    const rightLabel = createSVGElement('text', {
+        x: 720, y: 1000,
+        'font-size': 11, 'font-weight': 'bold',
+        fill: '#44c', transform: 'rotate(90 720 1000)'
+    });
+    rightLabel.textContent = 'RADIATIVE / FEMALE (−) / EXPANSION';
+    svg.appendChild(rightLabel);
+    
+    // Title at top
+    const title = createSVGElement('text', {
+        x: centerX, y: 30,
+        'font-size': 14, 'font-weight': 'bold',
+        'text-anchor': 'middle'
+    });
+    title.textContent = 'DIAGRAM SHOWING THE TEN OCTAVES OF INTEGRATING LIGHT';
+    svg.appendChild(title);
 }
 
 // Generate Walter Russell helical side view
@@ -925,7 +1142,7 @@ if (originalToggle) {
     originalToggle.addEventListener('click', () => {
         setTimeout(() => {
             generateRussellSpiral();
-            generateRussellHelix();
+            generateRussellHelixSineWave();
         }, 100);
     });
 }

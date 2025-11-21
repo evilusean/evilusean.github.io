@@ -1,0 +1,23 @@
+<svg width="800" height="2000" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="2000" fill="white"/>
+  
+  <!-- Center reference line -->
+  <line x1="400" y1="0" x2="400" y2="2000" stroke="#ddd" stroke-width="1" stroke-dasharray="5,5"/>
+  
+  <!-- Vertical sine wave -->
+  <!-- Starts at bottom, oscillates left-right as it rises to top -->
+  <path d="M 400,1900
+           Q 200,1800 400,1700
+           Q 600,1600 400,1500
+           Q 200,1400 400,1300
+           Q 600,1200 400,1100
+           Q 200,1000 400,900
+           Q 600,800 400,700
+           Q 200,600 400,500
+           Q 600,400 400,300
+           Q 200,200 400,100"
+        stroke="black" 
+        stroke-width="3" 
+        fill="none"/>
+</svg>
