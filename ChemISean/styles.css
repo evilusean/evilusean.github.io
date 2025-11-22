@@ -1756,6 +1756,28 @@ main {
     color: white;
 }
 
+/* Comparison Tooltip */
+.compare-tooltip {
+    position: fixed;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #10b981;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 999;
+    display: none;
+    animation: slideDown 0.3s ease-out;
+}
+
+.compare-tooltip.active {
+    display: block;
+}
+
 .trends-toggle.active {
     background: #3b82f6;
     border-color: #3b82f6;

@@ -2351,12 +2351,13 @@ function initializeComparison() {
         
         if (compareMode) {
             compareBtn.classList.add('active');
-            comparePanel.classList.add('active');
             compareElements = [null, null];
-            updateCompareDisplay();
+            // Show small tooltip instead of full panel
+            showCompareTooltip();
         } else {
             compareBtn.classList.remove('active');
             comparePanel.classList.remove('active');
+            hideCompareTooltip();
         }
     });
     
@@ -2367,18 +2368,55 @@ function initializeComparison() {
     });
 }
 
+// Show small comparison tooltip
+function showCompareTooltip() {
+    let tooltip = document.getElementById('compareTooltip');
+    if (!tooltip) {
+        tooltip = document.createElement('div');
+        tooltip.id = 'compareTooltip';
+        tooltip.className = 'compare-tooltip';
+        tooltip.innerHTML = '👆 Click 2 elements to compare';
+        document.body.appendChild(tooltip);
+    }
+    tooltip.classList.add('active');
+}
+
+// Hide comparison tooltip
+function hideCompareTooltip() {
+    const tooltip = document.getElementById('compareTooltip');
+    if (tooltip) {
+        tooltip.classList.remove('active');
+    }
+}
+
 // Handle element click in comparison mode
 function handleCompareClick(element) {
     if (compareElements[0] === null) {
         compareElements[0] = element;
+        // Update tooltip to show progress
+        const tooltip = document.getElementById('compareTooltip');
+        if (tooltip) {
+            tooltip.innerHTML = `✓ ${element.symbol} selected. Click 1 more element`;
+        }
     } else if (compareElements[1] === null) {
         compareElements[1] = element;
+        // Both elements selected - hide tooltip and show full comparison
+        hideCompareTooltip();
+        const comparePanel = document.getElementById('comparePanel');
+        comparePanel.classList.add('active');
+        updateCompareDisplay();
     } else {
         // Reset and start over
         compareElements = [element, null];
+        const tooltip = document.getElementById('compareTooltip');
+        if (tooltip) {
+            tooltip.innerHTML = `✓ ${element.symbol} selected. Click 1 more element`;
+        }
+        // Hide panel, show tooltip again
+        const comparePanel = document.getElementById('comparePanel');
+        comparePanel.classList.remove('active');
+        showCompareTooltip();
     }
-    
-    updateCompareDisplay();
 }
 
 // Update comparison display
