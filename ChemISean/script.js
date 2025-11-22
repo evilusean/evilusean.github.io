@@ -512,11 +512,15 @@ function createRussellElement(element, position) {
         this.style.transform = 'scale(1.2)';
         this.style.transformOrigin = `${position.x}px ${position.y}px`;
         circle.setAttribute('stroke-width', 3);
+        // Track hover for spacebar save
+        hoveredElement = element;
     });
     
     group.addEventListener('mouseleave', function() {
         this.style.transform = 'scale(1)';
         circle.setAttribute('stroke-width', 2);
+        // Clear hover tracking
+        hoveredElement = null;
     });
     
     group.addEventListener('click', () => showElementModal(element));
@@ -676,10 +680,14 @@ function drawHelixElement(svg, x, y, elementData) {
         circle.addEventListener('mouseenter', function() {
             this.setAttribute('r', 15);
             this.setAttribute('stroke-width', 2.5);
+            // Track hover for spacebar save
+            hoveredElement = elementData;
         });
         circle.addEventListener('mouseleave', function() {
             this.setAttribute('r', 12);
             this.setAttribute('stroke-width', 1.5);
+            // Clear hover tracking
+            hoveredElement = null;
         });
     }
     
@@ -2079,23 +2087,56 @@ function revealElementInfo(overlay, element, elementDiv) {
             
             const infoDiv = document.createElement('div');
             infoDiv.className = 'screensaver-info fade-in';
-            infoDiv.innerHTML = `
-                <h2>${element.name}</h2>
-                <div class="info-grid">
-                    <div><strong>Atomic Number:</strong> ${element.number}</div>
-                    <div><strong>Atomic Mass:</strong> ${element.mass}</div>
-                    <div><strong>Category:</strong> ${formatCategory(element.category)}</div>
-                    <div><strong>Group:</strong> ${element.group || 'N/A'}</div>
-                    <div><strong>Period:</strong> ${element.period || element.row}</div>
-                    <div><strong>Block:</strong> ${element.block ? element.block + '-block' : 'N/A'}</div>
-                    <div><strong>Electron Config:</strong> ${element.electron_config}</div>
-                    <div><strong>Electronegativity:</strong> ${element.electronegativity !== null ? element.electronegativity : 'N/A'}</div>
-                    <div><strong>Ionization Energy:</strong> ${element.ionization_energy !== null ? element.ionization_energy + ' kJ/mol' : 'N/A'}</div>
-                    <div><strong>Atomic Radius:</strong> ${element.atomic_radius !== null ? element.atomic_radius + ' pm' : 'N/A'}</div>
-                    <div><strong>Oxidation States:</strong> ${element.oxidation_states ? element.oxidation_states.join(', ') : 'N/A'}</div>
-                    <div><strong>Discovery:</strong> ${element.discovery}</div>
-                </div>
-            `;
+            
+            // Check screen size
+            const screenWidth = window.innerWidth;
+            const isMobile = screenWidth <= 768;
+            const isTablet = screenWidth > 768 && screenWidth <= 1200;
+            
+            if (isMobile) {
+                // Mobile: Show only 4 critical items
+                infoDiv.innerHTML = `
+                    <h2>${element.name}</h2>
+                    <div class="info-grid">
+                        <div><strong>Atomic Number:</strong> ${element.number}</div>
+                        <div><strong>Atomic Mass:</strong> ${element.mass}</div>
+                        <div><strong>Category:</strong> ${formatCategory(element.category)}</div>
+                        <div><strong>Electron Config:</strong> ${element.electron_config}</div>
+                    </div>
+                `;
+            } else if (isTablet) {
+                // Tablet: Show 6 most important items
+                infoDiv.innerHTML = `
+                    <h2>${element.name}</h2>
+                    <div class="info-grid">
+                        <div><strong>Atomic Number:</strong> ${element.number}</div>
+                        <div><strong>Atomic Mass:</strong> ${element.mass}</div>
+                        <div><strong>Category:</strong> ${formatCategory(element.category)}</div>
+                        <div><strong>Electron Config:</strong> ${element.electron_config}</div>
+                        <div><strong>Electronegativity:</strong> ${element.electronegativity !== null ? element.electronegativity : 'N/A'}</div>
+                        <div><strong>Oxidation States:</strong> ${element.oxidation_states ? element.oxidation_states.join(', ') : 'N/A'}</div>
+                    </div>
+                `;
+            } else {
+                // Desktop: Show all 12 items
+                infoDiv.innerHTML = `
+                    <h2>${element.name}</h2>
+                    <div class="info-grid">
+                        <div><strong>Atomic Number:</strong> ${element.number}</div>
+                        <div><strong>Atomic Mass:</strong> ${element.mass}</div>
+                        <div><strong>Category:</strong> ${formatCategory(element.category)}</div>
+                        <div><strong>Group:</strong> ${element.group || 'N/A'}</div>
+                        <div><strong>Period:</strong> ${element.period || element.row}</div>
+                        <div><strong>Block:</strong> ${element.block ? element.block + '-block' : 'N/A'}</div>
+                        <div><strong>Electron Config:</strong> ${element.electron_config}</div>
+                        <div><strong>Electronegativity:</strong> ${element.electronegativity !== null ? element.electronegativity : 'N/A'}</div>
+                        <div><strong>Ionization Energy:</strong> ${element.ionization_energy !== null ? element.ionization_energy + ' kJ/mol' : 'N/A'}</div>
+                        <div><strong>Atomic Radius:</strong> ${element.atomic_radius !== null ? element.atomic_radius + ' pm' : 'N/A'}</div>
+                        <div><strong>Oxidation States:</strong> ${element.oxidation_states ? element.oxidation_states.join(', ') : 'N/A'}</div>
+                        <div><strong>Discovery:</strong> ${element.discovery}</div>
+                    </div>
+                `;
+            }
             container.appendChild(infoDiv);
             
             // Step 4: Hold for configured time, then move to next
