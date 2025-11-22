@@ -72,6 +72,25 @@ function initializeNavigation() {
     const russellBtn = document.getElementById('russellBtn');
     const classicView = document.getElementById('classicView');
     const russellView = document.getElementById('russellView');
+    const navToggle = document.getElementById('navToggle');
+    const navButtons = document.getElementById('navButtons');
+    
+    // Mobile nav toggle
+    navToggle.addEventListener('click', () => {
+        navButtons.classList.toggle('active');
+        navToggle.classList.toggle('active');
+    });
+    
+    // Close nav when clicking a button on mobile
+    const allNavButtons = navButtons.querySelectorAll('button');
+    allNavButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+                navButtons.classList.remove('active');
+                navToggle.classList.remove('active');
+            }
+        });
+    });
     
     classicBtn.addEventListener('click', () => {
         classicBtn.classList.add('active');
@@ -283,6 +302,24 @@ function createElementDiv(element) {
         <div class="mass">${element.mass}</div>
     `;
     
+    // Long press for mobile save
+    let pressTimer;
+    
+    div.addEventListener('touchstart', (e) => {
+        pressTimer = setTimeout(() => {
+            // Long press detected - save element
+            saveElement(element);
+        }, 500); // 500ms hold
+    });
+    
+    div.addEventListener('touchend', () => {
+        clearTimeout(pressTimer);
+    });
+    
+    div.addEventListener('touchmove', () => {
+        clearTimeout(pressTimer);
+    });
+    
     div.addEventListener('click', (e) => {
         if (quizModeActive) {
             handleQuizClick(element, div);
@@ -291,7 +328,7 @@ function createElementDiv(element) {
         }
     });
     
-    // Track hover for spacebar save
+    // Track hover for spacebar save (desktop)
     div.addEventListener('mouseenter', () => {
         hoveredElement = element;
     });
@@ -2049,6 +2086,24 @@ function cycleElement() {
         overlay.id = 'screensaverOverlay';
         overlay.className = 'screensaver-overlay';
         document.body.appendChild(overlay);
+        
+        // Add long-press handler for mobile save during screensaver
+        let overlayPressTimer;
+        overlay.addEventListener('touchstart', (e) => {
+            overlayPressTimer = setTimeout(() => {
+                if (currentScreensaverElement) {
+                    saveElement(currentScreensaverElement);
+                }
+            }, 500);
+        });
+        
+        overlay.addEventListener('touchend', () => {
+            clearTimeout(overlayPressTimer);
+        });
+        
+        overlay.addEventListener('touchmove', () => {
+            clearTimeout(overlayPressTimer);
+        });
     }
     
     overlay.innerHTML = '';

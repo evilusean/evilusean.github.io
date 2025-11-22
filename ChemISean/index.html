@@ -9,8 +9,15 @@
 <body>
     <nav class="main-nav">
         <div class="nav-container">
-            <h1>Periodic Tables Explorer</h1>
-            <div class="nav-buttons">
+            <div class="nav-header">
+                <h1>Periodic Tables Explorer</h1>
+                <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation">
+                    <span class="hamburger"></span>
+                    <span class="hamburger"></span>
+                    <span class="hamburger"></span>
+                </button>
+            </div>
+            <div class="nav-buttons" id="navButtons">
                 <button id="classicBtn" class="nav-btn active">Classic View</button>
                 <button id="russellBtn" class="nav-btn">Russell Spiral</button>
                 <button id="trendsBtn" class="nav-btn trends-toggle">
@@ -91,7 +98,9 @@
             <div class="filter-panel">
                 <h3>Filter Elements</h3>
                 <div class="filter-info">
-                    <p>💡 <strong>Tip:</strong> Filters affect screensaver and quiz mode. Press <kbd>Space</kbd> during screensaver or while hovering to save elements.</p>
+                    <p class="desktop-tip">💡 <strong>Tip:</strong> Filters affect screensaver and quiz mode. Press <kbd>Space</kbd> during screensaver or while hovering to save elements.</p>
+                    <p class="tablet-tip">💡 <strong>Tip:</strong> Filters affect screensaver and quiz mode. Press <kbd>Space</kbd> or <strong>touch and hold</strong> elements to save them.</p>
+                    <p class="mobile-tip">💡 <strong>Tip:</strong> Filters affect screensaver and quiz mode. <strong>Touch and hold</strong> any element for 0.5s to save it to your study list.</p>
                 </div>
                 <div class="quiz-info" id="quizInfo" style="display: none;">
                     <p>🎯 <strong>Quiz Mode Active:</strong> Click elements to reveal: 1st click = Atomic Number, 2nd click = Symbol, 3rd click = Full Info. Click "Quiz Mode" again to exit.</p>
