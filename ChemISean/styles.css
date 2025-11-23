@@ -824,6 +824,17 @@ main {
 }
 
 /* Responsive Design */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .tablet-tip {
+        display: block;
+    }
+    
+    .desktop-tip,
+    .mobile-tip {
+        display: none;
+    }
+}
+
 @media (max-width: 1024px) {
     .periodic-table {
         gap: 2px;
@@ -840,14 +851,6 @@ main {
     .element .name,
     .element .mass {
         font-size: 0.45rem;
-    }
-    
-    .tablet-tip {
-        display: block;
-    }
-    
-    .desktop-tip {
-        display: none;
     }
 }
 

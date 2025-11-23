@@ -168,6 +168,14 @@ Potential additions:
 - Animation of element discovery timeline
 - Export/print functionality
 
+# TODO : Future Sean Problems : 
+- Fix the 'Compare' function, it automatically opens each element seperately when clicked, also add highlight for selected elements
+- Quiz mode for Walter Russell Diagrams
+- Fix Walter Russell diagrams, some elements are out of position, but the core concept is still the same
+- Maybe add strudel tones that scale with elements for sound, seems superfluous but could be cool
+- Fix periodic table on small devices to break in half? you need to scroll currently to see it all
+- Add melting temps, because 7/11 was a part time job. 
+
 ---
 
 **Note**: This is a static website with no backend requirements. All data is loaded from the local JSON file.
