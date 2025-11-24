@@ -64,7 +64,7 @@ document.getElementById('searchGrok').addEventListener('click', function() {
   if (combined.value.trim()) {
     combined.select();
     document.execCommand('copy');
-    window.open('https://x.com/i/grok', '_blank');
+    window.open('https://grok.com/', '_blank');
   }
 });
 
