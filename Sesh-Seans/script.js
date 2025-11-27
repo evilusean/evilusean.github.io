@@ -82,19 +82,23 @@ let state = {
     intervalTimerHandle: null,
     timerSeconds: 900, // 15 minutes default
     timerRunning: false,
+    timerEndTime: null, // Timestamp when timer should end
     workoutTimerHandle: null,
     workoutTimerSeconds: 30, // 30 seconds default
     workoutTimerRunning: false,
+    workoutTimerEndTime: null, // Timestamp when workout timer should end
     pomodoroTimerHandle: null,
     pomodoroSeconds: 1200, // 20 minutes default
     pomodoroRunning: false,
     pomodoroOnBreak: false,
     pomodoroBreakSeconds: 300, // 5 minutes default
+    pomodoroEndTime: null, // Timestamp when pomodoro should end
     alarmTime: null,
     alarmCheckInterval: null,
     alarmMode: 'time', // 'time' or 'countdown'
     alarmCountdownHandle: null,
     alarmCountdownSeconds: 0,
+    alarmCountdownEndTime: null, // Timestamp when countdown should end
     currentDate: null,
     todayExercises: [],
     todayPomodoros: [],
@@ -983,27 +987,31 @@ function setupTimerListeners() {
     elements.startTimer.addEventListener('click', () => {
         if (!state.timerRunning) {
             state.timerRunning = true;
+            state.timerEndTime = Date.now() + (state.timerSeconds * 1000);
             elements.startTimer.classList.add('hidden');
             elements.pauseTimer.classList.remove('hidden');
             
             state.intervalTimerHandle = setInterval(() => {
-                if (state.timerSeconds > 0) {
-                    state.timerSeconds--;
-                    updateTimerDisplay();
-                } else {
+                const remaining = Math.max(0, Math.ceil((state.timerEndTime - Date.now()) / 1000));
+                state.timerSeconds = remaining;
+                updateTimerDisplay();
+                
+                if (remaining === 0) {
                     // Timer reached zero - play sound and restart
                     playIntervalSound();
                     const intervalMinutes = parseInt(elements.timerInterval.value) || 15;
                     state.timerSeconds = intervalMinutes * 60;
+                    state.timerEndTime = Date.now() + (state.timerSeconds * 1000);
                     updateTimerDisplay();
                 }
-            }, 1000);
+            }, 100); // Check more frequently for accuracy
         }
     });
 
     elements.pauseTimer.addEventListener('click', () => {
         state.timerRunning = false;
         clearInterval(state.intervalTimerHandle);
+        state.timerEndTime = null;
         elements.startTimer.classList.remove('hidden');
         elements.pauseTimer.classList.add('hidden');
     });
@@ -1022,25 +1030,28 @@ function setupTimerListeners() {
     elements.startWorkoutTimer.addEventListener('click', () => {
         if (!state.workoutTimerRunning) {
             state.workoutTimerRunning = true;
+            state.workoutTimerEndTime = Date.now() + (state.workoutTimerSeconds * 1000);
             elements.startWorkoutTimer.classList.add('hidden');
             elements.pauseWorkoutTimer.classList.remove('hidden');
             
             state.workoutTimerHandle = setInterval(() => {
-                if (state.workoutTimerSeconds > 0) {
-                    state.workoutTimerSeconds--;
-                    updateWorkoutTimerDisplay();
-                } else {
+                const remaining = Math.max(0, Math.ceil((state.workoutTimerEndTime - Date.now()) / 1000));
+                state.workoutTimerSeconds = remaining;
+                updateWorkoutTimerDisplay();
+                
+                if (remaining === 0) {
                     // Workout timer complete
                     playWorkoutSound();
                     resetWorkoutTimer();
                 }
-            }, 1000);
+            }, 100);
         }
     });
 
     elements.pauseWorkoutTimer.addEventListener('click', () => {
         state.workoutTimerRunning = false;
         clearInterval(state.workoutTimerHandle);
+        state.workoutTimerEndTime = null;
         elements.startWorkoutTimer.classList.remove('hidden');
         elements.pauseWorkoutTimer.classList.add('hidden');
     });
@@ -1183,14 +1194,16 @@ function setupPomodoroListeners() {
     elements.startPomodoro.addEventListener('click', () => {
         if (!state.pomodoroRunning) {
             state.pomodoroRunning = true;
+            state.pomodoroEndTime = Date.now() + (state.pomodoroSeconds * 1000);
             elements.startPomodoro.classList.add('hidden');
             elements.pausePomodoro.classList.remove('hidden');
             
             state.pomodoroTimerHandle = setInterval(() => {
-                if (state.pomodoroSeconds > 0) {
-                    state.pomodoroSeconds--;
-                    updatePomodoroTimerDisplay();
-                } else {
+                const remaining = Math.max(0, Math.ceil((state.pomodoroEndTime - Date.now()) / 1000));
+                state.pomodoroSeconds = remaining;
+                updatePomodoroTimerDisplay();
+                
+                if (remaining === 0) {
                     // Timer complete - switch between study and break
                     if (state.pomodoroOnBreak) {
                         // Break complete - back to study
@@ -1198,6 +1211,7 @@ function setupPomodoroListeners() {
                         state.pomodoroOnBreak = false;
                         const studyMinutes = parseInt(elements.pomodoroStudyTime.value) || 20;
                         state.pomodoroSeconds = studyMinutes * 60;
+                        state.pomodoroEndTime = Date.now() + (state.pomodoroSeconds * 1000);
                         elements.pomodoroStatus.textContent = 'Study Session';
                         updatePomodoroTimerDisplay();
                     } else {
@@ -1206,6 +1220,7 @@ function setupPomodoroListeners() {
                         state.pomodoroOnBreak = true;
                         const breakMinutes = parseInt(elements.pomodoroBreakTime.value) || 5;
                         state.pomodoroSeconds = breakMinutes * 60;
+                        state.pomodoroEndTime = Date.now() + (state.pomodoroSeconds * 1000);
                         elements.pomodoroStatus.textContent = 'Break Time!';
                         updatePomodoroTimerDisplay();
                         
@@ -1213,7 +1228,7 @@ function setupPomodoroListeners() {
                         showStatus('⏸️ Break time! Don\'t forget to log your study session!', 'success');
                     }
                 }
-            }, 1000);
+            }, 100);
         }
     });
 
@@ -1221,6 +1236,7 @@ function setupPomodoroListeners() {
     elements.pausePomodoro.addEventListener('click', () => {
         state.pomodoroRunning = false;
         clearInterval(state.pomodoroTimerHandle);
+        state.pomodoroEndTime = null;
         elements.startPomodoro.classList.remove('hidden');
         elements.pausePomodoro.classList.add('hidden');
     });
@@ -1427,6 +1443,7 @@ function setCountdownAlarm() {
     }
     
     state.alarmCountdownSeconds = totalSeconds;
+    state.alarmCountdownEndTime = Date.now() + (totalSeconds * 1000);
     
     elements.setAlarm.classList.add('hidden');
     elements.cancelAlarm.classList.remove('hidden');
@@ -1438,22 +1455,24 @@ function setCountdownAlarm() {
     }
     
     state.alarmCountdownHandle = setInterval(() => {
-        if (state.alarmCountdownSeconds > 0) {
-            state.alarmCountdownSeconds--;
-            const mins = Math.floor(state.alarmCountdownSeconds / 60);
-            const secs = state.alarmCountdownSeconds % 60;
-            elements.alarmDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-        } else {
+        const remaining = Math.max(0, Math.ceil((state.alarmCountdownEndTime - Date.now()) / 1000));
+        state.alarmCountdownSeconds = remaining;
+        const mins = Math.floor(remaining / 60);
+        const secs = remaining % 60;
+        elements.alarmDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        
+        if (remaining === 0) {
             playAlarmSound();
             cancelAlarm();
             showStatus('⏰ Countdown complete!', 'success');
         }
-    }, 1000);
+    }, 100);
 }
 
 function cancelAlarm() {
     state.alarmTime = null;
     state.alarmCountdownSeconds = 0;
+    state.alarmCountdownEndTime = null;
     
     if (state.alarmCheckInterval) {
         clearInterval(state.alarmCheckInterval);
