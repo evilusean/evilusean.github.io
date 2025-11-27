@@ -1,10 +1,8 @@
-// Configuration - Replace with your Google API credentials
-const CONFIG = {
-    CLIENT_ID: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
-    API_KEY: 'YOUR_GOOGLE_API_KEY',
-    DISCOVERY_DOCS: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
-    SCOPES: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file'
-};
+// Configuration is loaded from config.js (not tracked in git)
+// If CONFIG is not defined, it means config.js is missing
+if (typeof CONFIG === 'undefined') {
+    console.error('CONFIG not found! Please create config.js from config-template.js');
+}
 
 // State management
 let state = {
@@ -45,8 +43,20 @@ function initElements() {
 
 // Check if credentials are configured
 function checkCredentials() {
+    if (typeof CONFIG === 'undefined') {
+        const msg = '⚠️ config.js file is missing!\n\n1. Copy config-template.js to config.js\n2. Add your Google API credentials\n3. Refresh the page';
+        if (elements.authButton) {
+            elements.authButton.textContent = 'Missing config.js';
+            elements.authButton.disabled = true;
+            elements.authButton.style.backgroundColor = '#dc3545';
+        }
+        console.error(msg);
+        alert(msg);
+        return false;
+    }
+    
     if (CONFIG.CLIENT_ID.includes('YOUR_GOOGLE') || CONFIG.API_KEY.includes('YOUR_GOOGLE')) {
-        const msg = '⚠️ Please configure your Google API credentials in script.js. See README.md for instructions.';
+        const msg = '⚠️ Please configure your Google API credentials in config.js. See README.md for instructions.';
         if (elements.authButton) {
             elements.authButton.textContent = 'Configure Credentials First';
             elements.authButton.disabled = true;
@@ -88,17 +98,43 @@ function initGoogleAPI() {
             setupAuthButton();
         }).catch(error => {
             console.error('Error initializing Google API:', error);
-            let errorMsg = 'Error initializing Google API. ';
-            if (error.details) {
+            
+            let errorMsg = '❌ Google API Error\n\n';
+            
+            // Check for origin error
+            if (error.details && error.details.includes('Not a valid origin')) {
+                const currentOrigin = window.location.origin;
+                errorMsg += `Your current URL (${currentOrigin}) is not authorized.\n\n`;
+                errorMsg += '🔧 FIX:\n';
+                errorMsg += '1. Go to: https://console.developers.google.com/\n';
+                errorMsg += '2. Click APIs & Services → Credentials\n';
+                errorMsg += '3. Edit your OAuth 2.0 Client ID\n';
+                errorMsg += `4. Add this origin: ${currentOrigin}\n`;
+                errorMsg += '5. Save and wait 1-2 minutes\n\n';
+                errorMsg += 'See FIX_ORIGIN_ERROR.md for detailed instructions.';
+                
+                if (elements.authButton) {
+                    elements.authButton.textContent = 'Origin Not Authorized';
+                    elements.authButton.disabled = true;
+                    elements.authButton.style.backgroundColor = '#dc3545';
+                }
+            } else if (error.details) {
                 errorMsg += error.details;
+                if (elements.authButton) {
+                    elements.authButton.textContent = 'API Error - Check Console';
+                    elements.authButton.disabled = true;
+                }
             } else {
-                errorMsg += 'Check console for details. Make sure your credentials are correct and authorized origins are set.';
+                errorMsg += 'Check console for details.\n';
+                errorMsg += 'Make sure your credentials are correct and authorized origins are set.';
+                if (elements.authButton) {
+                    elements.authButton.textContent = 'API Error - Check Console';
+                    elements.authButton.disabled = true;
+                }
             }
+            
             alert(errorMsg);
-            if (elements.authButton) {
-                elements.authButton.textContent = 'API Error - Check Console';
-                elements.authButton.disabled = true;
-            }
+            console.log('📖 See docs/FIX_ORIGIN_ERROR.md for help with origin errors');
         });
     });
 }

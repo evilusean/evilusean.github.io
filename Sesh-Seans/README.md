@@ -15,60 +15,22 @@ A workout tracking app that logs exercises to Google Sheets with a built-in time
 - 📅 Automatic day separation in the spreadsheet
 - 📱 Fully responsive design
 
-## Setup Instructions
+## Quick Start
 
-### 1. Get Google API Credentials
+1. **Get Google API credentials** from [Google Cloud Console](https://console.cloud.google.com/)
+2. **Copy config template:** `cp config-template.js config.js`
+3. **Add your credentials** to `config.js`
+4. **Test locally:** `python -m http.server 8000`
+5. **Visit:** http://localhost:8000
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select an existing one
-3. Enable the following APIs:
-   - Google Sheets API
-   - Google Drive API
-4. Create OAuth 2.0 credentials:
-   - Go to "Credentials" → "Create Credentials" → "OAuth client ID"
-   - Application type: "Web application"
-   - Add authorized JavaScript origins: `http://localhost:8000` (for testing) and your GitHub Pages URL
-   - Add authorized redirect URIs: Same as above
-5. Create an API Key:
-   - Go to "Credentials" → "Create Credentials" → "API Key"
-   - Restrict the key to Google Sheets API and Google Drive API
+## 📚 Documentation
 
-### 2. Configure the App
-
-Edit `script.js` and replace the placeholder values:
-
-```javascript
-const CONFIG = {
-    CLIENT_ID: 'YOUR_ACTUAL_CLIENT_ID.apps.googleusercontent.com',
-    API_KEY: 'YOUR_ACTUAL_API_KEY',
-    // ... rest stays the same
-};
-```
-
-**Important:** Make sure your OAuth 2.0 Client ID has the correct authorized origins:
-- For local testing: `http://localhost:8000`
-- For GitHub Pages: `https://[username].github.io`
-
-The app will show an error if credentials aren't configured.
-
-### 3. Test Locally
-
-```bash
-# Simple HTTP server with Python
-python -m http.server 8000
-
-# Or with Node.js
-npx http-server -p 8000
-```
-
-Visit `http://localhost:8000`
-
-### 4. Deploy to GitHub Pages
-
-1. Push your code to GitHub
-2. Go to repository Settings → Pages
-3. Select your branch and root folder
-4. Your app will be available at `https://[username].github.io/[repo-name]`
+- **[Quick Start Guide](docs/QUICK_START.md)** - Fast setup overview
+- **[Setup Guide](docs/SETUP.md)** - Detailed local setup
+- **[GitHub Pages Deployment](docs/GITHUB_PAGES_SETUP.md)** - Deploy to GitHub Pages
+- **[Checklist](docs/CHECKLIST.md)** - Complete setup checklist
+- **[Fix Origin Error](docs/FIX_ORIGIN_ERROR.md)** - Fix "Not a valid origin" errors
+- **[Security Guide](docs/SECURITY.md)** - Credential safety information
 
 ## Usage
 
@@ -90,35 +52,11 @@ The Google Sheet will have the following columns:
 
 ## Troubleshooting
 
-### "Can't sign in with Google"
+See [Fix Origin Error Guide](docs/FIX_ORIGIN_ERROR.md) for the most common issue.
 
-1. **Check credentials are configured**: Open browser console (F12) and look for errors
-2. **Verify authorized origins**: In Google Cloud Console, make sure your OAuth client has:
-   - `http://localhost:8000` (for local testing)
-   - Your GitHub Pages URL (for production)
-3. **Check API restrictions**: Make sure your API key allows:
-   - Google Sheets API
-   - Google Drive API
-4. **Clear browser cache**: Sometimes old credentials get cached
-5. **Try incognito mode**: Rules out extension conflicts
+**Common errors:**
+- "Not a valid origin" → Add your URL to authorized origins in Google Cloud Console
+- "Missing config.js" → Copy config-template.js to config.js
+- "Configure Credentials First" → Add real credentials to config.js
 
-### Common Errors
-
-- **"idpiframe_initialization_failed"**: Your domain isn't in authorized origins
-- **"popup_closed_by_user"**: User closed the popup - just try again
-- **"access_denied"**: User didn't grant permissions - need to accept all scopes
-
-### Console Logs
-
-The app logs helpful messages to the browser console:
-- "Page loaded, initializing..." - App started
-- "Google API initialized successfully" - API ready
-- "User signed in" - Authentication successful
-
-## Notes
-
-- A new spreadsheet is created each year
-- Browser notifications will alert you when the timer completes
-- Today's exercises are displayed in the app for quick reference
-- All data is stored in your personal Google Drive
-- The app needs both Google Sheets API and Google Drive API enabled
+Check browser console (F12) for detailed error messages.

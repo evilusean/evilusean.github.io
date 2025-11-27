@@ -1,7 +1,7 @@
 // INSTRUCTIONS:
 // 1. Copy this file and rename it to config.js
 // 2. Fill in your actual Google API credentials below
-// 3. Update script.js to import from config.js instead of using inline CONFIG
+// 3. This file is in .gitignore so it won't be uploaded to GitHub
 
 const CONFIG = {
     // Get this from Google Cloud Console > Credentials > OAuth 2.0 Client IDs
@@ -22,3 +22,4 @@ const CONFIG = {
 // ✓ Added authorized JavaScript origins (http://localhost:8000 and your GitHub Pages URL)
 // ✓ Created and restricted API Key
 // ✓ Replaced YOUR_GOOGLE_CLIENT_ID and YOUR_GOOGLE_API_KEY above
+// ✓ Saved this file as config.js (not config-template.js)
