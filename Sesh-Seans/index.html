@@ -35,7 +35,7 @@
             <!-- Workout Timer Section -->
             <section class="timer-section">
                 <h3>Workout Timer</h3>
-                <div class="timer-display workout-timer" id="workoutTimerDisplay">00:15</div>
+                <div class="timer-display workout-timer" id="workoutTimerDisplay">00:30</div>
                 <div class="timer-controls">
                     <button id="startWorkoutTimer" class="btn btn-success">Start Workout</button>
                     <button id="pauseWorkoutTimer" class="btn btn-warning hidden">Pause</button>
@@ -43,13 +43,22 @@
                 </div>
                 <div class="timer-settings">
                     <label for="workoutTimerDuration">Duration (seconds):</label>
-                    <input type="number" id="workoutTimerDuration" value="15" min="1" max="300">
+                    <input type="number" id="workoutTimerDuration" value="30" min="1" max="300">
                 </div>
             </section>
 
             <!-- Exercise Input Section -->
             <section class="exercise-section">
-                <h2>Log Exercise</h2>
+                <div class="section-header">
+                    <h2>Log Exercise</h2>
+                    <div class="header-controls">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="autoSetWorkoutTimer" checked>
+                            Auto-set workout timer
+                        </label>
+                        <button type="button" id="manageExercises" class="btn btn-secondary btn-small">Manage Exercises</button>
+                    </div>
+                </div>
                 <form id="exerciseForm">
                     <div class="form-group">
                         <label for="exerciseName">Exercise:</label>

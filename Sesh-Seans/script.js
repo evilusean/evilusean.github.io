@@ -8,11 +8,12 @@ let state = {
     isSignedIn: false,
     accessToken: null,
     spreadsheetId: null,
+    workoutLogSheetName: 'Sheet1', // Will be detected
     intervalTimerHandle: null,
     timerSeconds: 900, // 15 minutes default
     timerRunning: false,
     workoutTimerHandle: null,
-    workoutTimerSeconds: 15, // 15 seconds default
+    workoutTimerSeconds: 30, // 30 seconds default
     workoutTimerRunning: false,
     currentDate: null,
     todayExercises: [],
@@ -45,7 +46,9 @@ function initElements() {
         reps: document.getElementById('reps'),
         time: document.getElementById('time'),
         statusMessage: document.getElementById('statusMessage'),
-        todayLog: document.getElementById('todayLog')
+        todayLog: document.getElementById('todayLog'),
+        manageExercises: document.getElementById('manageExercises'),
+        autoSetWorkoutTimer: document.getElementById('autoSetWorkoutTimer')
     };
 }
 
@@ -194,23 +197,406 @@ async function findOrCreateSpreadsheet() {
         if (searchData.files && searchData.files.length > 0) {
             state.spreadsheetId = searchData.files[0].id;
             console.log('Found existing spreadsheet:', state.spreadsheetId);
+            await detectWorkoutLogSheet();
+            await ensureExercisesSheet();
         } else {
-            // Create new spreadsheet
+            // Create new spreadsheet with two sheets
             const createResponse = await gapi.client.sheets.spreadsheets.create({
                 properties: {
                     title: sheetName
-                }
+                },
+                sheets: [
+                    {
+                        properties: {
+                            title: 'Workout Log',
+                            gridProperties: {
+                                frozenRowCount: 1
+                            }
+                        }
+                    },
+                    {
+                        properties: {
+                            title: 'Exercises',
+                            gridProperties: {
+                                frozenRowCount: 1
+                            }
+                        }
+                    }
+                ]
             });
             
             state.spreadsheetId = createResponse.result.spreadsheetId;
+            state.workoutLogSheetName = 'Workout Log';
             console.log('Created new spreadsheet:', state.spreadsheetId);
             
-            // Add header row
+            // Add header row to Workout Log
             await appendToSheet([['Date', 'Time', 'Exercise', 'Weight', 'Reps/Time']]);
+            
+            // Add header and default exercises to Exercises sheet
+            await initializeExercisesSheet();
         }
+        
+        // Load exercises into dropdown
+        await loadExercises();
     } catch (error) {
         console.error('Error with spreadsheet:', error);
         showStatus('Error accessing Google Sheets. Check console.', 'error');
+    }
+}
+
+// Detect the workout log sheet name (could be "Sheet1" or "Workout Log")
+async function detectWorkoutLogSheet() {
+    try {
+        const response = await gapi.client.sheets.spreadsheets.get({
+            spreadsheetId: state.spreadsheetId
+        });
+        
+        const sheets = response.result.sheets;
+        
+        // Look for "Workout Log" first, then fall back to "Sheet1"
+        const workoutLogSheet = sheets.find(sheet => 
+            sheet.properties.title === 'Workout Log' || 
+            sheet.properties.title === 'Sheet1'
+        );
+        
+        if (workoutLogSheet) {
+            state.workoutLogSheetName = workoutLogSheet.properties.title;
+            console.log('Using workout log sheet:', state.workoutLogSheetName);
+        }
+    } catch (error) {
+        console.error('Error detecting workout log sheet:', error);
+        state.workoutLogSheetName = 'Sheet1'; // Default fallback
+    }
+}
+
+// Ensure Exercises sheet exists in existing spreadsheet
+async function ensureExercisesSheet() {
+    try {
+        const response = await gapi.client.sheets.spreadsheets.get({
+            spreadsheetId: state.spreadsheetId
+        });
+        
+        const sheets = response.result.sheets;
+        const hasExercisesSheet = sheets.some(sheet => sheet.properties.title === 'Exercises');
+        
+        if (!hasExercisesSheet) {
+            // Add Exercises sheet
+            await gapi.client.sheets.spreadsheets.batchUpdate({
+                spreadsheetId: state.spreadsheetId,
+                resource: {
+                    requests: [{
+                        addSheet: {
+                            properties: {
+                                title: 'Exercises',
+                                gridProperties: {
+                                    frozenRowCount: 1
+                                }
+                            }
+                        }
+                    }]
+                }
+            });
+            
+            await initializeExercisesSheet();
+        }
+    } catch (error) {
+        console.error('Error ensuring Exercises sheet:', error);
+    }
+}
+
+// Initialize Exercises sheet with default exercises
+async function initializeExercisesSheet() {
+    const defaultExercises = [
+        ['Exercise Name', 'Default Weight', 'Default Reps', 'Default Time (seconds)'],
+        ['# Add # at start of exercise name to hide it from dropdown', '', '', ''],
+        ['', '', '', ''],
+        ['# === AB EXERCISES ===', '', '', ''],
+        ['Stomach Vacuum', '0', '0', '30'],
+        ['Plank', '0', '0', '60'],
+        ['Side Plank (Left)', '0', '0', '30'],
+        ['Side Plank (Right)', '0', '0', '30'],
+        ['Hollow Body Hold', '0', '0', '30'],
+        ['Dead Bug', '0', '20', '0'],
+        ['Bicycle Crunches', '0', '30', '0'],
+        ['Russian Twists', '0', '30', '0'],
+        ['Leg Raises', '0', '15', '0'],
+        ['Flutter Kicks', '0', '30', '0'],
+        ['Mountain Climbers', '0', '30', '0'],
+        ['V-Ups', '0', '15', '0'],
+        ['Situps', '0', '30', '0'],
+        ['', '', '', ''],
+        ['# === PULL-UP BAR EXERCISES ===', '', '', ''],
+        ['Pullups', '0', '10', '0'],
+        ['Chin-ups', '0', '10', '0'],
+        ['Negative Pullups', '0', '5', '0'],
+        ['Dead Hang', '0', '0', '30'],
+        ['Hanging Knee Raises', '0', '15', '0'],
+        ['Hanging Leg Raises', '0', '10', '0'],
+        ['L-Sit Hold', '0', '0', '20'],
+        ['', '', '', ''],
+        ['# === BODYWEIGHT/MAT EXERCISES ===', '', '', ''],
+        ['Push-ups', '0', '20', '0'],
+        ['Diamond Push-ups', '0', '15', '0'],
+        ['Wide Push-ups', '0', '15', '0'],
+        ['Pike Push-ups', '0', '12', '0'],
+        ['Burpees', '0', '15', '0'],
+        ['Squats', '0', '30', '0'],
+        ['Jump Squats', '0', '20', '0'],
+        ['Lunges', '0', '20', '0'],
+        ['Bulgarian Split Squats', '0', '15', '0'],
+        ['Glute Bridges', '0', '25', '0'],
+        ['Single Leg Glute Bridge', '0', '15', '0'],
+        ['Wall Sit', '0', '0', '60'],
+        ['Calf Raises', '0', '30', '0'],
+        ['', '', '', ''],
+        ['# === DUMBBELL EXERCISES ===', '', '', ''],
+        ['Dumbbell Curl', '20', '12', '0'],
+        ['Hammer Curl', '20', '12', '0'],
+        ['Overhead Press', '20', '12', '0'],
+        ['Lateral Raise', '15', '15', '0'],
+        ['Front Raise', '15', '12', '0'],
+        ['Bent Over Row', '25', '12', '0'],
+        ['Single Arm Row', '25', '12', '0'],
+        ['Chest Press (Floor)', '25', '15', '0'],
+        ['Chest Fly (Floor)', '20', '15', '0'],
+        ['Goblet Squat', '30', '15', '0'],
+        ['Dumbbell Deadlift', '40', '12', '0'],
+        ['Dumbbell Lunge', '20', '20', '0'],
+        ['Dumbbell Shrug', '30', '15', '0'],
+        ['Tricep Extension', '20', '15', '0'],
+        ['Dumbbell Swing', '25', '20', '0'],
+        ['', '', '', ''],
+        ['# === ISOMETRIC HOLDS ===', '', '', ''],
+        ['Wall Sit', '0', '0', '60'],
+        ['Plank', '0', '0', '60'],
+        ['Side Plank', '0', '0', '30'],
+        ['Hollow Body Hold', '0', '0', '30'],
+        ['Superman Hold', '0', '0', '30'],
+        ['Bridge Hold', '0', '0', '45'],
+        ['Dead Hang', '0', '0', '30'],
+        ['L-Sit Hold', '0', '0', '20']
+    ];
+    
+    await appendToSheet(defaultExercises, 'Exercises');
+}
+
+// Update exercise defaults in sheet when user logs with different values
+async function updateExerciseDefaults(exerciseName, weight, reps, time) {
+    if (exerciseName === 'Custom') return;
+    
+    try {
+        // Get all exercises from sheet
+        const response = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: state.spreadsheetId,
+            range: 'Exercises!A:D'
+        });
+        
+        const values = response.result.values || [];
+        let rowIndex = -1;
+        
+        // Find the exercise row
+        values.forEach((row, index) => {
+            if (row[0] && row[0].trim() === exerciseName) {
+                rowIndex = index;
+            }
+        });
+        
+        if (rowIndex > 0) { // Found the exercise (skip header at index 0)
+            const currentWeight = values[rowIndex][1] || '0';
+            const currentReps = values[rowIndex][2] || '0';
+            const currentTime = values[rowIndex][3] || '0';
+            
+            // Check if values changed
+            if (weight !== currentWeight || reps !== currentReps || time !== currentTime) {
+                // Update the row
+                const updateRange = `Exercises!B${rowIndex + 1}:D${rowIndex + 1}`;
+                await gapi.client.sheets.spreadsheets.values.update({
+                    spreadsheetId: state.spreadsheetId,
+                    range: updateRange,
+                    valueInputOption: 'USER_ENTERED',
+                    resource: {
+                        values: [[weight, reps, time]]
+                    }
+                });
+                
+                console.log(`Updated defaults for ${exerciseName}`);
+                
+                // Reload exercises to update dropdown data attributes
+                await loadExercises();
+            }
+        }
+    } catch (error) {
+        console.error('Error updating exercise defaults:', error);
+        // Don't show error to user - this is a background operation
+    }
+}
+
+// Update exercise library (add new exercises without deleting existing)
+async function updateExerciseLibrary() {
+    try {
+        showStatus('Updating exercise library...', 'success');
+        
+        // Get current exercises
+        const response = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: state.spreadsheetId,
+            range: 'Exercises!A:D'
+        });
+        
+        const existingValues = response.result.values || [];
+        const existingExercises = new Set();
+        
+        // Track existing exercise names (skip header and comments)
+        existingValues.forEach((row, index) => {
+            if (index > 0 && row[0] && !row[0].startsWith('#')) {
+                existingExercises.add(row[0].trim());
+            }
+        });
+        
+        // New exercises to add
+        const newExercises = [
+            ['# Add # at start of exercise name to hide it from dropdown', '', '', ''],
+            ['', '', '', ''],
+            ['# === AB EXERCISES ===', '', '', ''],
+            ['Stomach Vacuum', '0', '0', '30'],
+            ['Plank', '0', '0', '60'],
+            ['Side Plank (Left)', '0', '0', '30'],
+            ['Side Plank (Right)', '0', '0', '30'],
+            ['Hollow Body Hold', '0', '0', '30'],
+            ['Dead Bug', '0', '20', '0'],
+            ['Bicycle Crunches', '0', '30', '0'],
+            ['Russian Twists', '0', '30', '0'],
+            ['Leg Raises', '0', '15', '0'],
+            ['Flutter Kicks', '0', '30', '0'],
+            ['Mountain Climbers', '0', '30', '0'],
+            ['V-Ups', '0', '15', '0'],
+            ['Situps', '0', '30', '0'],
+            ['', '', '', ''],
+            ['# === PULL-UP BAR EXERCISES ===', '', '', ''],
+            ['Pullups', '0', '10', '0'],
+            ['Chin-ups', '0', '10', '0'],
+            ['Negative Pullups', '0', '5', '0'],
+            ['Dead Hang', '0', '0', '30'],
+            ['Hanging Knee Raises', '0', '15', '0'],
+            ['Hanging Leg Raises', '0', '10', '0'],
+            ['L-Sit Hold', '0', '0', '20'],
+            ['', '', '', ''],
+            ['# === BODYWEIGHT/MAT EXERCISES ===', '', '', ''],
+            ['Push-ups', '0', '20', '0'],
+            ['Diamond Push-ups', '0', '15', '0'],
+            ['Wide Push-ups', '0', '15', '0'],
+            ['Pike Push-ups', '0', '12', '0'],
+            ['Burpees', '0', '15', '0'],
+            ['Squats', '0', '30', '0'],
+            ['Jump Squats', '0', '20', '0'],
+            ['Lunges', '0', '20', '0'],
+            ['Bulgarian Split Squats', '0', '15', '0'],
+            ['Glute Bridges', '0', '25', '0'],
+            ['Single Leg Glute Bridge', '0', '15', '0'],
+            ['Wall Sit', '0', '0', '60'],
+            ['Calf Raises', '0', '30', '0'],
+            ['', '', '', ''],
+            ['# === DUMBBELL EXERCISES ===', '', '', ''],
+            ['Dumbbell Curl', '20', '12', '0'],
+            ['Hammer Curl', '20', '12', '0'],
+            ['Overhead Press', '20', '12', '0'],
+            ['Lateral Raise', '15', '15', '0'],
+            ['Front Raise', '15', '12', '0'],
+            ['Bent Over Row', '25', '12', '0'],
+            ['Single Arm Row', '25', '12', '0'],
+            ['Chest Press (Floor)', '25', '15', '0'],
+            ['Chest Fly (Floor)', '20', '15', '0'],
+            ['Goblet Squat', '30', '15', '0'],
+            ['Dumbbell Deadlift', '40', '12', '0'],
+            ['Dumbbell Lunge', '20', '20', '0'],
+            ['Dumbbell Shrug', '30', '15', '0'],
+            ['Tricep Extension', '20', '15', '0'],
+            ['Dumbbell Swing', '25', '20', '0'],
+            ['', '', '', ''],
+            ['# === ISOMETRIC HOLDS ===', '', '', ''],
+            ['Wall Sit', '0', '0', '60'],
+            ['Superman Hold', '0', '0', '30'],
+            ['Bridge Hold', '0', '0', '45']
+        ];
+        
+        // Filter out exercises that already exist
+        const exercisesToAdd = [];
+        newExercises.forEach(row => {
+            const exerciseName = row[0] ? row[0].trim() : '';
+            // Add if it's a comment, empty, or doesn't exist yet
+            if (exerciseName.startsWith('#') || exerciseName === '' || !existingExercises.has(exerciseName)) {
+                exercisesToAdd.push(row);
+            }
+        });
+        
+        if (exercisesToAdd.length > 0) {
+            await appendToSheet(exercisesToAdd, 'Exercises');
+            showStatus(`Added ${exercisesToAdd.length} new exercises! Reloading...`, 'success');
+            
+            // Reload exercises
+            setTimeout(() => {
+                loadExercises();
+            }, 1000);
+        } else {
+            showStatus('All exercises already exist!', 'success');
+        }
+        
+    } catch (error) {
+        console.error('Error updating exercises:', error);
+        showStatus('Error updating exercises. Check console.', 'error');
+    }
+}
+
+// Load exercises from Exercises sheet
+async function loadExercises() {
+    try {
+        const response = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: state.spreadsheetId,
+            range: 'Exercises!A2:D' // Skip header row
+        });
+        
+        const values = response.result.values || [];
+        
+        // Clear existing options
+        elements.exerciseName.innerHTML = '';
+        
+        let loadedCount = 0;
+        
+        // Add exercises from sheet, filtering out comments and empty rows
+        values.forEach(row => {
+            if (row[0]) { // If exercise name exists
+                const exerciseName = row[0].trim();
+                
+                // Skip if starts with # (comment) or is empty
+                if (exerciseName.startsWith('#') || exerciseName === '') {
+                    return;
+                }
+                
+                const option = document.createElement('option');
+                option.value = exerciseName;
+                option.textContent = exerciseName;
+                option.dataset.weight = row[1] || '0';
+                option.dataset.reps = row[2] || '0';
+                option.dataset.time = row[3] || '0';
+                elements.exerciseName.appendChild(option);
+                loadedCount++;
+            }
+        });
+        
+        // Add Custom option at the end
+        const customOption = document.createElement('option');
+        customOption.value = 'Custom';
+        customOption.textContent = 'Custom';
+        elements.exerciseName.appendChild(customOption);
+        
+        // Set defaults for first exercise
+        if (loadedCount > 0) {
+            setExerciseDefaults();
+        }
+        
+        console.log(`Loaded ${loadedCount} exercises from sheet (${values.length - loadedCount} hidden/commented)`);
+    } catch (error) {
+        console.error('Error loading exercises:', error);
+        showStatus('Error loading exercises. Using defaults.', 'error');
     }
 }
 
@@ -224,7 +610,7 @@ async function checkAndAddDaySeparator() {
         try {
             const response = await gapi.client.sheets.spreadsheets.values.get({
                 spreadsheetId: state.spreadsheetId,
-                range: 'Sheet1!A:A'
+                range: `${state.workoutLogSheetName}!A:A`
             });
             
             const values = response.result.values || [];
@@ -240,11 +626,14 @@ async function checkAndAddDaySeparator() {
 }
 
 // Append data to sheet
-async function appendToSheet(values) {
+async function appendToSheet(values, sheetName = null) {
     try {
+        // Use workout log sheet name if not specified
+        const targetSheet = sheetName || state.workoutLogSheetName;
+        
         const response = await gapi.client.sheets.spreadsheets.values.append({
             spreadsheetId: state.spreadsheetId,
-            range: 'Sheet1!A:E',
+            range: `${targetSheet}!A:E`,
             valueInputOption: 'USER_ENTERED',
             resource: {
                 values: values
@@ -432,6 +821,15 @@ if ('Notification' in window && Notification.permission === 'default') {
 
 // Exercise form handling
 function setupExerciseListeners() {
+    // Manage Exercises button
+    elements.manageExercises.addEventListener('click', () => {
+        const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${state.spreadsheetId}/edit#gid=`;
+        window.open(spreadsheetUrl, '_blank');
+        showStatus('Edit the "Exercises" sheet to add/modify exercises. Refresh this page to see changes.', 'success');
+    });
+
+
+
     elements.exerciseName.addEventListener('change', (e) => {
         if (e.target.value === 'Custom') {
             elements.customExercise.classList.remove('hidden');
@@ -472,6 +870,9 @@ function setupExerciseListeners() {
             await checkAndAddDaySeparator();
             await appendToSheet([rowData]);
             
+            // Update exercise defaults in sheet if values changed
+            await updateExerciseDefaults(exerciseName, weight, reps, timeValue);
+            
             showStatus('Exercise logged successfully! 💪', 'success');
             
             state.todayExercises.push({
@@ -491,31 +892,30 @@ function setupExerciseListeners() {
 }
 
 function setExerciseDefaults() {
-    const exercise = elements.exerciseName.value;
+    const selectedOption = elements.exerciseName.options[elements.exerciseName.selectedIndex];
     
-    switch(exercise) {
-        case 'Stomach Vacuum':
-            elements.weight.value = 0;
-            elements.reps.value = 0;
-            elements.time.value = 15;
-            break;
-        case 'Pullups':
-            elements.weight.value = 0;
-            elements.reps.value = 15;
-            elements.time.value = 0;
-            break;
-        case 'Situps':
-            elements.weight.value = 0;
-            elements.reps.value = 100;
-            elements.time.value = 0;
-            break;
-        case 'Burpees':
-            elements.weight.value = 0;
-            elements.reps.value = 25;
-            elements.time.value = 0;
-            break;
-        default:
-            break;
+    if (selectedOption.value === 'Custom') {
+        // Don't set defaults for custom
+        return;
+    }
+    
+    // Get defaults from data attributes
+    const weight = selectedOption.dataset.weight || '0';
+    const reps = selectedOption.dataset.reps || '0';
+    const time = selectedOption.dataset.time || '0';
+    
+    elements.weight.value = weight;
+    elements.reps.value = reps;
+    elements.time.value = time;
+    
+    // Auto-set workout timer if enabled and exercise has a time default
+    if (elements.autoSetWorkoutTimer.checked && parseInt(time) > 0) {
+        elements.workoutTimerDuration.value = time;
+        // Update the workout timer display if not running
+        if (!state.workoutTimerRunning) {
+            state.workoutTimerSeconds = parseInt(time);
+            updateWorkoutTimerDisplay();
+        }
     }
 }
 
@@ -529,9 +929,45 @@ function showStatus(message, type) {
     }, 5000);
 }
 
-function loadTodayExercises() {
-    state.todayExercises = [];
-    updateTodayLog();
+async function loadTodayExercises() {
+    const today = new Date().toISOString().split('T')[0];
+    
+    try {
+        const response = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: state.spreadsheetId,
+            range: `${state.workoutLogSheetName}!A:E`
+        });
+        
+        const values = response.result.values || [];
+        state.todayExercises = [];
+        
+        // Find today's exercises
+        values.forEach((row, index) => {
+            if (index === 0) return; // Skip header
+            
+            const date = row[0];
+            const time = row[1];
+            const exercise = row[2];
+            const weight = row[3];
+            const repsTime = row[4];
+            
+            if (date === today && exercise) {
+                state.todayExercises.push({
+                    time,
+                    exercise,
+                    weight,
+                    repsTime
+                });
+            }
+        });
+        
+        updateTodayLog();
+        console.log(`Loaded ${state.todayExercises.length} exercises from today`);
+    } catch (error) {
+        console.error('Error loading today\'s exercises:', error);
+        state.todayExercises = [];
+        updateTodayLog();
+    }
 }
 
 function updateTodayLog() {
