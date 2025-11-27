@@ -3,25 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Static GitHub Page</title>
+    <title>Workout Tracker - Sesh Seans</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="container">
+        <header>
+            <h1>💪 Sesh Seans Workout Tracker</h1>
+            <div id="authSection">
+                <button id="authButton" class="btn btn-primary">Sign in with Google</button>
+                <span id="userInfo" class="hidden"></span>
+            </div>
+        </header>
 
-    <header>
-        <h1>Welcome to My Static Site!</h1>
-    </header>
+        <main id="appContent" class="hidden">
+            <!-- Timer Section -->
+            <section class="timer-section">
+                <div class="timer-display" id="timerDisplay">15:00</div>
+                <div class="timer-controls">
+                    <button id="startTimer" class="btn btn-success">Start Timer</button>
+                    <button id="pauseTimer" class="btn btn-warning hidden">Pause</button>
+                    <button id="resetTimer" class="btn btn-secondary">Reset</button>
+                </div>
+                <div class="timer-settings">
+                    <label for="timerInterval">Timer Interval (minutes):</label>
+                    <input type="number" id="timerInterval" value="15" min="1" max="120">
+                </div>
+            </section>
 
-    <main>
-        <p>This is a boilerplate for a static site hosted on GitHub Pages.</p>
-        <button id="actionButton">Click Me</button>
-        <p id="outputMessage"></p>
-    </main>
+            <!-- Exercise Input Section -->
+            <section class="exercise-section">
+                <h2>Log Exercise</h2>
+                <form id="exerciseForm">
+                    <div class="form-group">
+                        <label for="exerciseName">Exercise:</label>
+                        <select id="exerciseName" required>
+                            <option value="Stomach Vacuum">Stomach Vacuum</option>
+                            <option value="Pullups">Pullups</option>
+                            <option value="Situps">Situps</option>
+                            <option value="Burpees">Burpees</option>
+                            <option value="Custom">Custom</option>
+                        </select>
+                        <input type="text" id="customExercise" class="hidden" placeholder="Enter exercise name">
+                    </div>
 
-    <footer>
-        <p>&copy; 2025 Static Page Boilerplate</p>
-    </footer>
+                    <div class="form-group">
+                        <label for="weight">Weight (lbs):</label>
+                        <input type="number" id="weight" value="0" min="0" step="0.5">
+                    </div>
 
+                    <div class="form-group">
+                        <label for="reps">Reps:</label>
+                        <input type="number" id="reps" value="0" min="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="time">Time (seconds):</label>
+                        <input type="number" id="time" value="0" min="0">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-large">Log Exercise</button>
+                </form>
+            </section>
+
+            <!-- Status Section -->
+            <section class="status-section">
+                <div id="statusMessage"></div>
+                <div id="todayLog" class="today-log"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://apis.google.com/js/api.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
