@@ -98,10 +98,10 @@ Add ALL of these:
 
 ## 📚 Help Files
 
-- **FIX_ORIGIN_ERROR.md** - Fix "Not a valid origin" errors
-- **SETUP.md** - Detailed local setup guide
-- **GITHUB_PAGES_SETUP.md** - Deployment guide
-- **QUICK_START.md** - Fast overview
+- **[FIX_ORIGIN_ERROR.md](FIX_ORIGIN_ERROR.md)** - Fix "Not a valid origin" errors
+- **[SETUP.md](SETUP.md)** - Detailed local setup guide
+- **[GITHUB_PAGES_SETUP.md](GITHUB_PAGES_SETUP.md)** - Deployment guide
+- **[QUICK_START.md](QUICK_START.md)** - Fast overview
 
 ---
 

@@ -80,6 +80,6 @@ git push origin main
 
 ## 🆘 Need Help?
 
-- **Local testing issues:** See SETUP.md
-- **GitHub Pages deployment:** See GITHUB_PAGES_SETUP.md
-- **Sign-in problems:** See README.md Troubleshooting section
+- **Local testing issues:** See [SETUP.md](SETUP.md)
+- **GitHub Pages deployment:** See [GITHUB_PAGES_SETUP.md](GITHUB_PAGES_SETUP.md)
+- **Sign-in problems:** See [FIX_ORIGIN_ERROR.md](FIX_ORIGIN_ERROR.md)

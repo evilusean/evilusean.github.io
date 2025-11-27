@@ -19,15 +19,31 @@
         <main id="appContent" class="hidden">
             <!-- Timer Section -->
             <section class="timer-section">
+                <h3>Interval Timer (Continuous)</h3>
                 <div class="timer-display" id="timerDisplay">15:00</div>
                 <div class="timer-controls">
-                    <button id="startTimer" class="btn btn-success">Start Timer</button>
+                    <button id="startTimer" class="btn btn-success">Start Interval Timer</button>
                     <button id="pauseTimer" class="btn btn-warning hidden">Pause</button>
                     <button id="resetTimer" class="btn btn-secondary">Reset</button>
                 </div>
                 <div class="timer-settings">
-                    <label for="timerInterval">Timer Interval (minutes):</label>
+                    <label for="timerInterval">Interval (minutes):</label>
                     <input type="number" id="timerInterval" value="15" min="1" max="120">
+                </div>
+            </section>
+
+            <!-- Workout Timer Section -->
+            <section class="timer-section">
+                <h3>Workout Timer</h3>
+                <div class="timer-display workout-timer" id="workoutTimerDisplay">00:15</div>
+                <div class="timer-controls">
+                    <button id="startWorkoutTimer" class="btn btn-success">Start Workout</button>
+                    <button id="pauseWorkoutTimer" class="btn btn-warning hidden">Pause</button>
+                    <button id="resetWorkoutTimer" class="btn btn-secondary">Reset</button>
+                </div>
+                <div class="timer-settings">
+                    <label for="workoutTimerDuration">Duration (seconds):</label>
+                    <input type="number" id="workoutTimerDuration" value="15" min="1" max="300">
                 </div>
             </section>
 

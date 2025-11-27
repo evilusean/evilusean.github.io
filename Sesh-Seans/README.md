@@ -1,6 +1,8 @@
-# Sesh Seans Workout Tracker
+# 💪 Sesh Seans Workout Tracker
 
 A workout tracking app that logs exercises to Google Sheets with a built-in timer.
+
+**[Live Demo](https://evilusean.github.io/Sesh-Seans)** (once deployed)
 
 ## Features
 
@@ -32,23 +34,14 @@ A workout tracking app that logs exercises to Google Sheets with a built-in time
 - **[Fix Origin Error](docs/FIX_ORIGIN_ERROR.md)** - Fix "Not a valid origin" errors
 - **[Security Guide](docs/SECURITY.md)** - Credential safety information
 
-## Usage
+## How It Works
 
-1. Sign in with your Google account
-2. The app will create a spreadsheet named `[YEAR]-Sesh-Seans` (e.g., `2025-Sesh-Seans`)
-3. Set your timer interval (default 15 minutes)
-4. Start the timer when you begin your workout
-5. Log exercises with weight, reps, or time
-6. Each new day automatically adds a blank line separator in the sheet
+1. Sign in with Google → Creates yearly spreadsheet `[YEAR]-Sesh-Seans`
+2. Set timer (default 15 min) → Start your workout
+3. Log exercises → Automatically saved to Google Sheets
+4. New day → Adds blank line separator
 
-## Data Format
-
-The Google Sheet will have the following columns:
-- Date (YYYY-MM-DD)
-- Time (HH:MM:SS)
-- Exercise
-- Weight (lbs)
-- Reps/Time
+**Data format:** Date | Time | Exercise | Weight | Reps/Time
 
 ## Troubleshooting
 

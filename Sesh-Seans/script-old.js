@@ -1,4 +1,5 @@
 // Configuration is loaded from config.js (not tracked in git)
+// If CONFIG is not defined, it means config.js is missing
 if (typeof CONFIG === 'undefined') {
     console.error('CONFIG not found! Please create config.js from config-template.js');
 }
@@ -8,15 +9,11 @@ let state = {
     isSignedIn: false,
     accessToken: null,
     spreadsheetId: null,
-    intervalTimerHandle: null,
+    timerInterval: null,
     timerSeconds: 900, // 15 minutes default
     timerRunning: false,
-    workoutTimerHandle: null,
-    workoutTimerSeconds: 15, // 15 seconds default
-    workoutTimerRunning: false,
     currentDate: null,
-    todayExercises: [],
-    tokenClient: null
+    todayExercises: []
 };
 
 // DOM Elements
@@ -33,11 +30,6 @@ function initElements() {
         pauseTimer: document.getElementById('pauseTimer'),
         resetTimer: document.getElementById('resetTimer'),
         timerInterval: document.getElementById('timerInterval'),
-        workoutTimerDisplay: document.getElementById('workoutTimerDisplay'),
-        startWorkoutTimer: document.getElementById('startWorkoutTimer'),
-        pauseWorkoutTimer: document.getElementById('pauseWorkoutTimer'),
-        resetWorkoutTimer: document.getElementById('resetWorkoutTimer'),
-        workoutTimerDuration: document.getElementById('workoutTimerDuration'),
         exerciseForm: document.getElementById('exerciseForm'),
         exerciseName: document.getElementById('exerciseName'),
         customExercise: document.getElementById('customExercise'),
@@ -77,51 +69,86 @@ function checkCredentials() {
     return true;
 }
 
-// Initialize Google API with new GIS library
+// Initialize Google API
 function initGoogleAPI() {
     if (!checkCredentials()) {
         return;
     }
 
-    // Check if libraries are loaded
-    if (typeof gapi === 'undefined' || typeof google === 'undefined') {
-        console.log('Waiting for Google libraries to load...');
+    // Check if gapi is loaded
+    if (typeof gapi === 'undefined') {
+        console.error('Google API library not loaded');
         setTimeout(initGoogleAPI, 500);
         return;
     }
 
-    // Initialize gapi client for Sheets API
-    gapi.load('client', async () => {
-        try {
-            await gapi.client.init({
-                apiKey: CONFIG.API_KEY,
-                discoveryDocs: CONFIG.DISCOVERY_DOCS
-            });
-            console.log('✅ Google Sheets API initialized');
+    gapi.load('client:auth2', () => {
+        gapi.client.init({
+            apiKey: CONFIG.API_KEY,
+            clientId: CONFIG.CLIENT_ID,
+            discoveryDocs: CONFIG.DISCOVERY_DOCS,
+            scope: CONFIG.SCOPES
+        }).then(() => {
+            console.log('Google API initialized successfully');
+            const authInstance = gapi.auth2.getAuthInstance();
+            authInstance.isSignedIn.listen(updateSignInStatus);
+            updateSignInStatus(authInstance.isSignedIn.get());
             
-            // Initialize Google Identity Services
-            state.tokenClient = google.accounts.oauth2.initTokenClient({
-                client_id: CONFIG.CLIENT_ID,
-                scope: CONFIG.SCOPES,
-                callback: (response) => {
-                    if (response.error) {
-                        console.error('Token error:', response);
-                        return;
-                    }
-                    state.accessToken = response.access_token;
-                    state.isSignedIn = true;
-                    updateSignInStatus(true);
-                    initializeApp();
-                }
-            });
-            
-            console.log('✅ Google Identity Services initialized');
+            // Setup auth button
             setupAuthButton();
+        }).catch(error => {
+            console.error('=== GOOGLE API ERROR ===');
+            console.error('Full error object:', error);
+            console.error('Error type:', typeof error);
+            console.error('Error.error:', error.error);
+            console.error('Error.details:', error.details);
+            console.error('Error message:', error.message);
+            console.error('========================');
             
-        } catch (error) {
-            console.error('Error initializing Google API:', error);
-            alert('Error initializing Google API. Check console for details.');
-        }
+            let errorMsg = '❌ Google API Error\n\n';
+            
+            // Check for origin error
+            const errorString = JSON.stringify(error);
+            const isOriginError = (error.details && error.details.includes('Not a valid origin')) || 
+                                  (error.error && error.error === 'idpiframe_initialization_failed') ||
+                                  errorString.includes('Not a valid origin');
+            
+            if (isOriginError) {
+                const currentOrigin = window.location.origin;
+                errorMsg += `⛔ ORIGIN ERROR ⛔\n\n`;
+                errorMsg += `Current URL: ${currentOrigin}\n\n`;
+                errorMsg += 'If you just added the origin:\n';
+                errorMsg += '1. Try incognito mode\n';
+                errorMsg += '2. Clear ALL browser cache (Ctrl+Shift+Delete)\n';
+                errorMsg += '3. Wait up to 10 minutes\n';
+                errorMsg += '4. Verify it saved in Google Console\n\n';
+                errorMsg += 'If you have NOT added the origin yet:\n';
+                errorMsg += `Go to console.cloud.google.com and add: ${currentOrigin}\n\n`;
+                errorMsg += 'See docs/ADD_ORIGIN_NOW.md for help.';
+                
+                if (elements.authButton) {
+                    elements.authButton.textContent = '⛔ Origin Error - See Console';
+                    elements.authButton.disabled = true;
+                    elements.authButton.style.backgroundColor = '#dc3545';
+                }
+            } else if (error.details) {
+                errorMsg += error.details;
+                if (elements.authButton) {
+                    elements.authButton.textContent = 'API Error - Check Console';
+                    elements.authButton.disabled = true;
+                }
+            } else {
+                errorMsg += 'Unknown error. Check console for details.\n';
+                errorMsg += 'Error: ' + (error.message || error.error || 'No details available');
+                if (elements.authButton) {
+                    elements.authButton.textContent = 'API Error - Check Console';
+                    elements.authButton.disabled = true;
+                }
+            }
+            
+            alert(errorMsg);
+            console.log('📖 See docs/ADD_ORIGIN_NOW.md for help');
+        });
     });
 }
 
@@ -130,17 +157,14 @@ function setupAuthButton() {
     if (!elements.authButton) return;
     
     elements.authButton.addEventListener('click', () => {
+        const authInstance = gapi.auth2.getAuthInstance();
         if (state.isSignedIn) {
-            // Sign out
-            state.isSignedIn = false;
-            state.accessToken = null;
-            google.accounts.oauth2.revoke(state.accessToken, () => {
-                console.log('Access token revoked');
-            });
-            updateSignInStatus(false);
+            authInstance.signOut();
         } else {
-            // Request access token
-            state.tokenClient.requestAccessToken();
+            authInstance.signIn().catch(error => {
+                console.error('Sign-in error:', error);
+                alert('Sign-in failed. Please try again.');
+            });
         }
     });
 }
@@ -150,12 +174,18 @@ function updateSignInStatus(isSignedIn) {
     state.isSignedIn = isSignedIn;
     
     if (isSignedIn) {
-        console.log('✅ User signed in');
+        console.log('User signed in');
+        const user = gapi.auth2.getAuthInstance().currentUser.get();
+        const profile = user.getBasicProfile();
+        
         elements.authButton.textContent = 'Sign Out';
         elements.authButton.disabled = false;
-        elements.userInfo.textContent = `Logged in`;
+        elements.userInfo.textContent = `Logged in as: ${profile.getName()}`;
         elements.userInfo.classList.remove('hidden');
         elements.appContent.classList.remove('hidden');
+        
+        state.accessToken = user.getAuthResponse().access_token;
+        initializeApp();
     } else {
         console.log('User signed out');
         elements.authButton.textContent = 'Sign in with Google';
@@ -179,20 +209,17 @@ async function findOrCreateSpreadsheet() {
     const sheetName = `${year}-Sesh-Seans`;
     
     try {
-        // Search for existing spreadsheet using Drive API
-        const searchResponse = await fetch(
-            `https://www.googleapis.com/drive/v3/files?q=name='${sheetName}' and mimeType='application/vnd.google-apps.spreadsheet'&fields=files(id,name)`,
-            {
-                headers: {
-                    'Authorization': `Bearer ${state.accessToken}`
-                }
+        // Search for existing spreadsheet
+        const response = await gapi.client.request({
+            path: 'https://www.googleapis.com/drive/v3/files',
+            params: {
+                q: `name='${sheetName}' and mimeType='application/vnd.google-apps.spreadsheet'`,
+                fields: 'files(id, name)'
             }
-        );
+        });
         
-        const searchData = await searchResponse.json();
-        
-        if (searchData.files && searchData.files.length > 0) {
-            state.spreadsheetId = searchData.files[0].id;
+        if (response.result.files && response.result.files.length > 0) {
+            state.spreadsheetId = response.result.files[0].id;
             console.log('Found existing spreadsheet:', state.spreadsheetId);
         } else {
             // Create new spreadsheet
@@ -222,6 +249,7 @@ async function checkAndAddDaySeparator() {
         state.currentDate = today;
         
         try {
+            // Get last row to check if it's already a separator
             const response = await gapi.client.sheets.spreadsheets.values.get({
                 spreadsheetId: state.spreadsheetId,
                 range: 'Sheet1!A:A'
@@ -230,6 +258,7 @@ async function checkAndAddDaySeparator() {
             const values = response.result.values || [];
             const lastRow = values[values.length - 1];
             
+            // Add separator if last row isn't empty
             if (lastRow && lastRow[0]) {
                 await appendToSheet([['', '', '', '', '']]);
             }
@@ -267,23 +296,20 @@ function updateTimerDisplay() {
 }
 
 function setupTimerListeners() {
-    // Interval Timer (Continuous)
     elements.startTimer.addEventListener('click', () => {
         if (!state.timerRunning) {
             state.timerRunning = true;
             elements.startTimer.classList.add('hidden');
             elements.pauseTimer.classList.remove('hidden');
             
-            state.intervalTimerHandle = setInterval(() => {
+            state.timerInterval = setInterval(() => {
                 if (state.timerSeconds > 0) {
                     state.timerSeconds--;
                     updateTimerDisplay();
                 } else {
-                    // Timer reached zero - play sound and restart
-                    playIntervalSound();
-                    const intervalMinutes = parseInt(elements.timerInterval.value) || 15;
-                    state.timerSeconds = intervalMinutes * 60;
-                    updateTimerDisplay();
+                    // Timer finished
+                    playNotification();
+                    resetTimer();
                 }
             }, 1000);
         }
@@ -291,7 +317,7 @@ function setupTimerListeners() {
 
     elements.pauseTimer.addEventListener('click', () => {
         state.timerRunning = false;
-        clearInterval(state.intervalTimerHandle);
+        clearInterval(state.timerInterval);
         elements.startTimer.classList.remove('hidden');
         elements.pauseTimer.classList.add('hidden');
     });
@@ -305,48 +331,11 @@ function setupTimerListeners() {
             resetTimer();
         }
     });
-
-    // Workout Timer
-    elements.startWorkoutTimer.addEventListener('click', () => {
-        if (!state.workoutTimerRunning) {
-            state.workoutTimerRunning = true;
-            elements.startWorkoutTimer.classList.add('hidden');
-            elements.pauseWorkoutTimer.classList.remove('hidden');
-            
-            state.workoutTimerHandle = setInterval(() => {
-                if (state.workoutTimerSeconds > 0) {
-                    state.workoutTimerSeconds--;
-                    updateWorkoutTimerDisplay();
-                } else {
-                    // Workout timer complete
-                    playWorkoutSound();
-                    resetWorkoutTimer();
-                }
-            }, 1000);
-        }
-    });
-
-    elements.pauseWorkoutTimer.addEventListener('click', () => {
-        state.workoutTimerRunning = false;
-        clearInterval(state.workoutTimerHandle);
-        elements.startWorkoutTimer.classList.remove('hidden');
-        elements.pauseWorkoutTimer.classList.add('hidden');
-    });
-
-    elements.resetWorkoutTimer.addEventListener('click', () => {
-        resetWorkoutTimer();
-    });
-
-    elements.workoutTimerDuration.addEventListener('change', () => {
-        if (!state.workoutTimerRunning) {
-            resetWorkoutTimer();
-        }
-    });
 }
 
 function resetTimer() {
     state.timerRunning = false;
-    clearInterval(state.intervalTimerHandle);
+    clearInterval(state.timerInterval);
     const intervalMinutes = parseInt(elements.timerInterval.value) || 15;
     state.timerSeconds = intervalMinutes * 60;
     updateTimerDisplay();
@@ -354,75 +343,16 @@ function resetTimer() {
     elements.pauseTimer.classList.add('hidden');
 }
 
-function resetWorkoutTimer() {
-    state.workoutTimerRunning = false;
-    clearInterval(state.workoutTimerHandle);
-    const duration = parseInt(elements.workoutTimerDuration.value) || 15;
-    state.workoutTimerSeconds = duration;
-    updateWorkoutTimerDisplay();
-    elements.startWorkoutTimer.classList.remove('hidden');
-    elements.pauseWorkoutTimer.classList.add('hidden');
-}
-
-function updateWorkoutTimerDisplay() {
-    const minutes = Math.floor(state.workoutTimerSeconds / 60);
-    const seconds = state.workoutTimerSeconds % 60;
-    elements.workoutTimerDisplay.textContent = 
-        `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-}
-
-function playIntervalSound() {
-    // Play beep sound for interval timer
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    oscillator.frequency.value = 800; // Frequency in Hz
-    oscillator.type = 'sine';
-    
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-    
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.5);
-    
-    // Show notification
+function playNotification() {
+    // Play browser notification sound
     if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('Interval Complete!', {
-            body: 'Next interval starting...',
-            icon: '⏰'
-        });
-    }
-}
-
-function playWorkoutSound() {
-    // Play different beep sound for workout timer
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    oscillator.frequency.value = 1200; // Higher frequency
-    oscillator.type = 'square';
-    
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-    
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.3);
-    
-    // Show notification
-    if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('Workout Complete!', {
+        new Notification('Timer Complete!', {
             body: 'Time to log your exercise!',
             icon: '💪'
         });
     }
+    // Fallback: alert
+    alert('Timer Complete! Time to log your exercise!');
 }
 
 // Request notification permission
@@ -457,6 +387,7 @@ function setupExerciseListeners() {
         const reps = elements.reps.value;
         const timeValue = elements.time.value;
         
+        // Format reps/time column
         let repsTime = '';
         if (parseInt(reps) > 0 && parseInt(timeValue) > 0) {
             repsTime = `${reps} reps / ${timeValue}s`;
@@ -474,6 +405,7 @@ function setupExerciseListeners() {
             
             showStatus('Exercise logged successfully! 💪', 'success');
             
+            // Add to today's log
             state.todayExercises.push({
                 time,
                 exercise: exerciseName,
@@ -482,6 +414,7 @@ function setupExerciseListeners() {
             });
             updateTodayLog();
             
+            // Reset timer
             resetTimer();
         } catch (error) {
             console.error('Error logging exercise:', error);
@@ -530,6 +463,7 @@ function showStatus(message, type) {
 }
 
 function loadTodayExercises() {
+    // This would ideally load from the sheet, but for simplicity we'll track in session
     state.todayExercises = [];
     updateTodayLog();
 }
@@ -559,8 +493,8 @@ window.addEventListener('load', () => {
     setupTimerListeners();
     setupExerciseListeners();
     updateTimerDisplay();
-    updateWorkoutTimerDisplay();
     
+    // Wait a bit for Google API scripts to load
     setTimeout(() => {
         initGoogleAPI();
     }, 500);
