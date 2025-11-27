@@ -1,6 +1,6 @@
 # Documentation
 
-Complete guides for setting up and deploying the Sesh Seans Workout Tracker.
+Complete guides for setting up and deploying Sesh Seans Workout/Study Tracker.
 
 ## Getting Started
 
@@ -23,16 +23,9 @@ Complete guides for setting up and deploying the Sesh Seans Workout Tracker.
    - Use GitHub Secrets to protect credentials
    - Complete deployment workflow
 
-## Troubleshooting
-
-5. **[Fix Origin Error](FIX_ORIGIN_ERROR.md)** 🔧
-   - Fix "Not a valid origin" errors
-   - Most common issue when testing
-   - Step-by-step fix with screenshots guide
-
 ## Security
 
-6. **[Security Guide](SECURITY.md)** 🔐
+5. **[Security Guide](SECURITY.md)** 🔐
    - What's safe to share publicly
    - How to restrict your API key
    - Best practices for credential management

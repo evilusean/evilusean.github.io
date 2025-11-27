@@ -90,8 +90,14 @@ let state = {
     pomodoroRunning: false,
     pomodoroOnBreak: false,
     pomodoroBreakSeconds: 300, // 5 minutes default
+    alarmTime: null,
+    alarmCheckInterval: null,
+    alarmMode: 'time', // 'time' or 'countdown'
+    alarmCountdownHandle: null,
+    alarmCountdownSeconds: 0,
     currentDate: null,
     todayExercises: [],
+    todayPomodoros: [],
     tokenClient: null,
     allExercises: [], // Store all exercises for filtering
     sortCategories: [], // Store sort categories
@@ -143,7 +149,18 @@ function initElements() {
         pomodoroStudyTime: document.getElementById('pomodoroStudyTime'),
         pomodoroBreakTime: document.getElementById('pomodoroBreakTime'),
         pomodoroNotes: document.getElementById('pomodoroNotes'),
-        managePomodoroSheet: document.getElementById('managePomodoroSheet')
+        managePomodoroSheet: document.getElementById('managePomodoroSheet'),
+        todayPomodoro: document.getElementById('todayPomodoro'),
+        // Alarm elements
+        alarmToggle: document.getElementById('alarmToggle'),
+        alarmDisplay: document.getElementById('alarmDisplay'),
+        alarmHour: document.getElementById('alarmHour'),
+        alarmMinute: document.getElementById('alarmMinute'),
+        countdownMinutes: document.getElementById('countdownMinutes'),
+        countdownSeconds: document.getElementById('countdownSeconds'),
+        setAlarm: document.getElementById('setAlarm'),
+        cancelAlarm: document.getElementById('cancelAlarm'),
+        alarmStatus: document.getElementById('alarmStatus')
     };
 }
 
@@ -269,6 +286,7 @@ async function initializeApp() {
     await findOrCreatePomodoroSpreadsheet();
     checkAndAddDaySeparator();
     loadTodayExercises();
+    loadTodayPomodoros();
     setExerciseDefaults();
 }
 
@@ -1066,24 +1084,33 @@ function updateWorkoutTimerDisplay() {
 }
 
 function playIntervalSound() {
-    // Play beep sound for interval timer
+    // Play double beep for interval timer
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
     
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
+    // First beep
+    const osc1 = audioContext.createOscillator();
+    const gain1 = audioContext.createGain();
+    osc1.connect(gain1);
+    gain1.connect(audioContext.destination);
+    osc1.frequency.value = 800;
+    osc1.type = 'sine';
+    gain1.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gain1.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+    osc1.start(audioContext.currentTime);
+    osc1.stop(audioContext.currentTime + 0.2);
     
-    oscillator.frequency.value = 800; // Frequency in Hz
-    oscillator.type = 'sine';
+    // Second beep
+    const osc2 = audioContext.createOscillator();
+    const gain2 = audioContext.createGain();
+    osc2.connect(gain2);
+    gain2.connect(audioContext.destination);
+    osc2.frequency.value = 800;
+    osc2.type = 'sine';
+    gain2.gain.setValueAtTime(0.3, audioContext.currentTime + 0.3);
+    gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+    osc2.start(audioContext.currentTime + 0.3);
+    osc2.stop(audioContext.currentTime + 0.5);
     
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-    
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.5);
-    
-    // Show notification
     if ('Notification' in window && Notification.permission === 'granted') {
         new Notification('Interval Complete!', {
             body: 'Next interval starting...',
@@ -1093,24 +1120,23 @@ function playIntervalSound() {
 }
 
 function playWorkoutSound() {
-    // Play different beep sound for workout timer
+    // Play triple beep for workout timer
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
     
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
+    for (let i = 0; i < 3; i++) {
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.frequency.value = 1200;
+        osc.type = 'square';
+        const startTime = audioContext.currentTime + (i * 0.25);
+        gain.gain.setValueAtTime(0.3, startTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.15);
+        osc.start(startTime);
+        osc.stop(startTime + 0.15);
+    }
     
-    oscillator.frequency.value = 1200; // Higher frequency
-    oscillator.type = 'square';
-    
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-    
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.3);
-    
-    // Show notification
     if ('Notification' in window && Notification.permission === 'granted') {
         new Notification('Workout Complete!', {
             body: 'Time to log your exercise!',
@@ -1168,7 +1194,7 @@ function setupPomodoroListeners() {
                     // Timer complete - switch between study and break
                     if (state.pomodoroOnBreak) {
                         // Break complete - back to study
-                        playPomodoroSound();
+                        playPomodoroStudySound();
                         state.pomodoroOnBreak = false;
                         const studyMinutes = parseInt(elements.pomodoroStudyTime.value) || 20;
                         state.pomodoroSeconds = studyMinutes * 60;
@@ -1176,12 +1202,15 @@ function setupPomodoroListeners() {
                         updatePomodoroTimerDisplay();
                     } else {
                         // Study complete - start break
-                        playPomodoroSound();
+                        playPomodoroBreakSound();
                         state.pomodoroOnBreak = true;
                         const breakMinutes = parseInt(elements.pomodoroBreakTime.value) || 5;
                         state.pomodoroSeconds = breakMinutes * 60;
                         elements.pomodoroStatus.textContent = 'Break Time!';
                         updatePomodoroTimerDisplay();
+                        
+                        // Remind user to log session
+                        showStatus('⏸️ Break time! Don\'t forget to log your study session!', 'success');
                     }
                 }
             }, 1000);
@@ -1231,11 +1260,215 @@ function setupPomodoroListeners() {
             await appendToPomodoroSheet([rowData]);
             showStatus('Pomodoro session logged! 📚', 'success');
             elements.pomodoroNotes.value = ''; // Clear notes
+            
+            // Add to today's log
+            state.todayPomodoros.push({
+                time,
+                subject,
+                studyDuration,
+                breakDuration,
+                notes
+            });
+            updateTodayPomodoroLog();
         } catch (error) {
             console.error('Error logging Pomodoro:', error);
             showStatus('Error logging Pomodoro session.', 'error');
         }
     });
+}
+
+// Load today's Pomodoro sessions
+async function loadTodayPomodoros() {
+    const today = new Date().toISOString().split('T')[0];
+    
+    try {
+        const response = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: state.pomodoroSpreadsheetId,
+            range: 'Sheet1!A:F'
+        });
+        
+        const values = response.result.values || [];
+        state.todayPomodoros = [];
+        
+        values.forEach((row, index) => {
+            if (index === 0) return; // Skip header
+            
+            const date = row[0];
+            const time = row[1];
+            const subject = row[2];
+            const studyDuration = row[3];
+            const breakDuration = row[4];
+            const notes = row[5];
+            
+            if (date === today && subject) {
+                state.todayPomodoros.push({
+                    time,
+                    subject,
+                    studyDuration,
+                    breakDuration,
+                    notes
+                });
+            }
+        });
+        
+        updateTodayPomodoroLog();
+        console.log(`Loaded ${state.todayPomodoros.length} Pomodoro sessions from today`);
+    } catch (error) {
+        console.error('Error loading today\'s Pomodoros:', error);
+        state.todayPomodoros = [];
+        updateTodayPomodoroLog();
+    }
+}
+
+function updateTodayPomodoroLog() {
+    if (state.todayPomodoros.length === 0) {
+        elements.todayPomodoro.innerHTML = '<h3>Today\'s Sessions</h3><p>No Pomodoro sessions logged yet today.</p>';
+    } else {
+        let html = '<h3>Today\'s Sessions</h3>';
+        state.todayPomodoros.forEach(session => {
+            html += `
+                <div class="log-entry">
+                    <strong>${session.time}</strong> - ${session.subject} 
+                    (${session.studyDuration}min study / ${session.breakDuration}min break)
+                    ${session.notes ? `<br><em>${session.notes}</em>` : ''}
+                </div>
+            `;
+        });
+        elements.todayPomodoro.innerHTML = html;
+    }
+}
+
+// Alarm Clock Functions
+function setupAlarmListeners() {
+    // Toggle collapse
+    elements.alarmToggle.addEventListener('click', () => {
+        document.querySelector('.alarm-section').classList.toggle('collapsed');
+    });
+
+    // Mode toggle buttons
+    document.querySelectorAll('.alarm-mode-toggle .mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const mode = btn.dataset.mode;
+            state.alarmMode = mode;
+            
+            // Update active button
+            document.querySelectorAll('.alarm-mode-toggle .mode-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Show/hide appropriate mode
+            if (mode === 'time') {
+                document.getElementById('alarmTimeMode').classList.remove('hidden');
+                document.getElementById('alarmCountdownMode').classList.add('hidden');
+            } else {
+                document.getElementById('alarmTimeMode').classList.add('hidden');
+                document.getElementById('alarmCountdownMode').classList.remove('hidden');
+            }
+        });
+    });
+
+    // Set alarm
+    elements.setAlarm.addEventListener('click', () => {
+        if (state.alarmMode === 'time') {
+            setTimeAlarm();
+        } else {
+            setCountdownAlarm();
+        }
+    });
+
+    // Cancel alarm
+    elements.cancelAlarm.addEventListener('click', () => {
+        cancelAlarm();
+    });
+}
+
+function setTimeAlarm() {
+    const hour = parseInt(elements.alarmHour.value);
+    const minute = parseInt(elements.alarmMinute.value);
+    
+    if (isNaN(hour) || isNaN(minute)) {
+        alert('Please enter valid hour and minute');
+        return;
+    }
+    
+    const timeString = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+    state.alarmTime = timeString;
+    
+    elements.setAlarm.classList.add('hidden');
+    elements.cancelAlarm.classList.remove('hidden');
+    elements.alarmStatus.textContent = `Alarm set for ${timeString}`;
+    elements.alarmDisplay.textContent = timeString;
+    
+    // Start checking for alarm
+    if (state.alarmCheckInterval) {
+        clearInterval(state.alarmCheckInterval);
+    }
+    
+    state.alarmCheckInterval = setInterval(() => {
+        const now = new Date();
+        const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        
+        if (currentTime === state.alarmTime) {
+            playAlarmSound();
+            cancelAlarm();
+            showStatus('⏰ Alarm ringing!', 'success');
+        }
+    }, 1000);
+}
+
+function setCountdownAlarm() {
+    const minutes = parseInt(elements.countdownMinutes.value) || 0;
+    const seconds = parseInt(elements.countdownSeconds.value) || 0;
+    
+    const totalSeconds = (minutes * 60) + seconds;
+    
+    if (totalSeconds === 0) {
+        alert('Please enter a countdown time');
+        return;
+    }
+    
+    state.alarmCountdownSeconds = totalSeconds;
+    
+    elements.setAlarm.classList.add('hidden');
+    elements.cancelAlarm.classList.remove('hidden');
+    elements.alarmStatus.textContent = `Countdown started`;
+    
+    // Start countdown
+    if (state.alarmCountdownHandle) {
+        clearInterval(state.alarmCountdownHandle);
+    }
+    
+    state.alarmCountdownHandle = setInterval(() => {
+        if (state.alarmCountdownSeconds > 0) {
+            state.alarmCountdownSeconds--;
+            const mins = Math.floor(state.alarmCountdownSeconds / 60);
+            const secs = state.alarmCountdownSeconds % 60;
+            elements.alarmDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        } else {
+            playAlarmSound();
+            cancelAlarm();
+            showStatus('⏰ Countdown complete!', 'success');
+        }
+    }, 1000);
+}
+
+function cancelAlarm() {
+    state.alarmTime = null;
+    state.alarmCountdownSeconds = 0;
+    
+    if (state.alarmCheckInterval) {
+        clearInterval(state.alarmCheckInterval);
+        state.alarmCheckInterval = null;
+    }
+    
+    if (state.alarmCountdownHandle) {
+        clearInterval(state.alarmCountdownHandle);
+        state.alarmCountdownHandle = null;
+    }
+    
+    elements.setAlarm.classList.remove('hidden');
+    elements.cancelAlarm.classList.add('hidden');
+    elements.alarmStatus.textContent = '';
+    elements.alarmDisplay.textContent = '--:--';
 }
 
 function resetPomodoro() {
@@ -1250,29 +1483,106 @@ function resetPomodoro() {
     elements.pausePomodoro.classList.add('hidden');
 }
 
-function playPomodoroSound() {
+function playPomodoroBreakSound() {
+    // Ascending tone for break time
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
     
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
+    osc.connect(gain);
+    gain.connect(audioContext.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(400, audioContext.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.5);
     
-    oscillator.frequency.value = 600; // Different frequency for Pomodoro
-    oscillator.type = 'sine';
+    gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
     
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.7);
+    osc.start(audioContext.currentTime);
+    osc.stop(audioContext.currentTime + 0.5);
     
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.7);
-    
-    // Message is opposite of current state because we're about to switch
-    const message = state.pomodoroOnBreak ? 'Back to studying!' : 'Time for a break!';
     if ('Notification' in window && Notification.permission === 'granted') {
         new Notification('Pomodoro Timer', {
-            body: message,
+            body: 'Time for a break! Remember to log your session!',
             icon: '📚'
+        });
+    }
+}
+
+function playPomodoroStudySound() {
+    // Descending tone for study time
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    
+    osc.connect(gain);
+    gain.connect(audioContext.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(800, audioContext.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.5);
+    
+    gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+    
+    osc.start(audioContext.currentTime);
+    osc.stop(audioContext.currentTime + 0.5);
+    
+    if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Pomodoro Timer', {
+            body: 'Back to studying!',
+            icon: '📚'
+        });
+    }
+}
+
+function playAlarmSound() {
+    // Create alarm modal
+    const modal = document.createElement('div');
+    modal.className = 'alarm-modal';
+    modal.innerHTML = `
+        <div class="alarm-modal-content">
+            <h2>⏰ ALARM!</h2>
+            <p>Your alarm is ringing!</p>
+            <button id="dismissAlarm" class="btn btn-primary btn-large">Dismiss Alarm</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    // Loop alarm sound continuously
+    let alarmInterval;
+    const playAlarmBeep = () => {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        for (let i = 0; i < 5; i++) {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.frequency.value = 1000;
+            osc.type = 'sawtooth';
+            const startTime = audioContext.currentTime + (i * 0.4);
+            gain.gain.setValueAtTime(0.4, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+            osc.start(startTime);
+            osc.stop(startTime + 0.3);
+        }
+    };
+    
+    // Play immediately and then every 2 seconds
+    playAlarmBeep();
+    alarmInterval = setInterval(playAlarmBeep, 2000);
+    
+    // Dismiss button handler
+    document.getElementById('dismissAlarm').addEventListener('click', () => {
+        clearInterval(alarmInterval);
+        document.body.removeChild(modal);
+    });
+    
+    // Browser notification
+    if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('⏰ Alarm!', {
+            body: 'Your alarm is ringing!',
+            icon: '⏰',
+            requireInteraction: true
         });
     }
 }
@@ -1622,6 +1932,7 @@ window.addEventListener('load', () => {
     setupTimerListeners();
     setupExerciseListeners();
     setupPomodoroListeners();
+    setupAlarmListeners();
     updateTimerDisplay();
     updateWorkoutTimerDisplay();
     updatePomodoroTimerDisplay();
