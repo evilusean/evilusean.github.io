@@ -3,6 +3,75 @@ if (typeof CONFIG === 'undefined') {
     console.error('CONFIG not found! Please create config.js from config-template.js');
 }
 
+// Exercise descriptions
+const EXERCISE_DESCRIPTIONS = {
+    'Stomach Vacuum': 'Exhale all air, pull belly button toward spine, hold. Great for transverse abdominis.',
+    'Plank': 'Forearms on ground, body straight from head to heels. Engage core, don\'t let hips sag.',
+    'Side Plank (Left)': 'On left forearm, stack feet, lift hips. Keep body in straight line.',
+    'Side Plank (Right)': 'On right forearm, stack feet, lift hips. Keep body in straight line.',
+    'Hollow Body Hold': 'Lie on back, press lower back to floor, lift shoulders and legs. Arms overhead.',
+    'Dead Bug': 'On back, extend opposite arm and leg while keeping core engaged. Alternate sides.',
+    'Bicycle Crunches': 'On back, bring opposite elbow to knee in cycling motion. Keep core tight.',
+    'Russian Twists': 'Seated, lean back, twist torso side to side. Can hold weight for resistance.',
+    'Leg Raises': 'Lie on back, lift straight legs to 90°, lower slowly without touching ground.',
+    'Flutter Kicks': 'On back, lift legs slightly, alternate small up-down kicks. Keep core engaged.',
+    'Mountain Climbers': 'Plank position, drive knees to chest alternating quickly. Keep hips level.',
+    'V-Ups': 'Lie flat, simultaneously lift legs and torso to form V shape. Touch toes.',
+    'Situps': 'Lie on back, knees bent, lift torso to knees. Control the descent.',
+    'Pullups': 'Hang from bar, pull chin over bar. Full range of motion, control descent.',
+    'Chin-ups': 'Like pullups but palms facing you. Easier variation, works biceps more.',
+    'Negative Pullups': 'Jump to top position, lower yourself slowly (5+ seconds).',
+    'Dead Hang': 'Hang from bar with straight arms. Builds grip strength and decompresses spine.',
+    'Hanging Knee Raises': 'Hang from bar, bring knees to chest. Control the movement.',
+    'Hanging Leg Raises': 'Hang from bar, lift straight legs to 90°. Advanced core exercise.',
+    'L-Sit Hold': 'Hang or support on bars, lift legs to 90° and hold. Very challenging.',
+    'Push-ups': 'Hands shoulder-width, lower chest to ground, push up. Keep body straight.',
+    'Diamond Push-ups': 'Hands together forming diamond, targets triceps more than regular pushups.',
+    'Wide Push-ups': 'Hands wider than shoulders, emphasizes chest muscles.',
+    'Pike Push-ups': 'Hips high, head toward ground. Targets shoulders, progression to handstand pushups.',
+    'Burpees': 'Squat, jump back to plank, pushup, jump feet forward, jump up. Full body cardio.',
+    'Squats': 'Feet shoulder-width, lower hips back and down, keep chest up. Thighs parallel to ground.',
+    'Jump Squats': 'Regular squat but explode up into a jump. Land softly.',
+    'Lunges': 'Step forward, lower back knee toward ground. Keep front knee over ankle.',
+    'Bulgarian Split Squats': 'Back foot elevated, lunge down on front leg. Very challenging.',
+    'Glute Bridges': 'On back, knees bent, lift hips high. Squeeze glutes at top.',
+    'Single Leg Glute Bridge': 'Like glute bridge but one leg extended. Harder balance and strength.',
+    'Wall Sit': 'Back against wall, slide down to 90° knee angle. Hold position.',
+    'Calf Raises': 'Rise up on toes, lower slowly. Can do on edge of step for more range.',
+    'Dumbbell Curl': 'Arms at sides, curl weights to shoulders. Keep elbows stationary.',
+    'Hammer Curl': 'Like curls but palms facing each other. Works brachialis muscle.',
+    'Overhead Press': 'Start at shoulders, press weights overhead. Keep core tight.',
+    'Lateral Raise': 'Arms at sides, lift weights out to sides to shoulder height.',
+    'Front Raise': 'Arms at sides, lift weights forward to shoulder height.',
+    'Bent Over Row': 'Hinge at hips, pull weights to ribcage. Squeeze shoulder blades.',
+    'Single Arm Row': 'One hand supported, row weight with other arm. Alternate sides.',
+    'Chest Press (Floor)': 'Lie on floor, press weights up from chest. Good for home workouts.',
+    'Chest Fly (Floor)': 'Lie on floor, arc weights out and together. Stretch and squeeze chest.',
+    'Goblet Squat': 'Hold weight at chest, squat down. Great for form and depth.',
+    'Dumbbell Deadlift': 'Weights at sides, hinge at hips, lower weights along legs. Keep back straight.',
+    'Dumbbell Lunge': 'Hold weights at sides, perform lunges. Adds resistance to bodyweight movement.',
+    'Dumbbell Shrug': 'Weights at sides, lift shoulders toward ears. Targets traps.',
+    'Tricep Extension': 'Weight overhead, lower behind head, extend back up. Keep elbows still.',
+    'Dumbbell Swing': 'Hinge and swing weight between legs, thrust hips to swing up. Explosive movement.',
+    'Superman Hold': 'Lie face down, lift arms and legs off ground. Hold position.',
+    'Bridge Hold': 'Glute bridge position held at top. Squeeze glutes throughout.',
+    'Seated Soleus Raise': 'Seated, knees bent, raise heels off ground. Targets soleus muscle specifically.',
+    'Seated Soleus Hold': 'Seated calf raise held at top position. Burns the soleus.',
+    'Seated Calf Raise': 'Seated, raise heels up and down. Can add weight on knees.',
+    'Seated Knee Extension Hold': 'Seated, extend one leg straight and hold. Isometric quad work.',
+    'Seated Hip Flexor Hold': 'Seated, lift knee up and hold. Works hip flexors isometrically.',
+    'Seated Glute Squeeze': 'Seated, squeeze glutes hard. Can do anywhere, anytime.',
+    'Seated Ab Vacuum': 'Seated version of stomach vacuum. Pull belly button to spine.',
+    'Seated Chest Squeeze': 'Press palms together in front of chest. Hold with maximum force.',
+    'Seated Shoulder Blade Squeeze': 'Pull shoulder blades together and hold. Improves posture.',
+    'Seated Neck Isometric (Front)': 'Push forehead into hand, resist. Strengthens neck.',
+    'Seated Neck Isometric (Side)': 'Push side of head into hand, resist. Do both sides.',
+    'Seated Fist Clench': 'Make tight fists and hold. Builds grip and forearm strength.',
+    'Seated Forearm Plank (Desk)': 'Lean on desk with forearms, hold plank position.',
+    'Seated Leg Extension Hold': 'Extend leg straight, hold. Isometric quad strengthening.',
+    'Seated Ankle Dorsiflexion Hold': 'Pull toes toward shin and hold. Strengthens tibialis anterior.'
+};
+
 // State management
 let state = {
     isSignedIn: false,
@@ -17,7 +86,9 @@ let state = {
     workoutTimerRunning: false,
     currentDate: null,
     todayExercises: [],
-    tokenClient: null
+    tokenClient: null,
+    allExercises: [], // Store all exercises for filtering
+    sortCategories: [] // Store sort categories
 };
 
 // DOM Elements
@@ -48,7 +119,10 @@ function initElements() {
         statusMessage: document.getElementById('statusMessage'),
         todayLog: document.getElementById('todayLog'),
         manageExercises: document.getElementById('manageExercises'),
-        autoSetWorkoutTimer: document.getElementById('autoSetWorkoutTimer')
+        updateCurrentExercise: document.getElementById('updateCurrentExercise'),
+        autoSetWorkoutTimer: document.getElementById('autoSetWorkoutTimer'),
+        sortFilter: document.getElementById('sortFilter'),
+        exerciseDescription: document.getElementById('exerciseDescription')
     };
 }
 
@@ -306,13 +380,19 @@ async function ensureExercisesSheet() {
 
 // Initialize Exercises sheet with default exercises
 async function initializeExercisesSheet() {
+    const defaultExercises = getDefaultExercisesWithDescriptions();
+    await appendToSheet(defaultExercises, 'Exercises');
+}
+
+// Old version kept for reference
+async function initializeExercisesSheetOld() {
     const defaultExercises = [
-        ['Exercise Name', 'Default Weight', 'Default Reps', 'Default Time (seconds)'],
-        ['# Add # at start of exercise name to hide it from dropdown', '', '', ''],
-        ['', '', '', ''],
-        ['# === AB EXERCISES ===', '', '', ''],
-        ['Stomach Vacuum', '0', '0', '30'],
-        ['Plank', '0', '0', '60'],
+        ['Exercise Name', 'Default Weight', 'Default Reps', 'Default Time (seconds)', 'Description'],
+        ['# Add # at start of exercise name to hide it from dropdown', '', '', '', ''],
+        ['', '', '', '', ''],
+        ['# === AB EXERCISES ===', '', '', '', ''],
+        ['Stomach Vacuum', '0', '0', '30', 'Exhale all air, pull belly button toward spine, hold. Great for transverse abdominis.'],
+        ['Plank', '0', '0', '60', 'Forearms on ground, body straight from head to heels. Engage core, don\'t let hips sag.'],
         ['Side Plank (Left)', '0', '0', '30'],
         ['Side Plank (Right)', '0', '0', '30'],
         ['Hollow Body Hold', '0', '0', '30'],
@@ -374,7 +454,24 @@ async function initializeExercisesSheet() {
         ['Superman Hold', '0', '0', '30'],
         ['Bridge Hold', '0', '0', '45'],
         ['Dead Hang', '0', '0', '30'],
-        ['L-Sit Hold', '0', '0', '20']
+        ['L-Sit Hold', '0', '0', '20'],
+        ['', '', '', ''],
+        ['# === SEATED ISOMETRIC EXERCISES ===', '', '', ''],
+        ['Seated Soleus Raise', '0', '30', '0'],
+        ['Seated Soleus Hold', '0', '0', '30'],
+        ['Seated Calf Raise', '0', '30', '0'],
+        ['Seated Knee Extension Hold', '0', '0', '30'],
+        ['Seated Hip Flexor Hold', '0', '0', '30'],
+        ['Seated Glute Squeeze', '0', '20', '0'],
+        ['Seated Ab Vacuum', '0', '0', '20'],
+        ['Seated Chest Squeeze', '0', '0', '30'],
+        ['Seated Shoulder Blade Squeeze', '0', '0', '30'],
+        ['Seated Neck Isometric (Front)', '0', '0', '20'],
+        ['Seated Neck Isometric (Side)', '0', '0', '20'],
+        ['Seated Fist Clench', '0', '0', '30'],
+        ['Seated Forearm Plank (Desk)', '0', '0', '30'],
+        ['Seated Leg Extension Hold', '0', '0', '30'],
+        ['Seated Ankle Dorsiflexion Hold', '0', '0', '30']
     ];
     
     await appendToSheet(defaultExercises, 'Exercises');
@@ -439,21 +536,29 @@ async function updateExerciseLibrary() {
         // Get current exercises
         const response = await gapi.client.sheets.spreadsheets.values.get({
             spreadsheetId: state.spreadsheetId,
-            range: 'Exercises!A:D'
+            range: 'Exercises!A:E'
         });
         
         const existingValues = response.result.values || [];
-        const existingExercises = new Set();
+        const existingExercises = new Map(); // Use Map to track row numbers
         
-        // Track existing exercise names (skip header and comments)
+        // Track existing exercise names and their row numbers
         existingValues.forEach((row, index) => {
             if (index > 0 && row[0] && !row[0].startsWith('#')) {
-                existingExercises.add(row[0].trim());
+                existingExercises.set(row[0].trim(), index + 1); // +1 for 1-based indexing
             }
         });
         
-        // New exercises to add
-        const newExercises = [
+        // Get all exercises with descriptions
+        const allExercises = getDefaultExercisesWithDescriptions();
+        const newExercises = allExercises.slice(1); // Skip header
+        
+        // Separate into new exercises and updates
+        const exercisesToAdd = [];
+        const exercisesToUpdate = [];
+        
+        /*
+        Old array removed - now using getDefaultExercisesWithDescriptions()
             ['# Add # at start of exercise name to hide it from dropdown', '', '', ''],
             ['', '', '', ''],
             ['# === AB EXERCISES ===', '', '', ''],
@@ -515,30 +620,90 @@ async function updateExerciseLibrary() {
             ['# === ISOMETRIC HOLDS ===', '', '', ''],
             ['Wall Sit', '0', '0', '60'],
             ['Superman Hold', '0', '0', '30'],
-            ['Bridge Hold', '0', '0', '45']
-        ];
+            ['Bridge Hold', '0', '0', '45'],
+            ['', '', '', ''],
+            ['# === SEATED ISOMETRIC EXERCISES ===', '', '', ''],
+            ['Seated Soleus Raise', '0', '30', '0'],
+            ['Seated Soleus Hold', '0', '0', '30'],
+            ['Seated Calf Raise', '0', '30', '0'],
+            ['Seated Knee Extension Hold', '0', '0', '30'],
+            ['Seated Hip Flexor Hold', '0', '0', '30'],
+            ['Seated Glute Squeeze', '0', '20', '0'],
+            ['Seated Ab Vacuum', '0', '0', '20'],
+            ['Seated Chest Squeeze', '0', '0', '30'],
+            ['Seated Shoulder Blade Squeeze', '0', '0', '30'],
+            ['Seated Neck Isometric (Front)', '0', '0', '20'],
+            ['Seated Neck Isometric (Side)', '0', '0', '20'],
+            ['Seated Fist Clench', '0', '0', '30'],
+            ['Seated Forearm Plank (Desk)', '0', '0', '30'],
+            ['Seated Leg Extension Hold', '0', '0', '30'],
+            ['Seated Ankle Dorsiflexion Hold', '0', '0', '30']
+        */
         
-        // Filter out exercises that already exist
-        const exercisesToAdd = [];
+        // Process each exercise
         newExercises.forEach(row => {
             const exerciseName = row[0] ? row[0].trim() : '';
-            // Add if it's a comment, empty, or doesn't exist yet
-            if (exerciseName.startsWith('#') || exerciseName === '' || !existingExercises.has(exerciseName)) {
+            
+            // Skip empty rows
+            if (!exerciseName) return;
+            
+            // Always add comments/headers
+            if (exerciseName.startsWith('#')) {
+                exercisesToAdd.push(row);
+                return;
+            }
+            
+            // Check if exercise exists
+            if (existingExercises.has(exerciseName)) {
+                // Update existing exercise with description if missing
+                const rowNum = existingExercises.get(exerciseName);
+                const existingRow = existingValues[rowNum - 1];
+                
+                // If description column is missing or empty, add it to update list
+                if (!existingRow[4]) {
+                    exercisesToUpdate.push({
+                        range: `Exercises!E${rowNum}`,
+                        value: row[4] || ''
+                    });
+                }
+            } else {
+                // New exercise - add it
                 exercisesToAdd.push(row);
             }
         });
         
+        // Update existing exercises with descriptions
+        if (exercisesToUpdate.length > 0) {
+            const batchUpdateData = exercisesToUpdate.map(update => ({
+                range: update.range,
+                values: [[update.value]]
+            }));
+            
+            await gapi.client.sheets.spreadsheets.values.batchUpdate({
+                spreadsheetId: state.spreadsheetId,
+                resource: {
+                    valueInputOption: 'USER_ENTERED',
+                    data: batchUpdateData
+                }
+            });
+            
+            console.log(`Updated ${exercisesToUpdate.length} exercises with descriptions`);
+        }
+        
+        // Add new exercises
         if (exercisesToAdd.length > 0) {
             await appendToSheet(exercisesToAdd, 'Exercises');
-            showStatus(`Added ${exercisesToAdd.length} new exercises! Reloading...`, 'success');
-            
-            // Reload exercises
-            setTimeout(() => {
-                loadExercises();
-            }, 1000);
+            showStatus(`Added ${exercisesToAdd.length} new items and updated ${exercisesToUpdate.length} descriptions! Reloading...`, 'success');
+        } else if (exercisesToUpdate.length > 0) {
+            showStatus(`Updated ${exercisesToUpdate.length} descriptions! Reloading...`, 'success');
         } else {
-            showStatus('All exercises already exist!', 'success');
+            showStatus('All exercises up to date!', 'success');
         }
+        
+        // Reload exercises
+        setTimeout(() => {
+            loadExercises();
+        }, 1000);
         
     } catch (error) {
         console.error('Error updating exercises:', error);
@@ -551,52 +716,98 @@ async function loadExercises() {
     try {
         const response = await gapi.client.sheets.spreadsheets.values.get({
             spreadsheetId: state.spreadsheetId,
-            range: 'Exercises!A2:D' // Skip header row
+            range: 'Exercises!A2:E' // Skip header row, include description column
         });
         
         const values = response.result.values || [];
         
-        // Clear existing options
-        elements.exerciseName.innerHTML = '';
+        state.allExercises = [];
+        state.sortCategories = [];
+        let currentCategory = '';
         
-        let loadedCount = 0;
-        
-        // Add exercises from sheet, filtering out comments and empty rows
+        // Parse exercises and categories
         values.forEach(row => {
-            if (row[0]) { // If exercise name exists
+            if (row[0]) {
                 const exerciseName = row[0].trim();
                 
-                // Skip if starts with # (comment) or is empty
+                // Check if it's a sort category marker
+                if (exerciseName.match(/^#\s*===\s*(.+?)\s*===\s*$/)) {
+                    currentCategory = exerciseName.match(/^#\s*===\s*(.+?)\s*===\s*$/)[1].trim();
+                    if (!state.sortCategories.includes(currentCategory)) {
+                        state.sortCategories.push(currentCategory);
+                    }
+                    return;
+                }
+                
+                // Skip other comments and empty
                 if (exerciseName.startsWith('#') || exerciseName === '') {
                     return;
                 }
                 
-                const option = document.createElement('option');
-                option.value = exerciseName;
-                option.textContent = exerciseName;
-                option.dataset.weight = row[1] || '0';
-                option.dataset.reps = row[2] || '0';
-                option.dataset.time = row[3] || '0';
-                elements.exerciseName.appendChild(option);
-                loadedCount++;
+                state.allExercises.push({
+                    name: exerciseName,
+                    weight: row[1] || '0',
+                    reps: row[2] || '0',
+                    time: row[3] || '0',
+                    description: row[4] || '',
+                    category: currentCategory
+                });
             }
         });
         
-        // Add Custom option at the end
-        const customOption = document.createElement('option');
-        customOption.value = 'Custom';
-        customOption.textContent = 'Custom';
-        elements.exerciseName.appendChild(customOption);
+        // Populate sort filter
+        populateSortFilter();
         
-        // Set defaults for first exercise
-        if (loadedCount > 0) {
-            setExerciseDefaults();
-        }
+        // Display all exercises initially
+        displayExercises();
         
-        console.log(`Loaded ${loadedCount} exercises from sheet (${values.length - loadedCount} hidden/commented)`);
+        console.log(`Loaded ${state.allExercises.length} exercises with ${state.sortCategories.length} categories`);
     } catch (error) {
         console.error('Error loading exercises:', error);
         showStatus('Error loading exercises. Using defaults.', 'error');
+    }
+}
+
+// Populate sort filter dropdown
+function populateSortFilter() {
+    elements.sortFilter.innerHTML = '<option value="">All Exercises</option>';
+    
+    state.sortCategories.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category;
+        option.textContent = category;
+        elements.sortFilter.appendChild(option);
+    });
+}
+
+// Display exercises based on current filter
+function displayExercises(filterCategory = '') {
+    elements.exerciseName.innerHTML = '';
+    
+    const filteredExercises = filterCategory 
+        ? state.allExercises.filter(ex => ex.category === filterCategory)
+        : state.allExercises;
+    
+    filteredExercises.forEach(exercise => {
+        const option = document.createElement('option');
+        option.value = exercise.name;
+        option.textContent = exercise.name;
+        option.dataset.weight = exercise.weight;
+        option.dataset.reps = exercise.reps;
+        option.dataset.time = exercise.time;
+        option.dataset.description = exercise.description;
+        elements.exerciseName.appendChild(option);
+    });
+    
+    // Add Custom option at the end
+    const customOption = document.createElement('option');
+    customOption.value = 'Custom';
+    customOption.textContent = 'Custom';
+    elements.exerciseName.appendChild(customOption);
+    
+    // Set defaults for first exercise
+    if (filteredExercises.length > 0) {
+        setExerciseDefaults();
     }
 }
 
@@ -631,9 +842,12 @@ async function appendToSheet(values, sheetName = null) {
         // Use workout log sheet name if not specified
         const targetSheet = sheetName || state.workoutLogSheetName;
         
+        // Determine range based on sheet type
+        const range = sheetName === 'Exercises' ? `${targetSheet}!A:E` : `${targetSheet}!A:E`;
+        
         const response = await gapi.client.sheets.spreadsheets.values.append({
             spreadsheetId: state.spreadsheetId,
-            range: `${targetSheet}!A:E`,
+            range: range,
             valueInputOption: 'USER_ENTERED',
             resource: {
                 values: values
@@ -819,23 +1033,180 @@ if ('Notification' in window && Notification.permission === 'default') {
     Notification.requestPermission();
 }
 
+// Show exercise description
+function showExerciseDescription(exerciseName) {
+    const selectedOption = elements.exerciseName.options[elements.exerciseName.selectedIndex];
+    const description = selectedOption.dataset.description || EXERCISE_DESCRIPTIONS[exerciseName] || '';
+    
+    if (description) {
+        elements.exerciseDescription.textContent = description;
+        elements.exerciseDescription.classList.remove('hidden');
+    } else {
+        elements.exerciseDescription.classList.add('hidden');
+    }
+}
+
+// Update or add current exercise to sheet
+async function updateCurrentExercise() {
+    const exerciseName = elements.exerciseName.value;
+    const weight = elements.weight.value;
+    const reps = elements.reps.value;
+    const time = elements.time.value;
+    
+    if (exerciseName === 'Custom') {
+        const customName = elements.customExercise.value.trim();
+        if (!customName) {
+            alert('Please enter a custom exercise name');
+            return;
+        }
+        
+        // Add custom exercise under current category
+        const currentCategory = elements.sortFilter.value || 'CUSTOM EXERCISES';
+        await addCustomExercise(customName, weight, reps, time, currentCategory);
+    } else {
+        // Update existing exercise defaults
+        await updateExerciseInSheet(exerciseName, weight, reps, time);
+    }
+}
+
+// Add custom exercise to sheet
+async function addCustomExercise(name, weight, reps, time, category) {
+    try {
+        // Get all exercises to find where to insert
+        const response = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: state.spreadsheetId,
+            range: 'Exercises!A:E'
+        });
+        
+        const values = response.result.values || [];
+        
+        // Check if exercise already exists
+        const existingIndex = values.findIndex((row, idx) => 
+            idx > 0 && row[0] && row[0].trim() === name
+        );
+        
+        if (existingIndex > 0) {
+            showStatus(`Exercise "${name}" already exists! Use it from the dropdown to update.`, 'error');
+            return;
+        }
+        
+        // Find the category section or add at end
+        let insertAfterRow = values.length;
+        const categoryMarker = `# === ${category} ===`;
+        
+        for (let i = 0; i < values.length; i++) {
+            if (values[i][0] && values[i][0].includes(category)) {
+                // Found category, find end of this section
+                insertAfterRow = i + 1;
+                // Skip to next category or end
+                for (let j = i + 1; j < values.length; j++) {
+                    if (values[j][0] && values[j][0].startsWith('# ===')) {
+                        insertAfterRow = j;
+                        break;
+                    }
+                    if (values[j][0] && !values[j][0].startsWith('#')) {
+                        insertAfterRow = j + 1;
+                    }
+                }
+                break;
+            }
+        }
+        
+        // Add the exercise
+        const newExercise = [[name, weight, reps, time, 'Custom exercise']];
+        await appendToSheet(newExercise, 'Exercises');
+        
+        showStatus(`Added "${name}" to ${category}! Reloading...`, 'success');
+        
+        // Reload exercises
+        setTimeout(() => {
+            loadExercises();
+        }, 1000);
+        
+    } catch (error) {
+        console.error('Error adding custom exercise:', error);
+        showStatus('Error adding exercise. Check console.', 'error');
+    }
+}
+
+// Update existing exercise in sheet
+async function updateExerciseInSheet(exerciseName, weight, reps, time) {
+    try {
+        // Get all exercises
+        const response = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: state.spreadsheetId,
+            range: 'Exercises!A:E'
+        });
+        
+        const values = response.result.values || [];
+        
+        // Find the exercise row
+        let rowIndex = -1;
+        for (let i = 1; i < values.length; i++) {
+            if (values[i][0] && values[i][0].trim() === exerciseName) {
+                rowIndex = i + 1; // +1 for 1-based indexing
+                break;
+            }
+        }
+        
+        if (rowIndex === -1) {
+            showStatus(`Exercise "${exerciseName}" not found in sheet!`, 'error');
+            return;
+        }
+        
+        // Update the row
+        await gapi.client.sheets.spreadsheets.values.update({
+            spreadsheetId: state.spreadsheetId,
+            range: `Exercises!B${rowIndex}:D${rowIndex}`,
+            valueInputOption: 'USER_ENTERED',
+            resource: {
+                values: [[weight, reps, time]]
+            }
+        });
+        
+        showStatus(`Updated "${exerciseName}" defaults! Reloading...`, 'success');
+        
+        // Reload exercises
+        setTimeout(() => {
+            loadExercises();
+        }, 1000);
+        
+    } catch (error) {
+        console.error('Error updating exercise:', error);
+        showStatus('Error updating exercise. Check console.', 'error');
+    }
+}
+
 // Exercise form handling
 function setupExerciseListeners() {
+    // Update Current Exercise button
+    elements.updateCurrentExercise.addEventListener('click', async () => {
+        await updateCurrentExercise();
+    });
+
     // Manage Exercises button
     elements.manageExercises.addEventListener('click', () => {
         const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${state.spreadsheetId}/edit#gid=`;
         window.open(spreadsheetUrl, '_blank');
-        showStatus('Edit the "Exercises" sheet to add/modify exercises. Refresh this page to see changes.', 'success');
+        showStatus('Edit the "Exercises" sheet. Use "# === CATEGORY ===" to create sort categories. Refresh to see changes.', 'success');
     });
 
+    // Sort filter
+    elements.sortFilter.addEventListener('change', (e) => {
+        displayExercises(e.target.value);
+    });
 
-
+    // Exercise selection
     elements.exerciseName.addEventListener('change', (e) => {
         if (e.target.value === 'Custom') {
             elements.customExercise.classList.remove('hidden');
+            elements.exerciseDescription.classList.add('hidden');
+            elements.updateCurrentExercise.textContent = 'Add to Sheet';
         } else {
             elements.customExercise.classList.add('hidden');
             setExerciseDefaults();
+            showExerciseDescription(e.target.value);
+            elements.updateCurrentExercise.textContent = 'Update Exercise';
         }
     });
 

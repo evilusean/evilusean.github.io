@@ -192,6 +192,33 @@ main {
     color: #ff6666;
 }
 
+.exercise-select-container {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.exercise-select-container select {
+    flex: 1;
+    min-width: 200px;
+}
+
+.sort-filter {
+    flex: 0 0 auto;
+    min-width: 150px;
+}
+
+.exercise-description {
+    margin-top: 10px;
+    padding: 12px;
+    background: #0d0000;
+    border-left: 3px solid #ff6600;
+    border-radius: 5px;
+    color: #ff9966;
+    font-size: 0.9em;
+    line-height: 1.5;
+}
+
 .form-group input,
 .form-group select {
     padding: 12px;

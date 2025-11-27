@@ -56,20 +56,27 @@
                             <input type="checkbox" id="autoSetWorkoutTimer" checked>
                             Auto-set workout timer
                         </label>
+                        <button type="button" id="updateCurrentExercise" class="btn btn-secondary btn-small">Update Exercise</button>
                         <button type="button" id="manageExercises" class="btn btn-secondary btn-small">Manage Exercises</button>
                     </div>
                 </div>
                 <form id="exerciseForm">
                     <div class="form-group">
                         <label for="exerciseName">Exercise:</label>
-                        <select id="exerciseName" required>
-                            <option value="Stomach Vacuum">Stomach Vacuum</option>
-                            <option value="Pullups">Pullups</option>
-                            <option value="Situps">Situps</option>
-                            <option value="Burpees">Burpees</option>
-                            <option value="Custom">Custom</option>
-                        </select>
+                        <div class="exercise-select-container">
+                            <select id="exerciseName" required>
+                                <option value="Stomach Vacuum">Stomach Vacuum</option>
+                                <option value="Pullups">Pullups</option>
+                                <option value="Situps">Situps</option>
+                                <option value="Burpees">Burpees</option>
+                                <option value="Custom">Custom</option>
+                            </select>
+                            <select id="sortFilter" class="sort-filter">
+                                <option value="">All Exercises</option>
+                            </select>
+                        </div>
                         <input type="text" id="customExercise" class="hidden" placeholder="Enter exercise name">
+                        <div id="exerciseDescription" class="exercise-description hidden"></div>
                     </div>
 
                     <div class="form-group">
@@ -102,6 +109,7 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://apis.google.com/js/api.js"></script>
     <script src="config.js"></script>
+    <script src="exercise-data.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
