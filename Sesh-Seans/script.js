@@ -77,6 +77,7 @@ let state = {
     isSignedIn: false,
     accessToken: null,
     spreadsheetId: null,
+    pomodoroSpreadsheetId: null,
     workoutLogSheetName: 'Sheet1', // Will be detected
     intervalTimerHandle: null,
     timerSeconds: 900, // 15 minutes default
@@ -84,11 +85,17 @@ let state = {
     workoutTimerHandle: null,
     workoutTimerSeconds: 30, // 30 seconds default
     workoutTimerRunning: false,
+    pomodoroTimerHandle: null,
+    pomodoroSeconds: 1200, // 20 minutes default
+    pomodoroRunning: false,
+    pomodoroOnBreak: false,
+    pomodoroBreakSeconds: 300, // 5 minutes default
     currentDate: null,
     todayExercises: [],
     tokenClient: null,
     allExercises: [], // Store all exercises for filtering
-    sortCategories: [] // Store sort categories
+    sortCategories: [], // Store sort categories
+    pomodoroSubjects: [] // Store pomodoro subjects
 };
 
 // DOM Elements
@@ -122,7 +129,21 @@ function initElements() {
         updateCurrentExercise: document.getElementById('updateCurrentExercise'),
         autoSetWorkoutTimer: document.getElementById('autoSetWorkoutTimer'),
         sortFilter: document.getElementById('sortFilter'),
-        exerciseDescription: document.getElementById('exerciseDescription')
+        exerciseDescription: document.getElementById('exerciseDescription'),
+        // Pomodoro elements
+        pomodoroToggle: document.getElementById('pomodoroToggle'),
+        pomodoroTimerDisplay: document.getElementById('pomodoroTimerDisplay'),
+        pomodoroStatus: document.getElementById('pomodoroStatus'),
+        startPomodoro: document.getElementById('startPomodoro'),
+        pausePomodoro: document.getElementById('pausePomodoro'),
+        resetPomodoro: document.getElementById('resetPomodoro'),
+        pomodoroForm: document.getElementById('pomodoroForm'),
+        pomodoroSubject: document.getElementById('pomodoroSubject'),
+        customSubject: document.getElementById('customSubject'),
+        pomodoroStudyTime: document.getElementById('pomodoroStudyTime'),
+        pomodoroBreakTime: document.getElementById('pomodoroBreakTime'),
+        pomodoroNotes: document.getElementById('pomodoroNotes'),
+        managePomodoroSheet: document.getElementById('managePomodoroSheet')
     };
 }
 
@@ -245,6 +266,7 @@ function updateSignInStatus(isSignedIn) {
 // Initialize app after sign-in
 async function initializeApp() {
     await findOrCreateSpreadsheet();
+    await findOrCreatePomodoroSpreadsheet();
     checkAndAddDaySeparator();
     loadTodayExercises();
     setExerciseDefaults();
@@ -253,7 +275,7 @@ async function initializeApp() {
 // Find or create the yearly spreadsheet
 async function findOrCreateSpreadsheet() {
     const year = new Date().getFullYear();
-    const sheetName = `${year}-Sesh-Seans`;
+    const sheetName = `${year}-Sesh-Seans-Workouts`;
     
     try {
         // Search for existing spreadsheet using Drive API
@@ -380,8 +402,20 @@ async function ensureExercisesSheet() {
 
 // Initialize Exercises sheet with default exercises
 async function initializeExercisesSheet() {
+    console.log('Initializing Exercises sheet with descriptions...');
+    
+    // Check if function exists
+    if (typeof getDefaultExercisesWithDescriptions !== 'function') {
+        console.error('getDefaultExercisesWithDescriptions is not defined! Check if exercise-data.js loaded.');
+        alert('Error: Exercise data not loaded. Check console.');
+        return;
+    }
+    
     const defaultExercises = getDefaultExercisesWithDescriptions();
+    console.log(`Adding ${defaultExercises.length} rows to Exercises sheet`);
+    
     await appendToSheet(defaultExercises, 'Exercises');
+    console.log('Exercises sheet initialized successfully');
 }
 
 // Old version kept for reference
@@ -811,6 +845,63 @@ function displayExercises(filterCategory = '') {
     }
 }
 
+// Find or create Pomodoro spreadsheet
+async function findOrCreatePomodoroSpreadsheet() {
+    const year = new Date().getFullYear();
+    const sheetName = `${year}-Sesh-Seans-Pomodoro`;
+    
+    try {
+        const searchResponse = await fetch(
+            `https://www.googleapis.com/drive/v3/files?q=name='${sheetName}' and mimeType='application/vnd.google-apps.spreadsheet'&fields=files(id,name)`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${state.accessToken}`
+                }
+            }
+        );
+        
+        const searchData = await searchResponse.json();
+        
+        if (searchData.files && searchData.files.length > 0) {
+            state.pomodoroSpreadsheetId = searchData.files[0].id;
+            console.log('Found existing Pomodoro spreadsheet:', state.pomodoroSpreadsheetId);
+        } else {
+            const createResponse = await gapi.client.sheets.spreadsheets.create({
+                properties: {
+                    title: sheetName
+                }
+            });
+            
+            state.pomodoroSpreadsheetId = createResponse.result.spreadsheetId;
+            console.log('Created new Pomodoro spreadsheet:', state.pomodoroSpreadsheetId);
+            
+            // Add header row
+            await appendToPomodoroSheet([['Date', 'Time', 'Subject', 'Study Duration (min)', 'Break Duration (min)', 'Notes']]);
+        }
+    } catch (error) {
+        console.error('Error with Pomodoro spreadsheet:', error);
+    }
+}
+
+// Append data to Pomodoro sheet
+async function appendToPomodoroSheet(values) {
+    try {
+        const response = await gapi.client.sheets.spreadsheets.values.append({
+            spreadsheetId: state.pomodoroSpreadsheetId,
+            range: 'Sheet1!A:F',
+            valueInputOption: 'USER_ENTERED',
+            resource: {
+                values: values
+            }
+        });
+        
+        return response;
+    } catch (error) {
+        console.error('Error appending to Pomodoro sheet:', error);
+        throw error;
+    }
+}
+
 // Check if we need to add a day separator
 async function checkAndAddDaySeparator() {
     const today = new Date().toISOString().split('T')[0];
@@ -1024,6 +1115,164 @@ function playWorkoutSound() {
         new Notification('Workout Complete!', {
             body: 'Time to log your exercise!',
             icon: '💪'
+        });
+    }
+}
+
+// Pomodoro Timer Functions
+function updatePomodoroTimerDisplay() {
+    const minutes = Math.floor(state.pomodoroSeconds / 60);
+    const seconds = state.pomodoroSeconds % 60;
+    elements.pomodoroTimerDisplay.textContent = 
+        `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+function setupPomodoroListeners() {
+    // Toggle collapse
+    elements.pomodoroToggle.addEventListener('click', () => {
+        document.querySelector('.pomodoro-section').classList.toggle('collapsed');
+    });
+
+    // Manage Pomodoro Sheet button
+    elements.managePomodoroSheet.addEventListener('click', () => {
+        if (state.pomodoroSpreadsheetId) {
+            const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${state.pomodoroSpreadsheetId}/edit`;
+            window.open(spreadsheetUrl, '_blank');
+            showStatus('You can view your Pomodoro log and add custom subjects to the dropdown!', 'success');
+        } else {
+            showStatus('Pomodoro spreadsheet not yet created. Start a session first!', 'error');
+        }
+    });
+
+    // Subject selection
+    elements.pomodoroSubject.addEventListener('change', (e) => {
+        if (e.target.value === 'Custom') {
+            elements.customSubject.classList.remove('hidden');
+        } else {
+            elements.customSubject.classList.add('hidden');
+        }
+    });
+
+    // Start Pomodoro
+    elements.startPomodoro.addEventListener('click', () => {
+        if (!state.pomodoroRunning) {
+            state.pomodoroRunning = true;
+            elements.startPomodoro.classList.add('hidden');
+            elements.pausePomodoro.classList.remove('hidden');
+            
+            state.pomodoroTimerHandle = setInterval(() => {
+                if (state.pomodoroSeconds > 0) {
+                    state.pomodoroSeconds--;
+                    updatePomodoroTimerDisplay();
+                } else {
+                    // Timer complete - switch between study and break
+                    if (state.pomodoroOnBreak) {
+                        // Break complete - back to study
+                        playPomodoroSound();
+                        state.pomodoroOnBreak = false;
+                        const studyMinutes = parseInt(elements.pomodoroStudyTime.value) || 20;
+                        state.pomodoroSeconds = studyMinutes * 60;
+                        elements.pomodoroStatus.textContent = 'Study Session';
+                        updatePomodoroTimerDisplay();
+                    } else {
+                        // Study complete - start break
+                        playPomodoroSound();
+                        state.pomodoroOnBreak = true;
+                        const breakMinutes = parseInt(elements.pomodoroBreakTime.value) || 5;
+                        state.pomodoroSeconds = breakMinutes * 60;
+                        elements.pomodoroStatus.textContent = 'Break Time!';
+                        updatePomodoroTimerDisplay();
+                    }
+                }
+            }, 1000);
+        }
+    });
+
+    // Pause Pomodoro
+    elements.pausePomodoro.addEventListener('click', () => {
+        state.pomodoroRunning = false;
+        clearInterval(state.pomodoroTimerHandle);
+        elements.startPomodoro.classList.remove('hidden');
+        elements.pausePomodoro.classList.add('hidden');
+    });
+
+    // Reset Pomodoro
+    elements.resetPomodoro.addEventListener('click', () => {
+        resetPomodoro();
+    });
+
+    // Study/Break time changes
+    elements.pomodoroStudyTime.addEventListener('change', () => {
+        if (!state.pomodoroRunning && !state.pomodoroOnBreak) {
+            resetPomodoro();
+        }
+    });
+
+    // Pomodoro form submission
+    elements.pomodoroForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const now = new Date();
+        const date = now.toISOString().split('T')[0];
+        const time = now.toTimeString().split(' ')[0];
+        
+        let subject = elements.pomodoroSubject.value;
+        if (subject === 'Custom') {
+            subject = elements.customSubject.value || 'Custom Subject';
+        }
+        
+        const studyDuration = elements.pomodoroStudyTime.value;
+        const breakDuration = elements.pomodoroBreakTime.value;
+        const notes = elements.pomodoroNotes.value;
+        
+        const rowData = [date, time, subject, studyDuration, breakDuration, notes];
+        
+        try {
+            await appendToPomodoroSheet([rowData]);
+            showStatus('Pomodoro session logged! 📚', 'success');
+            elements.pomodoroNotes.value = ''; // Clear notes
+        } catch (error) {
+            console.error('Error logging Pomodoro:', error);
+            showStatus('Error logging Pomodoro session.', 'error');
+        }
+    });
+}
+
+function resetPomodoro() {
+    state.pomodoroRunning = false;
+    state.pomodoroOnBreak = false;
+    clearInterval(state.pomodoroTimerHandle);
+    const studyMinutes = parseInt(elements.pomodoroStudyTime.value) || 20;
+    state.pomodoroSeconds = studyMinutes * 60;
+    elements.pomodoroStatus.textContent = 'Study Session';
+    updatePomodoroTimerDisplay();
+    elements.startPomodoro.classList.remove('hidden');
+    elements.pausePomodoro.classList.add('hidden');
+}
+
+function playPomodoroSound() {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.value = 600; // Different frequency for Pomodoro
+    oscillator.type = 'sine';
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.7);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.7);
+    
+    // Message is opposite of current state because we're about to switch
+    const message = state.pomodoroOnBreak ? 'Back to studying!' : 'Time for a break!';
+    if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Pomodoro Timer', {
+            body: message,
+            icon: '📚'
         });
     }
 }
@@ -1363,10 +1612,19 @@ function updateTodayLog() {
 window.addEventListener('load', () => {
     console.log('Page loaded, initializing...');
     initElements();
+    
+    // Ensure app content is hidden until signed in
+    if (elements.appContent) {
+        elements.appContent.classList.add('hidden');
+        console.log('App content hidden - waiting for sign in');
+    }
+    
     setupTimerListeners();
     setupExerciseListeners();
+    setupPomodoroListeners();
     updateTimerDisplay();
     updateWorkoutTimerDisplay();
+    updatePomodoroTimerDisplay();
     
     setTimeout(() => {
         initGoogleAPI();
