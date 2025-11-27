@@ -6,29 +6,45 @@ A comprehensive productivity app that tracks workouts and study sessions to Goog
 
 ## Features
 
-### Workout Tracking
-- 🔐 Google OAuth authentication
-- ⏱️ **Interval Timer** - Continuous timer with configurable intervals (default 15 min)
-- 💪 **Workout Timer** - Per-exercise timer (default 30 sec)
-- 📊 60+ pre-configured exercises with descriptions
-- 🏋️ Categories: Abs, Pull-up Bar, Bodyweight, Dumbbells, Isometric, Seated
-- 📝 Custom exercise creation
-- 📅 Automatic day separation in spreadsheet
-- 📱 Fully responsive design
+### 🏋️ Workout Tracking
+- 🔐 **Google OAuth Authentication** - Secure sign-in with Google Identity Services
+- ⏱️ **Interval Timer** - Continuous repeating timer with configurable intervals (default 15 min)
+- 💪 **Workout Timer** - Per-exercise countdown timer (default 30 sec)
+- 📊 **60+ Pre-configured Exercises** with detailed descriptions
+- 🏋️ **Exercise Categories**: Abs, Pull-up Bar, Bodyweight, Dumbbells, Isometric, Seated
+- 📝 **Custom Exercise Creation** - Add your own exercises on the fly
+- 🔄 **Auto-set Workout Timer** - Automatically sets timer based on exercise defaults
+- 📈 **Exercise Management** - Update exercise defaults and view descriptions
+- 📅 **Automatic Day Separation** - Blank lines between different days in spreadsheet
+- 📊 **Today's Log Display** - See all exercises logged today
+- 📱 **Fully Responsive Design** - Works on desktop, tablet, and mobile
 
-### Study Tracking (Pomodoro)
-- 📚 **Pomodoro Timer** - Study/break cycles (default 20/5 min)
-- 📖 Subject tracking with custom subjects
-- 📝 Session notes
-- 📊 Separate Pomodoro spreadsheet
-- 🔔 Different sounds for study/break transitions
+### 📚 Study Tracking (Pomodoro)
+- 📚 **Pomodoro Timer** - Study/break cycles with auto-switching (default 20/5 min)
+- 📖 **Subject Tracking** - Pre-configured subjects plus custom subject support
+- 📝 **Session Notes** - Add notes about what you're working on
+- 📊 **Separate Pomodoro Spreadsheet** - Dedicated tracking for study sessions
+- 🔔 **Unique Study/Break Sounds** - Different tones for study and break transitions
+- 📈 **Today's Sessions Display** - View all Pomodoro sessions logged today
+- ⏯️ **Pause/Resume** - Full control over your study sessions
+- 🎯 **Collapsible Section** - Keep your workspace clean when not studying
 
-### Additional Features
-- ⏰ **Alarm Clock** - Set specific time alarms
-- 🎵 Unique sounds for each timer type
-- 📈 Today's workout and study session logs
-- 🔄 Auto-update exercise defaults
-- 🎨 Color-coded timers (Red: Workout, Green: Pomodoro, Yellow: Alarm)
+### ⏰ Alarm Clock
+- ⏰ **Dual Mode Alarm** - Set specific time OR countdown timer
+- 🕐 **Set Time Mode** - Set alarm for specific hour and minute (24-hour format)
+- ⏲️ **Countdown Mode** - Set alarm for X minutes and Y seconds from now
+- 🔊 **Continuous Alarm** - Alarm loops until manually dismissed
+- 🚨 **Full-Screen Modal** - Impossible to miss with pulsing background and shaking alert
+- 🔴 **Red Theme** - Urgent, attention-grabbing color scheme
+- 🎵 **Loud Repeating Sound** - Distinctive alarm sound that repeats every 2 seconds
+- 🔕 **Manual Dismiss** - Must click "Dismiss Alarm" button to stop
+- 🎯 **Collapsible Section** - Keeps interface clean when not in use
+
+### 🎵 Multiple Independent Timers
+- ✅ **All Timers Run Simultaneously** - No conflicts between timers
+- 🎨 **Color-Coded Sections** - Red (Workout), Green (Pomodoro), Red (Alarm)
+- 🔊 **Unique Sounds** - Each timer has distinctive audio cues
+- ⏯️ **Individual Controls** - Start, pause, reset each timer independently
 
 ## Quick Start
 
@@ -49,11 +65,11 @@ A comprehensive productivity app that tracks workouts and study sessions to Goog
 ## 🎵 Timer Sounds
 
 Each timer has a unique sound to help you distinguish them:
-- **Interval Timer**: Double beep (800Hz)
-- **Workout Timer**: Triple beep (1200Hz)
-- **Pomodoro Break**: Ascending tone (break time!)
-- **Pomodoro Study**: Descending tone (back to work!)
-- **Alarm Clock**: Loud repeating alarm (5 beeps)
+- **Interval Timer**: Double beep (800Hz) - Signals interval completion
+- **Workout Timer**: Triple beep (1200Hz) - Exercise time complete
+- **Pomodoro Break**: Ascending tone (400Hz → 600Hz) - Break time!
+- **Pomodoro Study**: Descending tone (600Hz → 400Hz) - Back to work!
+- **Alarm Clock**: Loud repeating sawtooth wave (1000Hz) - Loops every 2 seconds until dismissed
 
 ## How It Works
 
@@ -73,9 +89,13 @@ Each timer has a unique sound to help you distinguish them:
 5. Log session → Saved with subject, duration, and notes
 
 ### Alarm Clock
-1. Set specific time for alarm
-2. Alarm rings with distinctive sound
-3. Perfect for reminders and scheduled breaks
+1. Choose between two modes:
+   - **Set Time**: Set alarm for specific hour:minute (24-hour format)
+   - **Countdown**: Set alarm for X minutes and Y seconds from now
+2. Click "Set Alarm" to activate
+3. Alarm triggers with full-screen modal and continuous sound
+4. Must click "Dismiss Alarm" button to stop
+5. Perfect for reminders, scheduled breaks, and time-sensitive tasks
 
 ## Troubleshooting
 
