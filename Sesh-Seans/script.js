@@ -104,6 +104,7 @@ let state = {
     todayPomodoros: [],
     tokenClient: null,
     tokenRefreshInterval: null,
+    audioContext: null, // Shared audio context for all sounds
     allExercises: [], // Store all exercises for filtering
     sortCategories: [], // Store sort categories
     pomodoroSubjects: [] // Store pomodoro subjects
@@ -1359,9 +1360,29 @@ function updateWorkoutTimerDisplay() {
         `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
+// Get or create shared audio context
+function getAudioContext() {
+    if (!state.audioContext) {
+        try {
+            state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+            console.error('Web Audio API not supported:', e);
+            return null;
+        }
+    }
+    
+    // Resume if suspended (browser autoplay policy)
+    if (state.audioContext.state === 'suspended') {
+        state.audioContext.resume();
+    }
+    
+    return state.audioContext;
+}
+
 function playIntervalSound() {
     // Play double beep for interval timer
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const audioContext = getAudioContext();
+    if (!audioContext) return;
     
     // First beep
     const osc1 = audioContext.createOscillator();
@@ -1397,7 +1418,8 @@ function playIntervalSound() {
 
 function playWorkoutSound() {
     // Play triple beep for workout timer
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const audioContext = getAudioContext();
+    if (!audioContext) return;
     
     for (let i = 0; i < 3; i++) {
         const osc = audioContext.createOscillator();
@@ -1797,7 +1819,8 @@ function resetPomodoro() {
 
 function playPomodoroBreakSound() {
     // Ascending tone for break time
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const audioContext = getAudioContext();
+    if (!audioContext) return;
     const osc = audioContext.createOscillator();
     const gain = audioContext.createGain();
     
@@ -1823,7 +1846,8 @@ function playPomodoroBreakSound() {
 
 function playPomodoroStudySound() {
     // Descending tone for study time
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const audioContext = getAudioContext();
+    if (!audioContext) return;
     const osc = audioContext.createOscillator();
     const gain = audioContext.createGain();
     
@@ -1860,22 +1884,30 @@ function playAlarmSound() {
     `;
     document.body.appendChild(modal);
     
+    // Get shared audio context
+    const audioContext = getAudioContext();
+    if (!audioContext) return;
+    
     // Loop alarm sound continuously
     let alarmInterval;
     const playAlarmBeep = () => {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        for (let i = 0; i < 5; i++) {
-            const osc = audioContext.createOscillator();
-            const gain = audioContext.createGain();
-            osc.connect(gain);
-            gain.connect(audioContext.destination);
-            osc.frequency.value = 1000;
-            osc.type = 'sawtooth';
-            const startTime = audioContext.currentTime + (i * 0.4);
-            gain.gain.setValueAtTime(0.4, startTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
-            osc.start(startTime);
-            osc.stop(startTime + 0.3);
+        try {
+            
+            for (let i = 0; i < 5; i++) {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.frequency.value = 1000;
+                osc.type = 'sawtooth';
+                const startTime = audioContext.currentTime + (i * 0.4);
+                gain.gain.setValueAtTime(0.4, startTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+                osc.start(startTime);
+                osc.stop(startTime + 0.3);
+            }
+        } catch (e) {
+            console.error('Error playing alarm sound:', e);
         }
     };
     
