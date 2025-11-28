@@ -1361,52 +1361,55 @@ function updateWorkoutTimerDisplay() {
 }
 
 // Get or create shared audio context
-function getAudioContext() {
+async function getAudioContext() {
     if (!state.audioContext) {
         try {
             state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            console.log('🔊 Audio context created, state:', state.audioContext.state);
         } catch (e) {
-            console.error('Web Audio API not supported:', e);
+            console.error('❌ Web Audio API not supported:', e);
             return null;
         }
     }
     
     // Resume if suspended (browser autoplay policy)
     if (state.audioContext.state === 'suspended') {
-        state.audioContext.resume();
+        console.log('⏸️ Audio context suspended, resuming...');
+        await state.audioContext.resume();
+        console.log('▶️ Audio context resumed, state:', state.audioContext.state);
     }
     
+    console.log('🔊 Audio context state:', state.audioContext.state);
     return state.audioContext;
 }
 
-function playIntervalSound() {
-    // Play double beep for interval timer
-    const audioContext = getAudioContext();
-    if (!audioContext) return;
+async function playIntervalSound() {
+    console.log('🔔 Playing interval sound...');
     
-    // First beep
-    const osc1 = audioContext.createOscillator();
-    const gain1 = audioContext.createGain();
-    osc1.connect(gain1);
-    gain1.connect(audioContext.destination);
-    osc1.frequency.value = 800;
-    osc1.type = 'sine';
-    gain1.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gain1.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-    osc1.start(audioContext.currentTime);
-    osc1.stop(audioContext.currentTime + 0.2);
-    
-    // Second beep
-    const osc2 = audioContext.createOscillator();
-    const gain2 = audioContext.createGain();
-    osc2.connect(gain2);
-    gain2.connect(audioContext.destination);
-    osc2.frequency.value = 800;
-    osc2.type = 'sine';
-    gain2.gain.setValueAtTime(0.3, audioContext.currentTime + 0.3);
-    gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-    osc2.start(audioContext.currentTime + 0.3);
-    osc2.stop(audioContext.currentTime + 0.5);
+    // Try using a simple beep sound with higher volume
+    try {
+        const audioContext = await getAudioContext();
+        if (!audioContext) {
+            console.error('❌ No audio context available');
+            return;
+        }
+        
+        // Create a louder, longer beep
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.frequency.value = 800;
+        osc.type = 'square'; // Square wave is louder
+        gain.gain.setValueAtTime(0.5, audioContext.currentTime); // Louder volume
+        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+        osc.start(audioContext.currentTime);
+        osc.stop(audioContext.currentTime + 0.5);
+        
+        console.log('✅ Interval sound started at volume 0.5');
+    } catch (e) {
+        console.error('❌ Error creating interval sound:', e);
+    }
     
     if ('Notification' in window && Notification.permission === 'granted') {
         new Notification('Interval Complete!', {
@@ -1416,9 +1419,9 @@ function playIntervalSound() {
     }
 }
 
-function playWorkoutSound() {
+async function playWorkoutSound() {
     // Play triple beep for workout timer
-    const audioContext = getAudioContext();
+    const audioContext = await getAudioContext();
     if (!audioContext) return;
     
     for (let i = 0; i < 3; i++) {
@@ -1817,9 +1820,9 @@ function resetPomodoro() {
     elements.pausePomodoro.classList.add('hidden');
 }
 
-function playPomodoroBreakSound() {
+async function playPomodoroBreakSound() {
     // Ascending tone for break time
-    const audioContext = getAudioContext();
+    const audioContext = await getAudioContext();
     if (!audioContext) return;
     const osc = audioContext.createOscillator();
     const gain = audioContext.createGain();
@@ -1844,9 +1847,9 @@ function playPomodoroBreakSound() {
     }
 }
 
-function playPomodoroStudySound() {
+async function playPomodoroStudySound() {
     // Descending tone for study time
-    const audioContext = getAudioContext();
+    const audioContext = await getAudioContext();
     if (!audioContext) return;
     const osc = audioContext.createOscillator();
     const gain = audioContext.createGain();
@@ -1871,7 +1874,7 @@ function playPomodoroStudySound() {
     }
 }
 
-function playAlarmSound() {
+async function playAlarmSound() {
     // Create alarm modal
     const modal = document.createElement('div');
     modal.className = 'alarm-modal';
@@ -1885,7 +1888,7 @@ function playAlarmSound() {
     document.body.appendChild(modal);
     
     // Get shared audio context
-    const audioContext = getAudioContext();
+    const audioContext = await getAudioContext();
     if (!audioContext) return;
     
     // Loop alarm sound continuously
@@ -2079,6 +2082,8 @@ async function updateExerciseInSheet(exerciseName, weight, reps, time, instructi
 
 // Exercise form handling
 function setupExerciseListeners() {
+    console.log('🔧 Setting up exercise listeners...');
+    
     // Update Current Exercise button
     elements.updateCurrentExercise.addEventListener('click', async () => {
         await updateCurrentExercise();
@@ -2161,8 +2166,10 @@ function setupExerciseListeners() {
         }
     });
 
+    console.log('📋 Attaching form submit listener to:', elements.exerciseForm);
     elements.exerciseForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        console.log('📝 Log Exercise button clicked');
         
         const now = new Date();
         const date = getLocalDate();
