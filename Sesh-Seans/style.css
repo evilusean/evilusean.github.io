@@ -129,7 +129,32 @@ main {
 
 /* Exercise Section */
 .exercise-section {
+    background: linear-gradient(135deg, #1a0000 0%, #000000 100%);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(255, 0, 0, 0.2);
+    border: 2px solid #cc0000;
     margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.exercise-section.collapsed .exercise-content {
+    display: none;
+}
+
+.exercise-section .collapse-toggle {
+    color: #ff0000;
+}
+
+.exercise-section .collapse-toggle:hover {
+    background: rgba(255, 0, 0, 0.1);
+}
+
+.exercise-section:not(.collapsed) .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.exercise-content {
+    padding: 30px;
 }
 
 .section-header {
@@ -165,11 +190,7 @@ main {
     accent-color: #ff0000;
 }
 
-.exercise-section h2 {
-    color: #ff0000;
-    margin: 0;
-    text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
-}
+
 
 .btn-small {
     padding: 8px 16px;

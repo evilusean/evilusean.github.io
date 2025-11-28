@@ -49,16 +49,17 @@
 
             <!-- Exercise Input Section -->
             <section class="exercise-section">
-                <div class="section-header">
-                    <h2>Log Exercise</h2>
-                    <div class="header-controls">
+                <button class="collapse-toggle" id="exerciseToggle">
+                    💪 Workout Tracker <span class="toggle-icon">▼</span>
+                </button>
+                <div class="exercise-content">
+                    <div class="section-header">
                         <label class="checkbox-label">
                             <input type="checkbox" id="autoSetWorkoutTimer" checked>
                             Auto-set exercise timer
                         </label>
                     </div>
-                </div>
-                <form id="exerciseForm">
+                    <form id="exerciseForm"></form>
                     <div class="form-group">
                         <label for="exerciseName">Exercise:</label>
                         <div class="exercise-select-container">
@@ -104,15 +105,14 @@
                         <button type="button" id="manageExercises" class="btn btn-secondary btn-small">Manage Exercises</button>
                     </div>
                 </form>
-            </section>
-
-            <!-- Status Section -->
-            <section class="status-section">
+                
+                <!-- Status Section -->
                 <div id="statusMessage"></div>
                 <div id="todayLog" class="today-log"></div>
                 
                 <div class="form-actions">
                     <button type="button" id="viewWorkoutLog" class="btn btn-secondary btn-small">View Workout Log</button>
+                </div>
                 </div>
             </section>
 

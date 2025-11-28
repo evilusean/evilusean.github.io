@@ -245,14 +245,22 @@ function initGoogleAPI() {
                     updateSignInStatus(true);
                     initializeApp();
                     
-                    // Auto-refresh token every 50 minutes (tokens expire after 60 minutes)
+                    // Auto-refresh token every 45 minutes (tokens expire after 60 minutes)
+                    // Using shorter interval to account for browser throttling
                     if (state.tokenRefreshInterval) {
                         clearInterval(state.tokenRefreshInterval);
                     }
                     state.tokenRefreshInterval = setInterval(() => {
                         console.log('🔄 Refreshing access token...');
-                        state.tokenClient.requestAccessToken({ prompt: '' });
-                    }, 50 * 60 * 1000); // 50 minutes
+                        refreshTokenIfNeeded();
+                    }, 45 * 60 * 1000); // 45 minutes
+                    
+                    // Also check on visibility change (when user returns to tab)
+                    document.addEventListener('visibilitychange', () => {
+                        if (!document.hidden && state.isSignedIn) {
+                            refreshTokenIfNeeded();
+                        }
+                    });
                 }
             });
             
@@ -268,6 +276,24 @@ function initGoogleAPI() {
             alert('Error initializing Google API. Check console for details.');
         }
     });
+}
+
+// Refresh token if it's close to expiring
+function refreshTokenIfNeeded() {
+    const tokenExpiry = localStorage.getItem('tokenExpiry');
+    if (!tokenExpiry) return;
+    
+    const now = Date.now();
+    const expiryTime = parseInt(tokenExpiry);
+    const timeUntilExpiry = expiryTime - now;
+    
+    // If less than 10 minutes until expiry, refresh now
+    if (timeUntilExpiry < 10 * 60 * 1000) {
+        console.log('⚠️ Token expiring soon, refreshing...');
+        state.tokenClient.requestAccessToken({ prompt: '' });
+    } else {
+        console.log(`✅ Token still valid for ${Math.round(timeUntilExpiry / 60000)} minutes`);
+    }
 }
 
 // Check for existing session in localStorage
@@ -293,23 +319,19 @@ function checkExistingSession() {
             updateSignInStatus(true);
             initializeApp();
             
-            // Set up auto-refresh for remaining time
-            const remainingTime = expiryTime - now;
+            // Set up auto-refresh
             if (state.tokenRefreshInterval) {
                 clearInterval(state.tokenRefreshInterval);
             }
             
-            // If less than 5 minutes remaining, refresh immediately
-            if (remainingTime < 5 * 60 * 1000) {
-                console.log('🔄 Token expiring soon, refreshing...');
-                state.tokenClient.requestAccessToken({ prompt: '' });
-            } else {
-                // Otherwise set up refresh for later
-                state.tokenRefreshInterval = setInterval(() => {
-                    console.log('🔄 Refreshing access token...');
-                    state.tokenClient.requestAccessToken({ prompt: '' });
-                }, 50 * 60 * 1000);
-            }
+            // Check if token needs immediate refresh
+            refreshTokenIfNeeded();
+            
+            // Set up periodic refresh every 45 minutes
+            state.tokenRefreshInterval = setInterval(() => {
+                console.log('🔄 Periodic token check...');
+                refreshTokenIfNeeded();
+            }, 45 * 60 * 1000);
         } else {
             // Token expired, clear it
             console.log('⚠️ Saved token expired');
@@ -1412,6 +1434,14 @@ function setupPomodoroListeners() {
     elements.pomodoroToggle.addEventListener('click', () => {
         document.querySelector('.pomodoro-section').classList.toggle('collapsed');
     });
+    
+    // Exercise section toggle
+    const exerciseToggle = document.getElementById('exerciseToggle');
+    if (exerciseToggle) {
+        exerciseToggle.addEventListener('click', () => {
+            document.querySelector('.exercise-section').classList.toggle('collapsed');
+        });
+    }
 
     // Manage Pomodoro Sheet button
     elements.managePomodoroSheet.addEventListener('click', async () => {
