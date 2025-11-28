@@ -233,6 +233,11 @@ function initGoogleAPI() {
                     state.accessToken = response.access_token;
                     state.isSignedIn = true;
                     
+                    // Set access token for gapi.client
+                    gapi.client.setToken({
+                        access_token: response.access_token
+                    });
+                    
                     // Save session to localStorage
                     localStorage.setItem('googleAccessToken', response.access_token);
                     localStorage.setItem('tokenExpiry', Date.now() + (55 * 60 * 1000)); // 55 minutes
@@ -279,6 +284,12 @@ function checkExistingSession() {
             console.log('🔄 Restoring previous session...');
             state.accessToken = savedToken;
             state.isSignedIn = true;
+            
+            // Set access token for gapi.client
+            gapi.client.setToken({
+                access_token: savedToken
+            });
+            
             updateSignInStatus(true);
             initializeApp();
             
@@ -363,9 +374,9 @@ function updateSignInStatus(isSignedIn) {
 async function initializeApp() {
     await findOrCreateSpreadsheet();
     await findOrCreatePomodoroSpreadsheet();
-    checkAndAddDaySeparator();
-    loadTodayExercises();
-    loadTodayPomodoros();
+    await checkAndAddDaySeparator();
+    await loadTodayExercises();
+    await loadTodayPomodoros();
     setExerciseDefaults();
 }
 
@@ -2193,6 +2204,8 @@ function showStatus(message, type) {
 async function loadTodayExercises() {
     const today = getLocalDate();
     
+    console.log(`📋 Loading exercises from sheet: ${state.workoutLogSheetName}`);
+    
     try {
         const response = await gapi.client.sheets.spreadsheets.values.get({
             spreadsheetId: state.spreadsheetId,
@@ -2201,6 +2214,8 @@ async function loadTodayExercises() {
         
         const values = response.result.values || [];
         state.todayExercises = [];
+        
+        console.log(`📊 Found ${values.length} total rows in ${state.workoutLogSheetName}`);
         
         // Find today's exercises (skip header and empty rows)
         values.forEach((row, index) => {
@@ -2224,9 +2239,9 @@ async function loadTodayExercises() {
         });
         
         updateTodayLog();
-        console.log(`Loaded ${state.todayExercises.length} exercises from today (${today})`);
+        console.log(`✅ Loaded ${state.todayExercises.length} exercises from today (${today})`);
     } catch (error) {
-        console.error('Error loading today\'s exercises:', error);
+        console.error('❌ Error loading today\'s exercises:', error);
         state.todayExercises = [];
         updateTodayLog();
     }

@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <header>
-            <h1>💪 Sesh Seans Workout/Study Tracker</h1>
+            <h1>💪 Sesh Seans Workout / <span class="title-break">Study Tracker ⏰</span></h1>
             <div id="authSection">
                 <button id="authButton" class="btn btn-primary">Sign in with Google</button>
                 <span id="userInfo" class="hidden"></span>
@@ -32,9 +32,9 @@
                 </div>
             </section>
 
-            <!-- Workout Timer Section -->
+            <!-- Exercise Timer Section -->
             <section class="timer-section">
-                <h3>Workout Timer</h3>
+                <h3>Exercise Timer</h3>
                 <div class="timer-display workout-timer" id="workoutTimerDisplay">00:30</div>
                 <div class="timer-controls">
                     <button id="startWorkoutTimer" class="btn btn-success">Start Workout</button>
@@ -54,7 +54,7 @@
                     <div class="header-controls">
                         <label class="checkbox-label">
                             <input type="checkbox" id="autoSetWorkoutTimer" checked>
-                            Auto-set workout timer
+                            Auto-set exercise timer
                         </label>
                     </div>
                 </div>
@@ -100,7 +100,6 @@
                     <button type="submit" class="btn btn-primary btn-large">Log Exercise</button>
                     
                     <div class="form-actions">
-                        <button type="button" id="viewWorkoutLog" class="btn btn-secondary btn-small">View Workout Log</button>
                         <button type="button" id="updateCurrentExercise" class="btn btn-secondary btn-small">Update Exercise</button>
                         <button type="button" id="manageExercises" class="btn btn-secondary btn-small">Manage Exercises</button>
                     </div>
@@ -111,6 +110,10 @@
             <section class="status-section">
                 <div id="statusMessage"></div>
                 <div id="todayLog" class="today-log"></div>
+                
+                <div class="form-actions">
+                    <button type="button" id="viewWorkoutLog" class="btn btn-secondary btn-small">View Workout Log</button>
+                </div>
             </section>
 
             <!-- Pomodoro Section (Collapsible) -->
@@ -158,14 +161,14 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-large">Log Session</button>
-                    
-                    <div class="form-actions">
-                        <button type="button" id="managePomodoroSheet" class="btn btn-secondary btn-small">View Pomodoro Log</button>
-                    </div>
                 </form>
 
                 <!-- Today's Pomodoro Sessions -->
                 <div id="todayPomodoro" class="today-pomodoro"></div>
+                
+                <div class="form-actions">
+                    <button type="button" id="managePomodoroSheet" class="btn btn-secondary btn-small">View Pomodoro Log</button>
+                </div>
             </div>
         </section>
 

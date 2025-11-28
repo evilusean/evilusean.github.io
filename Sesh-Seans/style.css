@@ -32,6 +32,7 @@ header h1 {
     margin-bottom: 20px;
     font-size: 2em;
     text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    white-space: nowrap;
 }
 
 #authSection {
@@ -341,12 +342,14 @@ main {
     border: 1px solid #660000;
     max-height: 300px;
     overflow-y: auto;
+    text-align: center;
 }
 
 .today-log h3 {
     color: #ff0000;
     margin-bottom: 15px;
     text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    text-align: center;
 }
 
 .log-entry {
@@ -366,6 +369,11 @@ main {
 
     header h1 {
         font-size: 1.5em;
+        white-space: normal;
+    }
+    
+    .title-break {
+        display: inline-block;
     }
 
     .timer-display {
@@ -408,10 +416,11 @@ main {
     font-size: 1.2em;
     font-weight: bold;
     cursor: pointer;
-    text-align: left;
+    text-align: center;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    gap: 10px;
     transition: background 0.3s;
 }
 
@@ -441,6 +450,7 @@ main {
     font-size: 3em;
     color: #00ff00;
     text-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+    text-align: center;
 }
 
 .pomodoro-status {
@@ -487,11 +497,13 @@ textarea:focus {
     margin-top: 30px;
     padding-top: 30px;
     border-top: 2px solid #00cc00;
+    text-align: center;
 }
 
 .today-pomodoro h3 {
     color: #00ff00;
     margin-bottom: 15px;
+    text-align: center;
 }
 
 .today-pomodoro .log-entry {
@@ -530,6 +542,7 @@ textarea:focus {
     font-size: 3em;
     color: #ff0000;
     text-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+    text-align: center;
 }
 
 .alarm-mode-toggle {
@@ -619,6 +632,7 @@ textarea:focus {
 @media (max-width: 480px) {
     header h1 {
         font-size: 1.3em;
+        white-space: normal;
     }
 
     .timer-display {
