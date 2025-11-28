@@ -103,6 +103,7 @@ let state = {
     todayExercises: [],
     todayPomodoros: [],
     tokenClient: null,
+    tokenRefreshInterval: null,
     allExercises: [], // Store all exercises for filtering
     sortCategories: [], // Store sort categories
     pomodoroSubjects: [] // Store pomodoro subjects
@@ -140,6 +141,7 @@ function initElements() {
         autoSetWorkoutTimer: document.getElementById('autoSetWorkoutTimer'),
         sortFilter: document.getElementById('sortFilter'),
         exerciseDescription: document.getElementById('exerciseDescription'),
+        exerciseInstructions: document.getElementById('exerciseInstructions'),
         // Pomodoro elements
         pomodoroToggle: document.getElementById('pomodoroToggle'),
         pomodoroTimerDisplay: document.getElementById('pomodoroTimerDisplay'),
@@ -231,6 +233,15 @@ function initGoogleAPI() {
                     state.isSignedIn = true;
                     updateSignInStatus(true);
                     initializeApp();
+                    
+                    // Auto-refresh token every 50 minutes (tokens expire after 60 minutes)
+                    if (state.tokenRefreshInterval) {
+                        clearInterval(state.tokenRefreshInterval);
+                    }
+                    state.tokenRefreshInterval = setInterval(() => {
+                        console.log('🔄 Refreshing access token...');
+                        state.tokenClient.requestAccessToken({ prompt: '' });
+                    }, 50 * 60 * 1000); // 50 minutes
                 }
             });
             
@@ -253,6 +264,13 @@ function setupAuthButton() {
             // Sign out
             state.isSignedIn = false;
             state.accessToken = null;
+            
+            // Clear token refresh interval
+            if (state.tokenRefreshInterval) {
+                clearInterval(state.tokenRefreshInterval);
+                state.tokenRefreshInterval = null;
+            }
+            
             google.accounts.oauth2.revoke(state.accessToken, () => {
                 console.log('Access token revoked');
             });
@@ -1616,12 +1634,8 @@ function showExerciseDescription(exerciseName) {
     const selectedOption = elements.exerciseName.options[elements.exerciseName.selectedIndex];
     const description = selectedOption.dataset.description || EXERCISE_DESCRIPTIONS[exerciseName] || '';
     
-    if (description) {
-        elements.exerciseDescription.textContent = description;
-        elements.exerciseDescription.classList.remove('hidden');
-    } else {
-        elements.exerciseDescription.classList.add('hidden');
-    }
+    // Populate the instructions textarea
+    elements.exerciseInstructions.value = description;
 }
 
 // Update or add current exercise to sheet
@@ -1630,6 +1644,7 @@ async function updateCurrentExercise() {
     const weight = elements.weight.value;
     const reps = elements.reps.value;
     const time = elements.time.value;
+    const instructions = elements.exerciseInstructions.value;
     
     if (exerciseName === 'Custom') {
         const customName = elements.customExercise.value.trim();
@@ -1642,8 +1657,8 @@ async function updateCurrentExercise() {
         const currentCategory = elements.sortFilter.value || 'CUSTOM EXERCISES';
         await addCustomExercise(customName, weight, reps, time, currentCategory);
     } else {
-        // Update existing exercise defaults
-        await updateExerciseInSheet(exerciseName, weight, reps, time);
+        // Update existing exercise defaults and instructions
+        await updateExerciseInSheet(exerciseName, weight, reps, time, instructions);
     }
 }
 
@@ -1708,7 +1723,7 @@ async function addCustomExercise(name, weight, reps, time, category) {
 }
 
 // Update existing exercise in sheet
-async function updateExerciseInSheet(exerciseName, weight, reps, time) {
+async function updateExerciseInSheet(exerciseName, weight, reps, time, instructions) {
     try {
         // Get all exercises
         const response = await gapi.client.sheets.spreadsheets.values.get({
@@ -1732,13 +1747,13 @@ async function updateExerciseInSheet(exerciseName, weight, reps, time) {
             return;
         }
         
-        // Update the row
+        // Update the row (including instructions in column E)
         await gapi.client.sheets.spreadsheets.values.update({
             spreadsheetId: state.spreadsheetId,
-            range: `Exercises!B${rowIndex}:D${rowIndex}`,
+            range: `Exercises!B${rowIndex}:E${rowIndex}`,
             valueInputOption: 'USER_ENTERED',
             resource: {
-                values: [[weight, reps, time]]
+                values: [[weight, reps, time, instructions || '']]
             }
         });
         
@@ -1779,6 +1794,7 @@ function setupExerciseListeners() {
         if (e.target.value === 'Custom') {
             elements.customExercise.classList.remove('hidden');
             elements.exerciseDescription.classList.add('hidden');
+            elements.exerciseInstructions.value = '';
             elements.updateCurrentExercise.textContent = 'Add to Sheet';
         } else {
             elements.customExercise.classList.add('hidden');
@@ -1831,8 +1847,6 @@ function setupExerciseListeners() {
                 repsTime
             });
             updateTodayLog();
-            
-            resetTimer();
         } catch (error) {
             console.error('Error logging exercise:', error);
             showStatus('Error logging exercise. Please try again.', 'error');
@@ -1856,6 +1870,9 @@ function setExerciseDefaults() {
     elements.weight.value = weight;
     elements.reps.value = reps;
     elements.time.value = time;
+    
+    // Show exercise description/instructions
+    showExerciseDescription(selectedOption.value);
     
     // Auto-set workout timer if enabled and exercise has a time default
     if (elements.autoSetWorkoutTimer.checked && parseInt(time) > 0) {
