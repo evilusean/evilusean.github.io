@@ -231,6 +231,11 @@ function initGoogleAPI() {
                     }
                     state.accessToken = response.access_token;
                     state.isSignedIn = true;
+                    
+                    // Save session to localStorage
+                    localStorage.setItem('googleAccessToken', response.access_token);
+                    localStorage.setItem('tokenExpiry', Date.now() + (55 * 60 * 1000)); // 55 minutes
+                    
                     updateSignInStatus(true);
                     initializeApp();
                     
@@ -246,6 +251,10 @@ function initGoogleAPI() {
             });
             
             console.log('✅ Google Identity Services initialized');
+            
+            // Check for existing session
+            checkExistingSession();
+            
             setupAuthButton();
             
         } catch (error) {
@@ -253,6 +262,49 @@ function initGoogleAPI() {
             alert('Error initializing Google API. Check console for details.');
         }
     });
+}
+
+// Check for existing session in localStorage
+function checkExistingSession() {
+    const savedToken = localStorage.getItem('googleAccessToken');
+    const tokenExpiry = localStorage.getItem('tokenExpiry');
+    
+    if (savedToken && tokenExpiry) {
+        const now = Date.now();
+        const expiryTime = parseInt(tokenExpiry);
+        
+        // Check if token is still valid (not expired)
+        if (now < expiryTime) {
+            console.log('🔄 Restoring previous session...');
+            state.accessToken = savedToken;
+            state.isSignedIn = true;
+            updateSignInStatus(true);
+            initializeApp();
+            
+            // Set up auto-refresh for remaining time
+            const remainingTime = expiryTime - now;
+            if (state.tokenRefreshInterval) {
+                clearInterval(state.tokenRefreshInterval);
+            }
+            
+            // If less than 5 minutes remaining, refresh immediately
+            if (remainingTime < 5 * 60 * 1000) {
+                console.log('🔄 Token expiring soon, refreshing...');
+                state.tokenClient.requestAccessToken({ prompt: '' });
+            } else {
+                // Otherwise set up refresh for later
+                state.tokenRefreshInterval = setInterval(() => {
+                    console.log('🔄 Refreshing access token...');
+                    state.tokenClient.requestAccessToken({ prompt: '' });
+                }, 50 * 60 * 1000);
+            }
+        } else {
+            // Token expired, clear it
+            console.log('⚠️ Saved token expired');
+            localStorage.removeItem('googleAccessToken');
+            localStorage.removeItem('tokenExpiry');
+        }
+    }
 }
 
 // Setup auth button handler
@@ -264,6 +316,10 @@ function setupAuthButton() {
             // Sign out
             state.isSignedIn = false;
             state.accessToken = null;
+            
+            // Clear localStorage
+            localStorage.removeItem('googleAccessToken');
+            localStorage.removeItem('tokenExpiry');
             
             // Clear token refresh interval
             if (state.tokenRefreshInterval) {
