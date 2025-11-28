@@ -1000,26 +1000,41 @@ async function appendToPomodoroSheet(values) {
 
 // Check if we need to add a day separator
 async function checkAndAddDaySeparator() {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDate();
     
-    if (state.currentDate !== today) {
-        state.currentDate = today;
+    try {
+        const response = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: state.spreadsheetId,
+            range: `${state.workoutLogSheetName}!A:A`
+        });
         
-        try {
-            const response = await gapi.client.sheets.spreadsheets.values.get({
-                spreadsheetId: state.spreadsheetId,
-                range: `${state.workoutLogSheetName}!A:A`
-            });
-            
-            const values = response.result.values || [];
-            const lastRow = values[values.length - 1];
-            
-            if (lastRow && lastRow[0]) {
-                await appendToSheet([['', '', '', '', '']]);
-            }
-        } catch (error) {
-            console.error('Error checking day separator:', error);
+        const values = response.result.values || [];
+        
+        // Skip if sheet is empty or only has header
+        if (values.length <= 1) {
+            state.currentDate = today;
+            return;
         }
+        
+        // Find the last non-empty date
+        let lastDate = null;
+        for (let i = values.length - 1; i >= 1; i--) {
+            if (values[i][0] && values[i][0].trim() !== '') {
+                lastDate = values[i][0];
+                break;
+            }
+        }
+        
+        // If last date is different from today and not already separated, add blank line
+        if (lastDate && lastDate !== today && state.currentDate !== today) {
+            console.log(`📅 New day detected. Last: ${lastDate}, Today: ${today}`);
+            await appendToSheet([['', '', '', '', '']]);
+            state.currentDate = today;
+        } else if (!state.currentDate) {
+            state.currentDate = today;
+        }
+    } catch (error) {
+        console.error('Error checking day separator:', error);
     }
 }
 
@@ -1332,7 +1347,7 @@ function setupPomodoroListeners() {
         e.preventDefault();
         
         const now = new Date();
-        const date = now.toISOString().split('T')[0];
+        const date = getLocalDate();
         const time = now.toTimeString().split(' ')[0];
         
         let subject = elements.pomodoroSubject.value;
@@ -1369,7 +1384,7 @@ function setupPomodoroListeners() {
 
 // Load today's Pomodoro sessions
 async function loadTodayPomodoros() {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDate();
     
     try {
         const response = await gapi.client.sheets.spreadsheets.values.get({
@@ -1864,7 +1879,7 @@ function setupExerciseListeners() {
         e.preventDefault();
         
         const now = new Date();
-        const date = now.toISOString().split('T')[0];
+        const date = getLocalDate();
         const time = now.toTimeString().split(' ')[0];
         
         let exerciseName = elements.exerciseName.value;
@@ -1941,6 +1956,17 @@ function setExerciseDefaults() {
     }
 }
 
+// Get local date in YYYY-MM-DD format
+function getLocalDate() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const localDate = `${year}-${month}-${day}`;
+    console.log(`📅 Local date: ${localDate}`);
+    return localDate;
+}
+
 function showStatus(message, type) {
     elements.statusMessage.textContent = message;
     elements.statusMessage.className = type;
@@ -1952,7 +1978,7 @@ function showStatus(message, type) {
 }
 
 async function loadTodayExercises() {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDate();
     
     try {
         const response = await gapi.client.sheets.spreadsheets.values.get({
@@ -1963,7 +1989,7 @@ async function loadTodayExercises() {
         const values = response.result.values || [];
         state.todayExercises = [];
         
-        // Find today's exercises
+        // Find today's exercises (skip header and empty rows)
         values.forEach((row, index) => {
             if (index === 0) return; // Skip header
             
@@ -1973,7 +1999,8 @@ async function loadTodayExercises() {
             const weight = row[3];
             const repsTime = row[4];
             
-            if (date === today && exercise) {
+            // Only include rows with today's date AND an exercise name (skip blank separator rows)
+            if (date === today && exercise && exercise.trim() !== '') {
                 state.todayExercises.push({
                     time,
                     exercise,
@@ -1984,7 +2011,7 @@ async function loadTodayExercises() {
         });
         
         updateTodayLog();
-        console.log(`Loaded ${state.todayExercises.length} exercises from today`);
+        console.log(`Loaded ${state.todayExercises.length} exercises from today (${today})`);
     } catch (error) {
         console.error('Error loading today\'s exercises:', error);
         state.todayExercises = [];
