@@ -137,6 +137,7 @@ function initElements() {
         statusMessage: document.getElementById('statusMessage'),
         todayLog: document.getElementById('todayLog'),
         manageExercises: document.getElementById('manageExercises'),
+        viewWorkoutLog: document.getElementById('viewWorkoutLog'),
         updateCurrentExercise: document.getElementById('updateCurrentExercise'),
         autoSetWorkoutTimer: document.getElementById('autoSetWorkoutTimer'),
         sortFilter: document.getElementById('sortFilter'),
@@ -1020,6 +1021,7 @@ function displayExercises(filterCategory = '') {
 // Find or create Pomodoro spreadsheet
 async function findOrCreatePomodoroSpreadsheet() {
     const year = new Date().getFullYear();
+    const month = new Date().toLocaleString('en-US', { month: 'long' });
     const sheetName = `${year}-Sesh-Seans-Pomodoro`;
     
     try {
@@ -1037,30 +1039,95 @@ async function findOrCreatePomodoroSpreadsheet() {
         if (searchData.files && searchData.files.length > 0) {
             state.pomodoroSpreadsheetId = searchData.files[0].id;
             console.log('Found existing Pomodoro spreadsheet:', state.pomodoroSpreadsheetId);
+            
+            // Ensure current month sheet exists
+            await ensurePomodoroMonthSheet(month);
         } else {
+            // Create new spreadsheet with current month sheet
             const createResponse = await gapi.client.sheets.spreadsheets.create({
                 properties: {
                     title: sheetName
-                }
+                },
+                sheets: [{
+                    properties: {
+                        title: month,
+                        gridProperties: {
+                            frozenRowCount: 1
+                        }
+                    }
+                }]
             });
             
             state.pomodoroSpreadsheetId = createResponse.result.spreadsheetId;
             console.log('Created new Pomodoro spreadsheet:', state.pomodoroSpreadsheetId);
             
-            // Add header row
-            await appendToPomodoroSheet([['Date', 'Time', 'Subject', 'Study Duration (min)', 'Break Duration (min)', 'Notes']]);
+            // Add header row to current month
+            await gapi.client.sheets.spreadsheets.values.update({
+                spreadsheetId: state.pomodoroSpreadsheetId,
+                range: `${month}!A1:F1`,
+                valueInputOption: 'USER_ENTERED',
+                resource: {
+                    values: [['Date', 'Time', 'Subject', 'Study Duration (min)', 'Break Duration (min)', 'Notes']]
+                }
+            });
         }
     } catch (error) {
         console.error('Error with Pomodoro spreadsheet:', error);
     }
 }
 
+// Ensure Pomodoro month sheet exists
+async function ensurePomodoroMonthSheet(monthName) {
+    try {
+        const response = await gapi.client.sheets.spreadsheets.get({
+            spreadsheetId: state.pomodoroSpreadsheetId
+        });
+        
+        const sheets = response.result.sheets;
+        const monthSheet = sheets.find(sheet => sheet.properties.title === monthName);
+        
+        if (!monthSheet) {
+            console.log(`Creating Pomodoro ${monthName} sheet...`);
+            
+            // Create the month sheet
+            await gapi.client.sheets.spreadsheets.batchUpdate({
+                spreadsheetId: state.pomodoroSpreadsheetId,
+                resource: {
+                    requests: [{
+                        addSheet: {
+                            properties: {
+                                title: monthName,
+                                gridProperties: {
+                                    frozenRowCount: 1
+                                }
+                            }
+                        }
+                    }]
+                }
+            });
+            
+            // Add header row
+            await gapi.client.sheets.spreadsheets.values.update({
+                spreadsheetId: state.pomodoroSpreadsheetId,
+                range: `${monthName}!A1:F1`,
+                valueInputOption: 'USER_ENTERED',
+                resource: {
+                    values: [['Date', 'Time', 'Subject', 'Study Duration (min)', 'Break Duration (min)', 'Notes']]
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Error ensuring Pomodoro month sheet:', error);
+    }
+}
+
 // Append data to Pomodoro sheet
 async function appendToPomodoroSheet(values) {
     try {
+        const month = new Date().toLocaleString('en-US', { month: 'long' });
         const response = await gapi.client.sheets.spreadsheets.values.append({
             spreadsheetId: state.pomodoroSpreadsheetId,
-            range: 'Sheet1!A:F',
+            range: `${month}!A:F`,
             valueInputOption: 'USER_ENTERED',
             resource: {
                 values: values
@@ -1336,11 +1403,30 @@ function setupPomodoroListeners() {
     });
 
     // Manage Pomodoro Sheet button
-    elements.managePomodoroSheet.addEventListener('click', () => {
+    elements.managePomodoroSheet.addEventListener('click', async () => {
         if (state.pomodoroSpreadsheetId) {
-            const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${state.pomodoroSpreadsheetId}/edit`;
-            window.open(spreadsheetUrl, '_blank');
-            showStatus('You can view your Pomodoro log and add custom subjects to the dropdown!', 'success');
+            try {
+                const month = new Date().toLocaleString('en-US', { month: 'long' });
+                const response = await gapi.client.sheets.spreadsheets.get({
+                    spreadsheetId: state.pomodoroSpreadsheetId
+                });
+                
+                const sheets = response.result.sheets;
+                const monthSheet = sheets.find(sheet => sheet.properties.title === month);
+                
+                if (monthSheet) {
+                    const sheetId = monthSheet.properties.sheetId;
+                    const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${state.pomodoroSpreadsheetId}/edit#gid=${sheetId}`;
+                    window.open(spreadsheetUrl, '_blank');
+                } else {
+                    const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${state.pomodoroSpreadsheetId}/edit`;
+                    window.open(spreadsheetUrl, '_blank');
+                }
+            } catch (error) {
+                console.error('Error opening Pomodoro sheet:', error);
+                const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${state.pomodoroSpreadsheetId}/edit`;
+                window.open(spreadsheetUrl, '_blank');
+            }
         } else {
             showStatus('Pomodoro spreadsheet not yet created. Start a session first!', 'error');
         }
@@ -1461,11 +1547,12 @@ function setupPomodoroListeners() {
 // Load today's Pomodoro sessions
 async function loadTodayPomodoros() {
     const today = getLocalDate();
+    const month = new Date().toLocaleString('en-US', { month: 'long' });
     
     try {
         const response = await gapi.client.sheets.spreadsheets.values.get({
             spreadsheetId: state.pomodoroSpreadsheetId,
-            range: 'Sheet1!A:F'
+            range: `${month}!A:F`
         });
         
         const values = response.result.values || [];
@@ -1481,7 +1568,7 @@ async function loadTodayPomodoros() {
             const breakDuration = row[4];
             const notes = row[5];
             
-            if (date === today && subject) {
+            if (date === today && subject && subject.trim() !== '') {
                 state.todayPomodoros.push({
                     time,
                     subject,
@@ -1924,11 +2011,61 @@ function setupExerciseListeners() {
         await updateCurrentExercise();
     });
 
+    // View Workout Log button
+    elements.viewWorkoutLog.addEventListener('click', async () => {
+        try {
+            // Get the sheet ID for the current month's workout log
+            const response = await gapi.client.sheets.spreadsheets.get({
+                spreadsheetId: state.spreadsheetId
+            });
+            
+            const sheets = response.result.sheets;
+            const workoutSheet = sheets.find(sheet => sheet.properties.title === state.workoutLogSheetName);
+            
+            if (workoutSheet) {
+                const sheetId = workoutSheet.properties.sheetId;
+                const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${state.spreadsheetId}/edit#gid=${sheetId}`;
+                window.open(spreadsheetUrl, '_blank');
+            } else {
+                // Fallback
+                const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${state.spreadsheetId}/edit`;
+                window.open(spreadsheetUrl, '_blank');
+            }
+        } catch (error) {
+            console.error('Error opening workout log:', error);
+            const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${state.spreadsheetId}/edit`;
+            window.open(spreadsheetUrl, '_blank');
+        }
+    });
+
     // Manage Exercises button
-    elements.manageExercises.addEventListener('click', () => {
-        const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${state.spreadsheetId}/edit#gid=`;
-        window.open(spreadsheetUrl, '_blank');
-        showStatus('Edit the "Exercises" sheet. Use "# === CATEGORY ===" to create sort categories. Refresh to see changes.', 'success');
+    elements.manageExercises.addEventListener('click', async () => {
+        try {
+            // Get the sheet ID for the Exercises sheet
+            const response = await gapi.client.sheets.spreadsheets.get({
+                spreadsheetId: state.spreadsheetId
+            });
+            
+            const sheets = response.result.sheets;
+            const exercisesSheet = sheets.find(sheet => sheet.properties.title === 'Exercises');
+            
+            if (exercisesSheet) {
+                const sheetId = exercisesSheet.properties.sheetId;
+                const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${state.spreadsheetId}/edit#gid=${sheetId}`;
+                window.open(spreadsheetUrl, '_blank');
+                showStatus('Edit the "Exercises" sheet. Use "# === CATEGORY ===" to create sort categories. Refresh to see changes.', 'success');
+            } else {
+                // Fallback to just opening the spreadsheet
+                const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${state.spreadsheetId}/edit`;
+                window.open(spreadsheetUrl, '_blank');
+                showStatus('Exercises sheet not found. Opening spreadsheet.', 'error');
+            }
+        } catch (error) {
+            console.error('Error opening exercises sheet:', error);
+            // Fallback
+            const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${state.spreadsheetId}/edit`;
+            window.open(spreadsheetUrl, '_blank');
+        }
     });
 
     // Sort filter

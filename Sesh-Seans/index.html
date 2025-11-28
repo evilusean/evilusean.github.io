@@ -56,8 +56,6 @@
                             <input type="checkbox" id="autoSetWorkoutTimer" checked>
                             Auto-set workout timer
                         </label>
-                        <button type="button" id="updateCurrentExercise" class="btn btn-secondary btn-small">Update Exercise</button>
-                        <button type="button" id="manageExercises" class="btn btn-secondary btn-small">Manage Exercises</button>
                     </div>
                 </div>
                 <form id="exerciseForm">
@@ -100,6 +98,12 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-large">Log Exercise</button>
+                    
+                    <div class="form-actions">
+                        <button type="button" id="viewWorkoutLog" class="btn btn-secondary btn-small">View Workout Log</button>
+                        <button type="button" id="updateCurrentExercise" class="btn btn-secondary btn-small">Update Exercise</button>
+                        <button type="button" id="manageExercises" class="btn btn-secondary btn-small">Manage Exercises</button>
+                    </div>
                 </form>
             </section>
 
@@ -115,9 +119,6 @@
                 📚 Pomodoro Timer <span class="toggle-icon">▼</span>
             </button>
             <div class="pomodoro-content">
-                <div class="pomodoro-header">
-                    <button type="button" id="managePomodoroSheet" class="btn btn-secondary btn-small">View Pomodoro Log</button>
-                </div>
                 <div class="timer-display pomodoro-timer" id="pomodoroTimerDisplay">20:00</div>
                 <div class="pomodoro-status" id="pomodoroStatus">Study Session</div>
                 
@@ -157,6 +158,10 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-large">Log Session</button>
+                    
+                    <div class="form-actions">
+                        <button type="button" id="managePomodoroSheet" class="btn btn-secondary btn-small">View Pomodoro Log</button>
+                    </div>
                 </form>
 
                 <!-- Today's Pomodoro Sessions -->
