@@ -371,6 +371,7 @@ async function initializeApp() {
 // Find or create the yearly spreadsheet
 async function findOrCreateSpreadsheet() {
     const year = new Date().getFullYear();
+    const month = new Date().toLocaleString('en-US', { month: 'long' });
     const sheetName = `${year}-Sesh-Seans-Workouts`;
     
     try {
@@ -389,10 +390,35 @@ async function findOrCreateSpreadsheet() {
         if (searchData.files && searchData.files.length > 0) {
             state.spreadsheetId = searchData.files[0].id;
             console.log('Found existing spreadsheet:', state.spreadsheetId);
-            await detectWorkoutLogSheet();
+            
+            // Set current month as workout log sheet
+            state.workoutLogSheetName = month;
+            
+            // Ensure current month sheet exists
+            await ensureMonthSheet(month);
             await ensureExercisesSheet();
         } else {
-            // Create new spreadsheet with two sheets
+            // Check if previous year exists to copy exercises
+            const previousYear = year - 1;
+            const previousYearSheet = `${previousYear}-Sesh-Seans-Workouts`;
+            let previousExercises = null;
+            
+            const prevSearchResponse = await fetch(
+                `https://www.googleapis.com/drive/v3/files?q=name='${previousYearSheet}' and mimeType='application/vnd.google-apps.spreadsheet'&fields=files(id,name)`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${state.accessToken}`
+                    }
+                }
+            );
+            
+            const prevSearchData = await prevSearchResponse.json();
+            if (prevSearchData.files && prevSearchData.files.length > 0) {
+                // Get exercises from previous year
+                previousExercises = await getExercisesFromSpreadsheet(prevSearchData.files[0].id);
+            }
+            
+            // Create new spreadsheet with current month and Exercises sheet
             const createResponse = await gapi.client.sheets.spreadsheets.create({
                 properties: {
                     title: sheetName
@@ -400,7 +426,7 @@ async function findOrCreateSpreadsheet() {
                 sheets: [
                     {
                         properties: {
-                            title: 'Workout Log',
+                            title: month,
                             gridProperties: {
                                 frozenRowCount: 1
                             }
@@ -418,14 +444,21 @@ async function findOrCreateSpreadsheet() {
             });
             
             state.spreadsheetId = createResponse.result.spreadsheetId;
-            state.workoutLogSheetName = 'Workout Log';
+            state.workoutLogSheetName = month;
             console.log('Created new spreadsheet:', state.spreadsheetId);
             
-            // Add header row to Workout Log
-            await appendToSheet([['Date', 'Time', 'Exercise', 'Weight', 'Reps/Time']]);
+            // Add header row to current month
+            await gapi.client.sheets.spreadsheets.values.update({
+                spreadsheetId: state.spreadsheetId,
+                range: `${month}!A1:E1`,
+                valueInputOption: 'USER_ENTERED',
+                resource: {
+                    values: [['Date', 'Time', 'Exercise', 'Weight', 'Reps/Time']]
+                }
+            });
             
-            // Add header and default exercises to Exercises sheet
-            await initializeExercisesSheet();
+            // Initialize Exercises sheet (with previous year's data if available)
+            await initializeExercisesSheet(previousExercises);
         }
         
         // Load exercises into dropdown
@@ -436,28 +469,63 @@ async function findOrCreateSpreadsheet() {
     }
 }
 
-// Detect the workout log sheet name (could be "Sheet1" or "Workout Log")
-async function detectWorkoutLogSheet() {
+// Ensure current month sheet exists
+async function ensureMonthSheet(monthName) {
     try {
         const response = await gapi.client.sheets.spreadsheets.get({
             spreadsheetId: state.spreadsheetId
         });
         
         const sheets = response.result.sheets;
+        const monthSheet = sheets.find(sheet => sheet.properties.title === monthName);
         
-        // Look for "Workout Log" first, then fall back to "Sheet1"
-        const workoutLogSheet = sheets.find(sheet => 
-            sheet.properties.title === 'Workout Log' || 
-            sheet.properties.title === 'Sheet1'
-        );
-        
-        if (workoutLogSheet) {
-            state.workoutLogSheetName = workoutLogSheet.properties.title;
-            console.log('Using workout log sheet:', state.workoutLogSheetName);
+        if (!monthSheet) {
+            console.log(`Creating ${monthName} sheet...`);
+            
+            // Create the month sheet
+            await gapi.client.sheets.spreadsheets.batchUpdate({
+                spreadsheetId: state.spreadsheetId,
+                resource: {
+                    requests: [{
+                        addSheet: {
+                            properties: {
+                                title: monthName,
+                                gridProperties: {
+                                    frozenRowCount: 1
+                                }
+                            }
+                        }
+                    }]
+                }
+            });
+            
+            // Add header row
+            await gapi.client.sheets.spreadsheets.values.update({
+                spreadsheetId: state.spreadsheetId,
+                range: `${monthName}!A1:E1`,
+                valueInputOption: 'USER_ENTERED',
+                resource: {
+                    values: [['Date', 'Time', 'Exercise', 'Weight', 'Reps/Time']]
+                }
+            });
         }
     } catch (error) {
-        console.error('Error detecting workout log sheet:', error);
-        state.workoutLogSheetName = 'Sheet1'; // Default fallback
+        console.error('Error ensuring month sheet:', error);
+    }
+}
+
+// Get exercises from a spreadsheet (for year rollover)
+async function getExercisesFromSpreadsheet(spreadsheetId) {
+    try {
+        const response = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: spreadsheetId,
+            range: 'Exercises!A:E'
+        });
+        
+        return response.result.values || null;
+    } catch (error) {
+        console.error('Error getting exercises from previous year:', error);
+        return null;
     }
 }
 
@@ -497,20 +565,28 @@ async function ensureExercisesSheet() {
 }
 
 // Initialize Exercises sheet with default exercises
-async function initializeExercisesSheet() {
-    console.log('Initializing Exercises sheet with descriptions...');
+async function initializeExercisesSheet(previousExercises = null) {
+    console.log('Initializing Exercises sheet...');
     
-    // Check if function exists
-    if (typeof getDefaultExercisesWithDescriptions !== 'function') {
-        console.error('getDefaultExercisesWithDescriptions is not defined! Check if exercise-data.js loaded.');
-        alert('Error: Exercise data not loaded. Check console.');
-        return;
+    let exercisesToAdd;
+    
+    if (previousExercises && previousExercises.length > 0) {
+        // Use exercises from previous year
+        console.log(`Copying ${previousExercises.length} exercises from previous year`);
+        exercisesToAdd = previousExercises;
+    } else {
+        // Use default exercises
+        if (typeof getDefaultExercisesWithDescriptions !== 'function') {
+            console.error('getDefaultExercisesWithDescriptions is not defined! Check if exercise-data.js loaded.');
+            alert('Error: Exercise data not loaded. Check console.');
+            return;
+        }
+        
+        exercisesToAdd = getDefaultExercisesWithDescriptions();
+        console.log(`Adding ${exercisesToAdd.length} default exercises`);
     }
     
-    const defaultExercises = getDefaultExercisesWithDescriptions();
-    console.log(`Adding ${defaultExercises.length} rows to Exercises sheet`);
-    
-    await appendToSheet(defaultExercises, 'Exercises');
+    await appendToSheet(exercisesToAdd, 'Exercises');
     console.log('Exercises sheet initialized successfully');
 }
 
