@@ -400,7 +400,7 @@ async function initializeApp() {
     await checkAndAddDaySeparator();
     await loadTodayExercises();
     await loadTodayPomodoros();
-    setExerciseDefaults();
+    restoreLastExercise();
 }
 
 // Find or create the yearly spreadsheet
@@ -2153,6 +2153,9 @@ function setupExerciseListeners() {
 
     // Exercise selection
     elements.exerciseName.addEventListener('change', (e) => {
+        // Save selected exercise to localStorage
+        localStorage.setItem('lastSelectedExercise', e.target.value);
+        
         if (e.target.value === 'Custom') {
             elements.customExercise.classList.remove('hidden');
             elements.exerciseDescription.classList.add('hidden');
@@ -2216,6 +2219,26 @@ function setupExerciseListeners() {
             showStatus('Error logging exercise. Please try again.', 'error');
         }
     });
+}
+
+// Restore last selected exercise from localStorage
+function restoreLastExercise() {
+    const lastExercise = localStorage.getItem('lastSelectedExercise');
+    
+    if (lastExercise) {
+        // Try to find and select the exercise
+        const options = elements.exerciseName.options;
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].value === lastExercise) {
+                elements.exerciseName.selectedIndex = i;
+                console.log(`🔄 Restored last exercise: ${lastExercise}`);
+                break;
+            }
+        }
+    }
+    
+    // Set defaults for the selected exercise
+    setExerciseDefaults();
 }
 
 function setExerciseDefaults() {
