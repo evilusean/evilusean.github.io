@@ -104,6 +104,7 @@ let state = {
     todayPomodoros: [],
     tokenClient: null,
     tokenRefreshInterval: null,
+    tokenCheckInterval: null, // Frequent token check interval
     visibilityListenerAdded: false, // Track if visibility listener is added
     audioContext: null, // Shared audio context for all sounds
     allExercises: [], // Store all exercises for filtering
@@ -141,6 +142,7 @@ function initElements() {
         manageExercises: document.getElementById('manageExercises'),
         viewWorkoutLog: document.getElementById('viewWorkoutLog'),
         updateCurrentExercise: document.getElementById('updateCurrentExercise'),
+        deleteLastExercise: document.getElementById('deleteLastExercise'),
         autoSetWorkoutTimer: document.getElementById('autoSetWorkoutTimer'),
         sortFilter: document.getElementById('sortFilter'),
         exerciseDescription: document.getElementById('exerciseDescription'),
@@ -159,6 +161,7 @@ function initElements() {
         pomodoroBreakTime: document.getElementById('pomodoroBreakTime'),
         pomodoroNotes: document.getElementById('pomodoroNotes'),
         managePomodoroSheet: document.getElementById('managePomodoroSheet'),
+        deleteLastPomodoro: document.getElementById('deleteLastPomodoro'),
         todayPomodoro: document.getElementById('todayPomodoro'),
         // Alarm elements
         alarmToggle: document.getElementById('alarmToggle'),
@@ -199,6 +202,50 @@ function checkCredentials() {
         return false;
     }
     return true;
+}
+
+// Wrapper for API calls that handles auth errors
+async function apiCallWithAuth(apiFunction) {
+    try {
+        return await apiFunction();
+    } catch (error) {
+        // Check if it's an auth error (401 or 403)
+        if (error.status === 401 || error.status === 403 || 
+            (error.result && (error.result.error?.code === 401 || error.result.error?.code === 403))) {
+            console.log('🔐 Authentication expired, requesting new token...');
+            
+            // Try to refresh token silently
+            return new Promise((resolve, reject) => {
+                state.tokenClient.requestAccessToken({ 
+                    prompt: '',
+                    callback: async (response) => {
+                        if (response.error) {
+                            console.error('Silent refresh failed, requiring user login');
+                            // Clear session and require re-login
+                            localStorage.removeItem('googleAccessToken');
+                            localStorage.removeItem('tokenExpiry');
+                            localStorage.removeItem('userConsent');
+                            state.isSignedIn = false;
+                            updateSignInStatus(false);
+                            alert('Session expired. Please sign in again.');
+                            reject(error);
+                        } else {
+                            // Token refreshed successfully, retry the API call
+                            console.log('✅ Token refreshed, retrying API call...');
+                            try {
+                                const result = await apiFunction();
+                                resolve(result);
+                            } catch (retryError) {
+                                reject(retryError);
+                            }
+                        }
+                    }
+                });
+            });
+        }
+        // Not an auth error, rethrow
+        throw error;
+    }
 }
 
 // Initialize Google API with new GIS library
@@ -245,30 +292,42 @@ function initGoogleAPI() {
                     localStorage.setItem('googleAccessToken', response.access_token);
                     localStorage.setItem('tokenExpiry', Date.now() + (50 * 60 * 1000)); // 50 minutes
                     localStorage.setItem('userConsent', 'true'); // Remember user gave consent
+                    localStorage.setItem('lastActivity', Date.now().toString()); // Track last activity
                     
                     updateSignInStatus(true);
                     initializeApp();
                     
-                    // Auto-refresh token every 45 minutes (before 50 min expiry)
+                    // Auto-refresh token every 30 minutes (well before 50 min expiry)
                     if (state.tokenRefreshInterval) {
                         clearInterval(state.tokenRefreshInterval);
                     }
                     state.tokenRefreshInterval = setInterval(() => {
-                        console.log('🔄 Auto-refreshing access token...');
+                        console.log('🔄 Auto-refreshing access token (30 min interval)...');
                         if (state.isSignedIn) {
                             state.tokenClient.requestAccessToken({ prompt: '' });
                         }
-                    }, 45 * 60 * 1000); // 45 minutes
+                    }, 30 * 60 * 1000); // 30 minutes
                     
                     // Also check on visibility change (when user returns to tab)
                     if (!state.visibilityListenerAdded) {
                         document.addEventListener('visibilitychange', () => {
                             if (!document.hidden && state.isSignedIn) {
+                                console.log('👀 Tab visible, checking token...');
                                 refreshTokenIfNeeded();
                             }
                         });
                         state.visibilityListenerAdded = true;
                     }
+                    
+                    // Add aggressive token check every 5 minutes
+                    if (state.tokenCheckInterval) {
+                        clearInterval(state.tokenCheckInterval);
+                    }
+                    state.tokenCheckInterval = setInterval(() => {
+                        if (state.isSignedIn) {
+                            refreshTokenIfNeeded();
+                        }
+                    }, 5 * 60 * 1000); // 5 minutes
                 }
             });
             
@@ -298,9 +357,10 @@ function refreshTokenIfNeeded() {
     const expiryTime = parseInt(tokenExpiry);
     const timeUntilExpiry = expiryTime - now;
     
-    // If less than 10 minutes until expiry, refresh now
-    if (timeUntilExpiry < 10 * 60 * 1000) {
-        console.log('⚠️ Token expiring soon (less than 10 min), refreshing...');
+    // If less than 20 minutes until expiry, refresh now
+    if (timeUntilExpiry < 20 * 60 * 1000) {
+        console.log('⚠️ Token expiring soon (less than 20 min), refreshing...');
+        localStorage.setItem('lastActivity', now.toString());
         state.tokenClient.requestAccessToken({ prompt: '' });
     } else {
         console.log(`✅ Token still valid for ${Math.round(timeUntilExpiry / 60000)} minutes`);
@@ -339,13 +399,23 @@ function checkExistingSession() {
             // Check if token needs immediate refresh
             refreshTokenIfNeeded();
             
-            // Set up periodic refresh every 45 minutes
+            // Set up periodic refresh every 30 minutes
             state.tokenRefreshInterval = setInterval(() => {
-                console.log('🔄 Periodic token refresh...');
+                console.log('🔄 Periodic token refresh (30 min)...');
                 if (state.isSignedIn) {
                     state.tokenClient.requestAccessToken({ prompt: '' });
                 }
-            }, 45 * 60 * 1000);
+            }, 30 * 60 * 1000);
+            
+            // Add aggressive token check every 5 minutes
+            if (state.tokenCheckInterval) {
+                clearInterval(state.tokenCheckInterval);
+            }
+            state.tokenCheckInterval = setInterval(() => {
+                if (state.isSignedIn) {
+                    refreshTokenIfNeeded();
+                }
+            }, 5 * 60 * 1000); // 5 minutes
         } else {
             // Token expired, try to refresh silently
             console.log('⚠️ Saved token expired, attempting silent refresh...');
@@ -376,10 +446,14 @@ function setupAuthButton() {
             localStorage.removeItem('tokenExpiry');
             localStorage.removeItem('userConsent');
             
-            // Clear token refresh interval
+            // Clear token refresh intervals
             if (state.tokenRefreshInterval) {
                 clearInterval(state.tokenRefreshInterval);
                 state.tokenRefreshInterval = null;
+            }
+            if (state.tokenCheckInterval) {
+                clearInterval(state.tokenCheckInterval);
+                state.tokenCheckInterval = null;
             }
             
             google.accounts.oauth2.revoke(state.accessToken, () => {
@@ -1518,6 +1592,59 @@ function setupPomodoroListeners() {
         }
     });
 
+    // Delete Last Pomodoro button
+    elements.deleteLastPomodoro.addEventListener('click', async () => {
+        if (!state.pomodoroSpreadsheetId) {
+            showStatus('No Pomodoro sessions to delete.', 'error');
+            return;
+        }
+
+        if (!confirm('Delete the last Pomodoro session?')) {
+            return;
+        }
+
+        try {
+            const month = new Date().toLocaleString('en-US', { month: 'long' });
+            
+            // Get all data from current month
+            const response = await gapi.client.sheets.spreadsheets.values.get({
+                spreadsheetId: state.pomodoroSpreadsheetId,
+                range: `${month}!A:F`
+            });
+
+            const values = response.result.values || [];
+            
+            // Find the last non-empty row (skip header at row 0)
+            let lastRowIndex = -1;
+            for (let i = values.length - 1; i >= 1; i--) {
+                if (values[i] && values[i].some(cell => cell && cell.trim() !== '')) {
+                    lastRowIndex = i;
+                    break;
+                }
+            }
+
+            if (lastRowIndex === -1) {
+                showStatus('No Pomodoro sessions to delete.', 'error');
+                return;
+            }
+
+            // Delete the row by clearing it
+            const rowNumber = lastRowIndex + 1; // Convert to 1-based index
+            await gapi.client.sheets.spreadsheets.values.clear({
+                spreadsheetId: state.pomodoroSpreadsheetId,
+                range: `${month}!A${rowNumber}:F${rowNumber}`
+            });
+
+            showStatus('Last Pomodoro session deleted successfully!', 'success');
+            
+            // Reload today's Pomodoros
+            await loadTodayPomodoros();
+        } catch (error) {
+            console.error('Error deleting last Pomodoro:', error);
+            showStatus('Error deleting Pomodoro session. Check console.', 'error');
+        }
+    });
+
     // Subject selection
     elements.pomodoroSubject.addEventListener('change', (e) => {
         if (e.target.value === 'Custom') {
@@ -2163,6 +2290,52 @@ function setupExerciseListeners() {
             // Fallback
             const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${state.spreadsheetId}/edit`;
             window.open(spreadsheetUrl, '_blank');
+        }
+    });
+
+    // Delete Last Exercise button
+    elements.deleteLastExercise.addEventListener('click', async () => {
+        if (!confirm('Delete the last exercise entry?')) {
+            return;
+        }
+
+        try {
+            // Get all data from current month
+            const response = await gapi.client.sheets.spreadsheets.values.get({
+                spreadsheetId: state.spreadsheetId,
+                range: `${state.workoutLogSheetName}!A:E`
+            });
+
+            const values = response.result.values || [];
+            
+            // Find the last non-empty row (skip header at row 0)
+            let lastRowIndex = -1;
+            for (let i = values.length - 1; i >= 1; i--) {
+                if (values[i] && values[i].some(cell => cell && cell.trim() !== '')) {
+                    lastRowIndex = i;
+                    break;
+                }
+            }
+
+            if (lastRowIndex === -1) {
+                showStatus('No exercises to delete.', 'error');
+                return;
+            }
+
+            // Delete the row by clearing it
+            const rowNumber = lastRowIndex + 1; // Convert to 1-based index
+            await gapi.client.sheets.spreadsheets.values.clear({
+                spreadsheetId: state.spreadsheetId,
+                range: `${state.workoutLogSheetName}!A${rowNumber}:E${rowNumber}`
+            });
+
+            showStatus('Last exercise deleted successfully!', 'success');
+            
+            // Reload today's exercises
+            await loadTodayExercises();
+        } catch (error) {
+            console.error('Error deleting last exercise:', error);
+            showStatus('Error deleting exercise. Check console.', 'error');
         }
     });
 

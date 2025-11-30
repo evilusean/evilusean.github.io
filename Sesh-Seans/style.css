@@ -348,6 +348,7 @@ main {
 #statusMessage {
     padding: 15px;
     border-radius: 8px;
+    margin-top: 20px;
     margin-bottom: 20px;
     text-align: center;
     font-weight: 500;
