@@ -104,6 +104,7 @@ let state = {
     todayPomodoros: [],
     tokenClient: null,
     tokenRefreshInterval: null,
+    visibilityListenerAdded: false, // Track if visibility listener is added
     audioContext: null, // Shared audio context for all sounds
     allExercises: [], // Store all exercises for filtering
     sortCategories: [], // Store sort categories
@@ -240,27 +241,34 @@ function initGoogleAPI() {
                     });
                     
                     // Save session to localStorage
+                    // Google tokens expire after 1 hour, so we set expiry to 50 minutes
                     localStorage.setItem('googleAccessToken', response.access_token);
-                    localStorage.setItem('tokenExpiry', Date.now() + (7 * 24 * 60 * 60 * 1000)); // 7 days
+                    localStorage.setItem('tokenExpiry', Date.now() + (50 * 60 * 1000)); // 50 minutes
+                    localStorage.setItem('userConsent', 'true'); // Remember user gave consent
                     
                     updateSignInStatus(true);
                     initializeApp();
                     
-                    // Auto-refresh token every 6 days to keep session alive
+                    // Auto-refresh token every 45 minutes (before 50 min expiry)
                     if (state.tokenRefreshInterval) {
                         clearInterval(state.tokenRefreshInterval);
                     }
                     state.tokenRefreshInterval = setInterval(() => {
-                        console.log('🔄 Refreshing access token...');
-                        refreshTokenIfNeeded();
-                    }, 6 * 24 * 60 * 60 * 1000); // 6 days
+                        console.log('🔄 Auto-refreshing access token...');
+                        if (state.isSignedIn) {
+                            state.tokenClient.requestAccessToken({ prompt: '' });
+                        }
+                    }, 45 * 60 * 1000); // 45 minutes
                     
                     // Also check on visibility change (when user returns to tab)
-                    document.addEventListener('visibilitychange', () => {
-                        if (!document.hidden && state.isSignedIn) {
-                            refreshTokenIfNeeded();
-                        }
-                    });
+                    if (!state.visibilityListenerAdded) {
+                        document.addEventListener('visibilitychange', () => {
+                            if (!document.hidden && state.isSignedIn) {
+                                refreshTokenIfNeeded();
+                            }
+                        });
+                        state.visibilityListenerAdded = true;
+                    }
                 }
             });
             
@@ -281,18 +289,21 @@ function initGoogleAPI() {
 // Refresh token if it's close to expiring
 function refreshTokenIfNeeded() {
     const tokenExpiry = localStorage.getItem('tokenExpiry');
-    if (!tokenExpiry) return;
+    if (!tokenExpiry) {
+        console.log('⚠️ No token expiry found');
+        return;
+    }
     
     const now = Date.now();
     const expiryTime = parseInt(tokenExpiry);
     const timeUntilExpiry = expiryTime - now;
     
-    // If less than 1 day until expiry, refresh now
-    if (timeUntilExpiry < 24 * 60 * 60 * 1000) {
-        console.log('⚠️ Token expiring soon, refreshing...');
+    // If less than 10 minutes until expiry, refresh now
+    if (timeUntilExpiry < 10 * 60 * 1000) {
+        console.log('⚠️ Token expiring soon (less than 10 min), refreshing...');
         state.tokenClient.requestAccessToken({ prompt: '' });
     } else {
-        console.log(`✅ Token still valid for ${Math.round(timeUntilExpiry / (24 * 60 * 60 * 1000))} days`);
+        console.log(`✅ Token still valid for ${Math.round(timeUntilExpiry / 60000)} minutes`);
     }
 }
 
@@ -300,8 +311,9 @@ function refreshTokenIfNeeded() {
 function checkExistingSession() {
     const savedToken = localStorage.getItem('googleAccessToken');
     const tokenExpiry = localStorage.getItem('tokenExpiry');
+    const userConsent = localStorage.getItem('userConsent');
     
-    if (savedToken && tokenExpiry) {
+    if (savedToken && tokenExpiry && userConsent) {
         const now = Date.now();
         const expiryTime = parseInt(tokenExpiry);
         
@@ -327,16 +339,24 @@ function checkExistingSession() {
             // Check if token needs immediate refresh
             refreshTokenIfNeeded();
             
-            // Set up periodic refresh every 6 days
+            // Set up periodic refresh every 45 minutes
             state.tokenRefreshInterval = setInterval(() => {
-                console.log('🔄 Periodic token check...');
-                refreshTokenIfNeeded();
-            }, 6 * 24 * 60 * 60 * 1000);
+                console.log('🔄 Periodic token refresh...');
+                if (state.isSignedIn) {
+                    state.tokenClient.requestAccessToken({ prompt: '' });
+                }
+            }, 45 * 60 * 1000);
         } else {
-            // Token expired, clear it
-            console.log('⚠️ Saved token expired');
-            localStorage.removeItem('googleAccessToken');
-            localStorage.removeItem('tokenExpiry');
+            // Token expired, try to refresh silently
+            console.log('⚠️ Saved token expired, attempting silent refresh...');
+            if (userConsent) {
+                // User previously gave consent, try silent refresh
+                state.tokenClient.requestAccessToken({ prompt: '' });
+            } else {
+                // Clear expired token
+                localStorage.removeItem('googleAccessToken');
+                localStorage.removeItem('tokenExpiry');
+            }
         }
     }
 }
@@ -354,6 +374,7 @@ function setupAuthButton() {
             // Clear localStorage
             localStorage.removeItem('googleAccessToken');
             localStorage.removeItem('tokenExpiry');
+            localStorage.removeItem('userConsent');
             
             // Clear token refresh interval
             if (state.tokenRefreshInterval) {
