@@ -241,20 +241,19 @@ function initGoogleAPI() {
                     
                     // Save session to localStorage
                     localStorage.setItem('googleAccessToken', response.access_token);
-                    localStorage.setItem('tokenExpiry', Date.now() + (55 * 60 * 1000)); // 55 minutes
+                    localStorage.setItem('tokenExpiry', Date.now() + (7 * 24 * 60 * 60 * 1000)); // 7 days
                     
                     updateSignInStatus(true);
                     initializeApp();
                     
-                    // Auto-refresh token every 45 minutes (tokens expire after 60 minutes)
-                    // Using shorter interval to account for browser throttling
+                    // Auto-refresh token every 6 days to keep session alive
                     if (state.tokenRefreshInterval) {
                         clearInterval(state.tokenRefreshInterval);
                     }
                     state.tokenRefreshInterval = setInterval(() => {
                         console.log('🔄 Refreshing access token...');
                         refreshTokenIfNeeded();
-                    }, 45 * 60 * 1000); // 45 minutes
+                    }, 6 * 24 * 60 * 60 * 1000); // 6 days
                     
                     // Also check on visibility change (when user returns to tab)
                     document.addEventListener('visibilitychange', () => {
@@ -288,12 +287,12 @@ function refreshTokenIfNeeded() {
     const expiryTime = parseInt(tokenExpiry);
     const timeUntilExpiry = expiryTime - now;
     
-    // If less than 10 minutes until expiry, refresh now
-    if (timeUntilExpiry < 10 * 60 * 1000) {
+    // If less than 1 day until expiry, refresh now
+    if (timeUntilExpiry < 24 * 60 * 60 * 1000) {
         console.log('⚠️ Token expiring soon, refreshing...');
         state.tokenClient.requestAccessToken({ prompt: '' });
     } else {
-        console.log(`✅ Token still valid for ${Math.round(timeUntilExpiry / 60000)} minutes`);
+        console.log(`✅ Token still valid for ${Math.round(timeUntilExpiry / (24 * 60 * 60 * 1000))} days`);
     }
 }
 
@@ -328,11 +327,11 @@ function checkExistingSession() {
             // Check if token needs immediate refresh
             refreshTokenIfNeeded();
             
-            // Set up periodic refresh every 45 minutes
+            // Set up periodic refresh every 6 days
             state.tokenRefreshInterval = setInterval(() => {
                 console.log('🔄 Periodic token check...');
                 refreshTokenIfNeeded();
-            }, 45 * 60 * 1000);
+            }, 6 * 24 * 60 * 60 * 1000);
         } else {
             // Token expired, clear it
             console.log('⚠️ Saved token expired');
