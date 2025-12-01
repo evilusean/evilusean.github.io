@@ -217,7 +217,7 @@ async function apiCallWithAuth(apiFunction) {
             // Try to refresh token silently
             return new Promise((resolve, reject) => {
                 state.tokenClient.requestAccessToken({ 
-                    prompt: '',
+                    prompt: 'none',
                     callback: async (response) => {
                         if (response.error) {
                             console.error('Silent refresh failed, requiring user login');
@@ -297,16 +297,17 @@ function initGoogleAPI() {
                     updateSignInStatus(true);
                     initializeApp();
                     
-                    // Auto-refresh token every 30 minutes (well before 50 min expiry)
+                    // Auto-refresh token every 45 minutes (well before 60 min expiry)
                     if (state.tokenRefreshInterval) {
                         clearInterval(state.tokenRefreshInterval);
                     }
                     state.tokenRefreshInterval = setInterval(() => {
-                        console.log('🔄 Auto-refreshing access token (30 min interval)...');
+                        console.log('🔄 Auto-refreshing access token (45 min interval)...');
                         if (state.isSignedIn) {
-                            state.tokenClient.requestAccessToken({ prompt: '' });
+                            // Request new token (will show popup if needed)
+                            state.tokenClient.requestAccessToken({ prompt: 'none' });
                         }
-                    }, 30 * 60 * 1000); // 30 minutes
+                    }, 45 * 60 * 1000); // 45 minutes
                     
                     // Also check on visibility change (when user returns to tab)
                     if (!state.visibilityListenerAdded) {
@@ -319,7 +320,7 @@ function initGoogleAPI() {
                         state.visibilityListenerAdded = true;
                     }
                     
-                    // Add aggressive token check every 5 minutes
+                    // Add aggressive token check every 2 minutes
                     if (state.tokenCheckInterval) {
                         clearInterval(state.tokenCheckInterval);
                     }
@@ -327,7 +328,7 @@ function initGoogleAPI() {
                         if (state.isSignedIn) {
                             refreshTokenIfNeeded();
                         }
-                    }, 5 * 60 * 1000); // 5 minutes
+                    }, 2 * 60 * 1000); // 2 minutes
                 }
             });
             
@@ -357,11 +358,12 @@ function refreshTokenIfNeeded() {
     const expiryTime = parseInt(tokenExpiry);
     const timeUntilExpiry = expiryTime - now;
     
-    // If less than 20 minutes until expiry, refresh now
-    if (timeUntilExpiry < 20 * 60 * 1000) {
-        console.log('⚠️ Token expiring soon (less than 20 min), refreshing...');
+    // If less than 15 minutes until expiry, refresh now
+    if (timeUntilExpiry < 15 * 60 * 1000) {
+        console.log('⚠️ Token expiring soon (less than 15 min), refreshing...');
         localStorage.setItem('lastActivity', now.toString());
-        state.tokenClient.requestAccessToken({ prompt: '' });
+        // Use 'none' instead of empty string for silent refresh
+        state.tokenClient.requestAccessToken({ prompt: 'none' });
     } else {
         console.log(`✅ Token still valid for ${Math.round(timeUntilExpiry / 60000)} minutes`);
     }
@@ -399,15 +401,15 @@ function checkExistingSession() {
             // Check if token needs immediate refresh
             refreshTokenIfNeeded();
             
-            // Set up periodic refresh every 30 minutes
+            // Set up periodic refresh every 45 minutes
             state.tokenRefreshInterval = setInterval(() => {
-                console.log('🔄 Periodic token refresh (30 min)...');
+                console.log('🔄 Periodic token refresh (45 min)...');
                 if (state.isSignedIn) {
-                    state.tokenClient.requestAccessToken({ prompt: '' });
+                    state.tokenClient.requestAccessToken({ prompt: 'none' });
                 }
-            }, 30 * 60 * 1000);
+            }, 45 * 60 * 1000);
             
-            // Add aggressive token check every 5 minutes
+            // Add aggressive token check every 2 minutes
             if (state.tokenCheckInterval) {
                 clearInterval(state.tokenCheckInterval);
             }
@@ -415,13 +417,13 @@ function checkExistingSession() {
                 if (state.isSignedIn) {
                     refreshTokenIfNeeded();
                 }
-            }, 5 * 60 * 1000); // 5 minutes
+            }, 2 * 60 * 1000); // 2 minutes
         } else {
             // Token expired, try to refresh silently
             console.log('⚠️ Saved token expired, attempting silent refresh...');
             if (userConsent) {
                 // User previously gave consent, try silent refresh
-                state.tokenClient.requestAccessToken({ prompt: '' });
+                state.tokenClient.requestAccessToken({ prompt: 'none' });
             } else {
                 // Clear expired token
                 localStorage.removeItem('googleAccessToken');
