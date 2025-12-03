@@ -2288,22 +2288,17 @@ async function updateWorkoutInSheet(exerciseName, weight, reps, time) {
         
         const values = response.result.values || [];
         
-        // Find the current exercise in the current workout
-        const workoutExercises = state.allWorkouts.filter(w => w.workoutName === selectedWorkout);
-        const currentExercise = workoutExercises[state.currentWorkoutIndex];
-        
-        // Find the row in the sheet
+        // Find if this exact exercise already exists in the workout
         let rowIndex = -1;
-        let matchCount = 0;
         for (let i = 1; i < values.length; i++) {
-            if (values[i][0] === selectedWorkout && values[i][1] === currentExercise.exercise) {
-                if (matchCount === state.currentWorkoutIndex) {
-                    rowIndex = i + 1; // Convert to 1-based index
-                    break;
-                }
-                matchCount++;
+            if (values[i][0] === selectedWorkout && values[i][1] === exerciseName) {
+                rowIndex = i + 1; // Convert to 1-based index
+                console.log(`Found existing exercise "${exerciseName}" at row ${rowIndex}`);
+                break;
             }
         }
+        
+        console.log(`Looking for exercise "${exerciseName}" in workout "${selectedWorkout}": ${rowIndex === -1 ? 'NOT FOUND (will add)' : 'FOUND (will update)'}`);
         
         if (rowIndex === -1) {
             // Exercise not found in workout - add it as a new entry
@@ -2348,13 +2343,28 @@ async function updateWorkoutInSheet(exerciseName, weight, reps, time) {
             showStatus('Workout entry updated successfully!', 'success');
         }
         
-        // Reload workouts to reflect changes
-        setTimeout(async () => {
-            await loadWorkouts();
-            // Restore the current workout selection
-            elements.workoutSelect.value = selectedWorkout;
+        // If it was a custom exercise, stay on Custom and clear the name field
+        const wasCustom = elements.exerciseName.value === 'Custom';
+        
+        // Reload workouts immediately to update state.allWorkouts
+        await loadWorkouts();
+        
+        // Restore the current workout selection
+        elements.workoutSelect.value = selectedWorkout;
+        
+        // If it was custom, reset to Custom and clear the field
+        if (wasCustom) {
+            // Don't call loadWorkoutExercises - keep all exercises loaded
+            elements.exerciseName.value = 'Custom';
+            elements.customExercise.value = ''; // Clear the custom name
+            elements.customExercise.classList.remove('hidden');
+            elements.exerciseDescription.classList.add('hidden');
+            elements.customExercise.focus(); // Focus on the input for next entry
+            showStatus(`Added ${exerciseName} to ${selectedWorkout}! Add another exercise.`, 'success');
+        } else {
+            // For non-custom, reload the workout exercises
             loadWorkoutExercises(selectedWorkout);
-        }, 1000);
+        }
         
     } catch (error) {
         console.error('Error updating workout:', error);
@@ -2883,14 +2893,18 @@ function updateTodayLog() {
 // Load workout exercises for selected workout
 function loadWorkoutExercises(workoutName) {
     const workoutExercises = state.allWorkouts.filter(w => w.workoutName === workoutName);
-    if (workoutExercises.length === 0) {
-        showStatus('No exercises found for this workout.', 'error');
-        return;
-    }
     
     state.currentWorkoutIndex = 0;
     state.currentSetCount = 0;
     state.completedExercises = {}; // Reset completion tracking
+    
+    if (workoutExercises.length === 0) {
+        // Empty workout - load all exercises so user can add them
+        console.log('Empty workout, loading all exercises');
+        loadExercises();
+        showStatus(`Workout "${workoutName}" is empty. Use "Update Workout" to add exercises.`, 'success');
+        return;
+    }
     
     // Populate exercise dropdown with only exercises from this workout
     const uniqueExercises = [...new Set(workoutExercises.map(w => w.exercise))];
@@ -3136,36 +3150,69 @@ function createNewWorkout() {
         return;
     }
     
-    // Store the new workout name temporarily BEFORE loading exercises
-    state.newWorkoutName = trimmedName;
-    console.log('Set state.newWorkoutName to:', state.newWorkoutName);
-    
-    // Verify it's set correctly
-    if (state.newWorkoutName === '__NEW__' || !state.newWorkoutName) {
-        console.error('ERROR: newWorkoutName was not set correctly!');
-        alert('Error: Workout name was not set correctly. Please try again.');
-        elements.workoutSelect.value = '';
+    // Create the workout in Google Sheets immediately
+    createWorkoutInSheet(trimmedName);
+}
+
+// Create workout in Google Sheets and select it
+async function createWorkoutInSheet(workoutName) {
+    try {
+        console.log('Creating workout in sheet:', workoutName);
+        
+        // Ensure Workouts sheet exists
+        await ensureWorkoutsSheet();
+        
+        // Add blank line and category header
+        const rowsToAdd = [
+            ['', '', '', '', '', ''], // Blank line
+            [`# === ${workoutName.toUpperCase()} ===`, '', '', '', '', ''] // Category header
+        ];
+        
+        await gapi.client.sheets.spreadsheets.values.append({
+            spreadsheetId: state.spreadsheetId,
+            range: 'Workouts!A:F',
+            valueInputOption: 'USER_ENTERED',
+            resource: {
+                values: rowsToAdd
+            }
+        });
+        
+        console.log('Workout created in sheet');
+        
+        // Add the workout to the dropdown immediately (don't wait for reload)
+        const option = document.createElement('option');
+        option.value = workoutName;
+        option.textContent = workoutName;
+        // Insert before the "+ Create New Workout" option
+        const newOption = elements.workoutSelect.querySelector('option[value="__NEW__"]');
+        if (newOption) {
+            elements.workoutSelect.insertBefore(option, newOption);
+        } else {
+            elements.workoutSelect.appendChild(option);
+        }
+        
+        // Select the new workout
+        elements.workoutSelect.value = workoutName;
+        
+        // Clear newWorkoutName since we're now using a real workout
         state.newWorkoutName = null;
-        return;
+        
+        // Load all exercises (workout is empty)
+        loadExercises();
+        
+        // Select Custom by default
+        elements.exerciseName.value = 'Custom';
+        elements.customExercise.classList.remove('hidden');
+        elements.exerciseDescription.classList.add('hidden');
+        elements.exerciseInstructions.value = '';
+        
+        showStatus(`Created workout: ${workoutName}. Add exercises using "Update Workout".`, 'success');
+        
+    } catch (error) {
+        console.error('Error creating workout in sheet:', error);
+        showStatus(`Error creating workout: ${error.message || 'Check console'}`, 'error');
+        elements.workoutSelect.value = '';
     }
-    
-    // Reset state
-    state.currentWorkoutIndex = 0;
-    state.currentSetCount = 0;
-    state.completedExercises = {};
-    
-    // Temporarily clear workout selection to allow loadExercises to run
-    const tempWorkoutValue = elements.workoutSelect.value;
-    elements.workoutSelect.value = '';
-    
-    // Load all exercises for selection
-    loadExercises();
-    
-    // Restore workout selection
-    elements.workoutSelect.value = tempWorkoutValue;
-    
-    showStatus(`Creating new workout: ${trimmedName}. Select exercises and log them to add to this workout.`, 'success');
-    console.log('Final check - state.newWorkoutName:', state.newWorkoutName);
 }
 
 // Initialize when page loads
