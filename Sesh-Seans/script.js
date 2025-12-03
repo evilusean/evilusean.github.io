@@ -2685,6 +2685,8 @@ function setupExerciseListeners() {
             elements.sortFilter.disabled = false; // Re-enable
             elements.manageExercises.textContent = 'Manage Exercises';
             elements.updateCurrentExercise.textContent = 'Update Exercise';
+            // Hide custom exercise input when exiting workout mode
+            elements.customExercise.classList.add('hidden');
             // Reload all exercises when exiting workout mode
             loadExercises();
         }
