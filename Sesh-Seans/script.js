@@ -2265,9 +2265,18 @@ async function updateCurrentExercise() {
 // Update workout entry in Workouts sheet
 async function updateWorkoutInSheet(exerciseName, weight, reps, time) {
     try {
-        const selectedWorkout = elements.workoutSelect.value;
-        if (!selectedWorkout) {
-            showStatus('No workout selected', 'error');
+        // Use newWorkoutName if creating a new workout, otherwise use selected workout
+        const selectedWorkout = state.newWorkoutName || elements.workoutSelect.value;
+        
+        console.log('updateWorkoutInSheet called with:', {
+            exerciseName,
+            selectedWorkout,
+            newWorkoutName: state.newWorkoutName,
+            dropdownValue: elements.workoutSelect.value
+        });
+        
+        if (!selectedWorkout || selectedWorkout === '__NEW__') {
+            showStatus('No workout selected or invalid workout name', 'error');
             return;
         }
         
@@ -2299,14 +2308,28 @@ async function updateWorkoutInSheet(exerciseName, weight, reps, time) {
         if (rowIndex === -1) {
             // Exercise not found in workout - add it as a new entry
             const sets = elements.sets.value || '3';
-            const rowData = [selectedWorkout, exerciseName, sets, weight, reps, time];
+            
+            // Check if this is the first exercise for this workout
+            const existingWorkout = state.allWorkouts.find(w => w.workoutName === selectedWorkout);
+            
+            const rowsToAdd = [];
+            
+            if (!existingWorkout) {
+                // First exercise - add blank line and category header
+                console.log('First exercise for workout, adding header');
+                rowsToAdd.push(['', '', '', '', '', '']); // Blank line
+                rowsToAdd.push([`# === ${selectedWorkout.toUpperCase()} ===`, '', '', '', '', '']); // Category header
+            }
+            
+            // Add the exercise
+            rowsToAdd.push([selectedWorkout, exerciseName, sets, weight, reps, time]);
             
             await gapi.client.sheets.spreadsheets.values.append({
                 spreadsheetId: state.spreadsheetId,
                 range: 'Workouts!A:F',
                 valueInputOption: 'USER_ENTERED',
                 resource: {
-                    values: [rowData]
+                    values: rowsToAdd
                 }
             });
             
@@ -2629,12 +2652,17 @@ function setupExerciseListeners() {
     // Workout Selection
     elements.workoutSelect.addEventListener('change', (e) => {
         const selectedWorkout = e.target.value;
+        console.log('Workout selection changed to:', selectedWorkout);
+        
         if (selectedWorkout === '__NEW__') {
             createNewWorkout();
         } else if (selectedWorkout) {
+            // Clear new workout name when selecting an existing workout
+            state.newWorkoutName = null;
             loadWorkoutExercises(selectedWorkout);
         } else {
             // No workout selected, load all exercises
+            state.newWorkoutName = null;
             loadExercises();
         }
     });
@@ -3027,30 +3055,54 @@ async function addExerciseToNewWorkout(exerciseName, weight, reps, time) {
         time
     });
     
+    if (!state.newWorkoutName || state.newWorkoutName === '__NEW__') {
+        console.error('Invalid workout name:', state.newWorkoutName);
+        showStatus('Error: Invalid workout name. Please try again.', 'error');
+        return;
+    }
+    
     try {
         // Ensure Workouts sheet exists
         await ensureWorkoutsSheet();
         
-        // Add to Workouts sheet
-        const rowData = [state.newWorkoutName, exerciseName, sets, weight, reps, time];
+        // Check if this is the first exercise for this workout
+        const existingWorkout = state.allWorkouts.find(w => w.workoutName === state.newWorkoutName);
+        
+        const rowsToAdd = [];
+        
+        if (!existingWorkout) {
+            // First exercise - add blank line and category header
+            console.log('First exercise for new workout, adding header');
+            rowsToAdd.push(['', '', '', '', '', '']); // Blank line
+            rowsToAdd.push([`# === ${state.newWorkoutName.toUpperCase()} ===`, '', '', '', '', '']); // Category header
+        }
+        
+        // Add the exercise
+        rowsToAdd.push([state.newWorkoutName, exerciseName, sets, weight, reps, time]);
+        
         const response = await gapi.client.sheets.spreadsheets.values.append({
             spreadsheetId: state.spreadsheetId,
             range: 'Workouts!A:F',
             valueInputOption: 'USER_ENTERED',
             resource: {
-                values: [rowData]
+                values: rowsToAdd
             }
         });
         
         console.log('Successfully added to Workouts sheet:', response);
         
-        showStatus(`Added ${exerciseName} to ${state.newWorkoutName}. Add more exercises or select a different workout to finish.`, 'success');
+        const workoutName = state.newWorkoutName; // Save before reload
+        
+        showStatus(`Added ${exerciseName} to ${workoutName}. Add more exercises or select a different workout to finish.`, 'success');
         
         // Reload workouts to include the new entry
         await loadWorkouts();
         
-        // Keep the workout selection on __NEW__ to continue adding
+        // Restore state after reload
+        state.newWorkoutName = workoutName;
         elements.workoutSelect.value = '__NEW__';
+        
+        console.log('After reload - newWorkoutName:', state.newWorkoutName, 'dropdown:', elements.workoutSelect.value);
         
     } catch (error) {
         console.error('Error adding exercise to new workout:', error);
@@ -3062,22 +3114,40 @@ async function addExerciseToNewWorkout(exerciseName, weight, reps, time) {
 // Create new workout
 function createNewWorkout() {
     const workoutName = prompt('Enter new workout name:');
+    console.log('Prompt returned:', workoutName);
+    
     if (!workoutName || workoutName.trim() === '') {
+        console.log('No workout name entered, canceling');
         elements.workoutSelect.value = '';
+        state.newWorkoutName = null;
         return;
     }
     
+    const trimmedName = workoutName.trim();
+    console.log('Creating new workout with name:', trimmedName);
+    
     // Check if workout already exists
-    const existingWorkout = state.allWorkouts.find(w => w.workoutName === workoutName);
+    const existingWorkout = state.allWorkouts.find(w => w.workoutName === trimmedName);
     if (existingWorkout) {
         alert('A workout with this name already exists!');
-        elements.workoutSelect.value = workoutName;
-        loadWorkoutExercises(workoutName);
+        elements.workoutSelect.value = trimmedName;
+        loadWorkoutExercises(trimmedName);
+        state.newWorkoutName = null;
         return;
     }
     
     // Store the new workout name temporarily BEFORE loading exercises
-    state.newWorkoutName = workoutName;
+    state.newWorkoutName = trimmedName;
+    console.log('Set state.newWorkoutName to:', state.newWorkoutName);
+    
+    // Verify it's set correctly
+    if (state.newWorkoutName === '__NEW__' || !state.newWorkoutName) {
+        console.error('ERROR: newWorkoutName was not set correctly!');
+        alert('Error: Workout name was not set correctly. Please try again.');
+        elements.workoutSelect.value = '';
+        state.newWorkoutName = null;
+        return;
+    }
     
     // Reset state
     state.currentWorkoutIndex = 0;
@@ -3094,7 +3164,8 @@ function createNewWorkout() {
     // Restore workout selection
     elements.workoutSelect.value = tempWorkoutValue;
     
-    showStatus(`Creating new workout: ${workoutName}. Select exercises and log them to add to this workout.`, 'success');
+    showStatus(`Creating new workout: ${trimmedName}. Select exercises and log them to add to this workout.`, 'success');
+    console.log('Final check - state.newWorkoutName:', state.newWorkoutName);
 }
 
 // Initialize when page loads
