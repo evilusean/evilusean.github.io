@@ -58,6 +58,19 @@
                             <input type="checkbox" id="autoSetWorkoutTimer" checked>
                             Auto-set exercise timer
                         </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="workoutModeToggle">
+                            Workout Mode
+                        </label>
+                    </div>
+                    
+                    <div id="workoutModeSection" class="hidden">
+                        <div class="form-group">
+                            <label for="workoutSelect">Select Workout:</label>
+                            <select id="workoutSelect">
+                                <option value="">Loading workouts...</option>
+                            </select>
+                        </div>
                     </div>
                     <form id="exerciseForm">
                     <div class="form-group">
@@ -233,6 +246,7 @@
     <script src="https://apis.google.com/js/api.js"></script>
     <script src="config.js"></script>
     <script src="exercise-data.js"></script>
+    <script src="workout-data.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

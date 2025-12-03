@@ -12,9 +12,13 @@ A comprehensive productivity app that tracks workouts and study sessions to Goog
 - 💪 **Workout Timer** - Per-exercise countdown timer (default 30 sec)
 - 📊 **60+ Pre-configured Exercises** with detailed descriptions
 - 🏋️ **Exercise Categories**: Abs, Pull-up Bar, Bodyweight, Dumbbells, Isometric, Seated
+- 🏋️ **Workout Mode** - Cycle through pre-defined workout routines automatically
+- 📋 **Default Workouts** - 3-day split (Legs+Arms, Back+Pull, Chest+Core), Full Body, Stretching
+- 🔄 **Auto-Cycling** - In Workout Mode, logging an exercise automatically loads the next one
 - 📝 **Custom Exercise Creation** - Add your own exercises on the fly
 - 🔄 **Auto-set Workout Timer** - Automatically sets timer based on exercise defaults
 - 📈 **Exercise Management** - Update exercise defaults and view descriptions
+- 🗑️ **Delete Last Entry** - Quick correction for mistakes
 - 📅 **Automatic Day Separation** - Blank lines between different days in spreadsheet
 - 📊 **Today's Log Display** - See all exercises logged today
 - 📱 **Fully Responsive Design** - Works on desktop, tablet, and mobile
@@ -53,6 +57,7 @@ A comprehensive productivity app that tracks workouts and study sessions to Goog
 3. **Add your credentials** to `config.js`
 4. **Test locally:** `python -m http.server 8000`
 5. **Visit:** http://localhost:8000
+6. **⚠️ IMPORTANT: Allow popups** - The app uses popups to refresh your login every 50 minutes. If popups are blocked, you'll be logged out after 1 hour. Enable popups for this site to stay logged in indefinitely.
 
 ## 📚 Documentation
 
@@ -73,13 +78,22 @@ Each timer has a unique sound to help you distinguish them:
 
 ## How It Works
 
-### Workout Mode
-1. Sign in with Google → Creates `[YEAR]-Sesh-Seans-Workouts` spreadsheet
+### Single Exercise Mode (Default)
+1. Sign in with Google → Creates `[YEAR]-Sesh-Seans-Workouts` spreadsheet with Exercises and Workouts sheets
 2. Use Interval Timer for continuous workout tracking
 3. Use Workout Timer for timed exercises
 4. Select exercise from dropdown (or create custom)
 5. Log exercise → Saved to Google Sheets with timestamp
 6. New day → Automatic blank line separator
+
+### Workout Mode (Guided Routines)
+1. Enable "Workout Mode" checkbox
+2. Select a workout from dropdown (Day 1: Legs+Arms, Day 2: Back+Pull, Day 3: Chest+Core, etc.)
+3. First exercise loads automatically with defaults
+4. Complete exercise and click "Log Exercise"
+5. Next exercise in sequence loads automatically
+6. Cycles through entire workout routine
+7. Edit Workouts sheet in Google Sheets to customize routines
 
 ### Study Mode (Pomodoro)
 1. Creates separate `[YEAR]-Sesh-Seans-Pomodoro` spreadsheet

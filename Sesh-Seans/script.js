@@ -109,7 +109,10 @@ let state = {
     audioContext: null, // Shared audio context for all sounds
     allExercises: [], // Store all exercises for filtering
     sortCategories: [], // Store sort categories
-    pomodoroSubjects: [] // Store pomodoro subjects
+    pomodoroSubjects: [], // Store pomodoro subjects
+    workoutMode: false, // Track if in workout mode
+    allWorkouts: [], // Store all workouts
+    currentWorkoutIndex: 0 // Track current position in workout
 };
 
 // DOM Elements
@@ -143,6 +146,9 @@ function initElements() {
         viewWorkoutLog: document.getElementById('viewWorkoutLog'),
         updateCurrentExercise: document.getElementById('updateCurrentExercise'),
         deleteLastExercise: document.getElementById('deleteLastExercise'),
+        workoutModeToggle: document.getElementById('workoutModeToggle'),
+        workoutModeSection: document.getElementById('workoutModeSection'),
+        workoutSelect: document.getElementById('workoutSelect'),
         autoSetWorkoutTimer: document.getElementById('autoSetWorkoutTimer'),
         sortFilter: document.getElementById('sortFilter'),
         exerciseDescription: document.getElementById('exerciseDescription'),
@@ -302,12 +308,12 @@ function initGoogleAPI() {
                         clearInterval(state.tokenRefreshInterval);
                     }
                     state.tokenRefreshInterval = setInterval(() => {
-                        console.log('🔄 Auto-refreshing access token (45 min interval)...');
+                        console.log('🔄 Auto-refreshing access token (50 min interval)...');
                         if (state.isSignedIn) {
                             // Request new token (will show popup if needed)
                             state.tokenClient.requestAccessToken({ prompt: 'none' });
                         }
-                    }, 45 * 60 * 1000); // 45 minutes
+                    }, 50 * 60 * 1000); // 50 minutes
                     
                     // Also check on visibility change (when user returns to tab)
                     if (!state.visibilityListenerAdded) {
@@ -320,7 +326,7 @@ function initGoogleAPI() {
                         state.visibilityListenerAdded = true;
                     }
                     
-                    // Add aggressive token check every 2 minutes
+                    // Add token check every 10 minutes
                     if (state.tokenCheckInterval) {
                         clearInterval(state.tokenCheckInterval);
                     }
@@ -358,9 +364,9 @@ function refreshTokenIfNeeded() {
     const expiryTime = parseInt(tokenExpiry);
     const timeUntilExpiry = expiryTime - now;
     
-    // If less than 15 minutes until expiry, refresh now
-    if (timeUntilExpiry < 15 * 60 * 1000) {
-        console.log('⚠️ Token expiring soon (less than 15 min), refreshing...');
+    // If less than 10 minutes until expiry, refresh now
+    if (timeUntilExpiry < 10 * 60 * 1000) {
+        console.log('⚠️ Token expiring soon (less than 10 min), refreshing...');
         localStorage.setItem('lastActivity', now.toString());
         // Use 'none' instead of empty string for silent refresh
         state.tokenClient.requestAccessToken({ prompt: 'none' });
@@ -401,15 +407,15 @@ function checkExistingSession() {
             // Check if token needs immediate refresh
             refreshTokenIfNeeded();
             
-            // Set up periodic refresh every 45 minutes
+            // Set up periodic refresh every 50 minutes
             state.tokenRefreshInterval = setInterval(() => {
-                console.log('🔄 Periodic token refresh (45 min)...');
+                console.log('🔄 Periodic token refresh (50 min)...');
                 if (state.isSignedIn) {
                     state.tokenClient.requestAccessToken({ prompt: 'none' });
                 }
-            }, 45 * 60 * 1000);
+            }, 50 * 60 * 1000);
             
-            // Add aggressive token check every 2 minutes
+            // Add token check every 10 minutes
             if (state.tokenCheckInterval) {
                 clearInterval(state.tokenCheckInterval);
             }
@@ -417,7 +423,7 @@ function checkExistingSession() {
                 if (state.isSignedIn) {
                     refreshTokenIfNeeded();
                 }
-            }, 2 * 60 * 1000); // 2 minutes
+            }, 10 * 60 * 1000); // 10 minutes
         } else {
             // Token expired, try to refresh silently
             console.log('⚠️ Saved token expired, attempting silent refresh...');
@@ -496,6 +502,8 @@ async function initializeApp() {
     await checkAndAddDaySeparator();
     await loadTodayExercises();
     await loadTodayPomodoros();
+    await ensureWorkoutsSheet();
+    await loadWorkouts();
     restoreLastExercise();
 }
 
@@ -692,6 +700,109 @@ async function ensureExercisesSheet() {
         }
     } catch (error) {
         console.error('Error ensuring Exercises sheet:', error);
+    }
+}
+
+// Ensure Workouts sheet exists in existing spreadsheet
+async function ensureWorkoutsSheet() {
+    try {
+        const response = await gapi.client.sheets.spreadsheets.get({
+            spreadsheetId: state.spreadsheetId
+        });
+        
+        const sheets = response.result.sheets;
+        const hasWorkoutsSheet = sheets.some(sheet => sheet.properties.title === 'Workouts');
+        
+        if (!hasWorkoutsSheet) {
+            // Add Workouts sheet
+            await gapi.client.sheets.spreadsheets.batchUpdate({
+                spreadsheetId: state.spreadsheetId,
+                resource: {
+                    requests: [{
+                        addSheet: {
+                            properties: {
+                                title: 'Workouts',
+                                gridProperties: {
+                                    frozenRowCount: 1
+                                }
+                            }
+                        }
+                    }]
+                }
+            });
+            
+            await initializeWorkoutsSheet();
+        }
+    } catch (error) {
+        console.error('Error ensuring Workouts sheet:', error);
+    }
+}
+
+// Initialize Workouts sheet with default workouts
+async function initializeWorkoutsSheet() {
+    console.log('Initializing Workouts sheet...');
+    
+    if (typeof getDefaultWorkouts !== 'function') {
+        console.error('getDefaultWorkouts is not defined! Check if workout-data.js loaded.');
+        alert('Error: Workout data not loaded. Check console.');
+        return;
+    }
+    
+    const workoutsToAdd = getDefaultWorkouts();
+    console.log(`Adding ${workoutsToAdd.length} default workout entries`);
+    
+    await appendToSheet(workoutsToAdd, 'Workouts');
+    console.log('Workouts sheet initialized successfully');
+}
+
+// Load workouts from Workouts sheet
+async function loadWorkouts() {
+    try {
+        const response = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: state.spreadsheetId,
+            range: 'Workouts!A2:E' // Skip header row
+        });
+        
+        const values = response.result.values || [];
+        state.allWorkouts = [];
+        const workoutNames = new Set();
+        
+        values.forEach(row => {
+            const workoutName = row[0];
+            const exercise = row[1];
+            const weight = row[2] || '0';
+            const reps = row[3] || '0';
+            const time = row[4] || '0';
+            
+            // Skip empty rows, comments, and category headers
+            if (!workoutName || workoutName.trim() === '' || workoutName.startsWith('#')) {
+                return;
+            }
+            
+            workoutNames.add(workoutName);
+            
+            state.allWorkouts.push({
+                workoutName,
+                exercise,
+                weight,
+                reps,
+                time
+            });
+        });
+        
+        // Populate workout dropdown
+        elements.workoutSelect.innerHTML = '<option value="">Select a workout...</option>';
+        Array.from(workoutNames).forEach(name => {
+            const option = document.createElement('option');
+            option.value = name;
+            option.textContent = name;
+            elements.workoutSelect.appendChild(option);
+        });
+        
+        console.log(`Loaded ${state.allWorkouts.length} workout entries with ${workoutNames.size} unique workouts`);
+    } catch (error) {
+        console.error('Error loading workouts:', error);
+        showStatus('Error loading workouts. Check console.', 'error');
     }
 }
 
@@ -2364,6 +2475,28 @@ function setupExerciseListeners() {
         }
     });
 
+    // Workout Mode Toggle
+    elements.workoutModeToggle.addEventListener('change', (e) => {
+        state.workoutMode = e.target.checked;
+        if (state.workoutMode) {
+            elements.workoutModeSection.classList.remove('hidden');
+            elements.exerciseName.disabled = true;
+            elements.sortFilter.disabled = true;
+        } else {
+            elements.workoutModeSection.classList.add('hidden');
+            elements.exerciseName.disabled = false;
+            elements.sortFilter.disabled = false;
+        }
+    });
+    
+    // Workout Selection
+    elements.workoutSelect.addEventListener('change', (e) => {
+        const selectedWorkout = e.target.value;
+        if (selectedWorkout) {
+            loadWorkoutExercises(selectedWorkout);
+        }
+    });
+    
     console.log('📋 Attaching form submit listener to:', elements.exerciseForm);
     elements.exerciseForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -2409,6 +2542,11 @@ function setupExerciseListeners() {
                 repsTime
             });
             updateTodayLog();
+            
+            // If in workout mode, cycle to next exercise
+            if (state.workoutMode) {
+                cycleToNextWorkoutExercise();
+            }
         } catch (error) {
             console.error('Error logging exercise:', error);
             showStatus('Error logging exercise. Please try again.', 'error');
@@ -2550,6 +2688,73 @@ function updateTodayLog() {
         });
         elements.todayLog.innerHTML = html;
     }
+}
+
+// Load workout exercises for selected workout
+function loadWorkoutExercises(workoutName) {
+    const workoutExercises = state.allWorkouts.filter(w => w.workoutName === workoutName);
+    if (workoutExercises.length === 0) {
+        showStatus('No exercises found for this workout.', 'error');
+        return;
+    }
+    
+    state.currentWorkoutIndex = 0;
+    setWorkoutExercise(workoutExercises[0]);
+    showStatus(`Loaded ${workoutExercises.length} exercises for ${workoutName}`, 'success');
+}
+
+// Set exercise from workout
+function setWorkoutExercise(workoutExercise) {
+    // Find the exercise in the dropdown
+    const options = elements.exerciseName.options;
+    let found = false;
+    for (let i = 0; i < options.length; i++) {
+        if (options[i].value === workoutExercise.exercise) {
+            elements.exerciseName.selectedIndex = i;
+            found = true;
+            break;
+        }
+    }
+    
+    if (!found) {
+        console.warn(`Exercise "${workoutExercise.exercise}" not found in dropdown`);
+        return;
+    }
+    
+    // Set the values
+    elements.weight.value = workoutExercise.weight;
+    elements.reps.value = workoutExercise.reps;
+    elements.time.value = workoutExercise.time;
+    
+    // Update description
+    setExerciseDefaults();
+    
+    // Auto-set workout timer if enabled
+    if (elements.autoSetWorkoutTimer.checked) {
+        const timeValue = parseInt(workoutExercise.time);
+        if (timeValue > 0) {
+            state.workoutTimerSeconds = timeValue;
+            updateWorkoutTimerDisplay();
+        }
+    }
+}
+
+// Cycle to next exercise in workout
+function cycleToNextWorkoutExercise() {
+    const selectedWorkout = elements.workoutSelect.value;
+    if (!selectedWorkout) return;
+    
+    const workoutExercises = state.allWorkouts.filter(w => w.workoutName === selectedWorkout);
+    if (workoutExercises.length === 0) return;
+    
+    state.currentWorkoutIndex = (state.currentWorkoutIndex + 1) % workoutExercises.length;
+    const nextExercise = workoutExercises[state.currentWorkoutIndex];
+    
+    setWorkoutExercise(nextExercise);
+    
+    // Show which exercise we're on
+    const position = state.currentWorkoutIndex + 1;
+    showStatus(`Exercise ${position}/${workoutExercises.length}: ${nextExercise.exercise}`, 'success');
 }
 
 // Initialize when page loads
