@@ -125,6 +125,7 @@ let elements = {};
 function initElements() {
     elements = {
         authButton: document.getElementById('authButton'),
+        authNote: document.getElementById('authNote'),
         userInfo: document.getElementById('userInfo'),
         appContent: document.getElementById('appContent'),
         timerDisplay: document.getElementById('timerDisplay'),
@@ -494,12 +495,14 @@ function updateSignInStatus(isSignedIn) {
         elements.authButton.disabled = false;
         elements.userInfo.textContent = `Logged in`;
         elements.userInfo.classList.remove('hidden');
+        elements.authNote.classList.add('hidden'); // Hide adblocker note when signed in
         elements.appContent.classList.remove('hidden');
     } else {
         console.log('User signed out');
         elements.authButton.textContent = 'Sign in with Google';
         elements.authButton.disabled = false;
         elements.userInfo.classList.add('hidden');
+        elements.authNote.classList.remove('hidden'); // Show adblocker note when signed out
         elements.appContent.classList.add('hidden');
     }
 }
@@ -2657,6 +2660,23 @@ function setupExerciseListeners() {
             elements.updateCurrentExercise.textContent = 'Update Workout';
             // Clear new workout name when toggling off
             state.newWorkoutName = null;
+            
+            // Clear exercise dropdown and show only "Select an exercise..." and "Custom" until workout is selected
+            elements.exerciseName.innerHTML = '';
+            
+            const selectOption = document.createElement('option');
+            selectOption.value = '__ADD__';
+            selectOption.textContent = '+ Select an exercise...';
+            elements.exerciseName.appendChild(selectOption);
+            
+            const customOption = document.createElement('option');
+            customOption.value = 'Custom';
+            customOption.textContent = 'Custom';
+            elements.exerciseName.appendChild(customOption);
+            
+            // Default to Custom
+            elements.exerciseName.value = 'Custom';
+            elements.customExercise.classList.remove('hidden');
         } else {
             elements.workoutModeSection.classList.add('hidden');
             elements.setsGroup.classList.add('hidden');

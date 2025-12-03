@@ -48,6 +48,12 @@ header h1 {
     font-weight: 500;
 }
 
+.auth-note {
+    color: #999;
+    font-size: 0.85em;
+    font-style: italic;
+}
+
 main {
     background: linear-gradient(135deg, #1a0000 0%, #000000 100%);
     padding: 30px;
