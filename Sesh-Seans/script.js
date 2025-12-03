@@ -183,7 +183,11 @@ function initElements() {
         countdownSeconds: document.getElementById('countdownSeconds'),
         setAlarm: document.getElementById('setAlarm'),
         cancelAlarm: document.getElementById('cancelAlarm'),
-        alarmStatus: document.getElementById('alarmStatus')
+        alarmStatus: document.getElementById('alarmStatus'),
+        // Exercise Picker Modal elements
+        exercisePickerModal: document.getElementById('exercisePickerModal'),
+        exercisePickerContent: document.getElementById('exercisePickerContent'),
+        closeExercisePicker: document.getElementById('closeExercisePicker')
     };
 }
 
@@ -2612,6 +2616,12 @@ function setupExerciseListeners() {
 
     // Exercise selection
     elements.exerciseName.addEventListener('change', (e) => {
+        // Check if "+ Select an exercise..." was selected
+        if (e.target.value === '__ADD__') {
+            showExercisePicker();
+            return;
+        }
+        
         // Save selected exercise to localStorage
         localStorage.setItem('lastSelectedExercise', e.target.value);
         
@@ -2674,6 +2684,20 @@ function setupExerciseListeners() {
             // No workout selected, load all exercises
             state.newWorkoutName = null;
             loadExercises();
+        }
+    });
+    
+    // Exercise Picker Modal close button
+    elements.closeExercisePicker.addEventListener('click', () => {
+        elements.exercisePickerModal.classList.add('hidden');
+        // Reset dropdown to previous selection
+        const lastExercise = localStorage.getItem('lastSelectedExercise') || 'Stomach Vacuum';
+        const options = elements.exerciseName.options;
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].value === lastExercise) {
+                elements.exerciseName.selectedIndex = i;
+                break;
+            }
         }
     });
     
@@ -2890,6 +2914,204 @@ function updateTodayLog() {
     }
 }
 
+// Show exercise picker modal to select exercise from Google Sheets
+async function showExercisePicker() {
+    try {
+        // Fetch all exercises from the Exercises sheet
+        const response = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: state.spreadsheetId,
+            range: 'Exercises!A:D'
+        });
+        
+        const values = response.result.values || [];
+        
+        console.log('📋 Exercise Picker: Found', values.length, 'rows in Exercises sheet');
+        
+        // Parse categories and exercises
+        // Only categories marked with #=== will be shown
+        const categories = [];
+        let currentCategory = null;
+        const exercisesByCategory = {};
+        
+        values.forEach((row, index) => {
+            if (index === 0) return; // Skip header
+            
+            const exerciseName = row[0];
+            if (!exerciseName) return;
+            
+            // Check if this is a category marker (handles both "#===" and "# ===" formats)
+            if (exerciseName.includes('===')) {
+                // Extract category name from "#=== CATEGORY ===" or "# === CATEGORY ===" format
+                const match = exerciseName.match(/#\s*===\s*(.+?)\s*===/);
+                if (match) {
+                    currentCategory = match[1].trim();
+                    console.log('📁 Found category:', currentCategory);
+                    if (!categories.includes(currentCategory)) {
+                        categories.push(currentCategory);
+                        exercisesByCategory[currentCategory] = [];
+                    }
+                }
+            } else if (currentCategory) {
+                // Only add exercises that are under a category marker
+                console.log('  ➕ Adding exercise to', currentCategory + ':', exerciseName);
+                exercisesByCategory[currentCategory].push({
+                    name: exerciseName,
+                    weight: row[1] || '0',
+                    reps: row[2] || '0',
+                    time: row[3] || '0'
+                });
+            } else {
+                console.log('  ⚠️ Skipping exercise (no category):', exerciseName);
+            }
+        });
+        
+        console.log('✅ Found', categories.length, 'categories:', categories);
+        
+        // Show category selection - only categories with #=== markers
+        let html = '<h3>Select Category</h3><div class="exercise-picker-categories">';
+        
+        if (categories.length === 0) {
+            html += '<p>No categories found. Add categories to your Exercises sheet using "#=== CATEGORY ===" format.</p>';
+        } else {
+            // Add "All" option
+            html += `<button class="btn btn-secondary exercise-category-btn" data-category="All">All Exercises</button>`;
+            
+            // Add category buttons (only those marked with #===)
+            categories.forEach(category => {
+                if (exercisesByCategory[category].length > 0) {
+                    html += `<button class="btn btn-secondary exercise-category-btn" data-category="${category}">${category}</button>`;
+                }
+            });
+        }
+        
+        html += '</div>';
+        
+        elements.exercisePickerContent.innerHTML = html;
+        elements.exercisePickerModal.classList.remove('hidden');
+        
+        // Add event listeners to category buttons
+        document.querySelectorAll('.exercise-category-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const category = btn.dataset.category;
+                showExerciseListForCategory(category, exercisesByCategory, categories);
+            });
+        });
+        
+    } catch (error) {
+        console.error('Error loading exercises for picker:', error);
+        showStatus('Error loading exercises. Check console.', 'error');
+    }
+}
+
+// Show exercise list for selected category
+function showExerciseListForCategory(category, exercisesByCategory, allCategories) {
+    let exercises = [];
+    
+    if (category === 'All') {
+        // Combine all exercises
+        Object.keys(exercisesByCategory).forEach(cat => {
+            exercises = exercises.concat(exercisesByCategory[cat]);
+        });
+    } else {
+        exercises = exercisesByCategory[category] || [];
+    }
+    
+    let html = `<h3>${category}</h3>`;
+    html += '<button class="btn btn-secondary btn-small" id="backToCategories">← Back to Categories</button>';
+    html += '<div class="exercise-picker-list">';
+    
+    exercises.forEach(exercise => {
+        html += `
+            <button class="btn btn-secondary exercise-item-btn" 
+                    data-name="${exercise.name}" 
+                    data-weight="${exercise.weight}" 
+                    data-reps="${exercise.reps}" 
+                    data-time="${exercise.time}">
+                ${exercise.name}
+            </button>
+        `;
+    });
+    
+    html += '</div>';
+    
+    elements.exercisePickerContent.innerHTML = html;
+    
+    // Back button
+    document.getElementById('backToCategories').addEventListener('click', () => {
+        showExercisePicker();
+    });
+    
+    // Exercise selection buttons
+    document.querySelectorAll('.exercise-item-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const exerciseName = btn.dataset.name;
+            const weight = btn.dataset.weight;
+            const reps = btn.dataset.reps;
+            const time = btn.dataset.time;
+            
+            // Just populate the form fields - don't add to workout yet
+            selectExerciseFromPicker(exerciseName, weight, reps, time);
+            
+            // Close modal
+            elements.exercisePickerModal.classList.add('hidden');
+        });
+    });
+}
+
+// Select exercise from picker and populate form fields
+function selectExerciseFromPicker(exerciseName, weight, reps, time) {
+    // Check if exercise already exists in dropdown
+    let exerciseExists = false;
+    const options = elements.exerciseName.options;
+    
+    for (let i = 0; i < options.length; i++) {
+        if (options[i].value === exerciseName) {
+            elements.exerciseName.selectedIndex = i;
+            exerciseExists = true;
+            break;
+        }
+    }
+    
+    // If exercise doesn't exist in dropdown, add it temporarily
+    if (!exerciseExists) {
+        const option = document.createElement('option');
+        option.value = exerciseName;
+        option.textContent = exerciseName;
+        option.dataset.weight = weight;
+        option.dataset.reps = reps;
+        option.dataset.time = time;
+        
+        // Insert before the "+ Select an exercise..." option
+        const addOptionIndex = Array.from(options).findIndex(opt => opt.value === '__ADD__');
+        if (addOptionIndex !== -1) {
+            elements.exerciseName.insertBefore(option, options[addOptionIndex]);
+        } else {
+            elements.exerciseName.appendChild(option);
+        }
+        
+        elements.exerciseName.value = exerciseName;
+    }
+    
+    // Populate form fields with exercise defaults
+    elements.weight.value = weight;
+    elements.reps.value = reps;
+    elements.time.value = time;
+    
+    // Hide custom exercise input
+    elements.customExercise.classList.add('hidden');
+    
+    // Show exercise description if available
+    showExerciseDescription(exerciseName);
+    
+    // Update button text
+    elements.updateCurrentExercise.textContent = state.workoutMode ? 'Add to Workout' : 'Update Exercise';
+    
+    // Save to localStorage
+    localStorage.setItem('lastSelectedExercise', exerciseName);
+    
+    showStatus(`Selected ${exerciseName}. Click "Log Exercise" to log it, or "Add to Workout" to add it permanently to your workout.`, 'success');
+}
+
 // Load workout exercises for selected workout
 function loadWorkoutExercises(workoutName) {
     const workoutExercises = state.allWorkouts.filter(w => w.workoutName === workoutName);
@@ -2916,6 +3138,12 @@ function loadWorkoutExercises(workoutName) {
         option.textContent = exercise;
         elements.exerciseName.appendChild(option);
     });
+    
+    // Add "+ Select an exercise..." option
+    const addOption = document.createElement('option');
+    addOption.value = '__ADD__';
+    addOption.textContent = '+ Select an exercise...';
+    elements.exerciseName.appendChild(addOption);
     
     // Add Custom option
     const customOption = document.createElement('option');

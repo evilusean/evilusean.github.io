@@ -878,3 +878,32 @@ textarea:focus {
         width: 100%;
     }
 }
+
+/* Exercise Picker Modal */
+.exercise-picker-categories,
+.exercise-picker-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.exercise-category-btn,
+.exercise-item-btn {
+    text-align: left;
+    padding: 15px;
+    font-size: 1.1em;
+    width: 100%;
+}
+
+.exercise-category-btn:hover,
+.exercise-item-btn:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transform: translateY(-2px);
+}
+
+#backToCategories {
+    margin-bottom: 15px;
+}
