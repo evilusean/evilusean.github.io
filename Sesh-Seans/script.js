@@ -2233,25 +2233,29 @@ function showExerciseDescription(exerciseName) {
 
 // Update or add current exercise to sheet
 async function updateCurrentExercise() {
-    const exerciseName = elements.exerciseName.value;
+    let exerciseName = elements.exerciseName.value;
     const weight = elements.weight.value;
     const reps = elements.reps.value;
     const time = elements.time.value;
     const instructions = elements.exerciseInstructions.value;
     
-    if (state.workoutMode) {
-        // Update workout entry in Workouts sheet
-        await updateWorkoutInSheet(exerciseName, weight, reps, time);
-    } else if (exerciseName === 'Custom') {
+    // Get custom exercise name if applicable
+    if (exerciseName === 'Custom') {
         const customName = elements.customExercise.value.trim();
         if (!customName) {
             alert('Please enter a custom exercise name');
             return;
         }
-        
-        // Add custom exercise under current category
+        exerciseName = customName;
+    }
+    
+    if (state.workoutMode) {
+        // Update workout entry in Workouts sheet (or add if doesn't exist)
+        await updateWorkoutInSheet(exerciseName, weight, reps, time);
+    } else if (elements.exerciseName.value === 'Custom') {
+        // Add custom exercise to Exercises sheet
         const currentCategory = elements.sortFilter.value || 'CUSTOM EXERCISES';
-        await addCustomExercise(customName, weight, reps, time, currentCategory);
+        await addCustomExercise(exerciseName, weight, reps, time, currentCategory);
     } else {
         // Update existing exercise defaults and instructions
         await updateExerciseInSheet(exerciseName, weight, reps, time, instructions);
@@ -2293,21 +2297,33 @@ async function updateWorkoutInSheet(exerciseName, weight, reps, time) {
         }
         
         if (rowIndex === -1) {
-            showStatus('Could not find workout entry to update', 'error');
-            return;
+            // Exercise not found in workout - add it as a new entry
+            const sets = elements.sets.value || '3';
+            const rowData = [selectedWorkout, exerciseName, sets, weight, reps, time];
+            
+            await gapi.client.sheets.spreadsheets.values.append({
+                spreadsheetId: state.spreadsheetId,
+                range: 'Workouts!A:F',
+                valueInputOption: 'USER_ENTERED',
+                resource: {
+                    values: [rowData]
+                }
+            });
+            
+            showStatus(`Added ${exerciseName} to ${selectedWorkout}!`, 'success');
+        } else {
+            // Update the row (keep Sets column, update Weight, Reps, Time)
+            await gapi.client.sheets.spreadsheets.values.update({
+                spreadsheetId: state.spreadsheetId,
+                range: `Workouts!D${rowIndex}:F${rowIndex}`,
+                valueInputOption: 'USER_ENTERED',
+                resource: {
+                    values: [[weight, reps, time]]
+                }
+            });
+            
+            showStatus('Workout entry updated successfully!', 'success');
         }
-        
-        // Update the row (keep Sets column, update Weight, Reps, Time)
-        await gapi.client.sheets.spreadsheets.values.update({
-            spreadsheetId: state.spreadsheetId,
-            range: `Workouts!D${rowIndex}:F${rowIndex}`,
-            valueInputOption: 'USER_ENTERED',
-            resource: {
-                values: [[weight, reps, time]]
-            }
-        });
-        
-        showStatus('Workout entry updated successfully!', 'success');
         
         // Reload workouts to reflect changes
         setTimeout(async () => {
@@ -2659,8 +2675,6 @@ function setupExerciseListeners() {
             // Update exercise defaults in sheet if values changed
             await updateExerciseDefaults(exerciseName, weight, reps, timeValue);
             
-            showStatus('Exercise logged successfully! 💪', 'success');
-            
             state.todayExercises.push({
                 time,
                 exercise: exerciseName,
@@ -2670,13 +2684,30 @@ function setupExerciseListeners() {
             updateTodayLog();
             
             // If creating a new workout, add exercise to Workouts sheet
-            if (state.workoutMode && state.newWorkoutName) {
-                await addExerciseToNewWorkout(exerciseName, weight, reps, timeValue);
-            }
+            console.log('Workout mode check:', {
+                workoutMode: state.workoutMode,
+                newWorkoutName: state.newWorkoutName,
+                workoutSelect: elements.workoutSelect.value
+            });
             
-            // If in workout mode, cycle to next exercise
-            if (state.workoutMode && !state.newWorkoutName) {
-                cycleToNextWorkoutExercise();
+            if (state.workoutMode && state.newWorkoutName) {
+                console.log('Adding to new workout:', state.newWorkoutName);
+                await addExerciseToNewWorkout(exerciseName, weight, reps, timeValue);
+            } else if (state.workoutMode && !state.newWorkoutName && elements.workoutSelect.value && elements.workoutSelect.value !== '__NEW__') {
+                // If in workout mode with a selected workout, cycle to next exercise
+                // But only if the exercise is part of the workout
+                const selectedWorkout = elements.workoutSelect.value;
+                const workoutExercises = state.allWorkouts.filter(w => w.workoutName === selectedWorkout);
+                const isInWorkout = workoutExercises.some(w => w.exercise === exerciseName);
+                
+                if (isInWorkout) {
+                    cycleToNextWorkoutExercise();
+                } else {
+                    showStatus(`Exercise logged! (${exerciseName} is not in ${selectedWorkout} routine)`, 'success');
+                }
+            } else {
+                // Regular mode - show success message
+                showStatus('Exercise logged successfully! 💪', 'success');
             }
         } catch (error) {
             console.error('Error logging exercise:', error);
@@ -2987,10 +3018,22 @@ function updateExerciseDropdownStyling() {
 async function addExerciseToNewWorkout(exerciseName, weight, reps, time) {
     const sets = elements.sets.value || '3';
     
+    console.log('Adding exercise to new workout:', {
+        workoutName: state.newWorkoutName,
+        exerciseName,
+        sets,
+        weight,
+        reps,
+        time
+    });
+    
     try {
+        // Ensure Workouts sheet exists
+        await ensureWorkoutsSheet();
+        
         // Add to Workouts sheet
         const rowData = [state.newWorkoutName, exerciseName, sets, weight, reps, time];
-        await gapi.client.sheets.spreadsheets.values.append({
+        const response = await gapi.client.sheets.spreadsheets.values.append({
             spreadsheetId: state.spreadsheetId,
             range: 'Workouts!A:F',
             valueInputOption: 'USER_ENTERED',
@@ -2999,23 +3042,20 @@ async function addExerciseToNewWorkout(exerciseName, weight, reps, time) {
             }
         });
         
+        console.log('Successfully added to Workouts sheet:', response);
+        
         showStatus(`Added ${exerciseName} to ${state.newWorkoutName}. Add more exercises or select a different workout to finish.`, 'success');
         
         // Reload workouts to include the new entry
         await loadWorkouts();
         
-        // Update dropdown to show the new workout
-        if (!Array.from(elements.workoutSelect.options).some(opt => opt.value === state.newWorkoutName)) {
-            const option = document.createElement('option');
-            option.value = state.newWorkoutName;
-            option.textContent = state.newWorkoutName;
-            // Insert before the "Create New" option
-            elements.workoutSelect.insertBefore(option, elements.workoutSelect.lastElementChild);
-        }
+        // Keep the workout selection on __NEW__ to continue adding
+        elements.workoutSelect.value = '__NEW__';
         
     } catch (error) {
         console.error('Error adding exercise to new workout:', error);
-        showStatus('Error adding exercise to workout. Check console.', 'error');
+        console.error('Error details:', error.result || error);
+        showStatus(`Error adding exercise to workout: ${error.message || 'Check console'}`, 'error');
     }
 }
 
@@ -3036,16 +3076,23 @@ function createNewWorkout() {
         return;
     }
     
-    // Load all exercises for selection
-    loadExercises();
+    // Store the new workout name temporarily BEFORE loading exercises
+    state.newWorkoutName = workoutName;
     
     // Reset state
     state.currentWorkoutIndex = 0;
     state.currentSetCount = 0;
     state.completedExercises = {};
     
-    // Store the new workout name temporarily
-    state.newWorkoutName = workoutName;
+    // Temporarily clear workout selection to allow loadExercises to run
+    const tempWorkoutValue = elements.workoutSelect.value;
+    elements.workoutSelect.value = '';
+    
+    // Load all exercises for selection
+    loadExercises();
+    
+    // Restore workout selection
+    elements.workoutSelect.value = tempWorkoutValue;
     
     showStatus(`Creating new workout: ${workoutName}. Select exercises and log them to add to this workout.`, 'success');
 }
