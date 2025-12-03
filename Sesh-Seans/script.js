@@ -112,7 +112,9 @@ let state = {
     pomodoroSubjects: [], // Store pomodoro subjects
     workoutMode: false, // Track if in workout mode
     allWorkouts: [], // Store all workouts
-    currentWorkoutIndex: 0 // Track current position in workout
+    currentWorkoutIndex: 0, // Track current position in workout
+    currentSetCount: 0, // Track how many sets completed for current exercise
+    completedExercises: {} // Track completed exercises: {exerciseIndex: setsCompleted}
 };
 
 // DOM Elements
@@ -137,6 +139,8 @@ function initElements() {
         exerciseForm: document.getElementById('exerciseForm'),
         exerciseName: document.getElementById('exerciseName'),
         customExercise: document.getElementById('customExercise'),
+        setsGroup: document.getElementById('setsGroup'),
+        sets: document.getElementById('sets'),
         weight: document.getElementById('weight'),
         reps: document.getElementById('reps'),
         time: document.getElementById('time'),
@@ -760,7 +764,7 @@ async function loadWorkouts() {
     try {
         const response = await gapi.client.sheets.spreadsheets.values.get({
             spreadsheetId: state.spreadsheetId,
-            range: 'Workouts!A2:E' // Skip header row
+            range: 'Workouts!A2:F' // Skip header row, include Sets column
         });
         
         const values = response.result.values || [];
@@ -770,9 +774,10 @@ async function loadWorkouts() {
         values.forEach(row => {
             const workoutName = row[0];
             const exercise = row[1];
-            const weight = row[2] || '0';
-            const reps = row[3] || '0';
-            const time = row[4] || '0';
+            const sets = row[2] || '1';
+            const weight = row[3] || '0';
+            const reps = row[4] || '0';
+            const time = row[5] || '0';
             
             // Skip empty rows, comments, and category headers
             if (!workoutName || workoutName.trim() === '' || workoutName.startsWith('#')) {
@@ -784,6 +789,7 @@ async function loadWorkouts() {
             state.allWorkouts.push({
                 workoutName,
                 exercise,
+                sets: parseInt(sets),
                 weight,
                 reps,
                 time
@@ -2216,7 +2222,10 @@ async function updateCurrentExercise() {
     const time = elements.time.value;
     const instructions = elements.exerciseInstructions.value;
     
-    if (exerciseName === 'Custom') {
+    if (state.workoutMode) {
+        // Update workout entry in Workouts sheet
+        await updateWorkoutInSheet(exerciseName, weight, reps, time);
+    } else if (exerciseName === 'Custom') {
         const customName = elements.customExercise.value.trim();
         if (!customName) {
             alert('Please enter a custom exercise name');
@@ -2229,6 +2238,71 @@ async function updateCurrentExercise() {
     } else {
         // Update existing exercise defaults and instructions
         await updateExerciseInSheet(exerciseName, weight, reps, time, instructions);
+    }
+}
+
+// Update workout entry in Workouts sheet
+async function updateWorkoutInSheet(exerciseName, weight, reps, time) {
+    try {
+        const selectedWorkout = elements.workoutSelect.value;
+        if (!selectedWorkout) {
+            showStatus('No workout selected', 'error');
+            return;
+        }
+        
+        // Get all workouts
+        const response = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: state.spreadsheetId,
+            range: 'Workouts!A:F'
+        });
+        
+        const values = response.result.values || [];
+        
+        // Find the current exercise in the current workout
+        const workoutExercises = state.allWorkouts.filter(w => w.workoutName === selectedWorkout);
+        const currentExercise = workoutExercises[state.currentWorkoutIndex];
+        
+        // Find the row in the sheet
+        let rowIndex = -1;
+        let matchCount = 0;
+        for (let i = 1; i < values.length; i++) {
+            if (values[i][0] === selectedWorkout && values[i][1] === currentExercise.exercise) {
+                if (matchCount === state.currentWorkoutIndex) {
+                    rowIndex = i + 1; // Convert to 1-based index
+                    break;
+                }
+                matchCount++;
+            }
+        }
+        
+        if (rowIndex === -1) {
+            showStatus('Could not find workout entry to update', 'error');
+            return;
+        }
+        
+        // Update the row (keep Sets column, update Weight, Reps, Time)
+        await gapi.client.sheets.spreadsheets.values.update({
+            spreadsheetId: state.spreadsheetId,
+            range: `Workouts!D${rowIndex}:F${rowIndex}`,
+            valueInputOption: 'USER_ENTERED',
+            resource: {
+                values: [[weight, reps, time]]
+            }
+        });
+        
+        showStatus('Workout entry updated successfully!', 'success');
+        
+        // Reload workouts to reflect changes
+        setTimeout(async () => {
+            await loadWorkouts();
+            // Restore the current workout selection
+            elements.workoutSelect.value = selectedWorkout;
+            loadWorkoutExercises(selectedWorkout);
+        }, 1000);
+        
+    } catch (error) {
+        console.error('Error updating workout:', error);
+        showStatus('Error updating workout. Check console.', 'error');
     }
 }
 
@@ -2376,30 +2450,37 @@ function setupExerciseListeners() {
         }
     });
 
-    // Manage Exercises button
+    // Manage Exercises/Workouts button
     elements.manageExercises.addEventListener('click', async () => {
         try {
-            // Get the sheet ID for the Exercises sheet
+            const sheetName = state.workoutMode ? 'Workouts' : 'Exercises';
+            
+            // Get the sheet ID for the target sheet
             const response = await gapi.client.sheets.spreadsheets.get({
                 spreadsheetId: state.spreadsheetId
             });
             
             const sheets = response.result.sheets;
-            const exercisesSheet = sheets.find(sheet => sheet.properties.title === 'Exercises');
+            const targetSheet = sheets.find(sheet => sheet.properties.title === sheetName);
             
-            if (exercisesSheet) {
-                const sheetId = exercisesSheet.properties.sheetId;
+            if (targetSheet) {
+                const sheetId = targetSheet.properties.sheetId;
                 const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${state.spreadsheetId}/edit#gid=${sheetId}`;
                 window.open(spreadsheetUrl, '_blank');
-                showStatus('Edit the "Exercises" sheet. Use "# === CATEGORY ===" to create sort categories. Refresh to see changes.', 'success');
+                
+                if (state.workoutMode) {
+                    showStatus('Edit the "Workouts" sheet. Add "Sets" column to control repetitions. Refresh to see changes.', 'success');
+                } else {
+                    showStatus('Edit the "Exercises" sheet. Use "# === CATEGORY ===" to create sort categories. Refresh to see changes.', 'success');
+                }
             } else {
                 // Fallback to just opening the spreadsheet
                 const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${state.spreadsheetId}/edit`;
                 window.open(spreadsheetUrl, '_blank');
-                showStatus('Exercises sheet not found. Opening spreadsheet.', 'error');
+                showStatus(`${sheetName} sheet not found. Opening spreadsheet.`, 'error');
             }
         } catch (error) {
-            console.error('Error opening exercises sheet:', error);
+            console.error('Error opening sheet:', error);
             // Fallback
             const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${state.spreadsheetId}/edit`;
             window.open(spreadsheetUrl, '_blank');
@@ -2480,12 +2561,18 @@ function setupExerciseListeners() {
         state.workoutMode = e.target.checked;
         if (state.workoutMode) {
             elements.workoutModeSection.classList.remove('hidden');
-            elements.exerciseName.disabled = true;
+            elements.setsGroup.classList.remove('hidden');
+            elements.exerciseName.disabled = false; // Allow exercise selection in workout mode
             elements.sortFilter.disabled = true;
+            elements.manageExercises.textContent = 'Manage Workouts';
+            elements.updateCurrentExercise.textContent = 'Update Workout';
         } else {
             elements.workoutModeSection.classList.add('hidden');
+            elements.setsGroup.classList.add('hidden');
             elements.exerciseName.disabled = false;
             elements.sortFilter.disabled = false;
+            elements.manageExercises.textContent = 'Manage Exercises';
+            elements.updateCurrentExercise.textContent = 'Update Exercise';
         }
     });
     
@@ -2699,6 +2786,8 @@ function loadWorkoutExercises(workoutName) {
     }
     
     state.currentWorkoutIndex = 0;
+    state.currentSetCount = 0;
+    state.completedExercises = {}; // Reset completion tracking
     setWorkoutExercise(workoutExercises[0]);
     showStatus(`Loaded ${workoutExercises.length} exercises for ${workoutName}`, 'success');
 }
@@ -2722,6 +2811,7 @@ function setWorkoutExercise(workoutExercise) {
     }
     
     // Set the values
+    elements.sets.value = workoutExercise.sets;
     elements.weight.value = workoutExercise.weight;
     elements.reps.value = workoutExercise.reps;
     elements.time.value = workoutExercise.time;
@@ -2737,6 +2827,9 @@ function setWorkoutExercise(workoutExercise) {
             updateWorkoutTimerDisplay();
         }
     }
+    
+    // Update exercise styling based on completion
+    updateExerciseCompletionStatus();
 }
 
 // Cycle to next exercise in workout
@@ -2747,14 +2840,61 @@ function cycleToNextWorkoutExercise() {
     const workoutExercises = state.allWorkouts.filter(w => w.workoutName === selectedWorkout);
     if (workoutExercises.length === 0) return;
     
-    state.currentWorkoutIndex = (state.currentWorkoutIndex + 1) % workoutExercises.length;
-    const nextExercise = workoutExercises[state.currentWorkoutIndex];
+    const currentExercise = workoutExercises[state.currentWorkoutIndex];
+    state.currentSetCount++;
     
-    setWorkoutExercise(nextExercise);
+    // Track completion
+    state.completedExercises[state.currentWorkoutIndex] = state.currentSetCount;
     
-    // Show which exercise we're on
-    const position = state.currentWorkoutIndex + 1;
-    showStatus(`Exercise ${position}/${workoutExercises.length}: ${nextExercise.exercise}`, 'success');
+    // Check if we've completed all sets for this exercise
+    if (state.currentSetCount >= currentExercise.sets) {
+        // Mark as fully completed
+        state.completedExercises[state.currentWorkoutIndex] = currentExercise.sets;
+        
+        // Move to next exercise
+        const previousIndex = state.currentWorkoutIndex;
+        state.currentWorkoutIndex = (state.currentWorkoutIndex + 1) % workoutExercises.length;
+        state.currentSetCount = 0;
+        const nextExercise = workoutExercises[state.currentWorkoutIndex];
+        
+        setWorkoutExercise(nextExercise);
+        
+        // Show which exercise we're on
+        const position = state.currentWorkoutIndex + 1;
+        showStatus(`✅ Completed ${currentExercise.exercise}! Exercise ${position}/${workoutExercises.length}: ${nextExercise.exercise} - Set 1/${nextExercise.sets}`, 'success');
+    } else {
+        // Same exercise, next set
+        const setNum = state.currentSetCount + 1;
+        showStatus(`${currentExercise.exercise} - Set ${setNum}/${currentExercise.sets}`, 'success');
+    }
+    
+    updateExerciseCompletionStatus();
+}
+
+// Update exercise completion status visual feedback
+function updateExerciseCompletionStatus() {
+    if (!state.workoutMode) return;
+    
+    const selectedWorkout = elements.workoutSelect.value;
+    if (!selectedWorkout) return;
+    
+    const workoutExercises = state.allWorkouts.filter(w => w.workoutName === selectedWorkout);
+    const currentExercise = workoutExercises[state.currentWorkoutIndex];
+    
+    // Check if current exercise is completed
+    const setsCompleted = state.completedExercises[state.currentWorkoutIndex] || 0;
+    const isCompleted = setsCompleted >= currentExercise.sets;
+    
+    // Update exercise name dropdown styling
+    if (isCompleted) {
+        elements.exerciseName.style.backgroundColor = '#1a3300';
+        elements.exerciseName.style.color = '#66ff66';
+        elements.exerciseName.style.borderColor = '#339900';
+    } else {
+        elements.exerciseName.style.backgroundColor = '';
+        elements.exerciseName.style.color = '';
+        elements.exerciseName.style.borderColor = '';
+    }
 }
 
 // Initialize when page loads
