@@ -2704,9 +2704,24 @@ function setupExerciseListeners() {
             state.newWorkoutName = null;
             loadWorkoutExercises(selectedWorkout);
         } else {
-            // No workout selected, load all exercises
+            // No workout selected, show only "Select an exercise..." and "Custom"
             state.newWorkoutName = null;
-            loadExercises();
+            
+            elements.exerciseName.innerHTML = '';
+            
+            const selectOption = document.createElement('option');
+            selectOption.value = '__ADD__';
+            selectOption.textContent = '+ Select an exercise...';
+            elements.exerciseName.appendChild(selectOption);
+            
+            const customOption = document.createElement('option');
+            customOption.value = 'Custom';
+            customOption.textContent = 'Custom';
+            elements.exerciseName.appendChild(customOption);
+            
+            // Default to Custom
+            elements.exerciseName.value = 'Custom';
+            elements.customExercise.classList.remove('hidden');
         }
     });
     
