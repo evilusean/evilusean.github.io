@@ -2618,6 +2618,7 @@ function setupExerciseListeners() {
     elements.exerciseName.addEventListener('change', (e) => {
         // Check if "+ Select an exercise..." was selected
         if (e.target.value === '__ADD__') {
+            console.log('🔍 Opening exercise picker...');
             showExercisePicker();
             return;
         }
@@ -2690,13 +2691,28 @@ function setupExerciseListeners() {
     // Exercise Picker Modal close button
     elements.closeExercisePicker.addEventListener('click', () => {
         elements.exercisePickerModal.classList.add('hidden');
-        // Reset dropdown to previous selection
-        const lastExercise = localStorage.getItem('lastSelectedExercise') || 'Stomach Vacuum';
+        // Reset dropdown to previous selection or first available option
+        const lastExercise = localStorage.getItem('lastSelectedExercise');
         const options = elements.exerciseName.options;
-        for (let i = 0; i < options.length; i++) {
-            if (options[i].value === lastExercise) {
-                elements.exerciseName.selectedIndex = i;
-                break;
+        let found = false;
+        
+        if (lastExercise) {
+            for (let i = 0; i < options.length; i++) {
+                if (options[i].value === lastExercise) {
+                    elements.exerciseName.selectedIndex = i;
+                    found = true;
+                    break;
+                }
+            }
+        }
+        
+        // If not found, select first non-__ADD__ option
+        if (!found && options.length > 0) {
+            for (let i = 0; i < options.length; i++) {
+                if (options[i].value !== '__ADD__') {
+                    elements.exerciseName.selectedIndex = i;
+                    break;
+                }
             }
         }
     });
@@ -2988,6 +3004,15 @@ async function showExercisePicker() {
         
         elements.exercisePickerContent.innerHTML = html;
         elements.exercisePickerModal.classList.remove('hidden');
+        
+        // Reset dropdown to first non-__ADD__ option so change event fires next time
+        const options = elements.exerciseName.options;
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].value !== '__ADD__') {
+                elements.exerciseName.selectedIndex = i;
+                break;
+            }
+        }
         
         // Add event listeners to category buttons
         document.querySelectorAll('.exercise-category-btn').forEach(btn => {
@@ -3425,16 +3450,28 @@ async function createWorkoutInSheet(workoutName) {
         // Clear newWorkoutName since we're now using a real workout
         state.newWorkoutName = null;
         
-        // Load all exercises (workout is empty)
-        loadExercises();
+        // Clear exercise dropdown and show only "Select an exercise..." and "Custom"
+        elements.exerciseName.innerHTML = '';
         
-        // Select Custom by default
+        // Add "+ Select an exercise..." option
+        const selectOption = document.createElement('option');
+        selectOption.value = '__ADD__';
+        selectOption.textContent = '+ Select an exercise...';
+        elements.exerciseName.appendChild(selectOption);
+        
+        // Add Custom option
+        const customOption = document.createElement('option');
+        customOption.value = 'Custom';
+        customOption.textContent = 'Custom';
+        elements.exerciseName.appendChild(customOption);
+        
+        // Select "Custom" by default so user can click "Select an exercise..." to trigger change event
         elements.exerciseName.value = 'Custom';
         elements.customExercise.classList.remove('hidden');
         elements.exerciseDescription.classList.add('hidden');
         elements.exerciseInstructions.value = '';
         
-        showStatus(`Created workout: ${workoutName}. Add exercises using "Update Workout".`, 'success');
+        showStatus(`Created workout: ${workoutName}. Use "Select an exercise..." or "Custom" to add exercises.`, 'success');
         
     } catch (error) {
         console.error('Error creating workout in sheet:', error);
