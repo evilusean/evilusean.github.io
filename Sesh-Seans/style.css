@@ -268,6 +268,13 @@ main {
     box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
 }
 
+/* Strikethrough styling for completed exercises in dropdown */
+.form-group select option.completed {
+    text-decoration: line-through;
+    color: #ff6666 !important;
+    font-weight: bold;
+}
+
 /* Buttons */
 .btn {
     padding: 12px 24px;

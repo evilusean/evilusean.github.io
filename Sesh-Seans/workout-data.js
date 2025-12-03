@@ -79,6 +79,11 @@ function getDefaultWorkouts() {
         ['Stretching Routine', 'Seated Forward Fold', '1', '0', '0', '30'],
         ['Stretching Routine', 'Seated Figure-4 Stretch', '1', '0', '0', '30'],
         ['Stretching Routine', 'Seated Hamstring Stretch', '1', '0', '0', '30'],
-        ['Stretching Routine', 'Seated Calf Stretch', '1', '0', '0', '30']
+        ['Stretching Routine', 'Seated Calf Stretch', '1', '0', '0', '30'],
+        ['', '', '', '', '', ''],
+        ['# === TEST WORKOUT (FOR STRIKETHROUGH) ===', '', '', '', '', ''],
+        ['Test Workout', 'Push-ups', '2', '0', '10', '0'],
+        ['Test Workout', 'Squats', '2', '0', '15', '0'],
+        ['Test Workout', 'Plank', '1', '0', '0', '30']
     ];
 }

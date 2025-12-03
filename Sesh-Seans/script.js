@@ -114,7 +114,8 @@ let state = {
     allWorkouts: [], // Store all workouts
     currentWorkoutIndex: 0, // Track current position in workout
     currentSetCount: 0, // Track how many sets completed for current exercise
-    completedExercises: {} // Track completed exercises: {exerciseIndex: setsCompleted}
+    completedExercises: {}, // Track completed exercises: {exerciseIndex: setsCompleted}
+    newWorkoutName: null // Track new workout being created
 };
 
 // DOM Elements
@@ -805,6 +806,12 @@ async function loadWorkouts() {
             elements.workoutSelect.appendChild(option);
         });
         
+        // Add "Create New Workout" option at the end
+        const newOption = document.createElement('option');
+        newOption.value = '__NEW__';
+        newOption.textContent = '+ Create New Workout';
+        elements.workoutSelect.appendChild(newOption);
+        
         console.log(`Loaded ${state.allWorkouts.length} workout entries with ${workoutNames.size} unique workouts`);
     } catch (error) {
         console.error('Error loading workouts:', error);
@@ -972,8 +979,10 @@ async function updateExerciseDefaults(exerciseName, weight, reps, time) {
                 
                 console.log(`Updated defaults for ${exerciseName}`);
                 
-                // Reload exercises to update dropdown data attributes
-                await loadExercises();
+                // Reload exercises to update dropdown data attributes (only if not in workout mode)
+                if (!state.workoutMode) {
+                    await loadExercises();
+                }
             }
         }
     } catch (error) {
@@ -1154,9 +1163,11 @@ async function updateExerciseLibrary() {
             showStatus('All exercises up to date!', 'success');
         }
         
-        // Reload exercises
+        // Reload exercises (only if not in workout mode)
         setTimeout(() => {
-            loadExercises();
+            if (!state.workoutMode) {
+                loadExercises();
+            }
         }, 1000);
         
     } catch (error) {
@@ -1167,6 +1178,12 @@ async function updateExerciseLibrary() {
 
 // Load exercises from Exercises sheet
 async function loadExercises() {
+    // Don't reload exercises if in workout mode (preserve workout-filtered dropdown)
+    if (state.workoutMode && elements.workoutSelect.value && elements.workoutSelect.value !== '__NEW__') {
+        console.log('Skipping loadExercises - in workout mode with active workout');
+        return;
+    }
+    
     try {
         const response = await gapi.client.sheets.spreadsheets.values.get({
             spreadsheetId: state.spreadsheetId,
@@ -2355,9 +2372,11 @@ async function addCustomExercise(name, weight, reps, time, category) {
         
         showStatus(`Added "${name}" to ${category}! Reloading...`, 'success');
         
-        // Reload exercises
+        // Reload exercises (only if not in workout mode)
         setTimeout(() => {
-            loadExercises();
+            if (!state.workoutMode) {
+                loadExercises();
+            }
         }, 1000);
         
     } catch (error) {
@@ -2403,9 +2422,11 @@ async function updateExerciseInSheet(exerciseName, weight, reps, time, instructi
         
         showStatus(`Updated "${exerciseName}" defaults! Reloading...`, 'success');
         
-        // Reload exercises
+        // Reload exercises (only if not in workout mode)
         setTimeout(() => {
-            loadExercises();
+            if (!state.workoutMode) {
+                loadExercises();
+            }
         }, 1000);
         
     } catch (error) {
@@ -2535,6 +2556,8 @@ function setupExerciseListeners() {
 
     // Sort filter
     elements.sortFilter.addEventListener('change', (e) => {
+        // Don't filter in workout mode
+        if (state.workoutMode) return;
         displayExercises(e.target.value);
     });
 
@@ -2547,12 +2570,17 @@ function setupExerciseListeners() {
             elements.customExercise.classList.remove('hidden');
             elements.exerciseDescription.classList.add('hidden');
             elements.exerciseInstructions.value = '';
-            elements.updateCurrentExercise.textContent = 'Add to Sheet';
+            elements.updateCurrentExercise.textContent = state.workoutMode ? 'Add to Workout' : 'Add to Sheet';
         } else {
             elements.customExercise.classList.add('hidden');
             setExerciseDefaults();
             showExerciseDescription(e.target.value);
-            elements.updateCurrentExercise.textContent = 'Update Exercise';
+            elements.updateCurrentExercise.textContent = state.workoutMode ? 'Update Workout' : 'Update Exercise';
+        }
+        
+        // Update styling in workout mode
+        if (state.workoutMode) {
+            updateExerciseDropdownStyling();
         }
     });
 
@@ -2563,24 +2591,35 @@ function setupExerciseListeners() {
             elements.workoutModeSection.classList.remove('hidden');
             elements.setsGroup.classList.remove('hidden');
             elements.exerciseName.disabled = false; // Allow exercise selection in workout mode
-            elements.sortFilter.disabled = true;
+            elements.sortFilter.style.display = 'none'; // Hide regular filter
+            elements.sortFilter.disabled = true; // Disable to prevent events
             elements.manageExercises.textContent = 'Manage Workouts';
             elements.updateCurrentExercise.textContent = 'Update Workout';
+            // Clear new workout name when toggling off
+            state.newWorkoutName = null;
         } else {
             elements.workoutModeSection.classList.add('hidden');
             elements.setsGroup.classList.add('hidden');
             elements.exerciseName.disabled = false;
-            elements.sortFilter.disabled = false;
+            elements.sortFilter.style.display = ''; // Show regular filter
+            elements.sortFilter.disabled = false; // Re-enable
             elements.manageExercises.textContent = 'Manage Exercises';
             elements.updateCurrentExercise.textContent = 'Update Exercise';
+            // Reload all exercises when exiting workout mode
+            loadExercises();
         }
     });
     
     // Workout Selection
     elements.workoutSelect.addEventListener('change', (e) => {
         const selectedWorkout = e.target.value;
-        if (selectedWorkout) {
+        if (selectedWorkout === '__NEW__') {
+            createNewWorkout();
+        } else if (selectedWorkout) {
             loadWorkoutExercises(selectedWorkout);
+        } else {
+            // No workout selected, load all exercises
+            loadExercises();
         }
     });
     
@@ -2630,8 +2669,13 @@ function setupExerciseListeners() {
             });
             updateTodayLog();
             
+            // If creating a new workout, add exercise to Workouts sheet
+            if (state.workoutMode && state.newWorkoutName) {
+                await addExerciseToNewWorkout(exerciseName, weight, reps, timeValue);
+            }
+            
             // If in workout mode, cycle to next exercise
-            if (state.workoutMode) {
+            if (state.workoutMode && !state.newWorkoutName) {
                 cycleToNextWorkoutExercise();
             }
         } catch (error) {
@@ -2788,7 +2832,26 @@ function loadWorkoutExercises(workoutName) {
     state.currentWorkoutIndex = 0;
     state.currentSetCount = 0;
     state.completedExercises = {}; // Reset completion tracking
+    
+    // Populate exercise dropdown with only exercises from this workout
+    const uniqueExercises = [...new Set(workoutExercises.map(w => w.exercise))];
+    elements.exerciseName.innerHTML = '';
+    
+    uniqueExercises.forEach(exercise => {
+        const option = document.createElement('option');
+        option.value = exercise;
+        option.textContent = exercise;
+        elements.exerciseName.appendChild(option);
+    });
+    
+    // Add Custom option
+    const customOption = document.createElement('option');
+    customOption.value = 'Custom';
+    customOption.textContent = 'Custom';
+    elements.exerciseName.appendChild(customOption);
+    
     setWorkoutExercise(workoutExercises[0]);
+    updateExerciseDropdownStyling();
     showStatus(`Loaded ${workoutExercises.length} exercises for ${workoutName}`, 'success');
 }
 
@@ -2874,27 +2937,117 @@ function cycleToNextWorkoutExercise() {
 // Update exercise completion status visual feedback
 function updateExerciseCompletionStatus() {
     if (!state.workoutMode) return;
+    updateExerciseDropdownStyling();
+}
+
+// Update exercise dropdown with strikethrough for completed exercises
+function updateExerciseDropdownStyling() {
+    if (!state.workoutMode) return;
     
     const selectedWorkout = elements.workoutSelect.value;
-    if (!selectedWorkout) return;
+    if (!selectedWorkout || selectedWorkout === '__NEW__') return;
     
     const workoutExercises = state.allWorkouts.filter(w => w.workoutName === selectedWorkout);
-    const currentExercise = workoutExercises[state.currentWorkoutIndex];
     
-    // Check if current exercise is completed
-    const setsCompleted = state.completedExercises[state.currentWorkoutIndex] || 0;
-    const isCompleted = setsCompleted >= currentExercise.sets;
+    // Build a map of exercise names to their completion status
+    const exerciseCompletionMap = {};
+    workoutExercises.forEach((exercise, index) => {
+        const setsCompleted = state.completedExercises[index] || 0;
+        const isCompleted = setsCompleted >= exercise.sets;
+        
+        if (!exerciseCompletionMap[exercise.exercise]) {
+            exerciseCompletionMap[exercise.exercise] = { completed: 0, total: 0 };
+        }
+        exerciseCompletionMap[exercise.exercise].total++;
+        if (isCompleted) {
+            exerciseCompletionMap[exercise.exercise].completed++;
+        }
+    });
     
-    // Update exercise name dropdown styling
-    if (isCompleted) {
-        elements.exerciseName.style.backgroundColor = '#1a3300';
-        elements.exerciseName.style.color = '#66ff66';
-        elements.exerciseName.style.borderColor = '#339900';
-    } else {
-        elements.exerciseName.style.backgroundColor = '';
-        elements.exerciseName.style.color = '';
-        elements.exerciseName.style.borderColor = '';
+    // Apply styling to dropdown options using CSS class
+    Array.from(elements.exerciseName.options).forEach(option => {
+        const exerciseName = option.value;
+        
+        // Remove existing class
+        option.classList.remove('completed');
+        
+        if (exerciseName === 'Custom' || !exerciseCompletionMap[exerciseName]) {
+            return;
+        }
+        
+        const completion = exerciseCompletionMap[exerciseName];
+        // If all instances of this exercise are completed, add completed class
+        if (completion.completed >= completion.total) {
+            option.classList.add('completed');
+        }
+    });
+}
+
+// Add exercise to new workout being created
+async function addExerciseToNewWorkout(exerciseName, weight, reps, time) {
+    const sets = elements.sets.value || '3';
+    
+    try {
+        // Add to Workouts sheet
+        const rowData = [state.newWorkoutName, exerciseName, sets, weight, reps, time];
+        await gapi.client.sheets.spreadsheets.values.append({
+            spreadsheetId: state.spreadsheetId,
+            range: 'Workouts!A:F',
+            valueInputOption: 'USER_ENTERED',
+            resource: {
+                values: [rowData]
+            }
+        });
+        
+        showStatus(`Added ${exerciseName} to ${state.newWorkoutName}. Add more exercises or select a different workout to finish.`, 'success');
+        
+        // Reload workouts to include the new entry
+        await loadWorkouts();
+        
+        // Update dropdown to show the new workout
+        if (!Array.from(elements.workoutSelect.options).some(opt => opt.value === state.newWorkoutName)) {
+            const option = document.createElement('option');
+            option.value = state.newWorkoutName;
+            option.textContent = state.newWorkoutName;
+            // Insert before the "Create New" option
+            elements.workoutSelect.insertBefore(option, elements.workoutSelect.lastElementChild);
+        }
+        
+    } catch (error) {
+        console.error('Error adding exercise to new workout:', error);
+        showStatus('Error adding exercise to workout. Check console.', 'error');
     }
+}
+
+// Create new workout
+function createNewWorkout() {
+    const workoutName = prompt('Enter new workout name:');
+    if (!workoutName || workoutName.trim() === '') {
+        elements.workoutSelect.value = '';
+        return;
+    }
+    
+    // Check if workout already exists
+    const existingWorkout = state.allWorkouts.find(w => w.workoutName === workoutName);
+    if (existingWorkout) {
+        alert('A workout with this name already exists!');
+        elements.workoutSelect.value = workoutName;
+        loadWorkoutExercises(workoutName);
+        return;
+    }
+    
+    // Load all exercises for selection
+    loadExercises();
+    
+    // Reset state
+    state.currentWorkoutIndex = 0;
+    state.currentSetCount = 0;
+    state.completedExercises = {};
+    
+    // Store the new workout name temporarily
+    state.newWorkoutName = workoutName;
+    
+    showStatus(`Creating new workout: ${workoutName}. Select exercises and log them to add to this workout.`, 'success');
 }
 
 // Initialize when page loads
