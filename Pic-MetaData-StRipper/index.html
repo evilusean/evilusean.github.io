@@ -3,31 +3,92 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Photo Metadata Stripper</title>
-  <meta name="description" content="Client-side tool to remove all EXIF/metadata from images. No server upload." />
+  <title>Image Metadata Remover</title>
+  <meta name="description" content="Strip EXIF data, GPS location, and metadata from your photos. 100% private - everything happens in your browser." />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>Photo Metadata Stripper</h1>
-    <p>Upload an image to remove all EXIF/metadata (GPS, camera info, timestamps, etc.) directly in your browser. Nothing is sent to any server.</p>
+    <div class="title-section">
+      <h1>Image Metadata Remover</h1>
+      <button id="info-btn" class="info-button" aria-label="View supported formats">ℹ️ Supported Formats</button>
+    </div>
+    <p>
+      Remove EXIF data, GPS coordinates, camera info, and all metadata from your photos. Everything happens locally in your browser - your images never leave your device.
+    </p>
 
     <div id="drop-zone">
-      <p>Drag & drop an image here<br>or click to select</p>
-      <input type="file" id="file-input" accept="image/*" hidden />
+      <p>Drag & drop images here<br>or click to select</p>
+      <input type="file" id="file-input" accept="image/*" multiple hidden />
     </div>
 
-    <img id="preview" alt="Image preview" />
+    <div id="files-list"></div>
 
-    <div class="button-container">
-      <button id="download-btn" disabled>Download Stripped Image</button>
+    <div class="button-container" id="action-buttons" style="display: none;">
+      <button id="download-all-btn">Download All as ZIP</button>
+      <button id="clear-btn" class="secondary">Clear All</button>
+    </div>
+  </div>
+
+  <!-- Info Modal -->
+  <div id="info-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Supported Formats & Usage</h2>
+      
+      <div class="format-section">
+        <h3>How to Use</h3>
+        <ol>
+          <li>Drag & drop images or click the drop zone to select files</li>
+          <li>Wait for processing (metadata is automatically stripped)</li>
+          <li>Optionally rename files and change output format</li>
+          <li>Download individually or all at once as a ZIP file</li>
+        </ol>
+      </div>
+
+      <div class="format-section">
+        <h3>Input Formats</h3>
+        <ul>
+          <li><strong>JPEG/JPG</strong> - Standard photo format</li>
+          <li><strong>PNG</strong> - Graphics with transparency</li>
+          <li><strong>WebP</strong> - Modern web format</li>
+          <li><strong>BMP</strong> - Bitmap images</li>
+          <li><strong>GIF</strong> - Animated/static images (converts to PNG)</li>
+          <li><strong>AVIF</strong> - Next-gen format (browser support varies)</li>
+          <li><strong>TIFF/TIF</strong> - High-quality images (converts to PNG)</li>
+        </ul>
+      </div>
+
+      <div class="format-section">
+        <h3>Output Formats</h3>
+        <ul>
+          <li><strong>JPEG</strong> - Best for photos, smaller file size</li>
+          <li><strong>PNG</strong> - Best for graphics with transparency</li>
+          <li><strong>WebP</strong> - Modern format with great compression</li>
+          <li><strong>BMP</strong> - Uncompressed bitmap</li>
+          <li><strong>AVIF</strong> - Next-gen format (Chrome/Edge only)</li>
+        </ul>
+      </div>
+
+      <div class="format-section">
+        <h3>What Gets Removed</h3>
+        <ul>
+          <li>EXIF data (camera settings, timestamps)</li>
+          <li>GPS coordinates (location data)</li>
+          <li>Copyright information</li>
+          <li>Camera make and model</li>
+          <li>Software/editing history</li>
+          <li>Embedded thumbnails</li>
+        </ul>
+      </div>
     </div>
   </div>
 
   <footer class="footer">
-    100% client-side • No data leaves your browser • Hosted on GitHub Pages
+    100% Private • No Uploads • Open Source
   </footer>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
