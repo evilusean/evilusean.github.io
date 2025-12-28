@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Handwriting Animator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✍️ Handwriting Animator</h1>
+            <p>Because we all know schools aren't for teaching, learn recurSean handwriting.</p>
+            <button id="infoBtn" class="info-btn" title="About this app">ℹ️</button>
+        </header>
+
+        <div class="input-section">
+            <textarea 
+                id="textInput" 
+                placeholder="Type your text here..."
+                rows="4"
+            >zoomers cant read this
+a b c d e f g h i j k l m n o p q r s t u v w x y z
+A B C D E F G H I J K L M N O P Q R S T U V W X Y Z</textarea>
+            <div class="button-group">
+                <button id="generateBtn" class="btn btn-primary">Generate Handwriting</button>
+                <button id="clearBtn" class="btn btn-clear">Clear</button>
+            </div>
+        </div>
+
+        <div id="animationContainer" class="animation-container">
+            <div id="vara-container"></div>
+        </div>
+
+        <div id="controlsSection" class="controls-section" style="display: none;">
+            <div class="control-group">
+                <label for="fontSelector">Font Style:</label>
+                <select id="fontSelector" class="font-selector">
+                    <option value="Satisfy">Satisfy (better a,c,e,i,m,n,o,u,v,w,z)</option>
+                    <option value="Pacifico">Pacifico (better t)</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="colorPicker">Color:</label>
+                <input type="color" id="colorPicker" value="#dc2626">
+            </div>
+            <div class="control-group">
+                <label for="fontSizeSlider">Size: <span id="fontSizeValue">48</span>px</label>
+                <input type="range" id="fontSizeSlider" min="24" max="80" value="48" step="2">
+            </div>
+        </div>
+
+        <div id="downloadSection" class="download-section" style="display: none;">
+            <button id="downloadPng" class="btn btn-secondary">📥 Download as PNG</button>
+            <button id="downloadSvg" class="btn btn-secondary">📥 Download as SVG</button>
+            <button id="shareBtn" class="btn btn-secondary">🔗 Share URL</button>
+        </div>
+    </div>
+
+    <!-- Info Modal -->
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>About & How to Use</h2>
+            
+            <h3>How to Use:</h3>
+            <ol>
+                <li><strong>Type your text</strong> in the text box (supports multiple lines)</li>
+                <li><strong>Click "Generate Handwriting"</strong> to see the animation</li>
+                <li><strong>Customize:</strong>
+                    <ul>
+                        <li>Choose between Satisfy or Pacifico fonts</li>
+                        <li>Pick your text color</li>
+                        <li>Adjust text size (24-80px)</li>
+                    </ul>
+                </li>
+                <li><strong>Download:</strong> Save as PNG or SVG image</li>
+                <li><strong>Share:</strong> Click "Share URL" to copy a link with your settings</li>
+            </ol>
+
+            <h3>About This App:</h3>
+            <p><strong>Note:</strong> This app is not "high fidelity" cursive handwriting.</p>
+            <p>True cursive handwriting is written in <strong>one continuous stroke per word</strong>, without lifting the pen. This creates flowing, connected letters that are the hallmark of traditional cursive writing.</p>
+            <p>This tool uses digital fonts that approximate cursive style, but letters are rendered individually rather than as continuous strokes. It's great for visualization and practice, but not a replacement for learning proper cursive technique.</p>
+            
+            <h3>Want to Learn Real Cursive?</h3>
+            <p>Check out these resources:</p>
+            <ul>
+                <li><a href="https://www.iampeth.com/" target="_blank" rel="noopener">IAMPETH - International Association of Master Penmen</a></li>
+                <li><a href="https://www.youtube.com/results?search_query=cursive+handwriting+tutorial" target="_blank" rel="noopener">YouTube Cursive Tutorials</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vara@1.4.0/lib/vara.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
