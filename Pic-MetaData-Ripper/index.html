@@ -36,17 +36,19 @@
                 <li><strong>View Metadata:</strong> The app will automatically extract and display metadata from each image including:
                     <ul>
                         <li>File information (name, size, type)</li>
-                        <li>Image dimensions</li>
+                        <li>Image dimensions and technical details</li>
                         <li>EXIF data (camera, GPS, date taken, etc.)</li>
+                        <li>IPTC/XMP data (keywords, copyright, creator info)</li>
                     </ul>
                 </li>
                 <li><strong>Download:</strong> Click "Download Metadata as Text" to save all metadata to a .txt file</li>
             </ol>
             <p class="note"><strong>Privacy Note:</strong> All processing happens in your browser. No data is uploaded to any server.</p>
+            <p class="note"><strong>Need More Metadata?</strong> This browser-based tool extracts most common metadata fields. For comprehensive metadata extraction including all proprietary maker notes and advanced fields, use <code>exiftool</code> on Linux/Mac:<br><code>exiftool your-image.jpg</code><br>Install with: <code>sudo apt install libimage-exiftool-perl</code> (Debian/Ubuntu) or <code>brew install exiftool</code> (Mac)</p>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/exifr/dist/full.umd.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

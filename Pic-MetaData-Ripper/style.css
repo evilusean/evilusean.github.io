@@ -219,6 +219,14 @@ h1 {
     border-radius: 5px;
 }
 
+.note code {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    color: #ff6666;
+}
+
 @media (max-width: 768px) {
     h1 {
         font-size: 1.8em;

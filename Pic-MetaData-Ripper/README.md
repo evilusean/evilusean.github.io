@@ -23,17 +23,21 @@ A static web app that extracts and displays metadata from images, perfect for Gi
 
 ## Metadata Extracted
 
-- **File Information**: Name, size, type, last modified date
-- **Image Properties**: Dimensions (width x height)
-- **EXIF Data** (when available):
-  - Camera make and model
-  - Date and time taken
-  - Camera settings (ISO, aperture, shutter speed, focal length)
-  - GPS coordinates (latitude, longitude, altitude)
-  - Flash settings
-  - White balance
-  - Software used
-  - Artist/copyright information
+The app extracts comprehensive metadata including:
+
+- **File Information**: Name, size, type, MIME type, modification date
+- **Image Properties**: Dimensions, megapixels, bit depth, color space
+- **EXIF Data**: Camera settings, lens info, exposure, ISO, aperture, shutter speed, focal length, flash, white balance, metering mode, etc.
+- **GPS Data**: Latitude, longitude, altitude, position (formatted in degrees/minutes/seconds)
+- **IPTC/IIM Data**: Keywords, caption, byline, copyright, credit, source, category, location, etc.
+- **XMP Data**: Creator, rights, description, title, subject, rating, usage terms, web statement, history, and Adobe Lightroom/Photoshop settings
+- **Camera Information**: Make, model, lens model, software used
+- **Date/Time Information**: Original date taken, creation date, modification date
+- **Copyright & Attribution**: Artist, copyright notice, creator info, usage rights
+- **Location Data**: City, state, country, sublocation, GPS coordinates
+- **Technical Details**: Color components, encoding process, compression, resolution, orientation
+
+The app uses the powerful **exifr** library which extracts significantly more metadata than basic EXIF readers, including IPTC, XMP, ICC profiles, and proprietary maker notes.
 
 ## How to Use
 
@@ -55,7 +59,7 @@ This app is designed to be hosted on GitHub Pages:
 ## Technologies Used
 
 - Pure HTML, CSS, and JavaScript (no build process required)
-- [exif-js](https://github.com/exif-js/exif-js) library for EXIF data extraction
+- [exifr](https://github.com/MikeKovarik/exifr) library for comprehensive metadata extraction (EXIF, IPTC, XMP, ICC, GPS)
 - Responsive design with CSS Grid and Flexbox
 
 ## Privacy
