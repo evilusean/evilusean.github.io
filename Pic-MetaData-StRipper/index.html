@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Photo Metadata Stripper</title>
+  <meta name="description" content="Client-side tool to remove all EXIF/metadata from images. No server upload." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Photo Metadata Stripper</h1>
+    <p>Upload an image to remove all EXIF/metadata (GPS, camera info, timestamps, etc.) directly in your browser. Nothing is sent to any server.</p>
+
+    <div id="drop-zone">
+      <p>Drag & drop an image here<br>or click to select</p>
+      <input type="file" id="file-input" accept="image/*" hidden />
+    </div>
+
+    <img id="preview" alt="Image preview" />
+
+    <div class="button-container">
+      <button id="download-btn" disabled>Download Stripped Image</button>
+    </div>
+  </div>
+
+  <footer class="footer">
+    100% client-side • No data leaves your browser • Hosted on GitHub Pages
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
