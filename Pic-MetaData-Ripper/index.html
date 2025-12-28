@@ -1,35 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Static App</title>
-  <meta name="description" content="A simple static web app built with HTML, CSS, and JavaScript." />
-
-  <!-- Link to external CSS -->
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Metadata Reader</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>My Static App</h1>
-    <p>A clean, responsive starting point for static projects.</p>
-  </header>
+    <div class="container">
+        <header>
+            <h1>Image Metadata Reader</h1>
+            <button id="helpBtn" class="help-btn">?</button>
+        </header>
 
-  <main>
-    <section class="content">
-      <p>Replace this with your app's content.</p>
-      <!-- Example placeholder -->
-      <div id="app">
-        <p>App loads here.</p>
-      </div>
-    </section>
-  </main>
+        <div class="upload-section">
+            <input type="file" id="fileInput" accept="image/*,.heic,.heif,.tiff,.tif,.bmp,.webp" multiple>
+            <label for="fileInput" class="upload-label">
+                <span class="upload-icon">📁</span>
+                <span>Click to upload or drag images here</span>
+                <span class="upload-hint">Supports: JPG, PNG, GIF, HEIC, TIFF, BMP, WebP</span>
+            </label>
+        </div>
 
-  <footer>
-    <p>&copy; 2025 — Built with ❤️ on GitHub Pages</p>
-  </footer>
+        <div id="results" class="results"></div>
 
-  <!-- Link to external JavaScript (defer for better performance) -->
-  <script src="script.js" defer></script>
+        <button id="downloadBtn" class="download-btn" style="display: none;">Download Metadata as Text</button>
+    </div>
+
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>How to Use</h2>
+            <ol>
+                <li><strong>Upload Images:</strong> Click the upload area or drag and drop one or multiple images</li>
+                <li><strong>View Metadata:</strong> The app will automatically extract and display metadata from each image including:
+                    <ul>
+                        <li>File information (name, size, type)</li>
+                        <li>Image dimensions</li>
+                        <li>EXIF data (camera, GPS, date taken, etc.)</li>
+                    </ul>
+                </li>
+                <li><strong>Download:</strong> Click "Download Metadata as Text" to save all metadata to a .txt file</li>
+            </ol>
+            <p class="note"><strong>Privacy Note:</strong> All processing happens in your browser. No data is uploaded to any server.</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
