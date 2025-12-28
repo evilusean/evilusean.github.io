@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initializeQuizMode();
     initializeTrends();
     initializeComparison();
+    initializeOrbitals();
 });
 
 // Load elements data
@@ -97,6 +98,13 @@ function initializeNavigation() {
         russellBtn.classList.remove('active');
         classicView.classList.add('active');
         russellView.classList.remove('active');
+        
+        // Reset colors when switching to classic view
+        if (orbitalsMode) {
+            applyOrbitalColors();
+        } else if (activeTrend !== 'none') {
+            applyTrendColors(activeTrend);
+        }
     });
     
     russellBtn.addEventListener('click', () => {
@@ -104,6 +112,13 @@ function initializeNavigation() {
         classicBtn.classList.remove('active');
         russellView.classList.add('active');
         classicView.classList.remove('active');
+        
+        // Reapply active coloring mode to Russell view
+        if (orbitalsMode) {
+            applyOrbitalColors();
+        } else if (activeTrend !== 'none') {
+            applyTrendColors(activeTrend);
+        }
     });
 }
 
@@ -1934,6 +1949,9 @@ let activeTrend = 'none';
 let compareMode = false;
 let compareElements = [null, null];
 
+// Orbitals mode
+let orbitalsMode = false;
+
 // Speed settings (in milliseconds)
 const speedSettings = {
     slow: { number: 10000, symbol: 10000, info: 10000 },
@@ -2252,13 +2270,29 @@ function initializeTrends() {
 }
 
 // Apply trend-based colors to elements
+// Apply trend-based colors to elements
 function applyTrendColors(trend) {
     const allElements = document.querySelectorAll('.element');
+    const russellElements = document.querySelectorAll('.russell-element circle');
+    const helixElements = document.querySelectorAll('.helix-element');
+    
+    // Turn off orbital mode if active
+    if (orbitalsMode && trend !== 'none') {
+        orbitalsMode = false;
+        document.getElementById('orbitalsBtn').classList.remove('active');
+    }
     
     if (trend === 'none') {
         // Reset to category colors
         allElements.forEach(elementDiv => {
             elementDiv.style.removeProperty('background');
+            elementDiv.title = '';
+        });
+        russellElements.forEach(circle => {
+            circle.style.removeProperty('fill');
+        });
+        helixElements.forEach(circle => {
+            circle.style.removeProperty('fill');
         });
         return;
     }
@@ -2271,6 +2305,7 @@ function applyTrendColors(trend) {
     const min = Math.min(...values);
     const max = Math.max(...values);
     
+    // Apply to classic table
     allElements.forEach(elementDiv => {
         const elementNumber = parseInt(elementDiv.getAttribute('data-number'));
         const element = elements.find(e => e.number === elementNumber);
@@ -2281,6 +2316,45 @@ function applyTrendColors(trend) {
         } else {
             const color = getHeatmapColor(value, min, max);
             elementDiv.style.background = color;
+        }
+    });
+    
+    // Apply to Russell spiral
+    russellElements.forEach(circle => {
+        const group = circle.parentElement;
+        const elementNumber = parseInt(group.getAttribute('data-number'));
+        const element = elements.find(e => e.number === elementNumber);
+        
+        if (!element) return;
+        
+        const value = getTrendValue(element, trend);
+        
+        if (value === null) {
+            circle.style.fill = '#666';
+        } else {
+            const color = getHeatmapColor(value, min, max);
+            circle.style.fill = color;
+        }
+    });
+    
+    // Apply to helix elements
+    helixElements.forEach(circle => {
+        // Find element by matching symbol in adjacent text element
+        const nextSibling = circle.nextElementSibling;
+        if (nextSibling && nextSibling.tagName === 'text') {
+            const symbol = nextSibling.textContent;
+            const element = elements.find(e => e.symbol === symbol);
+            
+            if (!element) return;
+            
+            const value = getTrendValue(element, trend);
+            
+            if (value === null) {
+                circle.style.fill = '#666';
+            } else {
+                const color = getHeatmapColor(value, min, max);
+                circle.style.fill = color;
+            }
         }
     });
 }
@@ -2545,3 +2619,136 @@ createElementDiv = function(element) {
     
     return div;
 };
+
+// Initialize orbitals mode
+function initializeOrbitals() {
+    const orbitalsBtn = document.getElementById('orbitalsBtn');
+    const orbitalsPanel = document.getElementById('orbitalsPanel');
+    const closeOrbitals = document.getElementById('closeOrbitals');
+    
+    orbitalsBtn.addEventListener('click', () => {
+        orbitalsMode = !orbitalsMode;
+        
+        if (orbitalsMode) {
+            orbitalsBtn.classList.add('active');
+            orbitalsPanel.classList.add('active');
+            // Turn off trends mode if active
+            if (activeTrend !== 'none') {
+                activeTrend = 'none';
+                document.querySelectorAll('.trend-btn').forEach(b => b.classList.remove('active'));
+            }
+            applyOrbitalColors();
+        } else {
+            orbitalsBtn.classList.remove('active');
+            orbitalsPanel.classList.remove('active');
+            resetOrbitalColors();
+        }
+    });
+    
+    closeOrbitals.addEventListener('click', () => {
+        // Just close panel, don't turn off orbital mode
+        orbitalsPanel.classList.remove('active');
+    });
+}
+
+// Apply orbital-based colors to elements
+function applyOrbitalColors() {
+    const allElements = document.querySelectorAll('.element');
+    const russellElements = document.querySelectorAll('.russell-element circle');
+    const helixElements = document.querySelectorAll('.helix-element');
+    
+    // Apply to classic table
+    allElements.forEach(elementDiv => {
+        const elementNumber = parseInt(elementDiv.getAttribute('data-number'));
+        const element = elements.find(e => e.number === elementNumber);
+        
+        if (!element) return;
+        
+        const block = element.block;
+        let color = getBlockColor(block);
+        
+        elementDiv.style.background = color;
+        
+        // Add tooltip with last filled orbital
+        const lastOrbital = getLastFilledOrbital(element);
+        elementDiv.title = `${element.name} - Last filled: ${lastOrbital}`;
+    });
+    
+    // Apply to Russell spiral
+    russellElements.forEach(circle => {
+        const group = circle.parentElement;
+        const elementNumber = parseInt(group.getAttribute('data-number'));
+        const element = elements.find(e => e.number === elementNumber);
+        
+        if (!element) return;
+        
+        const block = element.block;
+        let color = getBlockColor(block);
+        
+        circle.style.fill = color;
+    });
+    
+    // Apply to helix elements
+    helixElements.forEach(circle => {
+        // Find element by matching symbol in adjacent text element
+        const nextSibling = circle.nextElementSibling;
+        if (nextSibling && nextSibling.tagName === 'text') {
+            const symbol = nextSibling.textContent;
+            const element = elements.find(e => e.symbol === symbol);
+            
+            if (!element) return;
+            
+            const block = element.block;
+            let color = getBlockColor(block);
+            
+            circle.style.fill = color;
+        }
+    });
+}
+
+// Helper function to get block color
+function getBlockColor(block) {
+    switch(block) {
+        case 's':
+            return '#ff6b6b'; // Red
+        case 'p':
+            return '#4dabf7'; // Blue
+        case 'd':
+            return '#51cf66'; // Green
+        case 'f':
+            return '#cc5de8'; // Purple
+        default:
+            return '#868e96'; // Gray
+    }
+}
+
+// Reset to category colors
+function resetOrbitalColors() {
+    const allElements = document.querySelectorAll('.element');
+    const russellElements = document.querySelectorAll('.russell-element circle');
+    const helixElements = document.querySelectorAll('.helix-element');
+    
+    allElements.forEach(elementDiv => {
+        elementDiv.style.removeProperty('background');
+        elementDiv.title = '';
+    });
+    
+    russellElements.forEach(circle => {
+        circle.style.removeProperty('fill');
+    });
+    
+    helixElements.forEach(circle => {
+        circle.style.removeProperty('fill');
+    });
+}
+
+// Get last filled orbital for an element
+function getLastFilledOrbital(element) {
+    const config = element.electron_config;
+    if (!config) return 'N/A';
+    
+    // Extract last orbital from electron configuration
+    // e.g., "[He] 2s² 2p²" -> "2p²"
+    const match = config.match(/(\d[spdf]\d+)(?!.*\d[spdf])/);
+    return match ? match[1] : 'N/A';
+}

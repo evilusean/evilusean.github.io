@@ -20,6 +20,9 @@
             <div class="nav-buttons" id="navButtons">
                 <button id="classicBtn" class="nav-btn active">Classic View</button>
                 <button id="russellBtn" class="nav-btn">Russell Spiral</button>
+                <button id="orbitalsBtn" class="nav-btn orbitals-toggle">
+                    🔬 Orbitals
+                </button>
                 <button id="trendsBtn" class="nav-btn trends-toggle">
                     📊 Trends
                 </button>
@@ -353,8 +356,64 @@
         </div>
     </div>
 
+    <!-- Orbitals Panel -->
+    <div id="orbitalsPanel" class="orbitals-panel-dropdown">
+        <div class="orbitals-header">
+            <h3>🔬 Electron Orbitals & Configuration</h3>
+            <button id="closeOrbitals" class="saved-btn close-btn" title="Close">×</button>
+        </div>
+        <div class="orbitals-content">
+            <div class="orbitals-explanation">
+                <h4>Understanding Electron Orbitals</h4>
+                <p>Orbitals are regions where electrons are likely to be found. The periodic table is organized by which orbital is being filled:</p>
+            </div>
+            
+            <div class="orbital-blocks">
+                <div class="orbital-block s-orbital">
+                    <h5>s-block (Groups 1-2)</h5>
+                    <p>Spherical orbitals. Max 2 electrons. Filling s orbitals.</p>
+                </div>
+                <div class="orbital-block p-orbital">
+                    <h5>p-block (Groups 13-18)</h5>
+                    <p>Dumbbell-shaped. Max 6 electrons (3 orbitals × 2). Filling p orbitals.</p>
+                </div>
+                <div class="orbital-block d-orbital">
+                    <h5>d-block (Groups 3-12)</h5>
+                    <p>Complex shapes. Max 10 electrons (5 orbitals × 2). Transition metals.</p>
+                </div>
+                <div class="orbital-block f-orbital">
+                    <h5>f-block (Lanthanides/Actinides)</h5>
+                    <p>Very complex. Max 14 electrons (7 orbitals × 2). Rare earths.</p>
+                </div>
+            </div>
+            
+            <div class="filling-order">
+                <h4>Orbital Filling Order (Aufbau Principle)</h4>
+                <div class="filling-diagram">
+                    <div class="filling-row"><span class="orbital-label">1s</span></div>
+                    <div class="filling-row"><span class="orbital-label">2s</span><span class="orbital-label">2p</span></div>
+                    <div class="filling-row"><span class="orbital-label">3s</span><span class="orbital-label">3p</span></div>
+                    <div class="filling-row"><span class="orbital-label">4s</span><span class="orbital-label">3d</span><span class="orbital-label">4p</span></div>
+                    <div class="filling-row"><span class="orbital-label">5s</span><span class="orbital-label">4d</span><span class="orbital-label">5p</span></div>
+                    <div class="filling-row"><span class="orbital-label">6s</span><span class="orbital-label">4f</span><span class="orbital-label">5d</span><span class="orbital-label">6p</span></div>
+                    <div class="filling-row"><span class="orbital-label">7s</span><span class="orbital-label">5f</span><span class="orbital-label">6d</span><span class="orbital-label">7p</span></div>
+                </div>
+                <p class="filling-note">Electrons fill lowest energy orbitals first. Note: 4s fills before 3d, 5s before 4d, etc.</p>
+            </div>
+            
+            <div class="orbital-rules">
+                <h4>Key Principles</h4>
+                <ul>
+                    <li><strong>Aufbau Principle:</strong> Electrons fill orbitals from lowest to highest energy</li>
+                    <li><strong>Pauli Exclusion:</strong> Maximum 2 electrons per orbital (opposite spins ↑↓)</li>
+                    <li><strong>Hund's Rule:</strong> Electrons fill degenerate orbitals singly before pairing</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <!-- Saved Elements Dropdown Panel -->
-    <div id="savedElementsPanel" class="saved-panel-dropdown">
+    <div id="savedElementsPanel" class="saved-panel-dropdown"></div>
         <div class="saved-header">
             <h3>📚 Saved Elements for Study</h3>
             <div class="saved-actions">
