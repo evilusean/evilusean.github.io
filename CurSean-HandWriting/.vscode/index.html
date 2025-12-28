@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cursive Handwriting Animator</title>
+  <meta name="description" content="Type text and watch it animate in cursive handwriting. Download as PNG or SVG." />
+  <link rel="stylesheet" href="style.css" />
+  <!-- Example cursive font from Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h1>Cursive Handwriting Animator</h1>
+    <p>Type any text below and see it written in animated cursive.</p>
+
+    <div class="input-group">
+      <input type="text" id="text-input" placeholder="e.g. my name is sean" />
+      <button id="generate-btn">Generate</button>
+    </div>
+
+    <div id="output" class="output"></div>
+
+    <div class="download-buttons" id="download-buttons" style="display:none;">
+      <button id="download-png">Download as PNG</button>
+      <button id="download-svg">Download as SVG</button>
+    </div>
+  </div>
+
+  <footer>
+    100% client-side • Runs in your browser • No data sent anywhere
+  </footer>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
