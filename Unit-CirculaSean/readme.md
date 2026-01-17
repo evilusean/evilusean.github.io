@@ -21,7 +21,47 @@ I want to build an app for learning the unit circle and trig identities
 
 
 
+### Trigonometric Identities :
+#### Fundamental Identities
+* **Reciprocal Identities**
+    * $\csc \theta = \frac{1}{\sin \theta}$
+    * $\sec \theta = \frac{1}{\cos \theta}$
+    * $\cot \theta = \frac{1}{\tan \theta}$
+* **Quotient Identities**
+    * $\tan \theta = \frac{\sin \theta}{\cos \theta}$
+    * $\cot \theta = \frac{\cos \theta}{\sin \theta}$
+* **Pythagorean Identities**
+    * $\sin^2 \theta + \cos^2 \theta = 1$
+    * $1 + \tan^2 \theta = \sec^2 \theta$
+    * $1 + \cot^2 \theta = \csc^2 \theta$
 
+#### Sum and Difference Formulas
+* $\sin(A \pm B) = \sin A \cos B \pm \cos A \sin B$
+* $\cos(A \pm B) = \cos A \cos B \mp \sin A \sin B$
+* $\tan(A \pm B) = \frac{\tan A \pm \tan B}{1 \mp \tan A \tan B}$
+
+#### Double-Angle Identities
+* $\sin(2\theta) = 2\sin \theta \cos \theta$
+* $\cos(2\theta) = \cos^2 \theta - \sin^2 \theta$
+    * $= 2\cos^2 \theta - 1$
+    * $= 1 - 2\sin^2 \theta$
+* $\tan(2\theta) = \frac{2\tan \theta}{1 - \tan^2 \theta}$
+
+#### Half-Angle / Power-Reduction
+* $\sin^2 \theta = \frac{1 - \cos(2\theta)}{2}$
+* $\cos^2 \theta = \frac{1 + \cos(2\theta)}{2}$
+* $\sin(\frac{\theta}{2}) = \pm \sqrt{\frac{1 - \cos \theta}{2}}$
+* $\cos(\frac{\theta}{2}) = \pm \sqrt{\frac{1 + \cos \theta}{2}}$
+
+#### Even/Odd Identities
+* $\sin(-\theta) = -\sin \theta$
+* $\cos(-\theta) = \cos \theta$
+* $\tan(-\theta) = -\tan \theta$
+
+#### Cofunction Identities
+* $\sin(\frac{\pi}{2} - \theta) = \cos \theta$
+* $\cos(\frac{\pi}{2} - \theta) = \sin \theta$
+* $\tan(\frac{\pi}{2} - \theta) = \cot \theta$
 
 
 
