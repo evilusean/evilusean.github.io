@@ -9,5 +9,66 @@ I want to build an app for learning the unit circle and trig identities
 **Deterministic Socratic Quiz Engine**: An interactive "Teacher Mode" that randomly populates a triangle with the bare minimum data required for a solution. It must utilize a **State-Based Scripting Tree** to guide the user through the specific "order of operations" for that unique triangle (e.g., if Side-Side is given, prompt for Pythagorean Theorem; if Angle-Side is given, prompt for Ratio Selection). 
 - **Visual & Pedagogical Suite**: Include a **Dynamic SVG Canvas** that resizes the triangle based on real-world proportions and a **"Show Your Work" Logic Log** that prints the step-by-step geometric reasoning used.- 
 
+**Tech Spec**: Develop as a **deterministic, static application** (Vanilla JS/HTML/CSS) suitable for **GitHub Pages**, ensuring all "Socratic" paths are hard-coded into logic objects without the need for a backend or AI. -
+
 **Trig Identities** Quiz mode : briefly display either a trig identity formula or a name like 'Sum of Sines' and then wait a few seconds, show it on screen, if the user presses 'Space' save it to a list the user can review after
+
+**Custom Math Input Pad** featuring dedicated buttons for radicals ($\sqrt{2}, \sqrt{3}$), fractions, and $\pi$ to prioritize exact-value entry over decimal approximations. - Quiz mode fillable chart for angles and side lengths as well as all cos sin tan, etc, that the user can fill in manually
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
