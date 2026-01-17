@@ -11,17 +11,19 @@ I want to build an app for learning the unit circle and trig identities
 
 **Tech Spec**: Develop as a **deterministic, static application** (Vanilla JS/HTML/CSS) suitable for **GitHub Pages**, ensuring all "Socratic" paths are hard-coded into logic objects without the need for a backend or AI. -
 
-**Trig Identities** Quiz mode : briefly display either a trig identity formula or a name like 'Sum of Sines' and then wait a few seconds, show it on screen, if the user presses 'Space' save it to a list the user can review after
+**Trig Identities** Quiz mode : briefly display either a trig identity formula or a name like 'Sum of Sines' and then wait a few seconds, show it on screen, if the user presses 'Space' save it to a list the user can review after, brief explanation for each identity to explain what is used for during the quiz, 
+
+**Popup** : Allow the user to view all the trig identities from a popup and see what each one is used for with a brief explanation
 
 **Custom Math Input Pad** featuring dedicated buttons for radicals ($\sqrt{2}, \sqrt{3}$), fractions, and $\pi$ to prioritize exact-value entry over decimal approximations. - Quiz mode fillable chart for angles and side lengths as well as all cos sin tan, etc, that the user can fill in manually
 
+**Sketch Pad** : allows the user to sketch on a canvas in quiz mode for randomly generated triangles
 
 
 
 
 
-
-### Trigonometric Identities :
+### Comprehensive Trigonometric Identities Reference
 #### Fundamental Identities
 * **Reciprocal Identities**
     * $\csc \theta = \frac{1}{\sin \theta}$
@@ -40,35 +42,40 @@ I want to build an app for learning the unit circle and trig identities
 * $\cos(A \pm B) = \cos A \cos B \mp \sin A \sin B$
 * $\tan(A \pm B) = \frac{\tan A \pm \tan B}{1 \mp \tan A \tan B}$
 
-#### Double-Angle Identities
+#### Double-Angle & Half-Angle
 * $\sin(2\theta) = 2\sin \theta \cos \theta$
-* $\cos(2\theta) = \cos^2 \theta - \sin^2 \theta$
-    * $= 2\cos^2 \theta - 1$
-    * $= 1 - 2\sin^2 \theta$
+* $\cos(2\theta) = \cos^2 \theta - \sin^2 \theta = 2\cos^2 \theta - 1 = 1 - 2\sin^2 \theta$
 * $\tan(2\theta) = \frac{2\tan \theta}{1 - \tan^2 \theta}$
-
-#### Half-Angle / Power-Reduction
 * $\sin^2 \theta = \frac{1 - \cos(2\theta)}{2}$
 * $\cos^2 \theta = \frac{1 + \cos(2\theta)}{2}$
 * $\sin(\frac{\theta}{2}) = \pm \sqrt{\frac{1 - \cos \theta}{2}}$
 * $\cos(\frac{\theta}{2}) = \pm \sqrt{\frac{1 + \cos \theta}{2}}$
 
-#### Even/Odd Identities
-* $\sin(-\theta) = -\sin \theta$
-* $\cos(-\theta) = \cos \theta$
-* $\tan(-\theta) = -\tan \theta$
+#### Product-to-Sum Identities
+* $\sin A \cos B = \frac{1}{2}[\sin(A + B) + \sin(A - B)]$
+* $\cos A \sin B = \frac{1}{2}[\sin(A + B) - \sin(A - B)]$
+* $\cos A \cos B = \frac{1}{2}[\cos(A + B) + \cos(A - B)]$
+* $\sin A \sin B = \frac{1}{2}[\cos(A - B) - \cos(A + B)]$
 
-#### Cofunction Identities
+#### Sum-to-Product Identities
+* $\sin A + \sin B = 2 \sin(\frac{A + B}{2}) \cos(\frac{A - B}{2})$
+* $\sin A - \sin B = 2 \cos(\frac{A + B}{2}) \sin(\frac{A - B}{2})$
+* $\cos A + \cos B = 2 \cos(\frac{A + B}{2}) \cos(\frac{A - B}{2})$
+* $\cos A - \cos B = -2 \sin(\frac{A + B}{2}) \sin(\frac{A - B}{2})$
+
+#### Laws for Oblique Triangles
+* **Law of Sines:** $\frac{a}{\sin A} = \frac{b}{\sin B} = \frac{c}{\sin C}$
+* **Law of Cosines:**
+    * $a^2 = b^2 + c^2 - 2bc \cos A$
+    * $b^2 = a^2 + c^2 - 2ac \cos B$
+    * $c^2 = a^2 + b^2 - 2ab \cos C$
+* **Area of a Triangle:** $\text{Area} = \frac{1}{2}bc \sin A$
+* **Heron's Formula:** $\text{Area} = \sqrt{s(s-a)(s-b)(s-c)}$ where $s = \frac{a+b+c}{2}$
+
+#### Even/Odd & Cofunctions
+* $\sin(-\theta) = -\sin \theta$, $\cos(-\theta) = \cos \theta$, $\tan(-\theta) = -\tan \theta$
 * $\sin(\frac{\pi}{2} - \theta) = \cos \theta$
 * $\cos(\frac{\pi}{2} - \theta) = \sin \theta$
-* $\tan(\frac{\pi}{2} - \theta) = \cot \theta$
-
-
-
-
-
-
-
 
 
 
