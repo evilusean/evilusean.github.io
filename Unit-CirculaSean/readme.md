@@ -19,6 +19,9 @@ I want to build an app for learning the unit circle and trig identities
 
 **Sketch Pad** : allows the user to sketch on a canvas in quiz mode for randomly generated triangles
 
+**Other things to add potentially** : Arc Length/Sector area quiz, trig ratios popup, Primary Trigonometric Ratios (SOH CAH TOA), Reciprocal Trigonometric Ratios, Key Properties & Relationships, etc... Actually, instead of updating this every lesson just review my notes at end of course and add all the formulas/identities/definitions/etc when completed, then make the app, or multiple apps, this one is already really 'busy'
+Review what else I can add from : https://github.com/evilusean/Khan/tree/main/Trig-PreCalc 
+https://github.com/evilusean/Khan/blob/main/Review/TOCT/2026-TOCT-Review-Precalc-Trig.md
 
 
 
