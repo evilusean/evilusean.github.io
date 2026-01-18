@@ -11,7 +11,7 @@ I want to build an app for learning the unit circle and trig identities
 
 **Tech Spec**: Develop as a **deterministic, static application** (Vanilla JS/HTML/CSS) suitable for **GitHub Pages**, ensuring all "Socratic" paths are hard-coded into logic objects without the need for a backend or AI. -
 
-**Trig Identities** Quiz mode : briefly display either a trig identity formula or a name like 'Sum of Sines' and then wait a few seconds, show it on screen, if the user presses 'Space' save it to a list the user can review after, brief explanation for each identity to explain what is used for during the quiz, 
+**Trig Identities** Quiz mode : briefly display either a trig identity formula or a name like 'Sum of Sines' and then wait a few seconds, show it on screen, if the user presses 'Space' save it to a list the user can review after, brief explanation for each identity to explain what is used for during the quiz - add use cases, when to use each trig identity
 
 **Popup** : Allow the user to view all the trig identities from a popup and see what each one is used for with a brief explanation
 
