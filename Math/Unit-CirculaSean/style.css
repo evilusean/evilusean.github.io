@@ -244,6 +244,39 @@ th {
   font-weight: 600;
 }
 
+/* Animation for angle reveal pulsing */
+@keyframes angle-pulse {
+  0%, 100% {
+    text-shadow: 0 0 0 rgba(224, 79, 124, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(224, 79, 124, 1), 0 0 40px rgba(224, 79, 124, 0.6);
+  }
+}
+
+.angle-reveal-pulse {
+  animation: angle-pulse 1.5s ease-in-out infinite;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+/* Full circle flash glow animation */
+@keyframes full-circle-flash {
+  0% {
+    filter: drop-shadow(0 0 0px rgba(224, 79, 124, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(224, 79, 124, 1)) drop-shadow(0 0 40px rgba(224, 79, 124, 0.8));
+  }
+  100% {
+    filter: drop-shadow(0 0 0px rgba(224, 79, 124, 0));
+  }
+}
+
+svg.flash-glow {
+  animation: full-circle-flash 0.5s ease-out;
+}
+
 @media (max-width: 900px) {
   .app {
     flex-direction: column;

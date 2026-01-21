@@ -39,6 +39,8 @@ const state = {
   index: -1, // points into history
   coterminalTarget: null, // for coterminal quiz: the angle to find
   currentIdentity: null, // for trig identities quiz
+  isPaused: false, // for pause/resume
+  screensaverIndex: 0, // for screensaver cycling through special triangles
 };
 
 // Angles used in quiz mode (exclude axis-only, non–special-triangle angles)
@@ -147,7 +149,7 @@ function addText(x, y, text, cls = '') {
   t.setAttribute('y', y);
   t.setAttribute('class', `svg-label ${cls}`);
   // font-size in SVG user units (viewBox-relative) so it stays proportional
-  t.setAttribute('font-size', '0.11');
+  t.setAttribute('font-size', '0.25');
   t.textContent = text;
   svg.appendChild(t);
 }
@@ -282,7 +284,7 @@ function drawSpecialTrianglesOverlay(interactive = false) {
 }
 
 function drawTriangle(angle, opts = {}) {
-  const { showLabels = false } = opts;
+  const { showLabels = false, showAnswers = false } = opts;
   drawBase();
   const angleRad = (angle.deg * Math.PI) / 180;
   const x = Math.cos(angleRad);
@@ -344,13 +346,41 @@ function drawTriangle(angle, opts = {}) {
   point.setAttribute('cx', x);
   point.setAttribute('cy', y);
   point.setAttribute('r', '0.025');
-  point.setAttribute('fill', '#40e0d0');
+  point.setAttribute('fill', '#e03746');
   svg.appendChild(point);
 
   if (showLabels) {
-    addLabel(angle.deg, 0.23, `${angle.deg}°`, 'svg-label anchor-mid');
-    addLabel(angle.deg, 0.34, `${angle.rad}`, 'rad anchor-mid');
+    // Add LARGE, PROMINENT angle labels visible on the arc/triangle
+    const angleRad = (angle.deg * Math.PI) / 180;
+    const labelRadius = 0.35;
+    const labelX = Math.cos(angleRad) * labelRadius;
+    const labelY = -Math.sin(angleRad) * labelRadius;
     
+    // Degrees label - very large and prominent
+    const degLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    degLabel.setAttribute('x', labelX);
+    degLabel.setAttribute('y', labelY - 0.08);
+    degLabel.setAttribute('class', 'svg-label anchor-mid');
+    degLabel.setAttribute('font-size', '0.32');
+    degLabel.setAttribute('fill', '#e04f7c');
+    degLabel.setAttribute('font-weight', 'bold');
+    degLabel.textContent = `${angle.deg}°`;
+    svg.appendChild(degLabel);
+    
+    // Radians label
+    const radLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    radLabel.setAttribute('x', labelX);
+    radLabel.setAttribute('y', labelY + 0.08);
+    radLabel.setAttribute('class', 'svg-label anchor-mid');
+    radLabel.setAttribute('font-size', '0.28');
+    radLabel.setAttribute('fill', '#e04f7c');
+    radLabel.setAttribute('font-weight', 'bold');
+    radLabel.textContent = `${angle.rad}`;
+    svg.appendChild(radLabel);
+  }
+  
+  // Only show (x,y) coordinates if showAnswers is true
+  if (showLabels && showAnswers) {
     // Color-code coordinate label
     const coord = angle.coord.replace('(', '').replace(')', '');
     const [xPart, yPart] = coord.split(',').map((s) => s.trim());
@@ -428,15 +458,16 @@ function setPhase(phase, message) {
   if (message) statusEl.textContent = message;
 }
 
-function showScreensaver() {
+function initializeApp() {
   clearTimers();
-  state.phase = 'screensaver';
+  state.phase = 'idle';
   state.mode = 'idle';
   state.quizType = 'none';
   state.history = [];
   state.index = -1;
   state.coterminalTarget = null;
   state.currentIdentity = null;
+  state.isPaused = false;
   quizModeSelect.value = 'none';
   questionOverlay.classList.remove('show');
   startStopBtn.textContent = 'Start';
@@ -448,6 +479,51 @@ function showScreensaver() {
   drawStaticLabels();
 }
 
+function startScreensaver() {
+  clearTimers();
+  state.phase = 'screensaver';
+  state.mode = 'idle';
+  state.quizType = 'none';
+  state.history = [];
+  state.index = -1;
+  state.coterminalTarget = null;
+  state.currentIdentity = null;
+  state.isPaused = false;
+  quizModeSelect.value = 'none';
+  questionOverlay.classList.remove('show');
+  startStopBtn.textContent = 'Stop';
+  tableBody.innerHTML = '';
+  statusEl.textContent = 'Screensaver: Cycling through special triangles';
+  
+  // Cycle through special triangles: 30, 45, 60 in each quadrant
+  const specialTriangles = [30, 45, 60, 120, 135, 150, 210, 225, 240, 300, 315, 330];
+  state.screensaverIndex = 0; // Reset index
+  
+  function showNextTriangle() {
+    if (state.mode !== 'idle') return; // stop if quiz started
+    
+    const angle = specialTriangles[state.screensaverIndex % specialTriangles.length];
+    state.current = angles.find(a => a.deg === angle);
+    state.screensaverIndex++;
+    
+    drawTriangle(state.current, { showLabels: true });
+    tagEl.innerHTML = `<div>${state.current.deg}°</div><div>${state.current.rad}</div>`;
+    renderTable(state.current);
+    statusEl.textContent = `Special Triangle: ${state.current.deg}°`;
+    
+    // Advance to next after 4 seconds
+    state.timers.push(setTimeout(showNextTriangle, 4000));
+  }
+  
+  showNextTriangle();
+}
+
+function showScreensaver() {
+  // Alias for startScreensaver for backward compatibility
+  startScreensaver();
+}
+
+
 function showReveal(fromClick = false) {
   if (!state.current) return;
   setPhase('reveal', fromClick ? 'Selected angle' : 'Reveal: values shown');
@@ -455,7 +531,7 @@ function showReveal(fromClick = false) {
   // Show angle first
   tagEl.innerHTML = `<div>${state.current.deg}°</div><div>${state.current.rad}</div>`;
   renderTable(state.current);
-  drawTriangle(state.current, { showLabels: true });
+  drawTriangle(state.current, { showLabels: true, showAnswers: true });
   
   // Then show (x,y) after brief delay
   state.timers.push(setTimeout(() => {
@@ -480,27 +556,52 @@ function startUnitCircleQuestion() {
   }
   tagEl.textContent = '—';
   tableBody.innerHTML = '';
-  setPhase('intro', 'Observe the highlighted triangle (5s)');
+  setPhase('intro', 'Observe the highlighted triangle (3s)');
   drawTriangle(state.current, { showLabels: false });
 
+  // After 3 seconds, show the angle ONLY on the circle (no answers yet)
   state.timers.push(setTimeout(() => {
-    setPhase('guess', 'Guess the angle (5s)');
-    drawTriangle(state.current, { showLabels: false });
-  }, 5000));
+    setPhase('guess', 'Guess the angle - revealed for 5s');
+    // Redraw triangle with angle labels visible (only for this triangle, no (x,y) yet)
+    drawTriangle(state.current, { showLabels: true, showAnswers: false });
+    // Show ONLY angle, hide table and xy coordinates
+    tagEl.innerHTML = `<div class="angle-reveal-pulse">${state.current.deg}°</div><div>${state.current.rad}</div>`;
+    tableBody.innerHTML = '';
+  }, 3000));
 
+  // After 8 seconds total (5 second angle-only window), show (x,y) and table
   state.timers.push(setTimeout(() => {
-    showReveal();
-  }, 10000)); // start 10s reveal window
+    setPhase('reveal', 'Coordinates and values revealed');
+    // Redraw the triangle with all answer information
+    drawTriangle(state.current, { showLabels: true, showAnswers: true });
+    const coord = state.current.coord.replace('(', '').replace(')', '');
+    const [xLabel, yLabel] = coord.split(',').map((s) => s.trim());
+    tagEl.innerHTML =
+      `<div>${state.current.deg}°</div>` +
+      `<div>${state.current.rad}</div>` +
+      `<div class="xy-wrapper">( <span class="xy-x">${xLabel}</span>, <span class="xy-y">${yLabel}</span> )</div>`;
+    renderTable(state.current);
+  }, 8000));
 
+  // After 12 seconds, flash full circle
   state.timers.push(setTimeout(() => {
     setPhase('flash', 'Full circle flash');
     drawBase();
+    drawSpecialTrianglesOverlay(false);
     drawStaticLabels();
-  }, 20000)); // reveal lasts ~10s (10s to 20s)
+    // Add flash effect
+    svg.classList.add('flash-glow');
+    state.timers.push(setTimeout(() => {
+      svg.classList.remove('flash-glow');
+    }, 500));
+  }, 12000));
 
+  // Auto-advance after reveal phase
   state.timers.push(setTimeout(() => {
-    if (state.mode === 'quiz' && state.quizType === 'unit-circle') startUnitCircleQuestion();
-  }, 25000)); // flash full circle for ~5s (20s to 25s)
+    if (state.mode === 'quiz' && state.quizType === 'unit-circle') {
+      startUnitCircleQuestion();
+    }
+  }, 17000));
 }
 
 function startCoterminalQuestion() {
@@ -736,14 +837,14 @@ function startTrigIdentityQuestion() {
       <div class="description">${identity.description}</div>
       <div class="usage">${identity.usage}</div>
     `;
-    statusEl.textContent = 'Identity explained';
+    statusEl.textContent = 'Identity explained (30 seconds)';
     
-    // Auto-advance after showing answer
+    // Auto-advance after showing answer for 30 seconds
     state.timers.push(setTimeout(() => {
       if (state.mode === 'quiz' && state.quizType === 'trig-functions') {
         startTrigIdentityQuestion();
       }
-    }, 8000)); // Show answer for 8 seconds
+    }, 30000)); // Show answer for 30 seconds
   }, 5000));
 }
 
@@ -764,19 +865,21 @@ function startQuiz() {
     startCoterminalQuestion();
   } else if (quizType === 'trig-functions') {
     startTrigIdentityQuestion();
+  } else if (quizType === 'none') {
+    startScreensaver();
   }
 }
 
 function stopQuiz() {
   clearTimers();
-  showScreensaver();
+  initializeApp();
 }
 
 quizModeSelect.addEventListener('change', () => {
   // Don't auto-start; just stop any running quiz and update UI.
   if (state.mode === 'quiz') stopQuiz();
   if (quizModeSelect.value === 'none') {
-    showScreensaver();
+    initializeApp();
   } else {
     startStopBtn.textContent = 'Start';
     statusEl.textContent = 'Ready. Press Start.';
@@ -823,21 +926,37 @@ angleFormatSelect.addEventListener('change', () => {
 });
 
 document.addEventListener('keydown', (e) => {
+  // Space: pause/resume
   if (e.code === 'Space') {
+    e.preventDefault();
+    if (state.mode === 'quiz') {
+      state.isPaused = !state.isPaused;
+      if (state.isPaused) {
+        clearTimers();
+        statusEl.textContent += ' [PAUSED]';
+      } else {
+        // Resume by restarting the current quiz type
+        if (state.quizType === 'unit-circle') startUnitCircleQuestion();
+        else if (state.quizType === 'coterminal') startCoterminalQuestion();
+        else if (state.quizType === 'trig-functions') startTrigIdentityQuestion();
+      }
+    }
+  }
+  
+  // Enter: save
+  if (e.code === 'Enter') {
     e.preventDefault();
     if (state.current) {
       state.saved.push(`${state.current.deg}° (${state.current.rad})`);
       reviewEl.innerHTML = 'Saved: ' + state.saved.map((s) => `<span class="pill">${s}</span>`).join('');
-    }
-  }
-  if (e.code === 'Enter') {
-    e.preventDefault();
-    if (state.mode === 'quiz') {
+    } else if (state.mode === 'quiz') {
+      // In quiz mode, Enter advances to next question
       if (state.quizType === 'unit-circle') startUnitCircleQuestion();
       else if (state.quizType === 'coterminal') startCoterminalQuestion();
       else if (state.quizType === 'trig-functions') startTrigIdentityQuestion();
     }
   }
+  
   if (e.code === 'ArrowRight') {
     e.preventDefault();
     if (state.mode === 'quiz') {
@@ -927,5 +1046,5 @@ svg.addEventListener('click', (evt) => {
   showReveal();
 });
 
-// initialize
-showScreensaver();
+// Initialize app with full unit circle display
+initializeApp();
