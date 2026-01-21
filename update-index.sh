@@ -28,6 +28,20 @@ cat > index.html << 'EOF'
             <div class="project-grid">
 EOF
 
+# Define multi-app directories
+multi_app_dirs=("3ThreeJS" "Math" "Languages" "CodePen")
+
+# Function to check if directory is multi-app
+is_multi_app_dir() {
+    local dir_name="$1"
+    for multi_dir in "${multi_app_dirs[@]}"; do
+        if [[ "$dir_name" == "$multi_dir" ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
 # Loop through directories and add project cards
 for dir in */; do
     # Remove trailing slash
@@ -54,6 +68,7 @@ for dir in */; do
     link="#"
     status=""
     project_type="folder"
+    multi_app_class=""
     
     if [ -f "$dir_name/index.html" ]; then
         # Standard HTML project
@@ -111,6 +126,15 @@ for dir in */; do
         project_type="folder"
     fi
     
+    # Check if this is a multi-app directory
+    if is_multi_app_dir "$dir_name"; then
+        multi_app_class=" multi-app"
+        if [ -f "$dir_name/index.html" ]; then
+            project_type="web"
+            link="$dir_name/index.html"
+        fi
+    fi
+    
     # Set icon based on project type
     case $project_type in
         "web") icon="bx-globe" ;;
@@ -122,7 +146,7 @@ for dir in */; do
     
     # Add project card to HTML
     cat >> index.html << EOF
-                <div class="project-card">
+                <div class="project-card$multi_app_class">
                     <div class="project-info">
                         <i class="bx $icon"></i>
                         <h3><a href="$link">$dir_name</a></h3>
@@ -184,8 +208,20 @@ if [ -d "3ThreeJS" ] && [ -f "3ThreeJS/update-threejs-index.sh" ]; then
     (cd 3ThreeJS && ./update-threejs-index.sh)
 fi
 
+# Update Math index if it exists
+if [ -d "Math" ] && [ -f "Math/update-math-index.sh" ]; then
+    echo "📐 Updating Math index..."
+    (cd Math && ./update-math-index.sh)
+fi
+
 # Update Languages indexes if they exist
 if [ -d "Languages" ] && [ -f "Languages/update-languages-index.sh" ]; then
     echo "🌐 Updating Languages indexes..."
     (cd Languages && ./update-languages-index.sh)
+fi
+
+# Update CodePen index if it exists
+if [ -d "CodePen" ] && [ -f "CodePen/update-codepen-index.sh" ]; then
+    echo "🎨 Updating CodePen index..."
+    (cd CodePen && ./update-codepen-index.sh)
 fi

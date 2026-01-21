@@ -1,7 +1,4 @@
 #!/bin/bash
-# CodePen Index Generator
-# This script auto-generates the CodePen index.html
-# Note: The main update-index.sh will add the 'multi-app' glow class to CodePen cards in the main index
 
 # Get current date
 current_date=$(date +"%B %d, %Y")
@@ -13,20 +10,20 @@ cat > index.html << 'EOF'
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodePen Projects - Sean's Portfolio</title>
+    <title>Math Projects - Sean's Portfolio</title>
     <link rel="stylesheet" href="../styles.css">
     <link rel="icon" href="../favicon.ico" type="image/x-icon">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
 <body>
     <header class="header">
-        <div class="glow-text" data-text="CodePen Projects">CodePen Projects</div>
-        <p>Collection of interactive demos and experiments from CodePen</p>
+        <div class="glow-text" data-text="Math Projects">Math Projects</div>
+        <p>Collection of interactive math visualizations and educational tools</p>
     </header>
     
     <main>
         <section class="projects">
-            <h2 class="heading">CodePen Projects</h2>
+            <h2 class="heading">Math Projects</h2>
             <div class="project-grid">
 EOF
 
@@ -45,16 +42,16 @@ get_project_type() {
         echo "threejs"
     elif grep -qi "react\|React" "$index_file"; then
         echo "react"
-    elif grep -qi "vue\|Vue" "$index_file"; then
-        echo "vue"
+    elif grep -qi "circle\|Circle\|trig\|Trig" "$index_file"; then
+        echo "geometry"
+    elif grep -qi "graph\|Graph\|plot\|Plot" "$index_file"; then
+        echo "graphing"
     elif grep -qi "animation\|Animation" "$index_file"; then
         echo "animation"
-    elif grep -qi "css\|CSS" "$index_file"; then
-        echo "css"
-    elif grep -qi "javascript\|JavaScript" "$index_file"; then
-        echo "javascript"
+    elif grep -qi "canvas\|Canvas" "$index_file"; then
+        echo "visualization"
     else
-        echo "web"
+        echo "math"
     fi
 }
 
@@ -63,11 +60,11 @@ get_project_icon() {
     local project_type="$1"
     case $project_type in
         "threejs") echo "bx-cube" ;;
-        "react") echo "bxl-react" ;;
-        "vue") echo "bxl-vuejs" ;;
+        "geometry") echo "bx-shape-circle" ;;
+        "graphing") echo "bx-chart" ;;
         "animation") echo "bx-movie" ;;
-        "css") echo "bxl-css3" ;;
-        "javascript") echo "bxl-javascript" ;;
+        "visualization") echo "bx-paint" ;;
+        "math") echo "bx-calculator" ;;
         "web") echo "bx-globe" ;;
         *) echo "bx-folder" ;;
     esac
@@ -81,13 +78,13 @@ get_project_description() {
     if [ -f "$index_file" ]; then
         # Try to extract title from HTML
         local title=$(grep -i "<title>" "$index_file" | sed 's/.*<title>\(.*\)<\/title>.*/\1/' | head -1)
-        if [ -n "$title" ] && [ "$title" != "CodePen Projects - Sean's Portfolio" ]; then
+        if [ -n "$title" ] && [ "$title" != "Math Projects - Sean's Portfolio" ]; then
             echo "$title"
         else
-            echo "$dir_name - CodePen Project"
+            echo "$dir_name - Math Project"
         fi
     else
-        echo "$dir_name - CodePen Project"
+        echo "$dir_name - Math Project"
     fi
 }
 
@@ -178,9 +175,8 @@ cat >> index.html << EOF
 </html>
 EOF
 
-echo "✅ CodePen index.html updated successfully!"
-echo "📁 Found $(find . -maxdepth 1 -type d ! -name ".*" ! -name "update-*" | wc -l) CodePen projects"
+echo "✅ Math index.html updated successfully!"
+echo "📁 Found $(find . -maxdepth 1 -type d ! -name ".*" ! -name "update-*" | wc -l) Math projects"
 
 # Make the script executable
-chmod +x update-codepen-index.sh
-chmod +x update-codepen-index.js
+chmod +x update-math-index.sh
