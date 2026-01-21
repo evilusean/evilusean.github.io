@@ -7,7 +7,7 @@ Later on add other quiz modes, where you can ask the angle in degrees or radians
 
 After doing that, add the Trig Identities quiz mode, reciprocal trig ratios(SOHCAHTOA Vs Sine Vs Cosecant - Cosine Vs Secant, Tangent vs CoTangent), etc - crawl -> walk -> run
 
-ColorCoding/Highlight - 
+ColorCoding/Highlight - color code the (x,y) on the triangle being quizzed and the (cosine, sine) are (blue, red) and tangent is purple(mixture of blue and red) - trig function reciprocals (cosecant = light red, secant = light blue, tangent = light purple) so the user can infer the reciprocal relationship and that the x = cosine and y = sine visually through color coding
 
 Brief Flash after answer before next question - 
 
