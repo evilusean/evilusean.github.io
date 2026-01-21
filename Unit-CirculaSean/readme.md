@@ -11,7 +11,13 @@ ColorCoding/Highlight - color code the (x,y) on the triangle being quizzed and t
 
 Brief Flash after answer before next question - after the user presses 'skip'(enter) or 'save'(space) it will briefly flash the entire unit circle with all the data before moving onto to next one, keep the current/previous highlighted with color, then flash to the next question with new highlighted triangle coloring on the next angle 
 
-Make it responsive - so press and hold to save, press once quick to skip to next 
+Make it responsive - so press and hold to save, press once quick to skip to next -
+
+I want the screensaver to run in the background, default to show the full unit circle, with degrees, radians,  then in quiz mode, highlight a section(with correct colors mentioned before), then wait 5 seconds, show a chart with all the values to the right and display the values for everything on that part of the unit circle for the triangle - the triangles and quadrants that show should be randomized - I want a chart displayed next to the unit circle (or below on small screens) with the values for sin, cos, tan, cosecant, secant, cotangent (with the color coding mentioned above) for the triangle being quizzed currently on the unit circle after the user 'skips' or the time has gone for the user to guess. 
+
+I don't know how you should draw and place the values? SVG with labels? figure out a way to do that using this unit circle image as a reference, it should be responsive and work on large and small screens
+
+You can replace any of the current code in this repo, it's all boilerplate
 
 I think the socratic triangle and arc length/sector quiz should be their own app - realistically I can make quite a few apps from trig, I want them to be used for passive learning/screensaver/quiz apps mainly to play in the background as I do other things - the active learning apps can wait.
 
