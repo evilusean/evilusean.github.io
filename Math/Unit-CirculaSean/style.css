@@ -32,6 +32,50 @@ body {
   flex: 3 1 420px;
   display: flex;
   justify-content: center;
+  position: relative;
+}
+
+.question-overlay {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(17, 23, 53, 0.95);
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--fg);
+  z-index: 10;
+  min-width: 300px;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  display: none;
+}
+
+.question-overlay.show {
+  display: block;
+}
+
+.question-overlay .formula {
+  font-size: 1.8rem;
+  margin: 0.5rem 0;
+  color: var(--accent);
+}
+
+.question-overlay .description {
+  font-size: 0.95rem;
+  color: var(--muted);
+  margin-top: 0.75rem;
+  line-height: 1.4;
+}
+
+.question-overlay .usage {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 0.5rem;
+  font-style: italic;
 }
 
 svg {
@@ -45,6 +89,27 @@ svg {
   gap: 0.5rem;
   align-items: center;
   margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.select {
+  background: #1b2342;
+  color: var(--fg);
+  border: 1px solid #273155;
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.select:hover {
+  border-color: var(--accent);
+}
+
+.select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .primary {
@@ -160,6 +225,8 @@ th {
 .svg-label.coord { fill: #e8ecf5; }
 .svg-label.deg { fill: #cfd7ef; }
 .svg-label.rad { fill: #9aa5c5; }
+.svg-label.coord-x { fill: var(--cos); }
+.svg-label.coord-y { fill: var(--sin); }
 .svg-label.anchor-mid { text-anchor: middle; }
 .svg-label.anchor-start { text-anchor: start; }
 .svg-label.anchor-end { text-anchor: end; }

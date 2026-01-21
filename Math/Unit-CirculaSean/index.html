@@ -9,6 +9,7 @@
 <body>
   <div class="app">
     <div class="svg-wrap">
+      <div id="question-overlay" class="question-overlay"></div>
       <svg id="unit-circle" viewBox="-1.35 -1.35 2.7 2.7" aria-label="Unit circle quiz"></svg>
     </div>
     <div class="panel">
@@ -18,7 +19,17 @@
         <span class="tag">x = cos(θ)</span>, <span class="tag">y = sin(θ)</span>, and <span class="tag">x² + y² = 1</span>.
       </div>
     <div class="controls">
-      <button id="quiz-toggle" class="primary">Start Quiz</button>
+      <select id="quiz-mode" class="select">
+        <option value="none">Screensaver</option>
+        <option value="unit-circle">Unit Circle Quiz</option>
+        <option value="coterminal">Coterminal Angles Quiz</option>
+        <option value="trig-functions">Trig Identities Quiz</option>
+      </select>
+      <select id="angle-format" class="select">
+        <option value="both">Degrees & Radians</option>
+        <option value="degrees">Degrees Only</option>
+        <option value="radians">Radians Only</option>
+      </select>
       <span id="phase" class="chip">Screensaver</span>
     </div>
       <div class="meta" id="status">Highlighting…</div>
@@ -29,7 +40,7 @@
       </table>
     <div class="review" id="review"></div>
     <div class="hint">
-      Space: save | Enter: skip | Cycle: 5s show, 5s guess, 5s reveal, flash full circle, repeat
+      Space: save | Enter/Right: next | Left: back | Esc: exit quiz
     </div>
     </div>
   </div>

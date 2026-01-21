@@ -4,7 +4,9 @@ const tagEl = document.getElementById('angle-tag');
 const tableBody = document.getElementById('table-body');
 const reviewEl = document.getElementById('review');
 const phaseEl = document.getElementById('phase');
-const quizToggle = document.getElementById('quiz-toggle');
+const quizModeSelect = document.getElementById('quiz-mode');
+const angleFormatSelect = document.getElementById('angle-format');
+const questionOverlay = document.getElementById('question-overlay');
 
 const angles = [
   { deg: 0, rad: '0', cos: 1, sin: 0, coord: '(1, 0)' },
@@ -27,12 +29,16 @@ const angles = [
 
 const state = {
   mode: 'idle', // idle | quiz
+  quizType: 'none', // none | unit-circle | coterminal | trig-functions
+  angleFormat: 'both', // both | degrees | radians
   phase: 'screensaver', // screensaver | intro | guess | reveal | flash
   timers: [],
   current: null,
   saved: [],
   history: [],
   index: -1, // points into history
+  coterminalTarget: null, // for coterminal quiz: the angle to find
+  currentIdentity: null, // for trig identities quiz
 };
 
 // Angles used in quiz mode (exclude axis-only, non–special-triangle angles)
@@ -190,11 +196,53 @@ function drawBase() {
 }
 
 function drawStaticLabels() {
-  // radians + degrees inside the circle; coordinates outside
+  // radians + degrees inside the circle; coordinates outside (color-coded)
   angles.forEach((a) => {
-    addLabel(a.deg, 0.72, a.rad, 'rad anchor-mid');
-    addLabel(a.deg, 0.90, `${a.deg}°`, 'deg anchor-mid');
-    addLabel(a.deg, 1.18, a.coord, 'coord anchor-mid');
+    // Show labels based on angle format preference
+    if (state.angleFormat === 'both' || state.angleFormat === 'radians') {
+      addLabel(a.deg, 0.72, a.rad, 'rad anchor-mid');
+    }
+    if (state.angleFormat === 'both' || state.angleFormat === 'degrees') {
+      addLabel(a.deg, 0.90, `${a.deg}°`, 'deg anchor-mid');
+    }
+    
+    // Color-code coordinates: x (cos) in blue, y (sin) in red
+    const coord = a.coord.replace('(', '').replace(')', '');
+    const [xPart, yPart] = coord.split(',').map((s) => s.trim());
+    const { x, y } = polar(1.18, a.deg);
+    
+    // Use tspan for proper alignment within a single text element
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', x);
+    text.setAttribute('y', y);
+    text.setAttribute('class', 'svg-label anchor-mid');
+    text.setAttribute('font-size', '0.11');
+    
+    const tspan1 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+    tspan1.textContent = '(';
+    text.appendChild(tspan1);
+    
+    const tspan2 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+    tspan2.setAttribute('class', 'coord-x');
+    tspan2.setAttribute('fill', '#1e6bf1'); // cos blue
+    tspan2.textContent = xPart;
+    text.appendChild(tspan2);
+    
+    const tspan3 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+    tspan3.textContent = ', ';
+    text.appendChild(tspan3);
+    
+    const tspan4 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+    tspan4.setAttribute('class', 'coord-y');
+    tspan4.setAttribute('fill', '#e03746'); // sin red
+    tspan4.textContent = yPart;
+    text.appendChild(tspan4);
+    
+    const tspan5 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+    tspan5.textContent = ')';
+    text.appendChild(tspan5);
+    
+    svg.appendChild(text);
   });
 }
 
@@ -302,7 +350,41 @@ function drawTriangle(angle, opts = {}) {
   if (showLabels) {
     addLabel(angle.deg, 0.23, `${angle.deg}°`, 'svg-label anchor-mid');
     addLabel(angle.deg, 0.34, `${angle.rad}`, 'rad anchor-mid');
-    addLabel(angle.deg, 1.20, angle.coord, 'coord anchor-mid');
+    
+    // Color-code coordinate label
+    const coord = angle.coord.replace('(', '').replace(')', '');
+    const [xPart, yPart] = coord.split(',').map((s) => s.trim());
+    const { x, y } = polar(1.20, angle.deg);
+    
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', x);
+    text.setAttribute('y', y);
+    text.setAttribute('class', 'svg-label anchor-mid');
+    text.setAttribute('font-size', '0.11');
+    
+    const tspan1 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+    tspan1.textContent = '(';
+    text.appendChild(tspan1);
+    
+    const tspan2 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+    tspan2.setAttribute('fill', '#1e6bf1'); // cos blue
+    tspan2.textContent = xPart;
+    text.appendChild(tspan2);
+    
+    const tspan3 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+    tspan3.textContent = ', ';
+    text.appendChild(tspan3);
+    
+    const tspan4 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+    tspan4.setAttribute('fill', '#e03746'); // sin red
+    tspan4.textContent = yPart;
+    text.appendChild(tspan4);
+    
+    const tspan5 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+    tspan5.textContent = ')';
+    text.appendChild(tspan5);
+    
+    svg.appendChild(text);
   }
 }
 
@@ -351,9 +433,13 @@ function showScreensaver() {
   clearTimers();
   state.phase = 'screensaver';
   state.mode = 'idle';
+  state.quizType = 'none';
   state.history = [];
   state.index = -1;
-  quizToggle.textContent = 'Start Quiz';
+  state.coterminalTarget = null;
+  state.currentIdentity = null;
+  quizModeSelect.value = 'none';
+  questionOverlay.classList.remove('show');
   phaseEl.textContent = 'Screensaver';
   tagEl.textContent = 'Click an angle to see values';
   tableBody.innerHTML = '';
@@ -366,17 +452,24 @@ function showScreensaver() {
 function showReveal(fromClick = false) {
   if (!state.current) return;
   setPhase('reveal', fromClick ? 'Selected angle' : 'Reveal: values shown');
-  const coord = state.current.coord.replace('(', '').replace(')', '');
-  const [xLabel, yLabel] = coord.split(',').map((s) => s.trim());
-  tagEl.innerHTML =
-    `<div>${state.current.deg}°</div>` +
-    `<div>${state.current.rad}</div>` +
-    `<div class="xy-wrapper">( <span class="xy-x">${xLabel}</span>, <span class="xy-y">${yLabel}</span> )</div>`;
+  
+  // Show angle first
+  tagEl.innerHTML = `<div>${state.current.deg}°</div><div>${state.current.rad}</div>`;
   renderTable(state.current);
   drawTriangle(state.current, { showLabels: true });
+  
+  // Then show (x,y) after brief delay
+  state.timers.push(setTimeout(() => {
+    const coord = state.current.coord.replace('(', '').replace(')', '');
+    const [xLabel, yLabel] = coord.split(',').map((s) => s.trim());
+    tagEl.innerHTML =
+      `<div>${state.current.deg}°</div>` +
+      `<div>${state.current.rad}</div>` +
+      `<div class="xy-wrapper">( <span class="xy-x">${xLabel}</span>, <span class="xy-y">${yLabel}</span> )</div>`;
+  }, 1500)); // 1.5 second delay
 }
 
-function startQuestion() {
+function startUnitCircleQuestion() {
   clearTimers();
   state.phase = 'intro';
   const next = quizAngles[Math.floor(Math.random() * quizAngles.length)];
@@ -407,14 +500,271 @@ function startQuestion() {
   }, 20000)); // reveal lasts ~10s (10s to 20s)
 
   state.timers.push(setTimeout(() => {
-    if (state.mode === 'quiz') startQuestion();
+    if (state.mode === 'quiz' && state.quizType === 'unit-circle') startUnitCircleQuestion();
   }, 25000)); // flash full circle for ~5s (20s to 25s)
 }
 
+function startCoterminalQuestion() {
+  clearTimers();
+  state.phase = 'guess';
+  
+  // Pick a random angle from our standard set
+  const baseAngle = angles[Math.floor(Math.random() * angles.length)];
+  
+  // Generate a coterminal angle by adding/subtracting multiples of 360° (or 2π)
+  const multiplier = Math.floor(Math.random() * 5) - 2; // -2 to +2
+  const coterminalDeg = baseAngle.deg + (multiplier * 360);
+  
+  // Store the target (the base angle on the unit circle)
+  state.coterminalTarget = baseAngle;
+  state.current = null; // user hasn't selected yet
+  
+  // Display the question prominently above the circle
+  const useRadians = state.angleFormat === 'radians' || 
+    (state.angleFormat === 'both' && Math.random() > 0.5);
+  
+  let questionText = '';
+  if (useRadians) {
+    // Convert to radians
+    const coterminalRad = (coterminalDeg * Math.PI) / 180;
+    // Format nicely
+    let radStr = '';
+    if (coterminalRad === 0) radStr = '0';
+    else if (coterminalRad === Math.PI) radStr = 'π';
+    else if (coterminalRad === -Math.PI) radStr = '-π';
+    else if (Math.abs(coterminalRad) === Math.PI / 2) radStr = coterminalRad > 0 ? 'π/2' : '-π/2';
+    else if (Math.abs(coterminalRad) === Math.PI * 2) radStr = coterminalRad > 0 ? '2π' : '-2π';
+    else {
+      // Try to simplify
+      const frac = coterminalRad / Math.PI;
+      if (Number.isInteger(frac)) {
+        radStr = frac === 1 ? 'π' : frac === -1 ? '-π' : `${frac}π`;
+      } else {
+        radStr = `${coterminalRad.toFixed(3)}`;
+      }
+    }
+    questionText = `Find coterminal angle: ${radStr} radians`;
+  } else {
+    questionText = `Find coterminal angle: ${coterminalDeg}°`;
+  }
+  
+  // Show large prominent question above circle
+  questionOverlay.textContent = questionText;
+  questionOverlay.classList.add('show');
+  
+  tagEl.textContent = '—';
+  tableBody.innerHTML = '';
+  statusEl.textContent = 'Click on the unit circle to select the coterminal angle';
+  
+  // Draw full circle with labels AND special triangles
+  drawBase();
+  drawSpecialTrianglesOverlay(false); // show triangles but not interactive
+  drawStaticLabels();
+  
+  // Highlight all possible coterminal positions (same point on circle)
+  const { x, y } = polar(1, baseAngle.deg);
+  const point = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  point.setAttribute('cx', x);
+  point.setAttribute('cy', y);
+  point.setAttribute('r', '0.035');
+  point.setAttribute('fill', '#40e0d0');
+  point.setAttribute('stroke', '#40e0d0');
+  point.setAttribute('stroke-width', '0.008');
+  svg.appendChild(point);
+  
+  // 10-second timeout to show answer
+  state.timers.push(setTimeout(() => {
+    if (state.mode === 'quiz' && state.quizType === 'coterminal' && !state.current) {
+      // User took too long, show answer
+      state.current = state.coterminalTarget;
+      statusEl.textContent = 'Time\'s up! Correct answer shown.';
+      tagEl.textContent = `${state.coterminalTarget.deg}° (${state.coterminalTarget.rad}) is coterminal`;
+      renderTable(state.coterminalTarget);
+      drawTriangle(state.coterminalTarget, { showLabels: true });
+      
+      // Auto-advance after showing answer
+      state.timers.push(setTimeout(() => {
+        if (state.mode === 'quiz' && state.quizType === 'coterminal') {
+          startCoterminalQuestion();
+        }
+      }, 3000));
+    }
+  }, 10000));
+}
+
+function checkCoterminalAnswer(selectedAngle) {
+  if (!state.coterminalTarget) return false;
+  // Angles are coterminal if they differ by multiples of 360°
+  const diff = Math.abs(selectedAngle.deg - state.coterminalTarget.deg);
+  const normalizedDiff = diff % 360;
+  return normalizedDiff === 0 || normalizedDiff === 360 - (diff % 360);
+}
+
+// Trig identities data
+const trigIdentities = [
+  {
+    name: 'Sum of Sine',
+    formula: 'sin(A + B) = sin A cos B + cos A sin B',
+    description: 'Expresses the sine of a sum of two angles in terms of sines and cosines of the individual angles.',
+    usage: 'Used to simplify trigonometric expressions, solve equations, and prove other identities. Essential for wave analysis and harmonic motion.'
+  },
+  {
+    name: 'Difference of Sine',
+    formula: 'sin(A - B) = sin A cos B - cos A sin B',
+    description: 'Expresses the sine of a difference of two angles.',
+    usage: 'Used in signal processing, phase shifts, and solving trigonometric equations involving angle differences.'
+  },
+  {
+    name: 'Sum of Cosine',
+    formula: 'cos(A + B) = cos A cos B - sin A sin B',
+    description: 'Expresses the cosine of a sum of two angles.',
+    usage: 'Fundamental for compound angle problems, vector mathematics, and analyzing periodic functions.'
+  },
+  {
+    name: 'Difference of Cosine',
+    formula: 'cos(A - B) = cos A cos B + sin A sin B',
+    description: 'Expresses the cosine of a difference of two angles.',
+    usage: 'Used in coordinate transformations, rotation matrices, and solving trigonometric equations.'
+  },
+  {
+    name: 'Sum of Tangent',
+    formula: 'tan(A + B) = (tan A + tan B) / (1 - tan A tan B)',
+    description: 'Expresses the tangent of a sum of two angles.',
+    usage: 'Useful for simplifying complex tangent expressions and solving angle addition problems.'
+  },
+  {
+    name: 'Double Angle Sine',
+    formula: 'sin(2θ) = 2 sin θ cos θ',
+    description: 'Expresses the sine of double an angle in terms of the original angle.',
+    usage: 'Essential for power reduction formulas, integration techniques, and solving equations with double angles.'
+  },
+  {
+    name: 'Double Angle Cosine',
+    formula: 'cos(2θ) = cos² θ - sin² θ = 2cos² θ - 1 = 1 - 2sin² θ',
+    description: 'Expresses the cosine of double an angle in multiple equivalent forms.',
+    usage: 'Used in power reduction, integration, and solving trigonometric equations. Critical for Fourier analysis.'
+  },
+  {
+    name: 'Double Angle Tangent',
+    formula: 'tan(2θ) = 2 tan θ / (1 - tan² θ)',
+    description: 'Expresses the tangent of double an angle.',
+    usage: 'Useful for simplifying expressions and solving equations involving double angles.'
+  },
+  {
+    name: 'Pythagorean Identity',
+    formula: 'sin² θ + cos² θ = 1',
+    description: 'Fundamental identity relating sine and cosine, derived from the unit circle.',
+    usage: 'Basis for all other identities. Used to convert between sin and cos, simplify expressions, and prove theorems.'
+  },
+  {
+    name: 'Secant Identity',
+    formula: '1 + tan² θ = sec² θ',
+    description: 'Relates tangent and secant functions.',
+    usage: 'Used in integration, solving equations, and converting between trigonometric forms.'
+  },
+  {
+    name: 'Cosecant Identity',
+    formula: '1 + cot² θ = csc² θ',
+    description: 'Relates cotangent and cosecant functions.',
+    usage: 'Useful for simplifying expressions and solving trigonometric equations.'
+  },
+  {
+    name: 'Half Angle Sine',
+    formula: 'sin(θ/2) = ±√[(1 - cos θ) / 2]',
+    description: 'Expresses the sine of half an angle.',
+    usage: 'Used in power reduction, solving equations, and integration techniques.'
+  },
+  {
+    name: 'Half Angle Cosine',
+    formula: 'cos(θ/2) = ±√[(1 + cos θ) / 2]',
+    description: 'Expresses the cosine of half an angle.',
+    usage: 'Essential for bisection problems, power reduction, and solving trigonometric equations.'
+  },
+  {
+    name: 'Product to Sum - Sine Cosine',
+    formula: 'sin A cos B = ½[sin(A + B) + sin(A - B)]',
+    description: 'Converts a product of sine and cosine into a sum.',
+    usage: 'Used in integration, Fourier series, and simplifying products of trigonometric functions.'
+  },
+  {
+    name: 'Product to Sum - Cosine Cosine',
+    formula: 'cos A cos B = ½[cos(A + B) + cos(A - B)]',
+    description: 'Converts a product of cosines into a sum.',
+    usage: 'Essential for signal processing, wave interference analysis, and integration techniques.'
+  },
+  {
+    name: 'Sum to Product - Sine',
+    formula: 'sin A + sin B = 2 sin[(A + B)/2] cos[(A - B)/2]',
+    description: 'Converts a sum of sines into a product.',
+    usage: 'Used to simplify expressions, solve equations, and analyze wave interference patterns.'
+  },
+  {
+    name: 'Sum to Product - Cosine',
+    formula: 'cos A + cos B = 2 cos[(A + B)/2] cos[(A - B)/2]',
+    description: 'Converts a sum of cosines into a product.',
+    usage: 'Useful for simplifying trigonometric expressions and solving equations.'
+  }
+];
+
+function startTrigIdentityQuestion() {
+  clearTimers();
+  state.phase = 'guess';
+  
+  // Pick a random identity
+  const identity = trigIdentities[Math.floor(Math.random() * trigIdentities.length)];
+  state.currentIdentity = identity;
+  
+  // Show question prominently above circle
+  questionOverlay.innerHTML = `
+    <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">${identity.name}</div>
+    <div class="formula">${identity.formula}</div>
+  `;
+  questionOverlay.classList.add('show');
+  
+  tagEl.textContent = '—';
+  tableBody.innerHTML = '';
+  statusEl.textContent = 'Think about what this identity means...';
+  
+  // Draw full circle
+  drawBase();
+  drawStaticLabels();
+  
+  // Wait 5 seconds, then show answer
+  state.timers.push(setTimeout(() => {
+    questionOverlay.innerHTML = `
+      <div style="font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--accent);">${identity.name}</div>
+      <div class="formula">${identity.formula}</div>
+      <div class="description">${identity.description}</div>
+      <div class="usage">${identity.usage}</div>
+    `;
+    statusEl.textContent = 'Identity explained';
+    
+    // Auto-advance after showing answer
+    state.timers.push(setTimeout(() => {
+      if (state.mode === 'quiz' && state.quizType === 'trig-functions') {
+        startTrigIdentityQuestion();
+      }
+    }, 8000)); // Show answer for 8 seconds
+  }, 5000));
+}
+
 function startQuiz() {
+  const quizType = quizModeSelect.value;
+  if (quizType === 'none') {
+    stopQuiz();
+    return;
+  }
+  
   state.mode = 'quiz';
-  quizToggle.textContent = 'Stop Quiz';
-  startQuestion();
+  state.quizType = quizType;
+  
+  if (quizType === 'unit-circle') {
+    startUnitCircleQuestion();
+  } else if (quizType === 'coterminal') {
+    startCoterminalQuestion();
+  } else if (quizType === 'trig-functions') {
+    startTrigIdentityQuestion();
+  }
 }
 
 function stopQuiz() {
@@ -422,11 +772,36 @@ function stopQuiz() {
   showScreensaver();
 }
 
-quizToggle.addEventListener('click', () => {
+quizModeSelect.addEventListener('change', () => {
   if (state.mode === 'quiz') {
     stopQuiz();
-  } else {
+  }
+  const quizType = quizModeSelect.value;
+  if (quizType !== 'none') {
     startQuiz();
+  }
+});
+
+angleFormatSelect.addEventListener('change', () => {
+  state.angleFormat = angleFormatSelect.value;
+  if (state.mode === 'quiz') {
+    // Redraw current view with new format
+    if (state.quizType === 'unit-circle' && state.current) {
+      drawTriangle(state.current, { showLabels: false });
+    } else if (state.quizType === 'coterminal') {
+      startCoterminalQuestion();
+    } else if (state.quizType === 'trig-functions') {
+      // Angle format doesn't affect trig identities quiz, but redraw circle
+      drawBase();
+      drawStaticLabels();
+    } else {
+      drawBase();
+      drawStaticLabels();
+    }
+  } else {
+    drawBase();
+    drawSpecialTrianglesOverlay(true);
+    drawStaticLabels();
   }
 });
 
@@ -440,12 +815,19 @@ document.addEventListener('keydown', (e) => {
   }
   if (e.code === 'Enter') {
     e.preventDefault();
-    if (state.mode === 'quiz') startQuestion();
+    if (state.mode === 'quiz') {
+      if (state.quizType === 'unit-circle') startUnitCircleQuestion();
+      else if (state.quizType === 'coterminal') startCoterminalQuestion();
+      else if (state.quizType === 'trig-functions') startTrigIdentityQuestion();
+    }
   }
   if (e.code === 'ArrowRight') {
     e.preventDefault();
-    if (state.mode === 'quiz') startQuestion();
-    else {
+    if (state.mode === 'quiz') {
+      if (state.quizType === 'unit-circle') startUnitCircleQuestion();
+      else if (state.quizType === 'coterminal') startCoterminalQuestion();
+      else if (state.quizType === 'trig-functions') startTrigIdentityQuestion();
+    } else {
       // advance history by picking a new random
       state.current = angles[Math.floor(Math.random() * angles.length)];
       state.history.push(state.current);
@@ -492,12 +874,38 @@ function nearestAngleFromPoint(x, y) {
 }
 
 svg.addEventListener('click', (evt) => {
-  if (state.mode === 'quiz') return;
   const p = svgPointFromEvent(evt);
   if (!p) return;
   // ignore clicks near center (avoid random picks)
   const r = Math.hypot(p.x, p.y);
   if (r < 0.35) return;
+  
+  if (state.mode === 'quiz' && state.quizType === 'coterminal') {
+    // Coterminal quiz: check if user clicked the correct angle
+    const selected = nearestAngleFromPoint(p.x, p.y);
+    if (checkCoterminalAnswer(selected)) {
+      state.current = selected;
+      questionOverlay.classList.remove('show');
+      statusEl.textContent = 'Correct! ✓';
+      tagEl.textContent = `${selected.deg}° (${selected.rad}) is coterminal`;
+      renderTable(selected);
+      drawTriangle(selected, { showLabels: true });
+      
+      // Auto-advance after showing answer
+      state.timers.push(setTimeout(() => {
+        if (state.mode === 'quiz' && state.quizType === 'coterminal') {
+          startCoterminalQuestion();
+        }
+      }, 3000));
+    } else {
+      statusEl.textContent = `Incorrect. Try again! (Correct: ${state.coterminalTarget.deg}° / ${state.coterminalTarget.rad})`;
+    }
+    return;
+  }
+  
+  if (state.mode === 'quiz') return; // other quiz modes don't allow clicking
+  
+  // Screensaver mode: show selected angle
   state.current = nearestAngleFromPoint(p.x, p.y);
   showReveal();
 });
