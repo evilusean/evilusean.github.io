@@ -3,10 +3,10 @@ const statusEl = document.getElementById('status');
 const tagEl = document.getElementById('angle-tag');
 const tableBody = document.getElementById('table-body');
 const reviewEl = document.getElementById('review');
-const phaseEl = document.getElementById('phase');
 const quizModeSelect = document.getElementById('quiz-mode');
 const angleFormatSelect = document.getElementById('angle-format');
 const questionOverlay = document.getElementById('question-overlay');
+const startStopBtn = document.getElementById('start-stop');
 
 const angles = [
   { deg: 0, rad: '0', cos: 1, sin: 0, coord: '(1, 0)' },
@@ -425,7 +425,6 @@ function renderTable(a) {
 
 function setPhase(phase, message) {
   state.phase = phase;
-  phaseEl.textContent = phase === 'screensaver' ? 'Screensaver' : phase.toUpperCase();
   if (message) statusEl.textContent = message;
 }
 
@@ -440,7 +439,7 @@ function showScreensaver() {
   state.currentIdentity = null;
   quizModeSelect.value = 'none';
   questionOverlay.classList.remove('show');
-  phaseEl.textContent = 'Screensaver';
+  startStopBtn.textContent = 'Start';
   tagEl.textContent = 'Click an angle to see values';
   tableBody.innerHTML = '';
   statusEl.textContent = 'Full unit circle';
@@ -605,104 +604,104 @@ const trigIdentities = [
   {
     name: 'Sum of Sine',
     formula: 'sin(A + B) = sin A cos B + cos A sin B',
-    description: 'Expresses the sine of a sum of two angles in terms of sines and cosines of the individual angles.',
-    usage: 'Used to simplify trigonometric expressions, solve equations, and prove other identities. Essential for wave analysis and harmonic motion.'
+    description: 'Breaks a sine of a combined angle into pieces you can evaluate from known values of sin and cos.',
+    usage: 'Use when you see sin(… + …) and you want exact values or to expand an expression.\nExample: sin(75°)=sin(45°+30°)= (√2/2)(√3/2) + (√2/2)(1/2).'
   },
   {
     name: 'Difference of Sine',
     formula: 'sin(A - B) = sin A cos B - cos A sin B',
-    description: 'Expresses the sine of a difference of two angles.',
-    usage: 'Used in signal processing, phase shifts, and solving trigonometric equations involving angle differences.'
+    description: 'Turns sin of a difference into a combination of sin/cos terms.',
+    usage: 'Use when you see sin(… − …) or need an exact value like sin(15°).\nExample: sin(15°)=sin(45°−30°)=(√2/2)(√3/2) − (√2/2)(1/2).'
   },
   {
     name: 'Sum of Cosine',
     formula: 'cos(A + B) = cos A cos B - sin A sin B',
-    description: 'Expresses the cosine of a sum of two angles.',
-    usage: 'Fundamental for compound angle problems, vector mathematics, and analyzing periodic functions.'
+    description: 'Expands cos of a sum into products of cos and sin.',
+    usage: 'Use when you see cos(… + …) or want an exact value.\nExample: cos(75°)=cos(45°+30°)= (√2/2)(√3/2) − (√2/2)(1/2).'
   },
   {
     name: 'Difference of Cosine',
     formula: 'cos(A - B) = cos A cos B + sin A sin B',
-    description: 'Expresses the cosine of a difference of two angles.',
-    usage: 'Used in coordinate transformations, rotation matrices, and solving trigonometric equations.'
+    description: 'Expands cos of a difference into products of cos and sin.',
+    usage: 'Use when you see cos(… − …) or want an exact value.\nExample: cos(15°)=cos(45°−30°)= (√2/2)(√3/2) + (√2/2)(1/2).'
   },
   {
     name: 'Sum of Tangent',
     formula: 'tan(A + B) = (tan A + tan B) / (1 - tan A tan B)',
-    description: 'Expresses the tangent of a sum of two angles.',
-    usage: 'Useful for simplifying complex tangent expressions and solving angle addition problems.'
+    description: 'Computes tangent of a sum using tangents of the parts.',
+    usage: 'Use when you see tan(… + …) or want an exact value.\nExample: tan(75°) = (tan45°+tan30°)/(1−tan45°tan30°) = (1+1/√3)/(1−1/√3).'
   },
   {
     name: 'Double Angle Sine',
     formula: 'sin(2θ) = 2 sin θ cos θ',
-    description: 'Expresses the sine of double an angle in terms of the original angle.',
-    usage: 'Essential for power reduction formulas, integration techniques, and solving equations with double angles.'
+    description: 'Rewrites sin(2θ) as a product of sinθ and cosθ.',
+    usage: 'Use when you see sin(2θ) and want to replace it with sin/cos (often for simplification or integration).\nExample: If sinθ=3/5 and cosθ=4/5, then sin(2θ)=2(3/5)(4/5)=24/25.'
   },
   {
     name: 'Double Angle Cosine',
     formula: 'cos(2θ) = cos² θ - sin² θ = 2cos² θ - 1 = 1 - 2sin² θ',
-    description: 'Expresses the cosine of double an angle in multiple equivalent forms.',
-    usage: 'Used in power reduction, integration, and solving trigonometric equations. Critical for Fourier analysis.'
+    description: 'Multiple equivalent ways to rewrite cos(2θ), letting you choose the form that matches what you know.',
+    usage: 'Use the form that fits your given info (only sin, only cos, or both).\nExample: If you know sinθ only, use cos(2θ)=1−2sin²θ.\nIf sinθ=3/5, cos(2θ)=1−2(9/25)=7/25.'
   },
   {
     name: 'Double Angle Tangent',
     formula: 'tan(2θ) = 2 tan θ / (1 - tan² θ)',
-    description: 'Expresses the tangent of double an angle.',
-    usage: 'Useful for simplifying expressions and solving equations involving double angles.'
+    description: 'Rewrites tan(2θ) in terms of tanθ.',
+    usage: 'Use when you have tanθ and need tan(2θ) without computing sin/cos.\nExample: If tanθ=1/2, tan(2θ)= (2·1/2)/(1−1/4)=1/(3/4)=4/3.'
   },
   {
     name: 'Pythagorean Identity',
     formula: 'sin² θ + cos² θ = 1',
-    description: 'Fundamental identity relating sine and cosine, derived from the unit circle.',
-    usage: 'Basis for all other identities. Used to convert between sin and cos, simplify expressions, and prove theorems.'
+    description: 'The unit-circle relationship that lets you swap between sin and cos.',
+    usage: 'Use to eliminate sin² or cos², or to find one trig value from the other.\nExample: If cosθ=4/5, then sin²θ=1−16/25=9/25 ⇒ sinθ=±3/5.'
   },
   {
     name: 'Secant Identity',
     formula: '1 + tan² θ = sec² θ',
-    description: 'Relates tangent and secant functions.',
-    usage: 'Used in integration, solving equations, and converting between trigonometric forms.'
+    description: 'Pythagorean-style identity for tangent/secant.',
+    usage: 'Use to replace sec²θ with 1+tan²θ (or vice versa), common in derivatives/integrals.\nExample: ∫sec²θ dθ = ∫(1+tan²θ)dθ if you’re substituting u=tanθ.'
   },
   {
     name: 'Cosecant Identity',
     formula: '1 + cot² θ = csc² θ',
-    description: 'Relates cotangent and cosecant functions.',
-    usage: 'Useful for simplifying expressions and solving trigonometric equations.'
+    description: 'Pythagorean-style identity for cotangent/cosecant.',
+    usage: 'Use to replace csc²θ with 1+cot²θ, often when substituting u=cotθ.\nExample: d/dθ(cotθ)=−csc²θ, and csc²θ=1+cot²θ helps rewrite everything in cot.'
   },
   {
     name: 'Half Angle Sine',
     formula: 'sin(θ/2) = ±√[(1 - cos θ) / 2]',
-    description: 'Expresses the sine of half an angle.',
-    usage: 'Used in power reduction, solving equations, and integration techniques.'
+    description: 'Computes sin(θ/2) from cosθ (useful when halving angles).',
+    usage: 'Use when you need sin(θ/2) but only know cosθ.\nExample: If cosθ=1/2, then sin(θ/2)=±√[(1−1/2)/2]=±√(1/4)=±1/2 (sign depends on quadrant of θ/2).'
   },
   {
     name: 'Half Angle Cosine',
     formula: 'cos(θ/2) = ±√[(1 + cos θ) / 2]',
-    description: 'Expresses the cosine of half an angle.',
-    usage: 'Essential for bisection problems, power reduction, and solving trigonometric equations.'
+    description: 'Computes cos(θ/2) from cosθ.',
+    usage: 'Use when you need cos(θ/2) from a known cosθ.\nExample: If cosθ=1/2, then cos(θ/2)=±√[(1+1/2)/2]=±√(3/4)=±√3/2 (sign depends on quadrant).'
   },
   {
     name: 'Product to Sum - Sine Cosine',
     formula: 'sin A cos B = ½[sin(A + B) + sin(A - B)]',
-    description: 'Converts a product of sine and cosine into a sum.',
-    usage: 'Used in integration, Fourier series, and simplifying products of trigonometric functions.'
+    description: 'Turns a product into a sum (great for integration and signal “mixing” problems).',
+    usage: 'Use when you see a product like sinA·cosB and want to integrate or simplify.\nExample: ∫sinx cos(3x) dx → ½∫[sin(4x)+sin(−2x)] dx.'
   },
   {
     name: 'Product to Sum - Cosine Cosine',
     formula: 'cos A cos B = ½[cos(A + B) + cos(A - B)]',
-    description: 'Converts a product of cosines into a sum.',
-    usage: 'Essential for signal processing, wave interference analysis, and integration techniques.'
+    description: 'Turns cosA·cosB into a sum of cosines.',
+    usage: 'Use to simplify products or integrate.\nExample: ∫cosx cos(3x) dx → ½∫[cos(4x)+cos(−2x)] dx = ½∫[cos(4x)+cos(2x)] dx.'
   },
   {
     name: 'Sum to Product - Sine',
     formula: 'sin A + sin B = 2 sin[(A + B)/2] cos[(A - B)/2]',
-    description: 'Converts a sum of sines into a product.',
-    usage: 'Used to simplify expressions, solve equations, and analyze wave interference patterns.'
+    description: 'Turns a sum into a product (useful for factoring and solving).',
+    usage: 'Use when you want to factor or find zeros.\nExample: sinx+sin3x = 2 sin(2x) cos(x). Now zeros come from sin(2x)=0 or cos(x)=0.'
   },
   {
     name: 'Sum to Product - Cosine',
     formula: 'cos A + cos B = 2 cos[(A + B)/2] cos[(A - B)/2]',
-    description: 'Converts a sum of cosines into a product.',
-    usage: 'Useful for simplifying trigonometric expressions and solving equations.'
+    description: 'Factors a sum of cosines into a product.',
+    usage: 'Use for factoring and solving.\nExample: cosx+cos3x = 2 cos(2x) cos(x). This is easier to set equal to 0 than the original.'
   }
 ];
 
@@ -757,6 +756,7 @@ function startQuiz() {
   
   state.mode = 'quiz';
   state.quizType = quizType;
+  startStopBtn.textContent = 'Stop';
   
   if (quizType === 'unit-circle') {
     startUnitCircleQuestion();
@@ -773,13 +773,30 @@ function stopQuiz() {
 }
 
 quizModeSelect.addEventListener('change', () => {
+  // Don't auto-start; just stop any running quiz and update UI.
+  if (state.mode === 'quiz') stopQuiz();
+  if (quizModeSelect.value === 'none') {
+    showScreensaver();
+  } else {
+    startStopBtn.textContent = 'Start';
+    statusEl.textContent = 'Ready. Press Start.';
+    // Draw default view for that mode
+    drawBase();
+    drawSpecialTrianglesOverlay(true);
+    drawStaticLabels();
+  }
+});
+
+startStopBtn.addEventListener('click', () => {
   if (state.mode === 'quiz') {
     stopQuiz();
+    return;
   }
-  const quizType = quizModeSelect.value;
-  if (quizType !== 'none') {
-    startQuiz();
+  if (quizModeSelect.value === 'none') {
+    showScreensaver();
+    return;
   }
+  startQuiz();
 });
 
 angleFormatSelect.addEventListener('change', () => {
