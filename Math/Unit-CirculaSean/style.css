@@ -1,24 +1,165 @@
+:root {
+  --cos: #1e6bf1;
+  --sin: #e03746;
+  --tan: #8c3be0;
+  --sec: #6fa7ff;
+  --csc: #ff9da5;
+  --cot: #b689ff;
+  --bg: #0b1021;
+  --fg: #e8ecf5;
+  --muted: #98a5c0;
+  --accent: #e04f7c;
+}
+
+* { box-sizing: border-box; }
+
 body {
-    font-family: sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
-    background-color: #f4f4f9;
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
 }
 
-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 5px;
+.app {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
 }
 
-button:hover {
-    background-color: #0056b3;
+.svg-wrap {
+  flex: 1 1 320px;
+  display: flex;
+  justify-content: center;
 }
+
+svg {
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+}
+
+.controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.primary:hover {
+  opacity: 0.9;
+}
+
+.chip {
+  display: inline-block;
+  background: #1b2342;
+  color: var(--fg);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  border: 1px solid #273155;
+}
+
+.panel {
+  flex: 1 1 280px;
+  min-width: 260px;
+  background: #111735;
+  border: 1px solid #1f2740;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+h1 {
+  margin: 0 0 0.35rem;
+  font-size: 1.25rem;
+}
+
+.meta {
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  border-radius: 8px;
+  background: #1b2342;
+  color: var(--fg);
+  font-size: 0.9rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.35rem 0.4rem;
+  border-bottom: 1px solid #1f2740;
+}
+
+th {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.row-cos { color: var(--cos); }
+.row-sin { color: var(--sin); }
+.row-tan { color: var(--tan); }
+.row-sec { color: var(--sec); }
+.row-csc { color: var(--csc); }
+.row-cot { color: var(--cot); }
+
+.review {
+  margin-top: 1rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.pill {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  margin: 0.2rem;
+  border-radius: 999px;
+  background: #1d2645;
+  color: var(--fg);
+}
+
+.hint {
+  margin-top: 0.5rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.svg-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  /* Use SVG user units (viewBox-relative) via script-set font-size;
+     keep this small as a fallback */
+  font-size: 0.04px;
+  fill: #e8ecf5;
+  user-select: none;
+  pointer-events: none;
+}
+
+.svg-label.muted { fill: #9aa5c5; }
+.svg-label.coord { fill: #e8ecf5; }
+.svg-label.deg { fill: #cfd7ef; }
+.svg-label.rad { fill: #9aa5c5; }
+.svg-label.anchor-mid { text-anchor: middle; }
+.svg-label.anchor-start { text-anchor: start; }
+.svg-label.anchor-end { text-anchor: end; }
