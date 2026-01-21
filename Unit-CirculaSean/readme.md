@@ -1,5 +1,18 @@
 I want to build an app for learning the unit circle and trig identities
 
+Start with just one quiz mode, the unit circle, which will display as the default, then highlight an area in red, give the user a few seconds
+then display the angle in degrees, radians, with the (x, y) values and then display a table of the cosine, sine, tangent, secant, cosecant, cotangent
+If the user presses 'Space' save it to a list so the user can review,
+Later on add other quiz modes, where you can ask the angle in degrees or radians and get the values for (x,y) or cosine, sine, tangent, secant, cosecant, cotangent - I should have this stuff memorized by now, but I don't, hence the app
+
+After doing that, add the Trig Identities quiz mode, reciprocal trig ratios(SOHCAHTOA Vs Sine Vs Cosecant - Cosine Vs Secant, Tangent vs CoTangent), etc - crawl -> walk -> run
+
+ColorCoding/Highlight - 
+
+Brief Flash after answer before next question - 
+
+I think the socratic triangle and arc length/sector quiz should be their own app - realistically I can make quite a few apps from trig, I want them to be used for passive learning/screensaver/quiz apps mainly to play in the background as I do other things - the active learning apps can wait.
+
 - Will require 3 quiz modes, one for the angles/ratios on the unit circle and one for the trig identities, and one for SOHCAHTOA values
 
 **Default Mode** : Have the unit circle with the special triangles ratios/angles (1/2, \frac{\sqrt{2}}{2}, \frac{\sqrt{3}}{2}, etc) for each angle with positive or negative, that can be changed from radians to degrees, you can fill in the blanks or be quizzed by highlighting a section of the unit circle, press 'space' to save to a list, 
