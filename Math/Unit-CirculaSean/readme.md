@@ -105,7 +105,9 @@ https://github.com/evilusean/Khan/blob/main/Review/TOCT/2026-TOCT-Review-Precalc
 
 Future Sean Problems / TODOs :
 Ran out of tokens, last prompt failed, saving here for posterity :
-'enter' to save, 'space' to pause, change the keys. 'screensaver' mode should go through each special right triangle starting from 30 dgrees in quadrant 1 and go around squentially till quadrant 4 and starting over again displaying each special right triangle and it's values in the chart - the unit circle quiz should display the angles before the (x, y) and values in the chart, can you maybe add some animation? when it changes to the next one (like filling up the arc then display the angle for unit circle quiz, maybe have the 'flash full unit circle' actually flash it with light/glowing effects - also the trig identities quiz, make sure you display the answer longer (like 30 seconds) 
+'enter' to save, 'space' to pause, change the keys. 'screensaver' mode should go through each special right triangle starting from 30 degrees in quadrant 1 and go around squentially till quadrant 4 and starting over again displaying each special right triangle and it's values in the chart - the unit circle quiz should display the angles before the (x, y) and values in the chart, can you maybe add some animation? when it changes to the next one (like filling up the arc then display the angle for unit circle quiz, maybe have the 'flash full unit circle' actually flash it with light/glowing effects - also the trig identities quiz, make sure you display the answer longer (like 30 seconds)
+
+
 
 
 
