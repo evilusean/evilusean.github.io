@@ -493,23 +493,54 @@ function startScreensaver() {
   questionOverlay.classList.remove('show');
   startStopBtn.textContent = 'Stop';
   tableBody.innerHTML = '';
-  statusEl.textContent = 'Screensaver: Cycling through special triangles';
+  statusEl.textContent = 'Screensaver: Cycling through all angles';
   
-  // Cycle through special triangles: 30, 45, 60 in each quadrant
-  const specialTriangles = [30, 45, 60, 120, 135, 150, 210, 225, 240, 300, 315, 330];
+  // Cycle through ALL angles including axis angles (0, 90, 180, 270) and special triangles
+  const screensaverAngles = [0, 30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330];
   state.screensaverIndex = 0; // Reset index
   
   function showNextTriangle() {
     if (state.mode !== 'idle') return; // stop if quiz started
     
-    const angle = specialTriangles[state.screensaverIndex % specialTriangles.length];
+    // Check if we've completed a full rotation (16 angles)
+    if (state.screensaverIndex > 0 && state.screensaverIndex % screensaverAngles.length === 0) {
+      // Show full circle flash
+      statusEl.textContent = 'Full rotation complete - showing all angles';
+      drawBase();
+      drawSpecialTrianglesOverlay(false);
+      drawStaticLabels();
+      // Add flash effect
+      svg.classList.add('flash-glow');
+      state.timers.push(setTimeout(() => {
+        svg.classList.remove('flash-glow');
+      }, 1000));
+      
+      // Wait 3 seconds before continuing to next triangle
+      state.timers.push(setTimeout(() => {
+        if (state.mode !== 'idle') return;
+        continueScreensaver();
+      }, 3000));
+    } else {
+      continueScreensaver();
+    }
+  }
+  
+  function continueScreensaver() {
+    if (state.mode !== 'idle') return;
+    
+    const angle = screensaverAngles[state.screensaverIndex % screensaverAngles.length];
     state.current = angles.find(a => a.deg === angle);
     state.screensaverIndex++;
     
-    drawTriangle(state.current, { showLabels: true });
-    tagEl.innerHTML = `<div>${state.current.deg}°</div><div>${state.current.rad}</div>`;
+    drawTriangle(state.current, { showLabels: true, showAnswers: true });
+    const coord = state.current.coord.replace('(', '').replace(')', '');
+    const [xLabel, yLabel] = coord.split(',').map((s) => s.trim());
+    tagEl.innerHTML = 
+      `<div>${state.current.deg}°</div>` +
+      `<div>${state.current.rad}</div>` +
+      `<div class="xy-wrapper">( <span class="xy-x">${xLabel}</span>, <span class="xy-y">${yLabel}</span> )</div>`;
     renderTable(state.current);
-    statusEl.textContent = `Special Triangle: ${state.current.deg}°`;
+    statusEl.textContent = `Angle: ${state.current.deg}°`;
     
     // Advance to next after 4 seconds
     state.timers.push(setTimeout(showNextTriangle, 4000));
@@ -556,20 +587,20 @@ function startUnitCircleQuestion() {
   }
   tagEl.textContent = '—';
   tableBody.innerHTML = '';
-  setPhase('intro', 'Observe the highlighted triangle (3s)');
+  setPhase('intro', 'Observe the highlighted triangle (4s)');
   drawTriangle(state.current, { showLabels: false });
 
-  // After 3 seconds, show the angle ONLY on the circle (no answers yet)
+  // After 4 seconds, show the angle ONLY on the circle (no answers yet)
   state.timers.push(setTimeout(() => {
-    setPhase('guess', 'Guess the angle - revealed for 5s');
+    setPhase('guess', 'Guess the angle - revealed for 6s');
     // Redraw triangle with angle labels visible (only for this triangle, no (x,y) yet)
     drawTriangle(state.current, { showLabels: true, showAnswers: false });
     // Show ONLY angle, hide table and xy coordinates
     tagEl.innerHTML = `<div class="angle-reveal-pulse">${state.current.deg}°</div><div>${state.current.rad}</div>`;
     tableBody.innerHTML = '';
-  }, 3000));
+  }, 4000));
 
-  // After 8 seconds total (5 second angle-only window), show (x,y) and table
+  // After 10 seconds total (6 second angle-only window), show (x,y) and table
   state.timers.push(setTimeout(() => {
     setPhase('reveal', 'Coordinates and values revealed');
     // Redraw the triangle with all answer information
@@ -581,9 +612,9 @@ function startUnitCircleQuestion() {
       `<div>${state.current.rad}</div>` +
       `<div class="xy-wrapper">( <span class="xy-x">${xLabel}</span>, <span class="xy-y">${yLabel}</span> )</div>`;
     renderTable(state.current);
-  }, 8000));
+  }, 10000));
 
-  // After 12 seconds, flash full circle
+  // After 24 seconds, flash full circle
   state.timers.push(setTimeout(() => {
     setPhase('flash', 'Full circle flash');
     drawBase();
@@ -593,15 +624,15 @@ function startUnitCircleQuestion() {
     svg.classList.add('flash-glow');
     state.timers.push(setTimeout(() => {
       svg.classList.remove('flash-glow');
-    }, 500));
-  }, 12000));
+    }, 1000));
+  }, 24000));
 
   // Auto-advance after reveal phase
   state.timers.push(setTimeout(() => {
     if (state.mode === 'quiz' && state.quizType === 'unit-circle') {
       startUnitCircleQuestion();
     }
-  }, 17000));
+  }, 34000));
 }
 
 function startCoterminalQuestion() {
