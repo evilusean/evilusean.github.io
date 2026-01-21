@@ -9,7 +9,9 @@ After doing that, add the Trig Identities quiz mode, reciprocal trig ratios(SOHC
 
 ColorCoding/Highlight - color code the (x,y) on the triangle being quizzed and the (cosine, sine) are (blue, red) and tangent is purple(mixture of blue and red) - trig function reciprocals (cosecant = light red, secant = light blue, tangent = light purple) so the user can infer the reciprocal relationship and that the x = cosine and y = sine visually through color coding
 
-Brief Flash after answer before next question - 
+Brief Flash after answer before next question - after the user presses 'skip'(enter) or 'save'(space) it will briefly flash the entire unit circle with all the data before moving onto to next one, keep the current/previous highlighted with color, then flash to the next question with new highlighted triangle coloring on the next angle 
+
+Make it responsive - so press and hold to save, press once quick to skip to next 
 
 I think the socratic triangle and arc length/sector quiz should be their own app - realistically I can make quite a few apps from trig, I want them to be used for passive learning/screensaver/quiz apps mainly to play in the background as I do other things - the active learning apps can wait.
 
