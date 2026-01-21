@@ -48,9 +48,81 @@ function trigData(a) {
   return { cos, sin, tan, sec, csc, cot };
 }
 
+function signPrefix(s, sign) {
+  if (s === '0' || s === 'undef') return s;
+  if (sign >= 0) return s;
+  return s.startsWith('-') ? s : `-${s}`;
+}
+
+function exactTrigStrings(deg) {
+  // Returns exact trig values for standard angles as strings.
+  // Uses √ format (e.g., √3/2). "undef" for undefined.
+  const d = ((deg % 360) + 360) % 360;
+  const q = d === 0 || d === 90 || d === 180 || d === 270 ? null : Math.floor(d / 90) + 1;
+  const ref = d <= 90 ? d : d <= 180 ? 180 - d : d <= 270 ? d - 180 : 360 - d;
+
+  const base = {
+    0: { cos: '1', sin: '0', tan: '0' },
+    30: { cos: '√3/2', sin: '1/2', tan: '1/√3' },
+    45: { cos: '√2/2', sin: '√2/2', tan: '1' },
+    60: { cos: '1/2', sin: '√3/2', tan: '√3' },
+    90: { cos: '0', sin: '1', tan: 'undef' },
+  }[ref];
+
+  if (!base) return null;
+
+  // signs by quadrant (cos, sin)
+  let cosSign = 1, sinSign = 1;
+  if (q === 2) cosSign = -1;
+  if (q === 3) { cosSign = -1; sinSign = -1; }
+  if (q === 4) sinSign = -1;
+  if (d === 0) { cosSign = 1; sinSign = 1; }
+  if (d === 180) { cosSign = -1; sinSign = 1; }
+  if (d === 270) { cosSign = 1; sinSign = -1; }
+
+  const cos = signPrefix(base.cos, cosSign);
+  const sin = signPrefix(base.sin, sinSign);
+
+  // tan sign = sin/cos; special-case undefined
+  let tan = base.tan;
+  if (tan !== 'undef' && tan !== '0') {
+    const tanSign = cosSign * sinSign;
+    tan = signPrefix(tan, tanSign);
+  } else if (tan === '0') {
+    tan = '0';
+  }
+
+  // reciprocals
+  // normalize common reciprocals to nicer forms
+  function recip(s) {
+    if (s === '0') return 'undef';
+    if (s === 'undef') return '0';
+    if (s === '1') return '1';
+    if (s === '-1') return '-1';
+    if (s === '1/2') return '2';
+    if (s === '-1/2') return '-2';
+    if (s === '√2/2') return '√2';
+    if (s === '-√2/2') return '-√2';
+    if (s === '√3/2') return '2/√3';
+    if (s === '-√3/2') return '-2/√3';
+    if (s === '√3') return '1/√3';
+    if (s === '-√3') return '-1/√3';
+    if (s === '1/√3') return '√3';
+    if (s === '-1/√3') return '-√3';
+    return `1/(${s})`;
+  }
+
+  const sec = cos === '0' ? 'undef' : recip(cos);
+  const csc = sin === '0' ? 'undef' : recip(sin);
+  const cot = tan === '0' ? 'undef' : recip(tan);
+
+  return { cos, sin, tan, sec, csc, cot };
+}
+
 function polar(r, deg) {
   const rad = (deg * Math.PI) / 180;
-  return { x: r * Math.cos(rad), y: r * Math.sin(rad) };
+  // SVG y grows downward; unit circle y grows upward
+  return { x: r * Math.cos(rad), y: -r * Math.sin(rad) };
 }
 
 function clearTimers() {
@@ -64,7 +136,7 @@ function addText(x, y, text, cls = '') {
   t.setAttribute('y', y);
   t.setAttribute('class', `svg-label ${cls}`);
   // font-size in SVG user units (viewBox-relative) so it stays proportional
-  t.setAttribute('font-size', '0.055');
+  t.setAttribute('font-size', '0.075');
   t.textContent = text;
   svg.appendChild(t);
 }
@@ -104,8 +176,9 @@ function drawBase() {
   // axis labels
   addText(1.08, -0.04, '1', 'svg-label muted');
   addText(-1.12, -0.04, '-1', 'svg-label muted');
-  addText(0.03, -1.12, '-1', 'svg-label muted');
-  addText(0.03, 1.04, '1', 'svg-label muted');
+  // y axis labels (remember SVG is flipped, so top is +1)
+  addText(0.03, -1.12, '1', 'svg-label muted');
+  addText(0.03, 1.04, '-1', 'svg-label muted');
   addText(0.04, -0.04, '0', 'svg-label muted');
   addText(1.08, 0.1, 'x', 'svg-label muted');
   addText(0.08, -1.25, 'y', 'svg-label muted');
@@ -119,8 +192,27 @@ function drawStaticLabels() {
     addLabel(a.deg, 1.18, a.coord, 'coord anchor-mid');
   });
   // cardinal text
-  addText(0, 1.14, '(0, 1)', 'svg-label anchor-mid');
-  addText(0, -1.08, '(0, -1)', 'svg-label anchor-mid');
+  addText(0, -1.14, '(0, 1)', 'svg-label anchor-mid');
+  addText(0, 1.08, '(0, -1)', 'svg-label anchor-mid');
+}
+
+function drawSpecialTrianglesOverlay() {
+  // Show 30/45/60 in each quadrant as faint white transparent triangles
+  const special = [30, 45, 60, 120, 135, 150, 210, 225, 240, 300, 315, 330];
+  special.forEach((deg) => {
+    const a = angles.find((x) => x.deg === deg);
+    if (!a) return;
+    const angleRad = (a.deg * Math.PI) / 180;
+    const x = Math.cos(angleRad);
+    const y = -Math.sin(angleRad);
+
+    const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+    poly.setAttribute('points', `0,0 ${x},0 ${x},${y}`);
+    poly.setAttribute('fill', 'rgba(255,255,255,0.06)');
+    poly.setAttribute('stroke', 'rgba(255,255,255,0.22)');
+    poly.setAttribute('stroke-width', '0.006');
+    svg.appendChild(poly);
+  });
 }
 
 function drawTriangle(angle, opts = {}) {
@@ -128,7 +220,7 @@ function drawTriangle(angle, opts = {}) {
   drawBase();
   const angleRad = (angle.deg * Math.PI) / 180;
   const x = Math.cos(angleRad);
-  const y = Math.sin(angleRad);
+  const y = -Math.sin(angleRad);
 
   // triangle fill
   const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
@@ -189,13 +281,14 @@ function drawTriangle(angle, opts = {}) {
   svg.appendChild(point);
 
   if (showLabels) {
-    addLabel(angle.deg, 0.28, `${angle.deg}° / ${angle.rad}`, 'svg-label anchor-mid');
+    addLabel(angle.deg, 0.28, `${angle.deg}°`, 'svg-label anchor-mid');
+    addLabel(angle.deg, 0.36, `${angle.rad}`, 'rad anchor-mid');
     addLabel(angle.deg, 1.15, angle.coord, 'coord anchor-mid');
   }
 }
 
 function renderTable(a) {
-  const t = trigData(a);
+  const t = exactTrigStrings(a.deg) || trigData(a);
   const rows = [
     ['cos', t.cos, 'row-cos'],
     ['sin', t.sin, 'row-sin'],
@@ -205,7 +298,7 @@ function renderTable(a) {
     ['cot', t.cot, 'row-cot'],
   ];
   tableBody.innerHTML = rows
-    .map(([k, v, c]) => `<tr class="${c}"><td>${k}</td><td>${fmt(v)}</td></tr>`)
+    .map(([k, v, c]) => `<tr class="${c}"><td>${k}</td><td>${typeof v === 'number' ? fmt(v) : v}</td></tr>`)
     .join('');
 }
 
@@ -225,13 +318,14 @@ function showScreensaver() {
   tableBody.innerHTML = '';
   statusEl.textContent = 'Full unit circle';
   drawBase();
+  drawSpecialTrianglesOverlay();
   drawStaticLabels();
 }
 
 function showReveal() {
   if (!state.current) return;
   setPhase('reveal', 'Reveal: values shown');
-  tagEl.textContent = `${state.current.deg}° | ${state.current.rad} | (x,y)=${state.current.coord}`;
+  tagEl.innerHTML = `<div>${state.current.deg}°</div><div>${state.current.rad}</div><div>(x,y)=${state.current.coord}</div>`;
   renderTable(state.current);
   drawTriangle(state.current, { showLabels: true });
 }
@@ -309,7 +403,8 @@ function svgPointFromEvent(evt) {
 
 function nearestAngleFromPoint(x, y) {
   // angle from +x axis in degrees [0, 360)
-  let deg = (Math.atan2(y, x) * 180) / Math.PI;
+  // y is SVG-space; flip to math-space before atan2
+  let deg = (Math.atan2(-y, x) * 180) / Math.PI;
   if (deg < 0) deg += 360;
   let best = angles[0];
   let bestD = Infinity;
