@@ -31,7 +31,12 @@ const state = {
   timers: [],
   current: null,
   saved: [],
+  history: [],
+  index: -1, // points into history
 };
+
+// Angles used in quiz mode (exclude axis-only, non–special-triangle angles)
+const quizAngles = angles.filter((a) => ![0, 90, 180, 270].includes(a.deg));
 
 function fmt(v) {
   if (!isFinite(v)) return 'undef';
@@ -136,7 +141,7 @@ function addText(x, y, text, cls = '') {
   t.setAttribute('y', y);
   t.setAttribute('class', `svg-label ${cls}`);
   // font-size in SVG user units (viewBox-relative) so it stays proportional
-  t.setAttribute('font-size', '0.075');
+  t.setAttribute('font-size', '0.11');
   t.textContent = text;
   svg.appendChild(t);
 }
@@ -191,13 +196,10 @@ function drawStaticLabels() {
     addLabel(a.deg, 0.90, `${a.deg}°`, 'deg anchor-mid');
     addLabel(a.deg, 1.18, a.coord, 'coord anchor-mid');
   });
-  // cardinal text
-  addText(0, -1.14, '(0, 1)', 'svg-label anchor-mid');
-  addText(0, 1.08, '(0, -1)', 'svg-label anchor-mid');
 }
 
-function drawSpecialTrianglesOverlay() {
-  // Show 30/45/60 in each quadrant as faint white transparent triangles
+function drawSpecialTrianglesOverlay(interactive = false) {
+  // Show 30/45/60 in each quadrant; hover to reveal white fill.
   const special = [30, 45, 60, 120, 135, 150, 210, 225, 240, 300, 315, 330];
   special.forEach((deg) => {
     const a = angles.find((x) => x.deg === deg);
@@ -208,9 +210,25 @@ function drawSpecialTrianglesOverlay() {
 
     const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
     poly.setAttribute('points', `0,0 ${x},0 ${x},${y}`);
-    poly.setAttribute('fill', 'rgba(255,255,255,0.06)');
-    poly.setAttribute('stroke', 'rgba(255,255,255,0.22)');
+    poly.setAttribute('fill', 'rgba(255,255,255,0)');
+    poly.setAttribute('stroke', 'rgba(255,255,255,0.18)');
     poly.setAttribute('stroke-width', '0.006');
+    poly.dataset.deg = deg;
+    if (interactive) {
+      poly.style.cursor = 'pointer';
+      poly.addEventListener('mouseenter', () => {
+        poly.setAttribute('fill', 'rgba(255,255,255,0.08)');
+        poly.setAttribute('stroke', 'rgba(255,255,255,0.35)');
+      });
+      poly.addEventListener('mouseleave', () => {
+        poly.setAttribute('fill', 'rgba(255,255,255,0)');
+        poly.setAttribute('stroke', 'rgba(255,255,255,0.18)');
+      });
+      poly.addEventListener('click', () => {
+        state.current = a;
+        showReveal(true);
+      });
+    }
     svg.appendChild(poly);
   });
 }
@@ -262,9 +280,10 @@ function drawTriangle(angle, opts = {}) {
   // arc
   const arc = document.createElementNS('http://www.w3.org/2000/svg', 'path');
   const largeArc = angle.deg > 180 ? 1 : 0;
-  const sweep = 1;
+  // sweep=0 draws counter‑clockwise in our flipped-y system
+  const sweep = 0;
   const arcX = Math.cos(angleRad) * 0.22;
-  const arcY = Math.sin(angleRad) * 0.22;
+  const arcY = -Math.sin(angleRad) * 0.22;
   const d = `M 0.22 0 A 0.22 0.22 0 ${largeArc} ${sweep} ${arcX} ${arcY}`;
   arc.setAttribute('d', d);
   arc.setAttribute('fill', 'none');
@@ -281,24 +300,44 @@ function drawTriangle(angle, opts = {}) {
   svg.appendChild(point);
 
   if (showLabels) {
-    addLabel(angle.deg, 0.28, `${angle.deg}°`, 'svg-label anchor-mid');
-    addLabel(angle.deg, 0.36, `${angle.rad}`, 'rad anchor-mid');
-    addLabel(angle.deg, 1.15, angle.coord, 'coord anchor-mid');
+    addLabel(angle.deg, 0.23, `${angle.deg}°`, 'svg-label anchor-mid');
+    addLabel(angle.deg, 0.34, `${angle.rad}`, 'rad anchor-mid');
+    addLabel(angle.deg, 1.20, angle.coord, 'coord anchor-mid');
   }
 }
 
 function renderTable(a) {
-  const t = exactTrigStrings(a.deg) || trigData(a);
+  const symbolic = exactTrigStrings(a.deg);
+  const numeric = trigData(a);
+  const t = symbolic || numeric;
   const rows = [
-    ['cos', t.cos, 'row-cos'],
-    ['sin', t.sin, 'row-sin'],
-    ['tan', t.tan, 'row-tan'],
-    ['sec', t.sec, 'row-sec'],
-    ['csc', t.csc, 'row-csc'],
-    ['cot', t.cot, 'row-cot'],
+    ['cos', 'cos', 'row-cos'],
+    ['sin', 'sin', 'row-sin'],
+    ['tan', 'tan', 'row-tan'],
+    ['sec', 'sec', 'row-sec'],
+    ['csc', 'csc', 'row-csc'],
+    ['cot', 'cot', 'row-cot'],
   ];
   tableBody.innerHTML = rows
-    .map(([k, v, c]) => `<tr class="${c}"><td>${k}</td><td>${typeof v === 'number' ? fmt(v) : v}</td></tr>`)
+    .map(([label, key, cls]) => {
+      const sym = symbolic ? symbolic[key] : null;
+      const num = numeric[key];
+      let val;
+      if (!isFinite(num)) {
+        val = sym || 'undef';
+      } else if (sym) {
+        // For integer-like symbolic values, just show the integer; otherwise show "symbolic (decimal)"
+        const isIntLike = /^-?\d+$/.test(sym);
+        if (isIntLike) {
+          val = sym;
+        } else {
+        val = `${sym} (${fmt(num)})`;
+        }
+      } else {
+        val = fmt(num);
+      }
+      return `<tr class="${cls}"><td>${label}</td><td>${val}</td></tr>`;
+    })
     .join('');
 }
 
@@ -312,20 +351,27 @@ function showScreensaver() {
   clearTimers();
   state.phase = 'screensaver';
   state.mode = 'idle';
+  state.history = [];
+  state.index = -1;
   quizToggle.textContent = 'Start Quiz';
   phaseEl.textContent = 'Screensaver';
   tagEl.textContent = 'Click an angle to see values';
   tableBody.innerHTML = '';
   statusEl.textContent = 'Full unit circle';
   drawBase();
-  drawSpecialTrianglesOverlay();
+  drawSpecialTrianglesOverlay(true);
   drawStaticLabels();
 }
 
-function showReveal() {
+function showReveal(fromClick = false) {
   if (!state.current) return;
-  setPhase('reveal', 'Reveal: values shown');
-  tagEl.innerHTML = `<div>${state.current.deg}°</div><div>${state.current.rad}</div><div>(x,y)=${state.current.coord}</div>`;
+  setPhase('reveal', fromClick ? 'Selected angle' : 'Reveal: values shown');
+  const coord = state.current.coord.replace('(', '').replace(')', '');
+  const [xLabel, yLabel] = coord.split(',').map((s) => s.trim());
+  tagEl.innerHTML =
+    `<div>${state.current.deg}°</div>` +
+    `<div>${state.current.rad}</div>` +
+    `<div class="xy-wrapper">( <span class="xy-x">${xLabel}</span>, <span class="xy-y">${yLabel}</span> )</div>`;
   renderTable(state.current);
   drawTriangle(state.current, { showLabels: true });
 }
@@ -333,7 +379,13 @@ function showReveal() {
 function startQuestion() {
   clearTimers();
   state.phase = 'intro';
-  state.current = angles[Math.floor(Math.random() * angles.length)];
+  const next = quizAngles[Math.floor(Math.random() * quizAngles.length)];
+  state.current = next;
+  // manage history
+  if (state.history.length === 0 || state.history[state.history.length - 1].deg !== next.deg) {
+    state.history.push(next);
+    state.index = state.history.length - 1;
+  }
   tagEl.textContent = '—';
   tableBody.innerHTML = '';
   setPhase('intro', 'Observe the highlighted triangle (5s)');
@@ -346,17 +398,17 @@ function startQuestion() {
 
   state.timers.push(setTimeout(() => {
     showReveal();
-  }, 10000));
+  }, 10000)); // start 10s reveal window
 
   state.timers.push(setTimeout(() => {
     setPhase('flash', 'Full circle flash');
     drawBase();
     drawStaticLabels();
-  }, 15000));
+  }, 20000)); // reveal lasts ~10s (10s to 20s)
 
   state.timers.push(setTimeout(() => {
     if (state.mode === 'quiz') startQuestion();
-  }, 17000));
+  }, 25000)); // flash full circle for ~5s (20s to 25s)
 }
 
 function startQuiz() {
@@ -389,6 +441,30 @@ document.addEventListener('keydown', (e) => {
   if (e.code === 'Enter') {
     e.preventDefault();
     if (state.mode === 'quiz') startQuestion();
+  }
+  if (e.code === 'ArrowRight') {
+    e.preventDefault();
+    if (state.mode === 'quiz') startQuestion();
+    else {
+      // advance history by picking a new random
+      state.current = angles[Math.floor(Math.random() * angles.length)];
+      state.history.push(state.current);
+      state.index = state.history.length - 1;
+      showReveal(true);
+    }
+  }
+  if (e.code === 'ArrowLeft') {
+    e.preventDefault();
+    if (state.history.length > 1 && state.index > 0) {
+      state.index -= 1;
+      state.current = state.history[state.index];
+      clearTimers();
+      showReveal(true);
+    }
+  }
+  if (e.code === 'Escape') {
+    e.preventDefault();
+    stopQuiz();
   }
 });
 

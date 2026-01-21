@@ -29,14 +29,14 @@ body {
 }
 
 .svg-wrap {
-  flex: 1 1 320px;
+  flex: 3 1 420px;
   display: flex;
   justify-content: center;
 }
 
 svg {
   width: 100%;
-  max-width: 680px;
+  max-width: 820px;
   height: auto;
 }
 
@@ -72,8 +72,8 @@ svg {
 }
 
 .panel {
-  flex: 1 1 280px;
-  min-width: 260px;
+  flex: 1 1 260px;
+  min-width: 240px;
   background: #111735;
   border: 1px solid #1f2740;
   border-radius: 12px;
@@ -150,7 +150,7 @@ th {
   font-family: 'Inter', system-ui, sans-serif;
   /* Use SVG user units (viewBox-relative) via script-set font-size;
      keep this small as a fallback */
-  font-size: 0.04px;
+  font-size: 0.06px;
   fill: #e8ecf5;
   user-select: none;
   pointer-events: none;
@@ -163,3 +163,29 @@ th {
 .svg-label.anchor-mid { text-anchor: middle; }
 .svg-label.anchor-start { text-anchor: start; }
 .svg-label.anchor-end { text-anchor: end; }
+
+.xy-wrapper {
+  font-size: 1.05rem;
+  margin-top: 0.25rem;
+}
+.xy-x {
+  color: var(--cos);
+  font-weight: 600;
+}
+.xy-y {
+  color: var(--sin);
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .app {
+    flex-direction: column;
+  }
+  .svg-wrap, .panel {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+  svg {
+    max-width: 100%;
+  }
+}
