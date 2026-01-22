@@ -211,6 +211,24 @@ th {
   font-size: 0.9rem;
 }
 
+.hint-desktop {
+  display: inline;
+}
+
+.hint-mobile {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .hint-desktop {
+    display: none;
+  }
+  
+  .hint-mobile {
+    display: inline;
+  }
+}
+
 .svg-label {
   font-family: 'Inter', system-ui, sans-serif;
   /* Use SVG user units (viewBox-relative) via script-set font-size;

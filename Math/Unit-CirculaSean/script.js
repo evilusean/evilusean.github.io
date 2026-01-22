@@ -32,6 +32,8 @@ const state = {
   quizType: 'none', // none | unit-circle | coterminal | trig-functions
   angleFormat: 'both', // both | degrees | radians
   phase: 'screensaver', // screensaver | intro | guess | reveal | flash
+  phaseIndex: 0, // current phase in multi-phase quizzes (0, 1, 2, 3...)
+  maxPhases: 0, // total number of phases in current quiz
   timers: [],
   current: null,
   saved: [],
@@ -578,6 +580,9 @@ function showReveal(fromClick = false) {
 function startUnitCircleQuestion() {
   clearTimers();
   state.phase = 'intro';
+  state.phaseIndex = 0;
+  state.maxPhases = 4;
+  
   const next = quizAngles[Math.floor(Math.random() * quizAngles.length)];
   state.current = next;
   // manage history
@@ -585,25 +590,47 @@ function startUnitCircleQuestion() {
     state.history.push(next);
     state.index = state.history.length - 1;
   }
+  
+  showUnitCirclePhase(0);
+}
+
+function showUnitCirclePhase(phaseIndex) {
+  if (!state.current) return;
+  
+  state.phaseIndex = phaseIndex;
+  clearTimers();
+  
   tagEl.textContent = '—';
   tableBody.innerHTML = '';
-  setPhase('intro', 'Observe the highlighted triangle (4s)');
-  drawTriangle(state.current, { showLabels: false });
-
-  // After 4 seconds, show the angle ONLY on the circle (no answers yet)
-  state.timers.push(setTimeout(() => {
-    setPhase('guess', 'Guess the angle - revealed for 6s');
-    // Redraw triangle with angle labels visible (only for this triangle, no (x,y) yet)
+  
+  if (phaseIndex === 0) {
+    // Phase 0: Observe triangle (no labels)
+    setPhase('intro', 'Observe the triangle (→ for angle)');
+    drawTriangle(state.current, { showLabels: false });
+    
+    // Auto-advance after 4 seconds
+    state.timers.push(setTimeout(() => {
+      if (state.mode === 'quiz' && state.quizType === 'unit-circle' && state.phaseIndex === 0) {
+        showUnitCirclePhase(1);
+      }
+    }, 4000));
+    
+  } else if (phaseIndex === 1) {
+    // Phase 1: Show angle only
+    setPhase('guess', 'Angle revealed (→ for coordinates)');
     drawTriangle(state.current, { showLabels: true, showAnswers: false });
-    // Show ONLY angle, hide table and xy coordinates
     tagEl.innerHTML = `<div class="angle-reveal-pulse">${state.current.deg}°</div><div>${state.current.rad}</div>`;
-    tableBody.innerHTML = '';
-  }, 4000));
-
-  // After 10 seconds total (6 second angle-only window), show (x,y) and table
-  state.timers.push(setTimeout(() => {
-    setPhase('reveal', 'Coordinates and values revealed');
-    // Redraw the triangle with all answer information
+    
+    // Auto-advance after 6 seconds
+    state.timers.push(setTimeout(() => {
+      if (state.mode === 'quiz' && state.quizType === 'unit-circle' && state.phaseIndex === 1) {
+        showUnitCirclePhase(2);
+      }
+    }, 6000));
+    
+  } else if (phaseIndex === 2) {
+    // Phase 2: Show coordinates and table
+    setPhase('reveal', 'Full answer (→ for full circle)');
     drawTriangle(state.current, { showLabels: true, showAnswers: true });
     const coord = state.current.coord.replace('(', '').replace(')', '');
     const [xLabel, yLabel] = coord.split(',').map((s) => s.trim());
@@ -612,11 +639,17 @@ function startUnitCircleQuestion() {
       `<div>${state.current.rad}</div>` +
       `<div class="xy-wrapper">( <span class="xy-x">${xLabel}</span>, <span class="xy-y">${yLabel}</span> )</div>`;
     renderTable(state.current);
-  }, 10000));
-
-  // After 24 seconds, flash full circle
-  state.timers.push(setTimeout(() => {
-    setPhase('flash', 'Full circle flash');
+    
+    // Auto-advance after 14 seconds
+    state.timers.push(setTimeout(() => {
+      if (state.mode === 'quiz' && state.quizType === 'unit-circle' && state.phaseIndex === 2) {
+        showUnitCirclePhase(3);
+      }
+    }, 14000));
+    
+  } else if (phaseIndex === 3) {
+    // Phase 3: Flash full circle
+    setPhase('flash', 'Full circle (→ for next question)');
     drawBase();
     drawSpecialTrianglesOverlay(false);
     drawStaticLabels();
@@ -625,14 +658,14 @@ function startUnitCircleQuestion() {
     state.timers.push(setTimeout(() => {
       svg.classList.remove('flash-glow');
     }, 1000));
-  }, 24000));
-
-  // Auto-advance after reveal phase
-  state.timers.push(setTimeout(() => {
-    if (state.mode === 'quiz' && state.quizType === 'unit-circle') {
-      startUnitCircleQuestion();
-    }
-  }, 34000));
+    
+    // Auto-advance to next question after 10 seconds
+    state.timers.push(setTimeout(() => {
+      if (state.mode === 'quiz' && state.quizType === 'unit-circle' && state.phaseIndex === 3) {
+        startUnitCircleQuestion();
+      }
+    }, 10000));
+  }
 }
 
 function startCoterminalQuestion() {
@@ -840,43 +873,92 @@ const trigIdentities = [
 function startTrigIdentityQuestion() {
   clearTimers();
   state.phase = 'guess';
+  state.phaseIndex = 0;
+  state.maxPhases = 4;
   
   // Pick a random identity
   const identity = trigIdentities[Math.floor(Math.random() * trigIdentities.length)];
   state.currentIdentity = identity;
   
-  // Show question prominently above circle
-  questionOverlay.innerHTML = `
-    <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">${identity.name}</div>
-    <div class="formula">${identity.formula}</div>
-  `;
-  questionOverlay.classList.add('show');
+  showTrigIdentityPhase(0);
+}
+
+function showTrigIdentityPhase(phaseIndex) {
+  if (!state.currentIdentity) return;
   
-  tagEl.textContent = '—';
-  tableBody.innerHTML = '';
-  statusEl.textContent = 'Think about what this identity means...';
+  const identity = state.currentIdentity;
+  state.phaseIndex = phaseIndex;
+  clearTimers();
   
   // Draw full circle
   drawBase();
   drawStaticLabels();
   
-  // Wait 5 seconds, then show answer
-  state.timers.push(setTimeout(() => {
+  if (phaseIndex === 0) {
+    // Phase 1: Show only the name
     questionOverlay.innerHTML = `
-      <div style="font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--accent);">${identity.name}</div>
-      <div class="formula">${identity.formula}</div>
-      <div class="description">${identity.description}</div>
-      <div class="usage">${identity.usage}</div>
+      <div style="font-size: 1.5rem; font-weight: bold; color: var(--accent);">${identity.name}</div>
     `;
-    statusEl.textContent = 'Identity explained (30 seconds)';
+    questionOverlay.classList.add('show');
+    tagEl.textContent = '—';
+    tableBody.innerHTML = '';
+    statusEl.textContent = 'Identity name shown (→ for formula)';
     
-    // Auto-advance after showing answer for 30 seconds
+    // Auto-advance after 3 seconds
     state.timers.push(setTimeout(() => {
-      if (state.mode === 'quiz' && state.quizType === 'trig-functions') {
+      if (state.mode === 'quiz' && state.quizType === 'trig-functions' && state.phaseIndex === 0) {
+        showTrigIdentityPhase(1);
+      }
+    }, 3000));
+    
+  } else if (phaseIndex === 1) {
+    // Phase 2: Show formula
+    questionOverlay.innerHTML = `
+      <div style="font-size: 1.3rem; font-weight: bold; color: var(--accent); margin-bottom: 0.5rem;">${identity.name}</div>
+      <div class="formula" style="font-size: 1.6rem; margin: 1rem 0;">${identity.formula}</div>
+    `;
+    statusEl.textContent = 'Formula shown (→ for WHY)';
+    
+    // Auto-advance after 5 seconds
+    state.timers.push(setTimeout(() => {
+      if (state.mode === 'quiz' && state.quizType === 'trig-functions' && state.phaseIndex === 1) {
+        showTrigIdentityPhase(2);
+      }
+    }, 5000));
+    
+  } else if (phaseIndex === 2) {
+    // Phase 3: Show WHY description
+    questionOverlay.innerHTML = `
+      <div style="font-size: 1.3rem; font-weight: bold; color: var(--accent); margin-bottom: 0.5rem;">${identity.name}</div>
+      <div class="formula" style="font-size: 1.5rem; margin: 0.8rem 0;">${identity.formula}</div>
+      <div class="description" style="font-size: 1rem; margin-top: 1rem; line-height: 1.5;">${identity.description}</div>
+    `;
+    statusEl.textContent = 'WHY explanation (→ for examples)';
+    
+    // Auto-advance after 8 seconds
+    state.timers.push(setTimeout(() => {
+      if (state.mode === 'quiz' && state.quizType === 'trig-functions' && state.phaseIndex === 2) {
+        showTrigIdentityPhase(3);
+      }
+    }, 8000));
+    
+  } else if (phaseIndex === 3) {
+    // Phase 4: Show full answer with examples
+    questionOverlay.innerHTML = `
+      <div style="font-size: 1.3rem; font-weight: bold; color: var(--accent); margin-bottom: 0.5rem;">${identity.name}</div>
+      <div class="formula" style="font-size: 1.5rem; margin: 0.8rem 0;">${identity.formula}</div>
+      <div class="description" style="font-size: 0.95rem; margin-top: 0.8rem; line-height: 1.5;">${identity.description}</div>
+      <div class="usage" style="font-size: 0.9rem; margin-top: 0.8rem; line-height: 1.5; white-space: pre-line;">${identity.usage}</div>
+    `;
+    statusEl.textContent = 'Full explanation (Enter to save, → for next identity)';
+    
+    // Auto-advance to next identity after 20 seconds
+    state.timers.push(setTimeout(() => {
+      if (state.mode === 'quiz' && state.quizType === 'trig-functions' && state.phaseIndex === 3) {
         startTrigIdentityQuestion();
       }
-    }, 30000)); // Show answer for 30 seconds
-  }, 5000));
+    }, 20000));
+  }
 }
 
 function startQuiz() {
@@ -966,10 +1048,25 @@ document.addEventListener('keydown', (e) => {
         clearTimers();
         statusEl.textContent += ' [PAUSED]';
       } else {
-        // Resume by restarting the current quiz type
-        if (state.quizType === 'unit-circle') startUnitCircleQuestion();
-        else if (state.quizType === 'coterminal') startCoterminalQuestion();
-        else if (state.quizType === 'trig-functions') startTrigIdentityQuestion();
+        // Resume by continuing from current phase
+        statusEl.textContent = statusEl.textContent.replace(' [PAUSED]', '');
+        if (state.quizType === 'unit-circle') {
+          // Resume unit circle at current phase
+          if (state.current && state.phaseIndex >= 0) {
+            showUnitCirclePhase(state.phaseIndex);
+          } else {
+            startUnitCircleQuestion();
+          }
+        } else if (state.quizType === 'coterminal') {
+          startCoterminalQuestion();
+        } else if (state.quizType === 'trig-functions') {
+          // Resume trig identities at current phase
+          if (state.currentIdentity && state.phaseIndex >= 0) {
+            showTrigIdentityPhase(state.phaseIndex);
+          } else {
+            startTrigIdentityQuestion();
+          }
+        }
       }
     }
   }
@@ -979,6 +1076,10 @@ document.addEventListener('keydown', (e) => {
     e.preventDefault();
     if (state.current) {
       state.saved.push(`${state.current.deg}° (${state.current.rad})`);
+      reviewEl.innerHTML = 'Saved: ' + state.saved.map((s) => `<span class="pill">${s}</span>`).join('');
+    } else if (state.currentIdentity) {
+      // Save trig identity with name and formula
+      state.saved.push(`${state.currentIdentity.name}: ${state.currentIdentity.formula}`);
       reviewEl.innerHTML = 'Saved: ' + state.saved.map((s) => `<span class="pill">${s}</span>`).join('');
     } else if (state.mode === 'quiz') {
       // In quiz mode, Enter advances to next question
@@ -991,9 +1092,35 @@ document.addEventListener('keydown', (e) => {
   if (e.code === 'ArrowRight') {
     e.preventDefault();
     if (state.mode === 'quiz') {
-      if (state.quizType === 'unit-circle') startUnitCircleQuestion();
-      else if (state.quizType === 'coterminal') startCoterminalQuestion();
-      else if (state.quizType === 'trig-functions') startTrigIdentityQuestion();
+      // Advance to next phase if available, otherwise next question
+      if (state.quizType === 'unit-circle' && state.phaseIndex < state.maxPhases - 1) {
+        showUnitCirclePhase(state.phaseIndex + 1);
+      } else if (state.quizType === 'trig-functions' && state.phaseIndex < state.maxPhases - 1) {
+        showTrigIdentityPhase(state.phaseIndex + 1);
+      } else if (state.quizType === 'unit-circle') {
+        startUnitCircleQuestion();
+      } else if (state.quizType === 'coterminal') {
+        startCoterminalQuestion();
+      } else if (state.quizType === 'trig-functions') {
+        startTrigIdentityQuestion();
+      }
+    } else if (state.mode === 'idle' && state.phase === 'screensaver') {
+      // Screensaver: advance to next angle sequentially
+      clearTimers();
+      const screensaverAngles = [0, 30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330];
+      state.screensaverIndex++;
+      const angle = screensaverAngles[state.screensaverIndex % screensaverAngles.length];
+      state.current = angles.find(a => a.deg === angle);
+      
+      drawTriangle(state.current, { showLabels: true, showAnswers: true });
+      const coord = state.current.coord.replace('(', '').replace(')', '');
+      const [xLabel, yLabel] = coord.split(',').map((s) => s.trim());
+      tagEl.innerHTML = 
+        `<div>${state.current.deg}°</div>` +
+        `<div>${state.current.rad}</div>` +
+        `<div class="xy-wrapper">( <span class="xy-x">${xLabel}</span>, <span class="xy-y">${yLabel}</span> )</div>`;
+      renderTable(state.current);
+      statusEl.textContent = `Angle: ${state.current.deg}°`;
     } else {
       // advance history by picking a new random
       state.current = angles[Math.floor(Math.random() * angles.length)];
@@ -1004,7 +1131,58 @@ document.addEventListener('keydown', (e) => {
   }
   if (e.code === 'ArrowLeft') {
     e.preventDefault();
-    if (state.history.length > 1 && state.index > 0) {
+    if (state.mode === 'quiz' && state.quizType === 'unit-circle') {
+      // Go back to previous phase in unit circle quiz
+      if (state.phaseIndex > 0) {
+        showUnitCirclePhase(state.phaseIndex - 1);
+      }
+    } else if (state.mode === 'quiz' && state.quizType === 'trig-functions') {
+      // Go back to previous phase in trig identities quiz
+      if (state.phaseIndex > 0) {
+        showTrigIdentityPhase(state.phaseIndex - 1);
+      }
+    } else if (state.mode === 'quiz' && state.quizType === 'coterminal') {
+      // Go back in history for coterminal quiz
+      if (state.history.length > 1 && state.index > 0) {
+        state.index -= 1;
+        const prevAngle = state.history[state.index];
+        state.coterminalTarget = prevAngle;
+        state.current = null;
+        clearTimers();
+        // Redraw the coterminal question for the previous angle
+        drawBase();
+        drawSpecialTrianglesOverlay(false);
+        drawStaticLabels();
+        const { x, y } = polar(1, prevAngle.deg);
+        const point = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        point.setAttribute('cx', x);
+        point.setAttribute('cy', y);
+        point.setAttribute('r', '0.035');
+        point.setAttribute('fill', '#40e0d0');
+        point.setAttribute('stroke', '#40e0d0');
+        point.setAttribute('stroke-width', '0.008');
+        svg.appendChild(point);
+        statusEl.textContent = `Previous coterminal: ${prevAngle.deg}° (${prevAngle.rad})`;
+      }
+    } else if (state.mode === 'idle' && state.phase === 'screensaver') {
+      // Screensaver: go back to previous angle
+      clearTimers();
+      const screensaverAngles = [0, 30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330];
+      state.screensaverIndex--;
+      if (state.screensaverIndex < 0) state.screensaverIndex = screensaverAngles.length - 1;
+      const angle = screensaverAngles[state.screensaverIndex % screensaverAngles.length];
+      state.current = angles.find(a => a.deg === angle);
+      
+      drawTriangle(state.current, { showLabels: true, showAnswers: true });
+      const coord = state.current.coord.replace('(', '').replace(')', '');
+      const [xLabel, yLabel] = coord.split(',').map((s) => s.trim());
+      tagEl.innerHTML = 
+        `<div>${state.current.deg}°</div>` +
+        `<div>${state.current.rad}</div>` +
+        `<div class="xy-wrapper">( <span class="xy-x">${xLabel}</span>, <span class="xy-y">${yLabel}</span> )</div>`;
+      renderTable(state.current);
+      statusEl.textContent = `Angle: ${state.current.deg}°`;
+    } else if (state.history.length > 1 && state.index > 0) {
       state.index -= 1;
       state.current = state.history[state.index];
       clearTimers();
@@ -1076,6 +1254,117 @@ svg.addEventListener('click', (evt) => {
   state.current = nearestAngleFromPoint(p.x, p.y);
   showReveal();
 });
+
+// Touch event handlers for mobile - only on the panel area
+const panel = document.querySelector('.panel');
+let touchStartX = 0;
+let touchStartY = 0;
+let touchStartTime = 0;
+let longPressTimer = null;
+const LONG_PRESS_DURATION = 500; // ms
+const SWIPE_THRESHOLD = 50; // pixels
+
+panel.addEventListener('touchstart', (e) => {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+  touchStartTime = Date.now();
+  
+  // Visual feedback for long press
+  statusEl.style.opacity = '0.7';
+  
+  // Start long press timer for save
+  longPressTimer = setTimeout(() => {
+    // Long press = save
+    statusEl.style.opacity = '1';
+    
+    if (state.current) {
+      state.saved.push(`${state.current.deg}° (${state.current.rad})`);
+      reviewEl.innerHTML = 'Saved: ' + state.saved.map((s) => `<span class="pill">${s}</span>`).join('');
+      // Visual feedback
+      const originalText = statusEl.textContent;
+      statusEl.textContent = '✓ Saved angle!';
+      statusEl.style.color = '#40e0d0';
+      setTimeout(() => {
+        statusEl.textContent = originalText;
+        statusEl.style.color = '';
+      }, 1500);
+    } else if (state.currentIdentity) {
+      state.saved.push(`${state.currentIdentity.name}: ${state.currentIdentity.formula}`);
+      reviewEl.innerHTML = 'Saved: ' + state.saved.map((s) => `<span class="pill">${s}</span>`).join('');
+      // Visual feedback
+      const originalText = statusEl.textContent;
+      statusEl.textContent = '✓ Saved identity!';
+      statusEl.style.color = '#40e0d0';
+      setTimeout(() => {
+        statusEl.textContent = originalText;
+        statusEl.style.color = '';
+      }, 1500);
+    } else {
+      // Nothing to save
+      statusEl.textContent = 'Nothing to save';
+      setTimeout(() => {
+        statusEl.textContent = state.mode === 'quiz' ? 'Quiz in progress' : 'Screensaver';
+      }, 1000);
+    }
+    longPressTimer = null;
+  }, LONG_PRESS_DURATION);
+}, { passive: true });
+
+panel.addEventListener('touchend', (e) => {
+  // Reset visual feedback
+  statusEl.style.opacity = '1';
+  
+  // Clear long press timer
+  if (longPressTimer) {
+    clearTimeout(longPressTimer);
+    longPressTimer = null;
+  }
+  
+  const touchEndX = e.changedTouches[0].clientX;
+  const touchEndY = e.changedTouches[0].clientY;
+  const touchDuration = Date.now() - touchStartTime;
+  
+  const deltaX = touchEndX - touchStartX;
+  const deltaY = touchEndY - touchStartY;
+  const absDeltaX = Math.abs(deltaX);
+  const absDeltaY = Math.abs(deltaY);
+  
+  // Check if it's a swipe (horizontal movement > vertical movement)
+  if (absDeltaX > SWIPE_THRESHOLD && absDeltaX > absDeltaY) {
+    if (deltaX > 0) {
+      // Swipe right
+      const rightArrowEvent = new KeyboardEvent('keydown', { code: 'ArrowRight' });
+      document.dispatchEvent(rightArrowEvent);
+    } else {
+      // Swipe left
+      const leftArrowEvent = new KeyboardEvent('keydown', { code: 'ArrowLeft' });
+      document.dispatchEvent(leftArrowEvent);
+    }
+  } else if (touchDuration < LONG_PRESS_DURATION && absDeltaX < 20 && absDeltaY < 20) {
+    // Quick tap (not a swipe, not a long press) = pause/resume
+    if (state.mode === 'quiz') {
+      const spaceEvent = new KeyboardEvent('keydown', { code: 'Space' });
+      document.dispatchEvent(spaceEvent);
+    }
+  }
+}, { passive: true });
+
+panel.addEventListener('touchmove', (e) => {
+  // Cancel long press if user moves finger too much
+  const touchX = e.touches[0].clientX;
+  const touchY = e.touches[0].clientY;
+  const deltaX = Math.abs(touchX - touchStartX);
+  const deltaY = Math.abs(touchY - touchStartY);
+  
+  // Increased threshold to 20px to be less sensitive
+  if (deltaX > 20 || deltaY > 20) {
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      longPressTimer = null;
+      statusEl.style.opacity = '1';
+    }
+  }
+}, { passive: true });
 
 // Initialize app with full unit circle display
 initializeApp();
