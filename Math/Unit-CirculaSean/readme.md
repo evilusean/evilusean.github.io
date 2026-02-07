@@ -106,6 +106,8 @@ https://github.com/evilusean/Khan/blob/main/Review/TOCT/2026-TOCT-Review-Precalc
 Future Sean Problems / TODOs :
 Add a way to teach ASTC and know which quadrant has how many pi over what for learning radians (-1 for quadrant 2, +1 for quadrant 3, prime less than 12 for quadrant 4 = 11, 7, 5) and the closest to 'x' is '/6', etc...
    Color highlighting showing the triangles closest to 'x' are /6 - and formulas for showing the numerator for radians 
+- add a cheatsheet for each trig identity with it's function, formula and use
+
 
 
 
