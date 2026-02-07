@@ -107,7 +107,7 @@ Future Sean Problems / TODOs :
 Add a way to teach ASTC and know which quadrant has how many pi over what for learning radians (-1 for quadrant 2, +1 for quadrant 3, prime less than 12 for quadrant 4 = 11, 7, 5) and the closest to 'x' is '/6', etc...
    Color highlighting showing the triangles closest to 'x' are /6 - and formulas for showing the numerator for radians 
 - add a cheatsheet for each trig identity with it's function, formula and use
-
+- add a checklist of what trig identities you want to study on quiz mode (realistically future Sean will only need a few)
 
 
 
