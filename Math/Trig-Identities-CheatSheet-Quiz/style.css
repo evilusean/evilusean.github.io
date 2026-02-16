@@ -1,46 +1,230 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 :root {
-    --bg-deep: #0d1117;        /* Match the dark navy/black from the image */
-    --bg-card: #161b22;        /* Slightly lighter slate for card depth */
-    
-    /* Mathematical Color Mapping */
-    --cos-blue: #58a6ff;       /* Blue for Cosine (x) */
-    --sin-red: #f85149;        /* Red for Sine (y) */
-    
-    --accent-red: #ff3131;     /* Neon red for alerts/active state */
+    --bg-deep: #0d1117;
+    --bg-card: #161b22;
+    --cos-blue: #58a6ff;
+    --sin-red: #f85149;
+    --accent: #ff3131;
     --text-primary: #ffffff;
-    --text-secondary: #8b949e; /* Muted gray for descriptions */
+    --text-secondary: #8b949e;
 }
 
-/* Logic for dynamic formula coloring */
-.formula-sine { color: var(--sin-red); text-shadow: 0 0 5px rgba(248, 81, 73, 0.5); }
-.formula-cosine { color: var(--cos-blue); text-shadow: 0 0 5px rgba(88, 166, 255, 0.5); }
-
-/* Animation for the "Glow" effect on formulas */
-@keyframes formula-glow {
-    from { text-shadow: 0 0 5px rgba(248, 81, 73, 0.2); }
-    to { text-shadow: 0 0 20px rgba(248, 81, 73, 0.8); }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    line-height: 1.6;
 }
 
-.formula-sine { color: var(--sin-red); animation: formula-glow 2s infinite alternate; }
-.formula-cosine { color: var(--cos-blue); }
+header {
+    background: var(--bg-card);
+    padding: 1rem;
+    border-bottom: 2px solid var(--cos-blue);
+}
 
-/* The reveal transition used by Screensaver mode */
-.reveal-element {
+header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+nav button {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--text-secondary);
+    padding: 0.5rem 1rem;
+    margin-right: 0.5rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+nav button.active {
+    background: var(--cos-blue);
+    color: var(--bg-deep);
+    border-color: var(--cos-blue);
+}
+
+.view {
+    display: none;
+    padding: 1rem;
+}
+
+.view.active {
+    display: block;
+}
+
+#identities-list {
+    display: grid;
+    gap: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.identity-item {
+    background: var(--bg-card);
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 3px solid var(--cos-blue);
+}
+
+.identity-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.identity-header input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+}
+
+.identity-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    flex: 1;
+}
+
+.identity-formula {
+    color: var(--sin-red);
+    font-family: 'Courier New', monospace;
+    margin: 0.5rem 0;
+    font-size: 1.1rem;
+}
+
+.identity-details {
+    display: none;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--text-secondary);
+    color: var(--text-secondary);
+}
+
+.identity-details.visible {
+    display: block;
+}
+
+#quiz-view {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+#quiz-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+#quiz-controls button {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--cos-blue);
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+#quiz-controls button:hover {
+    background: var(--cos-blue);
+    color: var(--bg-deep);
+}
+
+#quiz-settings {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    color: var(--text-secondary);
+}
+
+#quiz-card {
+    background: var(--bg-card);
+    padding: 3rem;
+    border-radius: 12px;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.card-name {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
     opacity: 0;
     transform: translateY(20px);
-    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.8s;
 }
 
-.reveal-element.visible {
+.card-formula {
+    font-size: 1.5rem;
+    color: var(--sin-red);
+    font-family: 'Courier New', monospace;
+    margin-bottom: 2rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s;
+}
+
+.card-usage {
+    color: var(--text-secondary);
+    max-width: 600px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s;
+}
+
+.card-name.visible,
+.card-formula.visible,
+.card-usage.visible {
     opacity: 1;
     transform: translateY(0);
 }
 
-/* Save Animation */
-@keyframes fly-to-review {
-    0% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.1); opacity: 0.8; }
-    100% { transform: scale(0) translate(200px, -500px); opacity: 0; }
+#help-view {
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.8;
 }
 
-.saving { animation: fly-to-review 0.6s forwards; }
+#help-view h2 {
+    margin-bottom: 1rem;
+    color: var(--cos-blue);
+}
+
+#help-view p {
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 1.2rem;
+    }
+    
+    nav button {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+    }
+    
+    #quiz-card {
+        padding: 2rem 1rem;
+        min-height: 300px;
+    }
+    
+    .card-name {
+        font-size: 1.5rem;
+    }
+    
+    .card-formula {
+        font-size: 1.2rem;
+    }
+}

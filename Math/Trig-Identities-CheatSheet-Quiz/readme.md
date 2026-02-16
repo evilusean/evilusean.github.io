@@ -1,23 +1,27 @@
-# TrigCheats: Interactive Identity Quiz
+# Trig Cheatsheet & Quiz App
 
-A high-performance, mobile-responsive trig identity cheatsheet and quiz app built for students and math enthusiasts. Hosted entirely on GitHub Pages.
+A static web app for learning trigonometric identities with an interactive cheatsheet and quiz mode.
 
-## 🚀 Features
-- **Customizable Quiz:** Select specific identity groups (Pythagorean, Double Angle, etc.) to study.
-- **Review List:** Press `Space` (Desktop) or `Long Press` (Mobile) to save tricky identities for later review.
-- **Fluid Navigation:** Use arrow keys or swipe gestures to move through the deck.
-- **Zero Latency:** Built with vanilla JS for instant response times.
+## Features
 
-## ⌨️ Controls
-| Action | Keyboard | Mobile |
-| :--- | :--- | :--- |
-| **Next Card** | `Right Arrow` | `Swipe Left` |
-| **Prev Card** | `Left Arrow` | `Swipe Right` |
-| **Save to Review** | `Spacebar` | `Long Press` |
+- **Cheatsheet Mode**: Browse all trig identities with expandable details
+- **Quiz Mode**: Automated flashcard-style learning with customizable speed
+- **Smart Selection**: Engineering-essential identities pre-selected
+- **Save for Review**: Mark difficult identities for later study
+- **Responsive Design**: Works on desktop and mobile
+- **Keyboard Shortcuts**: Arrow keys for navigation, Space to save
+- **Touch Gestures**: Swipe left/right on mobile
 
-## 🛠️ Development (Built with Kiro)
-This project uses **Spec-Driven Development**.
-- **Requirements:** Located in `.kiro/specs/requirements.md`
-- **Design:** Located in `.kiro/specs/design.md`
+## Usage
 
-To modify the app using Kiro, simply open the project and reference the specs.
+1. **Cheatsheet**: Check/uncheck identities you want to study. Click any identity to see detailed usage and examples.
+2. **Quiz Mode**: Automatically cycles through selected identities, revealing name → formula → usage.
+3. **Controls**: Use Prev/Next buttons, arrow keys, or swipe gestures. Adjust speed with the slider.
+
+## GitHub Pages Deployment
+
+This is a static site - just push to GitHub and enable Pages in repository settings.
+
+## Local Development
+
+Simply open `index.html` in a browser. No build process required.
