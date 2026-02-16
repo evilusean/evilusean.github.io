@@ -16,6 +16,7 @@ const engineeringEssentials = [
 let selectedIdentities = new Set(engineeringEssentials);
 let savedForReview = JSON.parse(localStorage.getItem('savedTrig')) || [];
 let currentQuizIndex = 0;
+let currentPhase = 0; // Track current phase: 0=name, 1=formula, 2=desc, 3=usage, 4=example
 let quizList = [];
 let quizInterval = null;
 let isPaused = false;
@@ -401,6 +402,7 @@ function startQuiz() {
     quizList = shuffleArray(quizList);
     
     currentQuizIndex = 0;
+    currentPhase = 0;
     isPaused = false;
     showCard();
 }
@@ -434,7 +436,7 @@ function showCard() {
     const usageEl = document.querySelector('.card-usage');
     const exampleEl = document.querySelector('.card-example');
     
-    // Reset
+    // Reset all visibility
     nameEl.classList.remove('visible');
     formulaEl.classList.remove('visible');
     descEl.classList.remove('visible');
@@ -460,55 +462,75 @@ function showCard() {
     
     refreshMathJax();
     
-    // Phase 1: Show name (5 seconds to think)
-    setTimeout(() => nameEl.classList.add('visible'), 100);
+    const showDetails = document.getElementById('show-usage').checked;
+    const maxPhase = showDetails ? 4 : 1; // 0-4 with details, 0-1 without
     
-    // Phase 2: Show formula (5 seconds after name appears)
+    // Show phases up to current phase instantly
     setTimeout(() => {
-        formulaEl.classList.add('visible');
-        
-        if (document.getElementById('show-usage').checked) {
-            // Phase 3: Show description (5 seconds after formula)
-            setTimeout(() => {
-                descEl.classList.add('visible');
-                
-                // Phase 4: Show usage (5 seconds after description)
-                setTimeout(() => {
-                    usageEl.classList.add('visible');
-                    
-                    // Phase 5: Show example (5 seconds after usage)
-                    setTimeout(() => {
-                        exampleEl.classList.add('visible');
-                    }, 5000);
-                }, 5000);
-            }, 5000);
+        if (currentPhase >= 0) nameEl.classList.add('visible');
+        if (currentPhase >= 1) formulaEl.classList.add('visible');
+        if (showDetails) {
+            if (currentPhase >= 2) descEl.classList.add('visible');
+            if (currentPhase >= 3) usageEl.classList.add('visible');
+            if (currentPhase >= 4) exampleEl.classList.add('visible');
         }
-    }, 5000);
+    }, 100);
     
     if (!isPaused) {
-        // Total time: 5s (name) + 5s (formula) + 5s + 5s + 5s (details) = 25s with all details
-        // Without details: 5s (name) + 5s (formula) = 10s
-        const totalTime = document.getElementById('show-usage').checked ? 25000 : 10000;
+        // Auto-advance to next phase after 5 seconds
         quizInterval = setTimeout(() => {
-            currentQuizIndex = (currentQuizIndex + 1) % quizList.length;
-            
-            // Reshuffle when we complete a full cycle
-            if (currentQuizIndex === 0) {
-                quizList = shuffleArray(quizList);
-            }
-            
-            showCard();
-        }, totalTime);
+            advancePhase();
+        }, 5000);
+    }
+}
+
+function advancePhase() {
+    const showDetails = document.getElementById('show-usage').checked;
+    const maxPhase = showDetails ? 4 : 1;
+    
+    if (currentPhase < maxPhase) {
+        // Move to next phase of current question
+        currentPhase++;
+        showCard();
+    } else {
+        // Move to next question, reset phase
+        currentPhase = 0;
+        currentQuizIndex = (currentQuizIndex + 1) % quizList.length;
+        
+        // Reshuffle when we complete a full cycle
+        if (currentQuizIndex === 0) {
+            quizList = shuffleArray(quizList);
+        }
+        
+        showCard();
     }
 }
 
 function nextCard() {
-    currentQuizIndex = (currentQuizIndex + 1) % quizList.length;
+    const showDetails = document.getElementById('show-usage').checked;
+    const maxPhase = showDetails ? 4 : 1;
+    
+    if (currentPhase < maxPhase) {
+        // Move to next phase
+        currentPhase++;
+    } else {
+        // Move to next question
+        currentPhase = 0;
+        currentQuizIndex = (currentQuizIndex + 1) % quizList.length;
+    }
     showCard();
 }
 
 function prevCard() {
-    currentQuizIndex = (currentQuizIndex - 1 + quizList.length) % quizList.length;
+    if (currentPhase > 0) {
+        // Move to previous phase
+        currentPhase--;
+    } else {
+        // Move to previous question, last phase
+        currentQuizIndex = (currentQuizIndex - 1 + quizList.length) % quizList.length;
+        const showDetails = document.getElementById('show-usage').checked;
+        currentPhase = showDetails ? 4 : 1;
+    }
     showCard();
 }
 
@@ -516,7 +538,10 @@ function togglePause() {
     isPaused = !isPaused;
     document.getElementById('pause-btn').textContent = isPaused ? 'Resume' : 'Pause';
     if (!isPaused) {
-        showCard();
+        // Resume auto-advance
+        quizInterval = setTimeout(() => {
+            advancePhase();
+        }, 5000);
     } else {
         stopQuiz();
     }
