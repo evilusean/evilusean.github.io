@@ -460,6 +460,40 @@ nav button.saved-btn:hover {
     color: var(--text-primary);
 }
 
+.notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    padding: 1.5rem 2.5rem;
+    border-radius: 12px;
+    border: 2px solid var(--cos-blue);
+    font-size: 1.2rem;
+    font-weight: 600;
+    z-index: 2000;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.notification.show {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.notification.success {
+    border-color: var(--cos-blue);
+}
+
+.notification.saved {
+    border-color: var(--sin-red);
+}
+
+.notification.copied {
+    border-color: var(--tan-purple);
+}
+
 @media (max-width: 768px) {
     header h1 {
         font-size: 1.5rem;

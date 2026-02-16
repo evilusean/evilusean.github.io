@@ -57,21 +57,68 @@ function parseIdentity(identity) {
 function colorCodeText(text) {
     if (!text) return text;
     
-    // Color code trig functions
-    text = text.replace(/\bsin\b/gi, '<span class="sin">sin</span>');
-    text = text.replace(/\bcos\b/gi, '<span class="cos">cos</span>');
-    text = text.replace(/\btan\b/gi, '<span class="tan">tan</span>');
-    text = text.replace(/\bcsc\b/gi, '<span class="sin">csc</span>');
-    text = text.replace(/\bsec\b/gi, '<span class="cos">sec</span>');
-    text = text.replace(/\bcot\b/gi, '<span class="tan">cot</span>');
+    // Color code trig functions - more comprehensive patterns
+    text = text.replace(/\bsin\s*θ/gi, '<span class="sin">sin θ</span>');
+    text = text.replace(/\bcos\s*θ/gi, '<span class="cos">cos θ</span>');
+    text = text.replace(/\btan\s*θ/gi, '<span class="tan">tan θ</span>');
+    text = text.replace(/\bcsc\s*θ/gi, '<span class="csc">csc θ</span>');
+    text = text.replace(/\bsec\s*θ/gi, '<span class="sec">sec θ</span>');
+    text = text.replace(/\bcot\s*θ/gi, '<span class="cot">cot θ</span>');
+    
+    // Color code with various notations
+    text = text.replace(/\bsin\(([^)]+)\)/gi, '<span class="sin">sin($1)</span>');
+    text = text.replace(/\bcos\(([^)]+)\)/gi, '<span class="cos">cos($1)</span>');
+    text = text.replace(/\btan\(([^)]+)\)/gi, '<span class="tan">tan($1)</span>');
+    text = text.replace(/\bcsc\(([^)]+)\)/gi, '<span class="csc">csc($1)</span>');
+    text = text.replace(/\bsec\(([^)]+)\)/gi, '<span class="sec">sec($1)</span>');
+    text = text.replace(/\bcot\(([^)]+)\)/gi, '<span class="cot">cot($1)</span>');
+    
+    // Standalone trig functions
+    text = text.replace(/\bsin\b(?![θ(])/gi, '<span class="sin">sin</span>');
+    text = text.replace(/\bcos\b(?![θ(])/gi, '<span class="cos">cos</span>');
+    text = text.replace(/\btan\b(?![θ(])/gi, '<span class="tan">tan</span>');
+    text = text.replace(/\bcsc\b(?![θ(])/gi, '<span class="csc">csc</span>');
+    text = text.replace(/\bsec\b(?![θ(])/gi, '<span class="sec">sec</span>');
+    text = text.replace(/\bcot\b(?![θ(])/gi, '<span class="cot">cot</span>');
+    
+    // Color code with superscripts
+    text = text.replace(/\bsin²\s*θ/gi, '<span class="sin">sin² θ</span>');
+    text = text.replace(/\bcos²\s*θ/gi, '<span class="cos">cos² θ</span>');
+    text = text.replace(/\btan²\s*θ/gi, '<span class="tan">tan² θ</span>');
+    text = text.replace(/\bsin²/gi, '<span class="sin">sin²</span>');
+    text = text.replace(/\bcos²/gi, '<span class="cos">cos²</span>');
+    text = text.replace(/\btan²/gi, '<span class="tan">tan²</span>');
+    
+    // Color code with x variable
+    text = text.replace(/\bsinx\b/gi, '<span class="sin">sinx</span>');
+    text = text.replace(/\bcosx\b/gi, '<span class="cos">cosx</span>');
+    text = text.replace(/\btanx\b/gi, '<span class="tan">tanx</span>');
+    text = text.replace(/\bcscx\b/gi, '<span class="csc">cscx</span>');
+    text = text.replace(/\bsecx\b/gi, '<span class="sec">secx</span>');
+    text = text.replace(/\bcotx\b/gi, '<span class="cot">cotx</span>');
     
     // Bold key terms
-    text = text.replace(/\b(WHY|WHEN TO USE|EXAMPLE|NOTE|IMPORTANT)\b/g, '<strong>$1</strong>');
+    text = text.replace(/\b(WHY|WHEN TO USE|EXAMPLE|NOTE|IMPORTANT|Area|Slope)\b/g, '<strong>$1</strong>');
     
     // Bold formulas in text (anything with θ or = or mathematical notation)
     text = text.replace(/([\w\s]*[=≠<>±√∫∑][^\.,;]+)/g, '<strong>$1</strong>');
     
     return text;
+}
+
+// Show notification
+function showNotification(message, type = 'success') {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.className = `notification ${type}`;
+    
+    // Trigger animation
+    setTimeout(() => notification.classList.add('show'), 10);
+    
+    // Hide after delay
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 2000);
 }
 
 // Convert formula to MathJax format
@@ -175,9 +222,7 @@ function renderCheatsheet() {
             e.stopPropagation();
             const formula = el.getAttribute('data-formula');
             navigator.clipboard.writeText(formula).then(() => {
-                const original = el.style.background;
-                el.style.background = 'var(--highlight-bg)';
-                setTimeout(() => el.style.background = original, 300);
+                showNotification('📋 Formula copied!', 'copied');
             });
         });
     });
@@ -235,7 +280,7 @@ function saveToURL() {
     const url = `${window.location.origin}${window.location.pathname}?s=${encoded}`;
     
     navigator.clipboard.writeText(url).then(() => {
-        alert('URL copied to clipboard! Share this link to save your selection.');
+        showNotification('🔗 URL copied to clipboard!', 'success');
     }).catch(() => {
         prompt('Copy this URL:', url);
     });
@@ -391,9 +436,7 @@ function showCard() {
     // Add click to copy for quiz card
     formulaEl.onclick = () => {
         navigator.clipboard.writeText(identity.formula).then(() => {
-            const original = formulaEl.style.background;
-            formulaEl.style.background = 'var(--highlight-bg)';
-            setTimeout(() => formulaEl.style.background = original, 300);
+            showNotification('📋 Formula copied!', 'copied');
         });
     };
     
@@ -403,33 +446,41 @@ function showCard() {
     
     refreshMathJax();
     
-    // Reveal sequence
+    const speed = parseInt(document.getElementById('speed-slider').value);
+    const baseDelay = 12000 - speed * 1000; // Base timing
+    
+    // Phase 1: Show name (3 seconds)
     setTimeout(() => nameEl.classList.add('visible'), 100);
     
-    const speed = parseInt(document.getElementById('speed-slider').value);
-    const delay = 11000 - speed * 1000; // 10s to 1s
-    
+    // Phase 2: Show formula (5 seconds after name)
     setTimeout(() => {
         formulaEl.classList.add('visible');
         
         if (document.getElementById('show-usage').checked) {
+            // Phase 3: Show description (3 seconds after formula)
             setTimeout(() => {
                 descEl.classList.add('visible');
+                
+                // Phase 4: Show usage (3 seconds after description)
                 setTimeout(() => {
                     usageEl.classList.add('visible');
+                    
+                    // Phase 5: Show example (3 seconds after usage)
                     setTimeout(() => {
                         exampleEl.classList.add('visible');
-                    }, delay / 4);
-                }, delay / 4);
-            }, delay / 4);
+                    }, 3000);
+                }, 3000);
+            }, 3000);
         }
-    }, delay / 2);
+    }, 5000);
     
     if (!isPaused) {
+        // Total time: 3s (name) + 5s (formula) + 3s + 3s + 3s (details) = 17s base
+        const totalTime = document.getElementById('show-usage').checked ? 17000 : 8000;
         quizInterval = setTimeout(() => {
             currentQuizIndex = (currentQuizIndex + 1) % quizList.length;
             showCard();
-        }, delay * 2.5);
+        }, totalTime);
     }
 }
 
@@ -465,20 +516,9 @@ function saveForReviewFunc() {
         localStorage.setItem('savedTrig', JSON.stringify(savedForReview));
         updateSavedCount();
         
-        // Visual feedback
-        const card = document.getElementById('quiz-card');
-        const btn = document.getElementById('save-btn');
-        card.style.transform = 'scale(1.05)';
-        card.style.border = '3px solid var(--sin-red)';
-        btn.textContent = '✓ Saved!';
-        btn.style.background = 'var(--sin-red)';
-        
-        setTimeout(() => {
-            card.style.transform = 'scale(1)';
-            card.style.border = '';
-            btn.textContent = '💾 Save for Review';
-            btn.style.background = '';
-        }, 800);
+        showNotification('💾 Saved for review!', 'saved');
+    } else {
+        showNotification('Already saved!', 'success');
     }
 }
 
@@ -509,7 +549,7 @@ function showSavedModal() {
 
 function downloadTXT() {
     if (savedForReview.length === 0) {
-        alert('No saved items to download');
+        showNotification('⚠️ No saved items', 'success');
         return;
     }
     
@@ -525,11 +565,12 @@ function downloadTXT() {
     content += new Date().toLocaleString();
     
     downloadFile(content, 'trig-identities-saved.txt', 'text/plain');
+    showNotification('📄 Downloaded as TXT!', 'success');
 }
 
 function downloadCSV() {
     if (savedForReview.length === 0) {
-        alert('No saved items to download');
+        showNotification('⚠️ No saved items', 'success');
         return;
     }
     
@@ -543,6 +584,7 @@ function downloadCSV() {
     });
     
     downloadFile(content, 'trig-identities-saved.csv', 'text/csv');
+    showNotification('📊 Downloaded as CSV!', 'success');
 }
 
 function downloadFile(content, filename, mimeType) {
@@ -574,6 +616,7 @@ function clearSaved() {
         localStorage.setItem('savedTrig', JSON.stringify(savedForReview));
         updateSavedCount();
         closeSavedModal();
+        showNotification('🗑️ All items cleared', 'success');
     }
 }
 
