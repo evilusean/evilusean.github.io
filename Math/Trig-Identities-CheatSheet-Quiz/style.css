@@ -24,19 +24,24 @@ body {
 
 header {
     background: var(--bg-card);
-    padding: 1rem;
+    padding: 1.5rem 1rem;
     border-bottom: 2px solid var(--cos-blue);
+    text-align: center;
 }
 
 header h1 {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
 }
 
 nav {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
+    justify-content: center;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 nav button {
@@ -66,6 +71,58 @@ nav button.saved-btn:hover {
     color: var(--bg-deep);
 }
 
+.external-link {
+    color: var(--cos-blue);
+    text-decoration: none;
+    font-weight: 600;
+    border-bottom: 2px solid var(--cos-blue);
+    transition: all 0.3s;
+}
+
+.external-link:hover {
+    color: var(--tan-purple);
+    border-bottom-color: var(--tan-purple);
+}
+
+.modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.modal-actions button {
+    flex: 1;
+    min-width: 150px;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+#download-txt-btn {
+    background: var(--cos-blue);
+    color: var(--bg-deep);
+}
+
+#download-csv-btn {
+    background: var(--tan-purple);
+    color: var(--bg-deep);
+}
+
+#download-txt-btn:hover,
+#download-csv-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+#clear-saved-btn {
+    background: var(--accent);
+    color: var(--text-primary);
+}
+
 .legend {
     position: fixed;
     bottom: 1rem;
@@ -87,37 +144,6 @@ nav button.saved-btn:hover {
 
 .view.active {
     display: block;
-}
-
-#cheatsheet-toolbar {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    padding: 1rem;
-    background: var(--bg-card);
-    border-radius: 8px;
-    flex-wrap: wrap;
-}
-
-.toolbar-section {
-    display: flex;
-    gap: 0.5rem;
-}
-
-#cheatsheet-toolbar button {
-    background: var(--bg-deep);
-    color: var(--text-primary);
-    border: 1px solid var(--cos-blue);
-    padding: 0.6rem 1.2rem;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.3s;
-    font-weight: 500;
-}
-
-#cheatsheet-toolbar button:hover {
-    background: var(--cos-blue);
-    color: var(--bg-deep);
 }
 
 #identities-list {
@@ -404,17 +430,11 @@ nav button.saved-btn:hover {
 #clear-saved-btn {
     background: var(--accent);
     color: var(--text-primary);
-    border: none;
-    padding: 0.75rem 1.5rem;
-    cursor: pointer;
-    border-radius: 4px;
-    margin-top: 1rem;
-    font-weight: 600;
 }
 
 @media (max-width: 768px) {
     header h1 {
-        font-size: 1.2rem;
+        font-size: 1.5rem;
     }
     
     nav {
@@ -432,20 +452,6 @@ nav button.saved-btn:hover {
         font-size: 0.75rem;
         gap: 0.5rem;
         padding: 0.5rem;
-    }
-    
-    #cheatsheet-toolbar {
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-    
-    .toolbar-section {
-        width: 100%;
-        flex-direction: column;
-    }
-    
-    #cheatsheet-toolbar button {
-        width: 100%;
     }
     
     #quiz-card {

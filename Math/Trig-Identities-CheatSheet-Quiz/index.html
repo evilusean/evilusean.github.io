@@ -4,30 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trig Cheatsheet & Quiz</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📐</text></svg>">
     <link rel="stylesheet" href="style.css">
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
 </head>
 <body>
     <header>
-        <h1>Trig Cheatsheet & Quiz</h1>
+        <h1>📐 Trig Cheatsheet & Quiz</h1>
         <nav>
             <button id="cheatsheet-btn" class="active">Cheatsheet</button>
             <button id="quiz-btn">Quiz Mode</button>
             <button id="help-btn">Help</button>
-            <button id="view-saved-btn-header" class="saved-btn">Saved (<span id="saved-count-header">0</span>)</button>
+            <button id="select-all-btn">Select All</button>
+            <button id="deselect-all-btn">Deselect All</button>
+            <button id="save-url-btn">📋 Save to URL</button>
+            <button id="view-saved-btn-header" class="saved-btn">💾 Saved (<span id="saved-count-header">0</span>)</button>
         </nav>
     </header>
 
     <div id="cheatsheet-view" class="view active">
-        <div id="cheatsheet-toolbar">
-            <div class="toolbar-section">
-                <button id="select-all-btn">Select All</button>
-                <button id="deselect-all-btn">Deselect All</button>
-            </div>
-            <div class="toolbar-section">
-                <button id="save-url-btn">📋 Save to URL</button>
-                <button id="load-url-btn">📥 Load from URL</button>
-            </div>
-        </div>
         <div id="identities-list"></div>
     </div>
 
@@ -61,17 +67,17 @@
         </div>
         <div class="help-section">
             <h3>Cheatsheet Mode</h3>
-            <p>Check identities to study. Selected items show details by default (click to collapse). Use toolbar to select all/save selections to URL.</p>
+            <p>Check identities to study. Selected items show details by default (click to collapse).</p>
         </div>
         <div class="help-section">
             <h3>Quiz Mode</h3>
             <p>Cycles through selected identities. Reveals name → formula → details progressively.</p>
-            <p><strong>Controls:</strong> Arrow keys or Prev/Next buttons. Press Space to save for review.</p>
+            <p><strong>Controls:</strong> Arrow keys or Prev/Next buttons. Press Space to save for review. ESC to exit.</p>
             <p><strong>Mobile:</strong> Swipe left/right to navigate.</p>
         </div>
         <div class="help-section">
-            <h3>Saved Items</h3>
-            <p>Click "Saved" button (top right) to view items you've marked for review during quiz mode.</p>
+            <h3>Related Resources</h3>
+            <p>📊 <a href="https://evilusean.github.io/Math/Unit-CirculaSean/index.html" target="_blank" class="external-link">Interactive Unit Circle App</a> - Visualize trig functions on the unit circle</p>
         </div>
     </div>
 
@@ -80,7 +86,11 @@
             <span class="close">&times;</span>
             <h2>💾 Saved for Review</h2>
             <div id="saved-list"></div>
-            <button id="clear-saved-btn">Clear All</button>
+            <div class="modal-actions">
+                <button id="download-txt-btn">📄 Download as TXT</button>
+                <button id="download-csv-btn">📊 Download as CSV</button>
+                <button id="clear-saved-btn">🗑️ Clear All</button>
+            </div>
         </div>
     </div>
 

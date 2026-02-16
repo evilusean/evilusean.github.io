@@ -74,6 +74,44 @@ function colorCodeText(text) {
     return text;
 }
 
+// Convert formula to MathJax format
+function toMathJax(formula) {
+    if (!formula) return formula;
+    
+    let math = formula;
+    
+    // Replace Greek letters
+    math = math.replace(/θ/g, '\\theta');
+    math = math.replace(/π/g, '\\pi');
+    
+    // Replace trig functions with colored versions
+    math = math.replace(/sin/g, '\\color{#f85149}{\\sin}');
+    math = math.replace(/cos/g, '\\color{#58a6ff}{\\cos}');
+    math = math.replace(/tan/g, '\\color{#bc8cff}{\\tan}');
+    math = math.replace(/csc/g, '\\color{#f85149}{\\csc}');
+    math = math.replace(/sec/g, '\\color{#58a6ff}{\\sec}');
+    math = math.replace(/cot/g, '\\color{#bc8cff}{\\cot}');
+    
+    // Handle superscripts (² becomes ^2)
+    math = math.replace(/²/g, '^2');
+    
+    // Handle fractions (a/b becomes \frac{a}{b})
+    math = math.replace(/(\d+|[a-z]+)\s*\/\s*(\d+|[a-z]+)/gi, '\\frac{$1}{$2}');
+    
+    // Handle square roots
+    math = math.replace(/√\[([^\]]+)\]/g, '\\sqrt{$1}');
+    math = math.replace(/√(\d+)/g, '\\sqrt{$1}');
+    
+    return `$${math}$`;
+}
+
+// Refresh MathJax rendering
+function refreshMathJax() {
+    if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise().catch((err) => console.log('MathJax error:', err));
+    }
+}
+
 function renderCheatsheet() {
     const container = document.getElementById('identities-list');
     container.innerHTML = trigIdentities.map((identity, index) => {
@@ -89,7 +127,7 @@ function renderCheatsheet() {
                     onclick="event.stopPropagation(); toggleSelection(${index}, '${identity.name.replace(/'/g, "\\'")}')">
                 <span class="identity-name">${identity.name}</span>
             </div>
-            <div class="identity-formula">${colorCodeText(identity.formula)}</div>
+            <div class="identity-formula">${toMathJax(identity.formula)}</div>
             <div class="identity-details ${isSelected ? 'visible' : ''}" id="details-${index}">
                 <div class="identity-section">
                     <h4>📖 Description</h4>
@@ -107,6 +145,8 @@ function renderCheatsheet() {
         </div>
     `;
     }).join('');
+    
+    refreshMathJax();
 }
 
 function toggleDetails(index) {
@@ -191,12 +231,6 @@ function setupEventListeners() {
     document.getElementById('select-all-btn').onclick = selectAll;
     document.getElementById('deselect-all-btn').onclick = deselectAll;
     document.getElementById('save-url-btn').onclick = saveToURL;
-    document.getElementById('load-url-btn').onclick = () => {
-        const url = prompt('Paste the URL:');
-        if (url) {
-            window.location.href = url;
-        }
-    };
     
     document.getElementById('exit-quiz-btn').onclick = () => switchView('cheatsheet');
     document.getElementById('prev-btn').onclick = prevCard;
@@ -208,6 +242,8 @@ function setupEventListeners() {
     
     // Modal close
     document.querySelector('.close').onclick = closeSavedModal;
+    document.getElementById('download-txt-btn').onclick = downloadTXT;
+    document.getElementById('download-csv-btn').onclick = downloadCSV;
     document.getElementById('clear-saved-btn').onclick = clearSaved;
     
     window.onclick = (e) => {
@@ -305,10 +341,12 @@ function showCard() {
     exampleEl.classList.remove('visible');
     
     nameEl.textContent = identity.name;
-    formulaEl.innerHTML = colorCodeText(identity.formula);
+    formulaEl.innerHTML = toMathJax(identity.formula);
     descEl.innerHTML = colorCodeText(parsed.description);
     usageEl.innerHTML = colorCodeText(parsed.usage);
     exampleEl.innerHTML = colorCodeText(parsed.example);
+    
+    refreshMathJax();
     
     // Reveal sequence
     setTimeout(() => nameEl.classList.add('visible'), 100);
@@ -404,13 +442,64 @@ function showSavedModal() {
         list.innerHTML = savedForReview.map((item, idx) => `
             <div class="saved-item">
                 <div class="saved-item-name">${item.name}</div>
-                <div class="saved-item-formula">${colorCodeText(item.formula)}</div>
+                <div class="saved-item-formula">${toMathJax(item.formula)}</div>
                 <button onclick="removeSaved(${idx})" style="float: right; background: var(--accent); border: none; color: white; padding: 0.4rem 0.8rem; cursor: pointer; border-radius: 4px; margin-top: 0.5rem; font-weight: 600;">Remove</button>
             </div>
         `).join('');
+        refreshMathJax();
     }
     
     modal.classList.add('active');
+}
+
+function downloadTXT() {
+    if (savedForReview.length === 0) {
+        alert('No saved items to download');
+        return;
+    }
+    
+    let content = 'SAVED TRIG IDENTITIES FOR REVIEW\n';
+    content += '='.repeat(50) + '\n\n';
+    
+    savedForReview.forEach((item, idx) => {
+        content += `${idx + 1}. ${item.name}\n`;
+        content += `   Formula: ${item.formula}\n\n`;
+    });
+    
+    content += '\nGenerated by Trig Cheatsheet & Quiz App\n';
+    content += new Date().toLocaleString();
+    
+    downloadFile(content, 'trig-identities-saved.txt', 'text/plain');
+}
+
+function downloadCSV() {
+    if (savedForReview.length === 0) {
+        alert('No saved items to download');
+        return;
+    }
+    
+    let content = 'Name,Formula\n';
+    
+    savedForReview.forEach(item => {
+        // Escape quotes in CSV
+        const name = `"${item.name.replace(/"/g, '""')}"`;
+        const formula = `"${item.formula.replace(/"/g, '""')}"`;
+        content += `${name},${formula}\n`;
+    });
+    
+    downloadFile(content, 'trig-identities-saved.csv', 'text/csv');
+}
+
+function downloadFile(content, filename, mimeType) {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
 }
 
 function closeSavedModal() {
