@@ -1,5 +1,46 @@
-:root { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; }
-body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; overflow: hidden; }
-#card-container { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; }
-.card { background: var(--card); padding: 2rem; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 80%; max-width: 500px; text-align: center; }
-/* Kiro: Add responsive breakpoints and swipe animations */
+:root {
+    --bg-deep: #0d1117;        /* Match the dark navy/black from the image */
+    --bg-card: #161b22;        /* Slightly lighter slate for card depth */
+    
+    /* Mathematical Color Mapping */
+    --cos-blue: #58a6ff;       /* Blue for Cosine (x) */
+    --sin-red: #f85149;        /* Red for Sine (y) */
+    
+    --accent-red: #ff3131;     /* Neon red for alerts/active state */
+    --text-primary: #ffffff;
+    --text-secondary: #8b949e; /* Muted gray for descriptions */
+}
+
+/* Logic for dynamic formula coloring */
+.formula-sine { color: var(--sin-red); text-shadow: 0 0 5px rgba(248, 81, 73, 0.5); }
+.formula-cosine { color: var(--cos-blue); text-shadow: 0 0 5px rgba(88, 166, 255, 0.5); }
+
+/* Animation for the "Glow" effect on formulas */
+@keyframes formula-glow {
+    from { text-shadow: 0 0 5px rgba(248, 81, 73, 0.2); }
+    to { text-shadow: 0 0 20px rgba(248, 81, 73, 0.8); }
+}
+
+.formula-sine { color: var(--sin-red); animation: formula-glow 2s infinite alternate; }
+.formula-cosine { color: var(--cos-blue); }
+
+/* The reveal transition used by Screensaver mode */
+.reveal-element {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal-element.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Save Animation */
+@keyframes fly-to-review {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+    100% { transform: scale(0) translate(200px, -500px); opacity: 0; }
+}
+
+.saving { animation: fly-to-review 0.6s forwards; }
