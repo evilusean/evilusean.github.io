@@ -17,6 +17,12 @@
     </header>
 
     <div id="cheatsheet-view" class="view active">
+        <div id="cheatsheet-controls">
+            <button id="select-all-btn">Select All</button>
+            <button id="deselect-all-btn">Deselect All</button>
+            <button id="save-url-btn">Save to URL</button>
+            <button id="load-url-btn">Load from URL</button>
+        </div>
         <div id="identities-list"></div>
     </div>
 
@@ -26,24 +32,38 @@
             <button id="pause-btn">Pause</button>
             <button id="save-btn">Save for Review</button>
             <button id="next-btn">Next →</button>
+            <button id="view-saved-btn">View Saved (<span id="saved-count">0</span>)</button>
         </div>
         <div id="quiz-settings">
             <label>Speed: <input type="range" id="speed-slider" min="1" max="10" value="5"></label>
-            <label><input type="checkbox" id="show-usage"> Show usage</label>
+            <label><input type="checkbox" id="show-usage"> Show all details</label>
         </div>
         <div id="quiz-card">
             <div class="card-name"></div>
             <div class="card-formula"></div>
+            <div class="card-description"></div>
             <div class="card-usage"></div>
+            <div class="card-example"></div>
         </div>
     </div>
 
     <div id="help-view" class="view">
         <h2>How to Use</h2>
-        <p><strong>Cheatsheet Mode:</strong> Check the identities you want to study. By default, essential engineering identities are selected.</p>
-        <p><strong>Quiz Mode:</strong> The app will cycle through selected identities. First shows the name, then formula, then usage (if enabled).</p>
+        <p><strong>Cheatsheet Mode:</strong> Check the identities you want to study. By default, essential engineering identities are selected. Selected items show details by default (click to collapse).</p>
+        <p><strong>Quiz Mode:</strong> The app will cycle through selected identities. First shows the name, then formula, then additional details (if enabled).</p>
         <p><strong>Controls:</strong> Use Prev/Next buttons or arrow keys. Press Space to save for review. Adjust speed with the slider.</p>
         <p><strong>Mobile:</strong> Swipe left/right to navigate in quiz mode.</p>
+        <p><strong>Save to URL:</strong> Click "Save to URL" to generate a shareable link with your selected identities.</p>
+        <p><strong>Saved for Review:</strong> Items saved during quiz mode appear in the "View Saved" list.</p>
+    </div>
+
+    <div id="saved-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Saved for Review</h2>
+            <div id="saved-list"></div>
+            <button id="clear-saved-btn">Clear All</button>
+        </div>
     </div>
 
     <script src="trig_identities_complete.js"></script>
