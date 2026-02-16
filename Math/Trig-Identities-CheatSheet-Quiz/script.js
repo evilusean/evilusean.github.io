@@ -396,9 +396,23 @@ function startQuiz() {
         switchView('cheatsheet');
         return;
     }
+    
+    // Shuffle the quiz list for random order
+    quizList = shuffleArray(quizList);
+    
     currentQuizIndex = 0;
     isPaused = false;
     showCard();
+}
+
+// Fisher-Yates shuffle algorithm
+function shuffleArray(array) {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
 }
 
 function stopQuiz() {
@@ -479,6 +493,12 @@ function showCard() {
         const totalTime = document.getElementById('show-usage').checked ? 17000 : 8000;
         quizInterval = setTimeout(() => {
             currentQuizIndex = (currentQuizIndex + 1) % quizList.length;
+            
+            // Reshuffle when we complete a full cycle
+            if (currentQuizIndex === 0) {
+                quizList = shuffleArray(quizList);
+            }
+            
             showCard();
         }, totalTime);
     }
