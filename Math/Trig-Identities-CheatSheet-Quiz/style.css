@@ -90,6 +90,28 @@ nav button.saved-btn:hover {
     color: var(--bg-deep);
 }
 
+#preset-dropdown {
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    border: 1px solid var(--tan-purple);
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+#preset-dropdown:hover {
+    background: var(--tan-purple);
+    color: var(--bg-deep);
+}
+
+#preset-dropdown option {
+    background: var(--bg-card);
+    color: var(--text-primary);
+}
+
 .help-section ul {
     margin-left: 1.5rem;
     margin-top: 0.5rem;
@@ -518,6 +540,10 @@ nav button.saved-btn:hover {
     }
     
     .secondary-nav button {
+        width: 100%;
+    }
+    
+    #preset-dropdown {
         width: 100%;
     }
     

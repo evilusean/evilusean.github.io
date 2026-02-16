@@ -12,6 +12,92 @@ const engineeringEssentials = [
     'Quotient: Tangent'
 ];
 
+// Preset configurations
+const presets = {
+    engineering: [
+        'Pythagorean Identity',
+        'Secant Identity',
+        'Cosecant Identity',
+        'Double Angle Sine',
+        'Double Angle Cosine',
+        'Sum of Sine',
+        'Sum of Cosine',
+        'Law of Sines',
+        'Law of Cosines (side a)',
+        'Law of Cosines (side b)',
+        'Law of Cosines (side c)',
+        'Quotient: Tangent',
+        'Quotient: Cotangent'
+    ],
+    beginner: [
+        'Reciprocal: Cosecant',
+        'Reciprocal: Secant',
+        'Reciprocal: Cotangent',
+        'Quotient: Tangent',
+        'Quotient: Cotangent',
+        'Pythagorean Identity',
+        'Even/Odd: Sine',
+        'Even/Odd: Cosine',
+        'Even/Odd: Tangent',
+        'Cofunction: sin/cos',
+        'Cofunction: cos/sin'
+    ],
+    intermediate: [
+        'Pythagorean Identity',
+        'Secant Identity',
+        'Cosecant Identity',
+        'Sum of Sine',
+        'Difference of Sine',
+        'Sum of Cosine',
+        'Difference of Cosine',
+        'Double Angle Sine',
+        'Double Angle Cosine',
+        'Double Angle Tangent',
+        'Power Reduction: sin²',
+        'Power Reduction: cos²'
+    ],
+    advanced: [
+        'Sum of Tangent',
+        'Difference of Tangent',
+        'Half Angle Sine',
+        'Half Angle Cosine',
+        'Product to Sum: sin·cos',
+        'Product to Sum: cos·sin',
+        'Product to Sum: cos·cos',
+        'Product to Sum: sin·sin',
+        'Sum to Product: sin+sin',
+        'Sum to Product: sin−sin',
+        'Sum to Product: cos+cos',
+        'Sum to Product: cos−cos'
+    ],
+    calculus: [
+        'Pythagorean Identity',
+        'Secant Identity',
+        'Cosecant Identity',
+        'Double Angle Sine',
+        'Double Angle Cosine',
+        'Power Reduction: sin²',
+        'Power Reduction: cos²',
+        'Product to Sum: sin·cos',
+        'Product to Sum: cos·cos',
+        'Product to Sum: sin·sin',
+        'Sum of Sine',
+        'Sum of Cosine'
+    ],
+    geometry: [
+        'Pythagorean Identity',
+        'Law of Sines',
+        'Law of Cosines (side a)',
+        'Law of Cosines (side b)',
+        'Law of Cosines (side c)',
+        'Triangle Area (SAS)',
+        'Heron\'s Formula',
+        'Cofunction: sin/cos',
+        'Cofunction: cos/sin',
+        'Quotient: Tangent'
+    ]
+};
+
 // State
 let selectedIdentities = new Set(engineeringEssentials);
 let savedForReview = JSON.parse(localStorage.getItem('savedTrig')) || [];
@@ -257,6 +343,18 @@ function loadSavedSelections() {
     const saved = localStorage.getItem('selectedIdentities');
     if (saved) {
         selectedIdentities = new Set(JSON.parse(saved));
+    } else {
+        // If nothing saved, use engineering defaults
+        selectedIdentities = new Set(engineeringEssentials);
+    }
+}
+
+function loadPreset(presetName) {
+    if (presets[presetName]) {
+        selectedIdentities = new Set(presets[presetName]);
+        saveSelections();
+        renderCheatsheet();
+        showNotification(`✨ ${presetName.charAt(0).toUpperCase() + presetName.slice(1)} preset loaded!`, 'success');
     }
 }
 
@@ -313,6 +411,13 @@ function setupEventListeners() {
     document.getElementById('select-all-btn').onclick = selectAll;
     document.getElementById('deselect-all-btn').onclick = deselectAll;
     document.getElementById('save-url-btn').onclick = saveToURL;
+    
+    document.getElementById('preset-dropdown').onchange = (e) => {
+        if (e.target.value) {
+            loadPreset(e.target.value);
+            e.target.value = ''; // Reset dropdown
+        }
+    };
     
     document.getElementById('exit-quiz-btn').onclick = () => switchView('cheatsheet');
     document.getElementById('prev-btn').onclick = prevCard;
