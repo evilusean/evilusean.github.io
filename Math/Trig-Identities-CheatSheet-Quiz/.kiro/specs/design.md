@@ -49,3 +49,5 @@ The "Engineering Mode" toggle should automatically select these from `trig_ident
 - **Law of Cosines** (Static mechanics/force vectors)
 - **Reciprocal: Cosecant/Secant** (General calculus)
 
+## Trig Identities :
+- **Add Any Trig Identities I don't already have** in the 'trig_identities_complete.js' like law of sines and cosines
