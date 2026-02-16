@@ -53,6 +53,27 @@ function parseIdentity(identity) {
     return parts;
 }
 
+// Color code formulas and text
+function colorCodeText(text) {
+    if (!text) return text;
+    
+    // Color code trig functions
+    text = text.replace(/\bsin\b/gi, '<span class="sin">sin</span>');
+    text = text.replace(/\bcos\b/gi, '<span class="cos">cos</span>');
+    text = text.replace(/\btan\b/gi, '<span class="tan">tan</span>');
+    text = text.replace(/\bcsc\b/gi, '<span class="sin">csc</span>');
+    text = text.replace(/\bsec\b/gi, '<span class="cos">sec</span>');
+    text = text.replace(/\bcot\b/gi, '<span class="tan">cot</span>');
+    
+    // Bold key terms
+    text = text.replace(/\b(WHY|WHEN TO USE|EXAMPLE|NOTE|IMPORTANT)\b/g, '<strong>$1</strong>');
+    
+    // Bold formulas in text (anything with θ or = or mathematical notation)
+    text = text.replace(/([\w\s]*[=≠<>±√∫∑][^\.,;]+)/g, '<strong>$1</strong>');
+    
+    return text;
+}
+
 function renderCheatsheet() {
     const container = document.getElementById('identities-list');
     container.innerHTML = trigIdentities.map((identity, index) => {
@@ -68,19 +89,19 @@ function renderCheatsheet() {
                     onclick="event.stopPropagation(); toggleSelection(${index}, '${identity.name.replace(/'/g, "\\'")}')">
                 <span class="identity-name">${identity.name}</span>
             </div>
-            <div class="identity-formula">${identity.formula}</div>
+            <div class="identity-formula">${colorCodeText(identity.formula)}</div>
             <div class="identity-details ${isSelected ? 'visible' : ''}" id="details-${index}">
                 <div class="identity-section">
-                    <h4>Description</h4>
-                    <p>${parsed.description}</p>
+                    <h4>📖 Description</h4>
+                    <p>${colorCodeText(parsed.description)}</p>
                 </div>
                 <div class="identity-section">
-                    <h4>When to Use</h4>
-                    <p>${parsed.usage}</p>
+                    <h4>🎯 When to Use</h4>
+                    <p>${colorCodeText(parsed.usage)}</p>
                 </div>
                 <div class="identity-section">
-                    <h4>Example</h4>
-                    <p>${parsed.example}</p>
+                    <h4>💡 Example</h4>
+                    <p>${colorCodeText(parsed.example)}</p>
                 </div>
             </div>
         </div>
@@ -165,6 +186,7 @@ function setupEventListeners() {
     document.getElementById('cheatsheet-btn').onclick = () => switchView('cheatsheet');
     document.getElementById('quiz-btn').onclick = () => switchView('quiz');
     document.getElementById('help-btn').onclick = () => switchView('help');
+    document.getElementById('view-saved-btn-header').onclick = showSavedModal;
     
     document.getElementById('select-all-btn').onclick = selectAll;
     document.getElementById('deselect-all-btn').onclick = deselectAll;
@@ -176,11 +198,11 @@ function setupEventListeners() {
         }
     };
     
+    document.getElementById('exit-quiz-btn').onclick = () => switchView('cheatsheet');
     document.getElementById('prev-btn').onclick = prevCard;
     document.getElementById('next-btn').onclick = nextCard;
     document.getElementById('pause-btn').onclick = togglePause;
     document.getElementById('save-btn').onclick = saveForReviewFunc;
-    document.getElementById('view-saved-btn').onclick = showSavedModal;
     
     document.getElementById('speed-slider').oninput = updateSpeed;
     
@@ -201,6 +223,7 @@ function setupEventListeners() {
             if (e.key === 'ArrowLeft') prevCard();
             if (e.key === 'ArrowRight') nextCard();
             if (e.key === ' ') { e.preventDefault(); saveForReviewFunc(); }
+            if (e.key === 'Escape') switchView('cheatsheet');
         }
     });
     
@@ -282,10 +305,10 @@ function showCard() {
     exampleEl.classList.remove('visible');
     
     nameEl.textContent = identity.name;
-    formulaEl.textContent = identity.formula;
-    descEl.textContent = parsed.description;
-    usageEl.textContent = parsed.usage;
-    exampleEl.textContent = parsed.example;
+    formulaEl.innerHTML = colorCodeText(identity.formula);
+    descEl.innerHTML = colorCodeText(parsed.description);
+    usageEl.innerHTML = colorCodeText(parsed.usage);
+    exampleEl.innerHTML = colorCodeText(parsed.example);
     
     // Reveal sequence
     setTimeout(() => nameEl.classList.add('visible'), 100);
@@ -339,8 +362,13 @@ function togglePause() {
 
 function saveForReviewFunc() {
     const identity = quizList[currentQuizIndex];
-    if (!savedForReview.includes(identity.name)) {
-        savedForReview.push(identity.name);
+    const existingIndex = savedForReview.findIndex(item => item.name === identity.name);
+    
+    if (existingIndex === -1) {
+        savedForReview.push({
+            name: identity.name,
+            formula: identity.formula
+        });
         localStorage.setItem('savedTrig', JSON.stringify(savedForReview));
         updateSavedCount();
         
@@ -348,19 +376,22 @@ function saveForReviewFunc() {
         const card = document.getElementById('quiz-card');
         const btn = document.getElementById('save-btn');
         card.style.transform = 'scale(1.05)';
-        card.style.border = '2px solid var(--accent)';
+        card.style.border = '3px solid var(--sin-red)';
         btn.textContent = '✓ Saved!';
+        btn.style.background = 'var(--sin-red)';
         
         setTimeout(() => {
             card.style.transform = 'scale(1)';
             card.style.border = '';
-            btn.textContent = 'Save for Review';
+            btn.textContent = '💾 Save for Review';
+            btn.style.background = '';
         }, 800);
     }
 }
 
 function updateSavedCount() {
-    document.getElementById('saved-count').textContent = savedForReview.length;
+    const count = savedForReview.length;
+    document.getElementById('saved-count-header').textContent = count;
 }
 
 function showSavedModal() {
@@ -368,12 +399,13 @@ function showSavedModal() {
     const list = document.getElementById('saved-list');
     
     if (savedForReview.length === 0) {
-        list.innerHTML = '<p style="color: var(--text-secondary);">No items saved yet. Press Space or click "Save for Review" during quiz mode.</p>';
+        list.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 2rem;">No items saved yet. Press Space or click "💾 Save for Review" during quiz mode.</p>';
     } else {
-        list.innerHTML = savedForReview.map((name, idx) => `
+        list.innerHTML = savedForReview.map((item, idx) => `
             <div class="saved-item">
-                <strong>${name}</strong>
-                <button onclick="removeSaved(${idx})" style="float: right; background: var(--accent); border: none; color: white; padding: 0.25rem 0.5rem; cursor: pointer; border-radius: 3px;">Remove</button>
+                <div class="saved-item-name">${item.name}</div>
+                <div class="saved-item-formula">${colorCodeText(item.formula)}</div>
+                <button onclick="removeSaved(${idx})" style="float: right; background: var(--accent); border: none; color: white; padding: 0.4rem 0.8rem; cursor: pointer; border-radius: 4px; margin-top: 0.5rem; font-weight: 600;">Remove</button>
             </div>
         `).join('');
     }

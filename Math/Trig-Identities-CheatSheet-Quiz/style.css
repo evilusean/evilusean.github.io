@@ -1,17 +1,13 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 :root {
     --bg-deep: #0d1117;
     --bg-card: #161b22;
     --cos-blue: #58a6ff;
     --sin-red: #f85149;
+    --tan-purple: #bc8cff;
     --accent: #ff3131;
     --text-primary: #ffffff;
     --text-secondary: #8b949e;
+    --highlight-bg: rgba(88, 166, 255, 0.15);
 }
 
 body {
@@ -20,6 +16,11 @@ body {
     color: var(--text-primary);
     line-height: 1.6;
 }
+
+/* Color coding classes */
+.color-cos, .cos { color: var(--cos-blue); font-weight: 600; }
+.color-sin, .sin { color: var(--sin-red); font-weight: 600; }
+.color-tan, .tan { color: var(--tan-purple); font-weight: 600; }
 
 header {
     background: var(--bg-card);
@@ -32,12 +33,17 @@ header h1 {
     margin-bottom: 0.5rem;
 }
 
+nav {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
 nav button {
     background: transparent;
     color: var(--text-secondary);
     border: 1px solid var(--text-secondary);
     padding: 0.5rem 1rem;
-    margin-right: 0.5rem;
     cursor: pointer;
     border-radius: 4px;
     transition: all 0.3s;
@@ -49,6 +55,31 @@ nav button.active {
     border-color: var(--cos-blue);
 }
 
+nav button.saved-btn {
+    margin-left: auto;
+    border-color: var(--sin-red);
+    color: var(--sin-red);
+}
+
+nav button.saved-btn:hover {
+    background: var(--sin-red);
+    color: var(--bg-deep);
+}
+
+.legend {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    background: var(--bg-card);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--cos-blue);
+    display: flex;
+    gap: 1rem;
+    font-size: 0.9rem;
+    z-index: 100;
+}
+
 .view {
     display: none;
     padding: 1rem;
@@ -56,6 +87,37 @@ nav button.active {
 
 .view.active {
     display: block;
+}
+
+#cheatsheet-toolbar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: var(--bg-card);
+    border-radius: 8px;
+    flex-wrap: wrap;
+}
+
+.toolbar-section {
+    display: flex;
+    gap: 0.5rem;
+}
+
+#cheatsheet-toolbar button {
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    border: 1px solid var(--cos-blue);
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+#cheatsheet-toolbar button:hover {
+    background: var(--cos-blue);
+    color: var(--bg-deep);
 }
 
 #identities-list {
@@ -85,16 +147,19 @@ nav button.active {
 }
 
 .identity-name {
-    font-weight: bold;
-    font-size: 1.1rem;
+    font-weight: 600;
+    font-size: 1rem;
     flex: 1;
+    color: var(--text-secondary);
 }
 
 .identity-formula {
-    color: var(--sin-red);
+    color: var(--text-primary);
     font-family: 'Courier New', monospace;
-    margin: 0.5rem 0;
-    font-size: 1.1rem;
+    margin: 0.75rem 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
 }
 
 .identity-details {
@@ -102,23 +167,46 @@ nav button.active {
     margin-top: 0.5rem;
     padding-top: 0.5rem;
     border-top: 1px solid var(--text-secondary);
-    color: var(--text-secondary);
 }
 
 .identity-details.visible {
     display: block;
 }
 
+.identity-section {
+    margin: 0.75rem 0;
+    padding: 0.75rem;
+    background: var(--highlight-bg);
+    border-radius: 4px;
+    border-left: 3px solid var(--cos-blue);
+}
+
+.identity-section h4 {
+    color: var(--cos-blue);
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.identity-section p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.7;
+}
+
 #quiz-view {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
 }
 
 #quiz-controls {
     display: flex;
     justify-content: center;
-    gap: 1rem;
+    gap: 0.75rem;
     margin-bottom: 1rem;
+    flex-wrap: wrap;
 }
 
 #quiz-controls button {
@@ -129,11 +217,22 @@ nav button.active {
     cursor: pointer;
     border-radius: 4px;
     transition: all 0.3s;
+    font-weight: 500;
 }
 
 #quiz-controls button:hover {
     background: var(--cos-blue);
     color: var(--bg-deep);
+}
+
+#quiz-controls .exit-btn {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+#quiz-controls .exit-btn:hover {
+    background: var(--accent);
+    color: var(--text-primary);
 }
 
 #quiz-settings {
@@ -148,44 +247,56 @@ nav button.active {
     background: var(--bg-card);
     padding: 3rem;
     border-radius: 12px;
-    min-height: 400px;
+    min-height: 450px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
+    transition: all 0.3s;
 }
 
 .card-name {
-    font-size: 2rem;
-    font-weight: bold;
+    font-size: 1.6rem;
+    font-weight: 600;
     margin-bottom: 2rem;
+    color: var(--text-secondary);
     opacity: 0;
     transform: translateY(20px);
     transition: all 0.8s;
 }
 
 .card-formula {
-    font-size: 1.5rem;
-    color: var(--sin-red);
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--text-primary);
     font-family: 'Courier New', monospace;
     margin-bottom: 2rem;
     opacity: 0;
     transform: translateY(20px);
     transition: all 0.8s;
+    letter-spacing: 1px;
+    text-shadow: 0 0 10px rgba(88, 166, 255, 0.3);
 }
 
-.card-usage {
+.card-description,
+.card-usage,
+.card-example {
     color: var(--text-secondary);
-    max-width: 600px;
+    max-width: 650px;
+    margin-bottom: 1.5rem;
     opacity: 0;
     transform: translateY(20px);
     transition: all 0.8s;
+    line-height: 1.8;
+    font-size: 1rem;
 }
 
 .card-name.visible,
 .card-formula.visible,
-.card-usage.visible {
+.card-description.visible,
+.card-usage.visible,
+.card-example.visible {
     opacity: 1;
     transform: translateY(0);
 }
@@ -197,70 +308,27 @@ nav button.active {
 }
 
 #help-view h2 {
-    margin-bottom: 1rem;
-    color: var(--cos-blue);
-}
-
-#help-view p {
-    margin-bottom: 1rem;
-}
-
-#cheatsheet-controls {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-}
-
-#cheatsheet-controls button {
-    background: var(--bg-card);
-    color: var(--text-primary);
-    border: 1px solid var(--cos-blue);
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.3s;
-}
-
-#cheatsheet-controls button:hover {
-    background: var(--cos-blue);
-    color: var(--bg-deep);
-}
-
-.identity-section {
-    margin: 0.5rem 0;
-    padding: 0.5rem;
-    background: rgba(88, 166, 255, 0.05);
-    border-radius: 4px;
-}
-
-.identity-section h4 {
-    color: var(--cos-blue);
-    margin-bottom: 0.3rem;
-    font-size: 0.9rem;
-}
-
-.identity-section p {
-    margin: 0;
-    font-size: 0.95rem;
-}
-
-.card-description,
-.card-usage,
-.card-example {
-    color: var(--text-secondary);
-    max-width: 600px;
     margin-bottom: 1.5rem;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.8s;
+    color: var(--cos-blue);
+    font-size: 1.8rem;
 }
 
-.card-description.visible,
-.card-usage.visible,
-.card-example.visible {
-    opacity: 1;
-    transform: translateY(0);
+#help-view h3 {
+    color: var(--tan-purple);
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.help-section {
+    background: var(--bg-card);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    border-left: 3px solid var(--cos-blue);
+}
+
+.help-section p {
+    margin-bottom: 0.75rem;
 }
 
 .modal {
@@ -271,7 +339,7 @@ nav button.active {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.85);
 }
 
 .modal.active {
@@ -282,12 +350,17 @@ nav button.active {
     background-color: var(--bg-card);
     margin: 5% auto;
     padding: 2rem;
-    border: 1px solid var(--cos-blue);
-    border-radius: 8px;
+    border: 2px solid var(--sin-red);
+    border-radius: 12px;
     width: 90%;
-    max-width: 600px;
+    max-width: 700px;
     max-height: 80vh;
     overflow-y: auto;
+}
+
+.modal-content h2 {
+    color: var(--sin-red);
+    margin-bottom: 1.5rem;
 }
 
 .close {
@@ -308,20 +381,35 @@ nav button.active {
 
 .saved-item {
     background: var(--bg-deep);
-    padding: 0.75rem;
-    margin: 0.5rem 0;
-    border-radius: 4px;
-    border-left: 3px solid var(--sin-red);
+    padding: 1rem;
+    margin: 0.75rem 0;
+    border-radius: 6px;
+    border-left: 4px solid var(--sin-red);
+}
+
+.saved-item-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.saved-item-formula {
+    font-family: 'Courier New', monospace;
+    color: var(--cos-blue);
+    font-size: 1.1rem;
+    font-weight: 600;
 }
 
 #clear-saved-btn {
     background: var(--accent);
     color: var(--text-primary);
     border: none;
-    padding: 0.5rem 1rem;
+    padding: 0.75rem 1.5rem;
     cursor: pointer;
     border-radius: 4px;
     margin-top: 1rem;
+    font-weight: 600;
 }
 
 @media (max-width: 768px) {
@@ -329,29 +417,56 @@ nav button.active {
         font-size: 1.2rem;
     }
     
+    nav {
+        gap: 0.3rem;
+    }
+    
     nav button {
         padding: 0.4rem 0.8rem;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
+    }
+    
+    .legend {
+        bottom: 0.5rem;
+        right: 0.5rem;
+        font-size: 0.75rem;
+        gap: 0.5rem;
+        padding: 0.5rem;
+    }
+    
+    #cheatsheet-toolbar {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .toolbar-section {
+        width: 100%;
+        flex-direction: column;
+    }
+    
+    #cheatsheet-toolbar button {
+        width: 100%;
     }
     
     #quiz-card {
         padding: 2rem 1rem;
-        min-height: 300px;
+        min-height: 350px;
     }
     
     .card-name {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
     }
     
     .card-formula {
-        font-size: 1.2rem;
+        font-size: 1.6rem;
     }
     
-    #cheatsheet-controls {
-        flex-direction: column;
+    #quiz-controls {
+        gap: 0.5rem;
     }
     
-    #cheatsheet-controls button {
-        width: 100%;
+    #quiz-controls button {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
     }
 }

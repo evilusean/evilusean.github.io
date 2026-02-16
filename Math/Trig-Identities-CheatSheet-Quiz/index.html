@@ -13,30 +13,35 @@
             <button id="cheatsheet-btn" class="active">Cheatsheet</button>
             <button id="quiz-btn">Quiz Mode</button>
             <button id="help-btn">Help</button>
+            <button id="view-saved-btn-header" class="saved-btn">Saved (<span id="saved-count-header">0</span>)</button>
         </nav>
     </header>
 
     <div id="cheatsheet-view" class="view active">
-        <div id="cheatsheet-controls">
-            <button id="select-all-btn">Select All</button>
-            <button id="deselect-all-btn">Deselect All</button>
-            <button id="save-url-btn">Save to URL</button>
-            <button id="load-url-btn">Load from URL</button>
+        <div id="cheatsheet-toolbar">
+            <div class="toolbar-section">
+                <button id="select-all-btn">Select All</button>
+                <button id="deselect-all-btn">Deselect All</button>
+            </div>
+            <div class="toolbar-section">
+                <button id="save-url-btn">📋 Save to URL</button>
+                <button id="load-url-btn">📥 Load from URL</button>
+            </div>
         </div>
         <div id="identities-list"></div>
     </div>
 
     <div id="quiz-view" class="view">
         <div id="quiz-controls">
+            <button id="exit-quiz-btn" class="exit-btn">✕ Exit Quiz</button>
             <button id="prev-btn">← Prev</button>
             <button id="pause-btn">Pause</button>
-            <button id="save-btn">Save for Review</button>
+            <button id="save-btn">💾 Save for Review</button>
             <button id="next-btn">Next →</button>
-            <button id="view-saved-btn">View Saved (<span id="saved-count">0</span>)</button>
         </div>
         <div id="quiz-settings">
             <label>Speed: <input type="range" id="speed-slider" min="1" max="10" value="5"></label>
-            <label><input type="checkbox" id="show-usage"> Show all details</label>
+            <label><input type="checkbox" id="show-usage" checked> Show all details</label>
         </div>
         <div id="quiz-card">
             <div class="card-name"></div>
@@ -49,21 +54,40 @@
 
     <div id="help-view" class="view">
         <h2>How to Use</h2>
-        <p><strong>Cheatsheet Mode:</strong> Check the identities you want to study. By default, essential engineering identities are selected. Selected items show details by default (click to collapse).</p>
-        <p><strong>Quiz Mode:</strong> The app will cycle through selected identities. First shows the name, then formula, then additional details (if enabled).</p>
-        <p><strong>Controls:</strong> Use Prev/Next buttons or arrow keys. Press Space to save for review. Adjust speed with the slider.</p>
-        <p><strong>Mobile:</strong> Swipe left/right to navigate in quiz mode.</p>
-        <p><strong>Save to URL:</strong> Click "Save to URL" to generate a shareable link with your selected identities.</p>
-        <p><strong>Saved for Review:</strong> Items saved during quiz mode appear in the "View Saved" list.</p>
+        <div class="help-section">
+            <h3>Color Coding</h3>
+            <p><span class="color-cos">Blue = Cosine (x-axis)</span> | <span class="color-sin">Red = Sine (y-axis)</span> | <span class="color-tan">Purple = Tangent (sin/cos)</span></p>
+            <p>On the unit circle: <strong>x = cos θ</strong> and <strong>y = sin θ</strong></p>
+        </div>
+        <div class="help-section">
+            <h3>Cheatsheet Mode</h3>
+            <p>Check identities to study. Selected items show details by default (click to collapse). Use toolbar to select all/save selections to URL.</p>
+        </div>
+        <div class="help-section">
+            <h3>Quiz Mode</h3>
+            <p>Cycles through selected identities. Reveals name → formula → details progressively.</p>
+            <p><strong>Controls:</strong> Arrow keys or Prev/Next buttons. Press Space to save for review.</p>
+            <p><strong>Mobile:</strong> Swipe left/right to navigate.</p>
+        </div>
+        <div class="help-section">
+            <h3>Saved Items</h3>
+            <p>Click "Saved" button (top right) to view items you've marked for review during quiz mode.</p>
+        </div>
     </div>
 
     <div id="saved-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2>Saved for Review</h2>
+            <h2>💾 Saved for Review</h2>
             <div id="saved-list"></div>
             <button id="clear-saved-btn">Clear All</button>
         </div>
+    </div>
+
+    <div class="legend">
+        <span class="color-cos">cos (x)</span>
+        <span class="color-sin">sin (y)</span>
+        <span class="color-tan">tan (sin/cos)</span>
     </div>
 
     <script src="trig_identities_complete.js"></script>
