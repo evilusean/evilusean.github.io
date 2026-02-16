@@ -1,13 +1,16 @@
 :root {
     --bg-deep: #0d1117;
     --bg-card: #161b22;
-    --cos-blue: #58a6ff;
-    --sin-red: #f85149;
-    --tan-purple: #bc8cff;
+    --cos-blue: #5b9bd5;
+    --sin-red: #e06666;
+    --tan-purple: #b388ff;
+    --csc-pink: #ea9999;
+    --sec-light-blue: #6fa8dc;
+    --cot-light-purple: #c9a3ff;
     --accent: #ff3131;
     --text-primary: #ffffff;
     --text-secondary: #8b949e;
-    --highlight-bg: rgba(88, 166, 255, 0.15);
+    --highlight-bg: rgba(91, 155, 213, 0.15);
 }
 
 body {
@@ -21,6 +24,9 @@ body {
 .color-cos, .cos { color: var(--cos-blue); font-weight: 600; }
 .color-sin, .sin { color: var(--sin-red); font-weight: 600; }
 .color-tan, .tan { color: var(--tan-purple); font-weight: 600; }
+.color-csc, .csc { color: var(--csc-pink); font-weight: 600; }
+.color-sec, .sec { color: var(--sec-light-blue); font-weight: 600; }
+.color-cot, .cot { color: var(--cot-light-purple); font-weight: 600; }
 
 header {
     background: var(--bg-card);
@@ -42,6 +48,19 @@ nav {
     justify-content: center;
     max-width: 1200px;
     margin: 0 auto;
+}
+
+.main-nav {
+    margin-bottom: 0.75rem;
+}
+
+.secondary-nav {
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--text-secondary);
+}
+
+.secondary-nav.hidden {
+    display: none;
 }
 
 nav button {
@@ -69,6 +88,15 @@ nav button.saved-btn {
 nav button.saved-btn:hover {
     background: var(--sin-red);
     color: var(--bg-deep);
+}
+
+.help-section ul {
+    margin-left: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.help-section li {
+    margin-bottom: 0.3rem;
 }
 
 .external-link {
@@ -446,12 +474,26 @@ nav button.saved-btn:hover {
         font-size: 0.85rem;
     }
     
+    .main-nav {
+        margin-bottom: 0.5rem;
+    }
+    
+    .secondary-nav {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .secondary-nav button {
+        width: 100%;
+    }
+    
     .legend {
         bottom: 0.5rem;
         right: 0.5rem;
-        font-size: 0.75rem;
-        gap: 0.5rem;
-        padding: 0.5rem;
+        font-size: 0.7rem;
+        gap: 0.3rem;
+        padding: 0.4rem 0.6rem;
+        flex-wrap: wrap;
     }
     
     #quiz-card {

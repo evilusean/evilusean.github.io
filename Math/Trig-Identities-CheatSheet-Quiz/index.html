@@ -22,14 +22,16 @@
 <body>
     <header>
         <h1>📐 Trig Cheatsheet & Quiz</h1>
-        <nav>
+        <nav class="main-nav">
             <button id="cheatsheet-btn" class="active">Cheatsheet</button>
             <button id="quiz-btn">Quiz Mode</button>
             <button id="help-btn">Help</button>
+            <button id="view-saved-btn-header" class="saved-btn">💾 Saved (<span id="saved-count-header">0</span>)</button>
+        </nav>
+        <nav class="secondary-nav">
             <button id="select-all-btn">Select All</button>
             <button id="deselect-all-btn">Deselect All</button>
             <button id="save-url-btn">📋 Save to URL</button>
-            <button id="view-saved-btn-header" class="saved-btn">💾 Saved (<span id="saved-count-header">0</span>)</button>
         </nav>
     </header>
 
@@ -46,7 +48,7 @@
             <button id="next-btn">Next →</button>
         </div>
         <div id="quiz-settings">
-            <label>Speed: <input type="range" id="speed-slider" min="1" max="10" value="5"></label>
+            <label>Speed: <input type="range" id="speed-slider" min="1" max="10" value="3"></label>
             <label><input type="checkbox" id="show-usage" checked> Show all details</label>
         </div>
         <div id="quiz-card">
@@ -62,7 +64,16 @@
         <h2>How to Use</h2>
         <div class="help-section">
             <h3>Color Coding</h3>
-            <p><span class="color-cos">Blue = Cosine (x-axis)</span> | <span class="color-sin">Red = Sine (y-axis)</span> | <span class="color-tan">Purple = Tangent (sin/cos)</span></p>
+            <p>
+                <span class="color-sin">Red = Sine (y-axis)</span> | 
+                <span class="color-cos">Blue = Cosine (x-axis)</span> | 
+                <span class="color-tan">Purple = Tangent (sin/cos)</span>
+            </p>
+            <p>
+                <span class="color-csc">Dark Blue = Cosecant (1/sin)</span> | 
+                <span class="color-sec">Dark Red = Secant (1/cos)</span> | 
+                <span class="color-cot">Dark Purple = Cotangent (1/tan)</span>
+            </p>
             <p>On the unit circle: <strong>x = cos θ</strong> and <strong>y = sin θ</strong></p>
         </div>
         <div class="help-section">
@@ -72,8 +83,14 @@
         <div class="help-section">
             <h3>Quiz Mode</h3>
             <p>Cycles through selected identities. Reveals name → formula → details progressively.</p>
-            <p><strong>Controls:</strong> Arrow keys or Prev/Next buttons. Press Space to save for review. ESC to exit.</p>
-            <p><strong>Mobile:</strong> Swipe left/right to navigate.</p>
+            <p><strong>Desktop Controls:</strong></p>
+            <ul>
+                <li>Arrow Left/Right: Navigate cards</li>
+                <li>Space: Pause/Resume</li>
+                <li>Enter: Save for review</li>
+                <li>ESC: Exit quiz mode</li>
+            </ul>
+            <p><strong>Mobile:</strong> Swipe left/right to navigate. Tap buttons to control.</p>
         </div>
         <div class="help-section">
             <h3>Related Resources</h3>
@@ -95,9 +112,12 @@
     </div>
 
     <div class="legend">
-        <span class="color-cos">cos (x)</span>
-        <span class="color-sin">sin (y)</span>
-        <span class="color-tan">tan (sin/cos)</span>
+        <span class="color-sin">sin</span>
+        <span class="color-cos">cos</span>
+        <span class="color-tan">tan</span>
+        <span class="color-csc">csc</span>
+        <span class="color-sec">sec</span>
+        <span class="color-cot">cot</span>
     </div>
 
     <script src="trig_identities_complete.js"></script>

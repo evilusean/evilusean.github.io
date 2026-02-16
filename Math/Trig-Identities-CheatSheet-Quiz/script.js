@@ -84,25 +84,47 @@ function toMathJax(formula) {
     math = math.replace(/θ/g, '\\theta');
     math = math.replace(/π/g, '\\pi');
     
-    // Replace trig functions with colored versions
-    math = math.replace(/sin/g, '\\color{#f85149}{\\sin}');
-    math = math.replace(/cos/g, '\\color{#58a6ff}{\\cos}');
-    math = math.replace(/tan/g, '\\color{#bc8cff}{\\tan}');
-    math = math.replace(/csc/g, '\\color{#f85149}{\\csc}');
-    math = math.replace(/sec/g, '\\color{#58a6ff}{\\sec}');
-    math = math.replace(/cot/g, '\\color{#bc8cff}{\\cot}');
-    
-    // Handle superscripts (² becomes ^2)
+    // Handle superscripts BEFORE trig functions
     math = math.replace(/²/g, '^2');
     
-    // Handle fractions (a/b becomes \frac{a}{b})
-    math = math.replace(/(\d+|[a-z]+)\s*\/\s*(\d+|[a-z]+)/gi, '\\frac{$1}{$2}');
+    // Handle fractions - be more careful with parentheses
+    // Match patterns like (a+b)/c or a/(b+c) or simple a/b
+    math = math.replace(/\(([^)]+)\)\s*\/\s*(\d+)/g, '\\frac{$1}{$2}');
+    math = math.replace(/(\d+)\s*\/\s*\(([^)]+)\)/g, '\\frac{$1}{$2}');
+    math = math.replace(/\(([^)]+)\)\s*\/\s*\(([^)]+)\)/g, '\\frac{$1}{$2}');
+    
+    // Simple fractions (number/number or letter/letter)
+    math = math.replace(/(\d+)\s*\/\s*(\d+)/g, '\\frac{$1}{$2}');
+    
+    // Replace trig functions with colored versions (using colors from unit circle app)
+    math = math.replace(/\\sin/g, '\\color{#e06666}{\\sin}');
+    math = math.replace(/sin(?![\w])/g, '\\color{#e06666}{\\sin}');
+    
+    math = math.replace(/\\cos/g, '\\color{#5b9bd5}{\\cos}');
+    math = math.replace(/cos(?![\w])/g, '\\color{#5b9bd5}{\\cos}');
+    
+    math = math.replace(/\\tan/g, '\\color{#b388ff}{\\tan}');
+    math = math.replace(/tan(?![\w])/g, '\\color{#b388ff}{\\tan}');
+    
+    math = math.replace(/\\csc/g, '\\color{#ea9999}{\\csc}');
+    math = math.replace(/csc(?![\w])/g, '\\color{#ea9999}{\\csc}');
+    
+    math = math.replace(/\\sec/g, '\\color{#6fa8dc}{\\sec}');
+    math = math.replace(/sec(?![\w])/g, '\\color{#6fa8dc}{\\sec}');
+    
+    math = math.replace(/\\cot/g, '\\color{#c9a3ff}{\\cot}');
+    math = math.replace(/cot(?![\w])/g, '\\color{#c9a3ff}{\\cot}');
     
     // Handle square roots
     math = math.replace(/√\[([^\]]+)\]/g, '\\sqrt{$1}');
     math = math.replace(/√(\d+)/g, '\\sqrt{$1}');
     
     return `$${math}$`;
+}
+
+// Get plain text from MathJax for copying
+function getPlainFormula(formula) {
+    return formula; // Return original formula for copying
 }
 
 // Refresh MathJax rendering
@@ -127,7 +149,7 @@ function renderCheatsheet() {
                     onclick="event.stopPropagation(); toggleSelection(${index}, '${identity.name.replace(/'/g, "\\'")}')">
                 <span class="identity-name">${identity.name}</span>
             </div>
-            <div class="identity-formula">${toMathJax(identity.formula)}</div>
+            <div class="identity-formula" title="${identity.formula}" data-formula="${identity.formula.replace(/"/g, '&quot;')}">${toMathJax(identity.formula)}</div>
             <div class="identity-details ${isSelected ? 'visible' : ''}" id="details-${index}">
                 <div class="identity-section">
                     <h4>📖 Description</h4>
@@ -145,6 +167,20 @@ function renderCheatsheet() {
         </div>
     `;
     }).join('');
+    
+    // Add copy functionality to formulas
+    document.querySelectorAll('.identity-formula').forEach(el => {
+        el.style.cursor = 'pointer';
+        el.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const formula = el.getAttribute('data-formula');
+            navigator.clipboard.writeText(formula).then(() => {
+                const original = el.style.background;
+                el.style.background = 'var(--highlight-bg)';
+                setTimeout(() => el.style.background = original, 300);
+            });
+        });
+    });
     
     refreshMathJax();
 }
@@ -256,10 +292,11 @@ function setupEventListeners() {
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
         if (document.getElementById('quiz-view').classList.contains('active')) {
-            if (e.key === 'ArrowLeft') prevCard();
-            if (e.key === 'ArrowRight') nextCard();
-            if (e.key === ' ') { e.preventDefault(); saveForReviewFunc(); }
-            if (e.key === 'Escape') switchView('cheatsheet');
+            if (e.key === 'ArrowLeft') { e.preventDefault(); prevCard(); }
+            if (e.key === 'ArrowRight') { e.preventDefault(); nextCard(); }
+            if (e.key === ' ') { e.preventDefault(); togglePause(); }
+            if (e.key === 'Enter') { e.preventDefault(); saveForReviewFunc(); }
+            if (e.key === 'Escape') { e.preventDefault(); switchView('cheatsheet'); }
         }
     });
     
@@ -287,17 +324,22 @@ function switchView(view) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
     
+    const secondaryNav = document.querySelector('.secondary-nav');
+    
     if (view === 'cheatsheet') {
         document.getElementById('cheatsheet-view').classList.add('active');
         document.getElementById('cheatsheet-btn').classList.add('active');
+        secondaryNav.classList.remove('hidden');
         stopQuiz();
     } else if (view === 'quiz') {
         document.getElementById('quiz-view').classList.add('active');
         document.getElementById('quiz-btn').classList.add('active');
+        secondaryNav.classList.add('hidden');
         startQuiz();
     } else if (view === 'help') {
         document.getElementById('help-view').classList.add('active');
         document.getElementById('help-btn').classList.add('active');
+        secondaryNav.classList.remove('hidden');
         stopQuiz();
     }
 }
@@ -342,6 +384,19 @@ function showCard() {
     
     nameEl.textContent = identity.name;
     formulaEl.innerHTML = toMathJax(identity.formula);
+    formulaEl.setAttribute('data-formula', identity.formula);
+    formulaEl.title = 'Click to copy: ' + identity.formula;
+    formulaEl.style.cursor = 'pointer';
+    
+    // Add click to copy for quiz card
+    formulaEl.onclick = () => {
+        navigator.clipboard.writeText(identity.formula).then(() => {
+            const original = formulaEl.style.background;
+            formulaEl.style.background = 'var(--highlight-bg)';
+            setTimeout(() => formulaEl.style.background = original, 300);
+        });
+    };
+    
     descEl.innerHTML = colorCodeText(parsed.description);
     usageEl.innerHTML = colorCodeText(parsed.usage);
     exampleEl.innerHTML = colorCodeText(parsed.example);
