@@ -460,37 +460,35 @@ function showCard() {
     
     refreshMathJax();
     
-    const speed = parseInt(document.getElementById('speed-slider').value);
-    const baseDelay = 12000 - speed * 1000; // Base timing
-    
-    // Phase 1: Show name (3 seconds)
+    // Phase 1: Show name (5 seconds to think)
     setTimeout(() => nameEl.classList.add('visible'), 100);
     
-    // Phase 2: Show formula (5 seconds after name)
+    // Phase 2: Show formula (5 seconds after name appears)
     setTimeout(() => {
         formulaEl.classList.add('visible');
         
         if (document.getElementById('show-usage').checked) {
-            // Phase 3: Show description (3 seconds after formula)
+            // Phase 3: Show description (5 seconds after formula)
             setTimeout(() => {
                 descEl.classList.add('visible');
                 
-                // Phase 4: Show usage (3 seconds after description)
+                // Phase 4: Show usage (5 seconds after description)
                 setTimeout(() => {
                     usageEl.classList.add('visible');
                     
-                    // Phase 5: Show example (3 seconds after usage)
+                    // Phase 5: Show example (5 seconds after usage)
                     setTimeout(() => {
                         exampleEl.classList.add('visible');
-                    }, 3000);
-                }, 3000);
-            }, 3000);
+                    }, 5000);
+                }, 5000);
+            }, 5000);
         }
     }, 5000);
     
     if (!isPaused) {
-        // Total time: 3s (name) + 5s (formula) + 3s + 3s + 3s (details) = 17s base
-        const totalTime = document.getElementById('show-usage').checked ? 17000 : 8000;
+        // Total time: 5s (name) + 5s (formula) + 5s + 5s + 5s (details) = 25s with all details
+        // Without details: 5s (name) + 5s (formula) = 10s
+        const totalTime = document.getElementById('show-usage').checked ? 25000 : 10000;
         quizInterval = setTimeout(() => {
             currentQuizIndex = (currentQuizIndex + 1) % quizList.length;
             
