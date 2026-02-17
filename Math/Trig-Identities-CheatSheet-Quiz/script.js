@@ -12,7 +12,7 @@ const engineeringEssentials = [
     'Quotient: Tangent'
 ];
 
-// Preset configurations
+// Preset configurations - Updated with exact Unicode characters from identity names
 const presets = {
     engineering: [
         'Pythagorean Identity',
@@ -106,6 +106,7 @@ let currentPhase = 0; // Track current phase: 0=name, 1=formula, 2=desc, 3=usage
 let quizList = [];
 let quizInterval = null;
 let isPaused = false;
+let isFullscreen = false;
 
 // Initialize
 function init() {
@@ -354,7 +355,14 @@ function loadPreset(presetName) {
         selectedIdentities = new Set(presets[presetName]);
         saveSelections();
         renderCheatsheet();
+        
+        // Debug: log what was loaded
+        console.log(`Loaded preset: ${presetName}`, presets[presetName]);
+        
         showNotification(`✨ ${presetName.charAt(0).toUpperCase() + presetName.slice(1)} preset loaded!`, 'success');
+    } else {
+        console.error(`Preset not found: ${presetName}`);
+        showNotification(`⚠️ Preset not found`, 'success');
     }
 }
 
@@ -424,6 +432,7 @@ function setupEventListeners() {
     document.getElementById('next-btn').onclick = nextCard;
     document.getElementById('pause-btn').onclick = togglePause;
     document.getElementById('save-btn').onclick = saveForReviewFunc;
+    document.getElementById('fullscreen-btn').onclick = toggleFullscreen;
     
     document.getElementById('speed-slider').oninput = updateSpeed;
     
@@ -447,7 +456,15 @@ function setupEventListeners() {
             if (e.key === 'ArrowRight') { e.preventDefault(); nextCard(); }
             if (e.key === ' ') { e.preventDefault(); togglePause(); }
             if (e.key === 'Enter') { e.preventDefault(); saveForReviewFunc(); }
-            if (e.key === 'Escape') { e.preventDefault(); switchView('cheatsheet'); }
+            if (e.key === 'Escape') { 
+                e.preventDefault(); 
+                if (isFullscreen) {
+                    toggleFullscreen();
+                } else {
+                    switchView('cheatsheet');
+                }
+            }
+            if (e.key === 'f' || e.key === 'F') { e.preventDefault(); toggleFullscreen(); }
         }
     });
     
@@ -476,6 +493,11 @@ function switchView(view) {
     document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
     
     const secondaryNav = document.querySelector('.secondary-nav');
+    
+    // Exit fullscreen when switching views
+    if (isFullscreen) {
+        toggleFullscreen();
+    }
     
     if (view === 'cheatsheet') {
         document.getElementById('cheatsheet-view').classList.add('active');
@@ -771,6 +793,24 @@ function clearSaved() {
 function updateSpeed() {
     if (!isPaused && quizInterval) {
         showCard();
+    }
+}
+
+function toggleFullscreen() {
+    isFullscreen = !isFullscreen;
+    const quizView = document.getElementById('quiz-view');
+    const body = document.body;
+    const btn = document.getElementById('fullscreen-btn');
+    
+    if (isFullscreen) {
+        quizView.classList.add('fullscreen');
+        body.classList.add('fullscreen-mode');
+        btn.textContent = '⛶ Exit Fullscreen';
+        showNotification('🖥️ Fullscreen mode (ESC to exit)', 'success');
+    } else {
+        quizView.classList.remove('fullscreen');
+        body.classList.remove('fullscreen-mode');
+        btn.textContent = '⛶ Fullscreen';
     }
 }
 
