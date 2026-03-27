@@ -70,7 +70,7 @@ Since this is a static site, no build step is required.
 
 ## ToDo / Future Sean Problems :
 - Ran out of tokens, quiz mode is broken
-- When you click on something like 'Law of Sines' or 'Law of Cosines' or whatever - it should open it in the cheatsheet
+- When you click on something like 'Law of Sines' or 'Law of Cosines' or whatever - it should open it in the cheatsheet - maybe add a link to https://evilusean.github.io/Math/Trig-Identities-CheatSheet-Quiz/index.html so the user can see when to use
 - It should have all steps to solve all cases (ASS, SAS, Etc) for each case solved sequentially, so you can just learn from those steps instead of sitting through a screensaver
 - what is 'h'? - I know it's height, but shouldn't that be the corresponding side? Why is it asking for height?
 - maybe get rid of the right hand ledger - I added the values to the top, so it seems superfluous 
@@ -83,3 +83,4 @@ Since this is a static site, no build step is required.
 - sometimes the triangles are offset and not centered
 - some triangles are displaying all sides and angles while still going through socratic questioning, again, defeats the purpose - 'what is side C'... uh, it's '5', it says it right there
 - add custom lengths for each step so you don't have to update the code to increase the speed 
+- add favicon
