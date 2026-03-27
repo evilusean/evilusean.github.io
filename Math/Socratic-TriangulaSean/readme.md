@@ -1,10 +1,10 @@
-# TriangulaSean : Socratic Geometry Engine
+# Socratic TriangulaSean: Socratic Geometry Engine
 
 A deterministic, step-by-step trigonometry tutor designed to help users master triangle congruence and solving techniques. This app is built to be hosted entirely on GitHub Pages as a static site using the **Kiro** state management library.
 
 ## Overview
 
-Triangle Tutor doesn't just give you the answer; it guides you through the logic. The app generates infinite problems—from classic **3-4-5** right triangles to complex **Ambiguous Case (SSA)** scenarios—and asks leading questions to help you determine which trigonometric ratio or law to apply next.
+**Socratic TriangulaSean** doesn't just give you the answer; it guides you through the logic. The app generates infinite problems—from classic **3-4-5** right triangles to complex **Ambiguous Case (SSA)** scenarios—and asks leading questions to help you determine which trigonometric ratio or law to apply next.
 
 ### Key Features
 * **Infinite Problem Generation:** Randomly generated triangles or "Classic" presets.
@@ -48,7 +48,7 @@ To solve a triangle, you generally need three pieces of information. The app sup
 
 ## Mathematical Toolkit
 
-The app guides you through the following formulas:
+**Socratic TriangulaSean** guides you through the following formulas:
 
 * **SOHCAHTOA:**
     * $\sin(\theta) = \frac{\text{Opposite}}{\text{Hypotenuse}}$
