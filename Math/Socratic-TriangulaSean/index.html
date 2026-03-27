@@ -265,6 +265,36 @@
       </div>
     </div>
 
+    <!-- Quiz Mode Panel -->
+    <div id="quiz-panel" class="side-panel collapsed">
+      <div class="panel-header" data-toggle="quiz-panel">
+        <span>🎯 Quiz Mode</span><span class="chevron">▾</span>
+      </div>
+      <div class="panel-body">
+        <p class="quiz-desc">Pick a case type and solve step-by-step. No timer — you set the pace.</p>
+        <div class="tool-section">
+          <label>Case Type</label>
+          <select id="quiz-case-select">
+            <option value="random">Random</option>
+            <option value="HL">HL — Right Triangle</option>
+            <option value="SAS">SAS</option>
+            <option value="SSS">SSS</option>
+            <option value="ASA">ASA</option>
+            <option value="AAS">AAS</option>
+            <option value="SSA">SSA (Ambiguous)</option>
+          </select>
+        </div>
+        <button id="btn-start-quiz">▶ Start Quiz</button>
+        <div id="quiz-controls" class="hidden">
+          <button id="btn-quiz-reveal">💡 Show Method</button>
+          <button id="btn-quiz-next" class="hidden">→ Next Step</button>
+          <button id="btn-quiz-skip">⏭ Skip</button>
+          <button id="btn-quiz-exit">✕ Exit</button>
+        </div>
+        <div id="quiz-progress-label"></div>
+      </div>
+    </div>
+
     <!-- Mistakes -->
     <div id="mistake-ledger-panel" class="side-panel collapsed">
       <div class="panel-header" data-toggle="mistake-ledger-panel">
@@ -290,32 +320,32 @@
     </div>
   </div>
   <div id="cheatsheet-body">
-    <section class="cs-section">
+    <section class="cs-section" id="cs-sohcahtoa">
       <h4>SOHCAHTOA</h4>
       <div class="cs-row sin">sin θ = Opposite / Hypotenuse</div>
       <div class="cs-row cos">cos θ = Adjacent / Hypotenuse</div>
       <div class="cs-row tan">tan θ = Opposite / Adjacent</div>
     </section>
-    <section class="cs-section">
+    <section class="cs-section" id="cs-inverse">
       <h4>Inverse Trig</h4>
       <div class="cs-row sin">θ = sin⁻¹(opp/hyp)</div>
       <div class="cs-row cos">θ = cos⁻¹(adj/hyp)</div>
       <div class="cs-row tan">θ = tan⁻¹(opp/adj)</div>
     </section>
-    <section class="cs-section">
+    <section class="cs-section" id="cs-sines">
       <h4>Law of Sines</h4>
       <div class="cs-row neutral">a/sin A = b/sin B = c/sin C</div>
     </section>
-    <section class="cs-section">
+    <section class="cs-section" id="cs-cosines">
       <h4>Law of Cosines</h4>
       <div class="cs-row neutral">c² = a² + b² − 2ab·cos(C)</div>
       <div class="cs-row neutral">cos C = (a²+b²−c²) / 2ab</div>
     </section>
-    <section class="cs-section">
+    <section class="cs-section" id="cs-pythagorean">
       <h4>Pythagorean Theorem</h4>
       <div class="cs-row neutral">a² + b² = c²</div>
     </section>
-    <section class="cs-section">
+    <section class="cs-section" id="cs-anglesum">
       <h4>Angle Sum</h4>
       <div class="cs-row neutral">A + B + C = 180°</div>
     </section>
@@ -330,7 +360,7 @@
         <div>90°</div><div>1</div><div>0</div><div>—</div>
       </div>
     </section>
-    <section class="cs-section">
+    <section class="cs-section" id="cs-ssa">
       <h4>SSA Ambiguous Case</h4>
       <div class="cs-row neutral">h = b·sin(A)</div>
       <div class="cs-row sin">a &lt; h → 0 solutions</div>

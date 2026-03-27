@@ -10,7 +10,7 @@ const RAD = 180 / Math.PI;
 // ─── PHASE SYSTEM ────────────────────────────────────────────
 // Each step cycles: QUESTION → REVEAL → UPDATE → (next step QUESTION)
 const PHASE = { QUESTION: 'question', REVEAL: 'reveal', UPDATE: 'update' };
-const PHASE_DUR = { question: 12000, reveal: 7000, update: 3000 };
+const PHASE_DUR = { question: 12000, reveal: 8000, update: 15000 };
 
 const STATE = { SCREENSAVER: 'screen', ACTIVE: 'active' };
 
@@ -74,9 +74,11 @@ function analyzeSSA(a,b,A){
 }
 
 // ─── SPOILER BUILDER ─────────────────────────────────────────
-// Wraps text in a spoiler span. type: 'formula' | 'answer' | ''
-function sp(text, type='') {
-  return `<span class="spoiler ${type?type+'-spoiler':''}" tabindex="0">${text}</span>`;
+// type: 'formula' | 'answer' | ''
+// topic: optional cheatsheet section id to highlight on click
+function sp(text, type='', topic='') {
+  const topicAttr = topic ? ` data-topic="${topic}"` : '';
+  return `<span class="spoiler ${type?type+'-spoiler':''}"${topicAttr} tabindex="0">${text}</span>`;
 }
 
 // ─── STEP BUILDER ────────────────────────────────────────────
@@ -363,7 +365,14 @@ function generateRandom(){
   if(!active.length){showToast('Enable at least one filter.','error');return;}
   const pool=TRIANGLE_LIBRARY.filter(t=>active.includes(t.tag));
   if(!pool.length){showToast('No triangles match filters.','error');return;}
-  generateFromPreset(pool[Math.floor(Math.random()*pool.length)]);
+  // Avoid repeating the same triangle back-to-back
+  let candidates=pool;
+  if(App.currentTri&&pool.length>1){
+    candidates=pool.filter(t=>t.name!==App.currentTri.name);
+  }
+  // Fisher-Yates pick: just pick a random index
+  const pick=candidates[Math.floor(Math.random()*candidates.length)];
+  generateFromPreset(pick);
 }
 
 function generateByCase(ct){
@@ -373,7 +382,6 @@ function generateByCase(ct){
   generateFromPreset(pool[Math.floor(Math.random()*pool.length)]);
 }
 
-// ─── TIMER ───────────────────────────────────────────────────
 function clearAllTimers(){
   if(App.timer){cancelAnimationFrame(App.timer);App.timer=null;}
   if(App.revealCountdownTimer){clearInterval(App.revealCountdownTimer);App.revealCountdownTimer=null;}
@@ -381,10 +389,11 @@ function clearAllTimers(){
 }
 
 function startTimer(duration, onComplete){
-  clearAllTimers();
+  if(App.timer){cancelAnimationFrame(App.timer);App.timer=null;}
+  DOM.progressBar.style.width='0%';
   if(App.paused)return;
   const start=Date.now();
-  const dur=duration/App.speed;
+  const dur=duration/App.speed;  // apply speed here only
   const tick=()=>{
     const elapsed=Date.now()-start;
     DOM.progressBar.style.width=Math.min(100,(elapsed/dur)*100)+'%';
@@ -402,22 +411,23 @@ function runPhase(phase){
   if(phase===PHASE.QUESTION){
     showQuestionPhase();
     if(!App.quizMode){
-      startTimer(PHASE_DUR.question/App.speed, ()=>runPhase(PHASE.REVEAL));
+      // startTimer handles speed internally
+      startTimer(PHASE_DUR.question, ()=>runPhase(PHASE.REVEAL));
     }
   } else if(phase===PHASE.REVEAL){
     showRevealPhase();
-    startRevealCountdown(PHASE_DUR.reveal/App.speed, ()=>runPhase(PHASE.UPDATE));
+    startRevealCountdown(PHASE_DUR.reveal, ()=>runPhase(PHASE.UPDATE));
   } else if(phase===PHASE.UPDATE){
-    // Reveal the answer for this step in SVG/ledger
     const step=App.steps[App.stepIndex];
     if(step&&step.key){
       App.revealedKeys.add(step.key);
       animateLedgerReveal(step.key);
+      popSVGLedger(step.key);
       renderSVG();
       renderSVGLedger();
     }
     if(step&&step.activeEl) applyStepColors(step);
-    startTimer(PHASE_DUR.update/App.speed, ()=>advanceStep());
+    startTimer(PHASE_DUR.update, ()=>advanceStep());
   }
 }
 
@@ -430,26 +440,61 @@ function showQuestionPhase(){
 function showRevealPhase(){
   DOM.phaseReveal.classList.remove('hidden');
   DOM.progressBar.style.background='var(--state-anim)';
-  // Render reveal HTML with spoilers
   const step=App.steps[App.stepIndex];
   DOM.revealText.innerHTML=step?.reveal||'';
-  // Bind spoiler clicks
+  // Bind spoiler interactions: click to lock-reveal, hover auto-reveals visually via CSS
   DOM.revealText.querySelectorAll('.spoiler').forEach(el=>{
-    el.addEventListener('click',()=>el.classList.add('revealed'));
+    el.addEventListener('click',()=>{
+      el.classList.add('revealed');
+      // If spoiler has a topic, highlight that section in the cheatsheet
+      const topic=el.dataset.topic;
+      if(topic) highlightCheatsheetTopic(topic);
+    });
     el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')el.classList.add('revealed');});
   });
 }
 
+// Map topic keys to cheatsheet section IDs
+const TOPIC_MAP = {
+  'sohcahtoa':     'cs-sohcahtoa',
+  'inverse-trig':  'cs-inverse',
+  'law-of-sines':  'cs-sines',
+  'law-of-cosines':'cs-cosines',
+  'pythagorean':   'cs-pythagorean',
+  'angle-sum':     'cs-anglesum',
+  'ssa':           'cs-ssa',
+};
+
+function highlightCheatsheetTopic(topic){
+  const sectionId=TOPIC_MAP[topic];
+  if(!sectionId)return;
+  // Open cheatsheet if hidden
+  if(DOM.cheatsheet.classList.contains('hidden')){
+    DOM.cheatsheet.classList.remove('hidden');
+    $('btn-cheatsheet').classList.add('active');
+  }
+  // Remove previous highlights
+  document.querySelectorAll('.cs-section.highlighted').forEach(s=>s.classList.remove('highlighted'));
+  const section=$(sectionId);
+  if(section){
+    section.classList.add('highlighted');
+    section.scrollIntoView({behavior:'smooth',block:'nearest'});
+    setTimeout(()=>section.classList.remove('highlighted'),3000);
+  }
+}
+
 function startRevealCountdown(duration, onComplete){
+  // duration is already in ms (not divided by speed — startTimer handles that)
   let remaining=Math.ceil(duration/1000);
   DOM.revealCountdown.textContent=`(${remaining}s)`;
+  if(App.revealCountdownTimer){clearInterval(App.revealCountdownTimer);App.revealCountdownTimer=null;}
   App.revealCountdownTimer=setInterval(()=>{
     remaining--;
     DOM.revealCountdown.textContent=remaining>0?`(${remaining}s)`:'';
     if(remaining<=0){
       clearInterval(App.revealCountdownTimer);
       App.revealCountdownTimer=null;
-      // Auto-reveal all spoilers
+      // Auto-reveal all spoilers with animation
       DOM.revealText.querySelectorAll('.spoiler:not(.revealed)').forEach(el=>{
         el.classList.add('auto-revealing','revealed');
       });
@@ -469,10 +514,19 @@ function advanceStep(){
   if(App.stepIndex<App.steps.length-1){
     App.stepIndex++;
     renderStep();
-    runPhase(PHASE.QUESTION);
+    if(App.quizMode){
+      App.phase=PHASE.QUESTION; updateStateBadge();
+      renderQuizStep();
+      $('btn-quiz-reveal').classList.remove('hidden');
+      $('btn-quiz-next').classList.add('hidden');
+    } else {
+      runPhase(PHASE.QUESTION);
+    }
   } else {
     if(!App.quizMode){
       setTimeout(()=>{generateRandom();startScreensaver();},2500);
+    } else {
+      showToast('Triangle solved! 🎉','success');
     }
   }
 }
@@ -491,66 +545,149 @@ function stopScreensaver(){
   document.body.classList.remove('screensaver-active');
   clearAllTimers();
 }
-function startQuizMode(vaultItem){
+function startQuizMode(preset){
   stopScreensaver();
-  App.quizMode=true; App.quizVaultItem=vaultItem;
-  generateFromPreset(vaultItem);
-  DOM.inputArea.classList.remove('hidden'); DOM.hintArea.classList.remove('hidden');
-  DOM.feedbackArea.textContent=''; DOM.feedbackArea.className='';
+  App.quizMode=true; App.quizVaultItem=preset;
+  generateFromPreset(preset);
+  // Quiz: no timers, user drives each step manually
+  clearAllTimers();
+  DOM.progressBar.style.width='0%';
+  showQuizUI();
   renderVault();
-  showToast(`Quiz: ${vaultItem.name}`);
-  runPhase(PHASE.QUESTION);
+  showToast(`Quiz: ${preset.name}`);
+  // Show question phase but don't start timer
+  App.phase=PHASE.QUESTION;
+  updateStateBadge();
+  showQuestionPhase();
+}
+
+function showQuizUI(){
+  DOM.inputArea.classList.remove('hidden');
+  DOM.hintArea.classList.remove('hidden');
+  DOM.feedbackArea.textContent=''; DOM.feedbackArea.className='';
+  // Update quiz step prompt
+  renderQuizStep();
+}
+
+function renderQuizStep(){
+  const step=App.steps[App.stepIndex];
+  if(!step)return;
+  DOM.tutorText.textContent=step.question;
+  DOM.phaseReveal.classList.add('hidden');
+  DOM.phaseQuestion.classList.remove('hidden');
+  const hasAnswer=step.answer!=null;
+  DOM.inputArea.classList.toggle('hidden',!hasAnswer);
+  // Progress bar
+  const total=App.steps.length;
+  const pct=total>1?(App.stepIndex/(total-1))*100:0;
+  DOM.progressBar.style.width=pct+'%';
+  DOM.progressBar.style.background='var(--state-review)';
+  // Progress label
+  const lbl=$('quiz-progress-label');
+  if(lbl) lbl.textContent=`Step ${App.stepIndex+1} of ${total}`;
+  // Button states
+  const revealBtn=$('btn-quiz-reveal');
+  const nextBtn=$('btn-quiz-next');
+  if(revealBtn) revealBtn.classList.toggle('hidden', App.phase!==PHASE.QUESTION||!step.reveal);
+  if(nextBtn)   nextBtn.classList.toggle('hidden', App.phase===PHASE.QUESTION);
+}
+
+function quizRevealStep(){
+  // Show the reveal/method for current step without advancing
+  App.phase=PHASE.REVEAL;
+  updateStateBadge();
+  showRevealPhase();
+  // Don't start a countdown timer in quiz mode
+  DOM.revealCountdown.textContent='';
+  $('btn-quiz-reveal').classList.add('hidden');
+  $('btn-quiz-next').classList.remove('hidden');
+}
+
+function quizNextStep(){
+  // Commit the answer to ledger/SVG and advance
+  const step=App.steps[App.stepIndex];
+  if(step&&step.key){
+    App.revealedKeys.add(step.key);
+    animateLedgerReveal(step.key);
+    popSVGLedger(step.key);
+    renderSVG();
+    renderSVGLedger();
+  }
+  if(step&&step.activeEl) applyStepColors(step);
+  if(App.stepIndex<App.steps.length-1){
+    App.stepIndex++;
+    App.phase=PHASE.QUESTION;
+    updateStateBadge();
+    renderQuizStep();
+    renderStep();
+    $('btn-quiz-reveal').classList.remove('hidden');
+    $('btn-quiz-next').classList.add('hidden');
+  } else {
+    // Done
+    showToast('Triangle solved! 🎉','success');
+    $('btn-quiz-next').classList.add('hidden');
+    $('btn-quiz-reveal').classList.add('hidden');
+  }
 }
 function checkAnswer(){
   const step=App.steps[App.stepIndex];
-  if(!step||step.answer==null){advanceStep();return;}
+  if(!step||step.answer==null){
+    if(App.quizMode) quizRevealStep();
+    else advanceStep();
+    return;
+  }
   const raw=parseFloat(DOM.answerInput.value);
   if(isNaN(raw)){showToast('Enter a number.','error');return;}
   const correct=Math.abs(raw-step.answer)<0.1;
-  DOM.feedbackArea.textContent=correct?`✓ Correct! ${step.answer}`:`✗ Expected ${step.answer}`;
+  DOM.feedbackArea.textContent=correct?`✓ Correct! ${step.answer}`:`✗ Expected ≈${step.answer}`;
   DOM.feedbackArea.className=correct?'correct':'wrong';
   if(!correct){
     App.mistakes.push({triName:App.currentTri.name,step:step.question.slice(0,40),expected:step.answer,got:raw});
     saveStorage(); renderMistakes();
   }
   DOM.answerInput.value='';
-  if(correct)setTimeout(()=>{DOM.feedbackArea.textContent='';runPhase(PHASE.REVEAL);},600);
+  if(correct){
+    setTimeout(()=>{
+      DOM.feedbackArea.textContent='';
+      if(App.quizMode) quizRevealStep();
+      else runPhase(PHASE.REVEAL);
+    },600);
+  }
 }
 
 // ─── RENDER ──────────────────────────────────────────────────
 function renderStep(){
   const step=App.steps[App.stepIndex];
   if(!step)return;
-  DOM.tutorText.innerHTML=''; // clear then set for animation
+  DOM.tutorText.innerHTML='';
   void DOM.tutorText.offsetWidth;
   DOM.tutorText.textContent=step.question;
   DOM.phaseReveal.classList.add('hidden');
   DOM.phaseQuestion.classList.remove('hidden');
-  if(step.isSSADecision&&App.currentTri.ssaSolutions) showSSAModal(App.currentTri.ssaSolutions,App.currentTri.ssaKnown);
+  // No SSA modal popup — SSA is handled inline in the step questions
   syncURL();
 }
 
-// Ledger (right column) — only shows revealed values
+// Ledger (right column) — only shows known givens + revealed values
 function renderLedger(){
   if(!App.currentTri)return;
   const{knowns,solved}=App.currentTri;
+  const step=App.steps[App.stepIndex]||{};
   ['A','B','C','a','b','c'].forEach(k=>{
     const valEl=DOM['val'+k], rowEl=DOM['ledger'+k];
+    const isKnown=knowns[k];
     const revealed=App.revealedKeys.has(k);
     const v=solved[k];
-    valEl.textContent=revealed&&v!=null?M.fmt(v)+(k===k.toUpperCase()?'°':''):'?';
+    const showVal=(isKnown||revealed)&&v!=null;
+    valEl.textContent=showVal?M.fmt(v)+(k===k.toUpperCase()?'°':''):'?';
     rowEl.className='ledger-row'; valEl.className='ledger-val';
-    if(knowns[k]){rowEl.classList.add('known');valEl.classList.add('known');}
+    if(isKnown){rowEl.classList.add('known');valEl.classList.add('known');}
     else if(revealed&&v!=null){rowEl.classList.add('solved');valEl.classList.add('solved');}
-    const step=App.steps[App.stepIndex]||{};
     if(step.key===k)rowEl.classList.add('active');
   });
   DOM.caseBadge.textContent=App.currentTri.caseType?`Case: ${App.currentTri.caseType}`:'';
-  if(App.currentTri.caseType==='SSA'){
-    DOM.ssaAlert.classList.remove('hidden');
-    const sols=App.currentTri.ssaSolutions||[];
-    DOM.ssaSolutions.textContent=sols.length===0?'No solution':sols.length===1?'1 solution':`2 solutions: ${sols.map(s=>s.label).join(' | ')}`;
-  } else DOM.ssaAlert.classList.add('hidden');
+  // Never show SSA alert inline — handled in steps
+  DOM.ssaAlert.classList.add('hidden');
 }
 
 function animateLedgerReveal(key){
@@ -558,15 +695,23 @@ function animateLedgerReveal(key){
   if(!valEl)return;
   const v=App.currentTri.solved[key];
   if(v==null)return;
+  // Update right-column ledger
   valEl.textContent=M.fmt(v)+(key===key.toUpperCase()?'°':'');
   valEl.className='ledger-val solved';
   DOM['ledger'+key].className='ledger-row solved';
-  // Pop animation
   valEl.classList.remove('pop'); void valEl.offsetWidth; valEl.classList.add('pop');
-  renderLedger();
+  // Update SVG ledger bar with pop
+  const slvEl=DOM['slv'+key];
+  if(slvEl){
+    const label=key===key.toUpperCase()?`∠${key}`:`${key}`;
+    slvEl.textContent=`${label} = ${M.fmt(v)}${key===key.toUpperCase()?'°':''}`;
+    slvEl.className='slr-val solved';
+    slvEl.classList.remove('pop'); void slvEl.offsetWidth; slvEl.classList.add('pop');
+    setTimeout(()=>slvEl.classList.remove('pop'),600);
+  }
 }
 
-// SVG ledger bar (above triangle)
+// SVG ledger bar (above triangle) — only show revealed values
 function renderSVGLedger(){
   if(!App.currentTri)return;
   const{knowns,solved}=App.currentTri;
@@ -574,13 +719,15 @@ function renderSVGLedger(){
   ['A','B','C','a','b','c'].forEach(k=>{
     const el=DOM['slv'+k];
     if(!el)return;
+    const isKnown=knowns[k];
     const revealed=App.revealedKeys.has(k);
     const v=solved[k];
     const label=k===k.toUpperCase()?`∠${k}`:`${k}`;
-    const val=revealed&&v!=null?M.fmt(v)+(k===k.toUpperCase()?'°':''):'?';
-    el.textContent=`${label} = ${val}`;
+    // Only show value if it's a known given OR has been revealed in UPDATE phase
+    const showVal=(isKnown||revealed)&&v!=null;
+    el.textContent=`${label} = ${showVal?M.fmt(v)+(k===k.toUpperCase()?'°':''):'?'}`;
     el.className='slr-val';
-    if(knowns[k])el.classList.add('known');
+    if(isKnown)el.classList.add('known');
     else if(revealed&&v!=null)el.classList.add('solved');
     if(step.key===k)el.classList.add('active');
   });
@@ -628,16 +775,21 @@ function renderSVG(){
   placeAngleLabel('lbl-angC',Cx,Cy,gx,gy,arcOff,solved.C,'C');
 
   // Side labels — perpendicular offset away from centroid
-  setSideLabel('lbl-a',pts.B,pts.C,gx,gy,`a = ${M.fmt(solved.a)}`);
-  setSideLabel('lbl-b',pts.A,pts.C,gx,gy,`b = ${M.fmt(solved.b)}`);
-  setSideLabel('lbl-c',pts.A,pts.B,gx,gy,`c = ${M.fmt(solved.c)}`);
+  // Only show label text if the value has been revealed
+  const aRev=App.revealedKeys.has('a')||App.currentTri.knowns['a'];
+  const bRev=App.revealedKeys.has('b')||App.currentTri.knowns['b'];
+  const cRev=App.revealedKeys.has('c')||App.currentTri.knowns['c'];
+  setSideLabel('lbl-a',pts.B,pts.C,gx,gy, aRev?`a = ${M.fmt(solved.a)}`:'a = ?');
+  setSideLabel('lbl-b',pts.A,pts.C,gx,gy, bRev?`b = ${M.fmt(solved.b)}`:'b = ?');
+  setSideLabel('lbl-c',pts.A,pts.B,gx,gy, cRev?`c = ${M.fmt(solved.c)}`:'c = ?');
 
   // Color side labels
   ['a','b','c'].forEach(k=>{
     const el=$('lbl-'+k);
+    const isKnown=App.currentTri.knowns[k];
     const revealed=App.revealedKeys.has(k);
-    el.className.baseVal='tri-label side-label'+(App.currentTri.knowns[k]?' known':(revealed?' solved':''));
-    el.style.opacity=revealed||App.currentTri.knowns[k]?'1':'0.25';
+    el.className.baseVal='tri-label side-label'+(isKnown?' known':(revealed?' solved':''));
+    el.style.opacity='1';
   });
 
   // Angle arcs
@@ -682,6 +834,7 @@ function placeAngleLabel(id,vx,vy,gx,gy,off,val,key){
   el.setAttribute('x',vx+dx/len*off);
   el.setAttribute('y',vy+dy/len*off+5);
   const revealed=App.revealedKeys.has(key)||App.currentTri?.knowns[key];
+  // Only show numeric value when revealed; always show arc
   el.textContent=revealed&&val!=null?`${M.fmt(val)}°`:'';
   el.className.baseVal='tri-label angle-val-label'+(revealed?' visible':'');
 }
@@ -925,11 +1078,51 @@ function bindEvents(){
   DOM.btnSubmit.addEventListener('click',checkAnswer);
   DOM.answerInput.addEventListener('keydown',e=>{if(e.key==='Enter')checkAnswer();});
   $('btn-hint').addEventListener('click',()=>{const step=App.steps[App.stepIndex];DOM.hintText.textContent=step?.reveal?.replace(/<[^>]+>/g,'')||'No hint available.';});
-  DOM.btnPrev.addEventListener('click',()=>{if(App.stepIndex>0){App.stepIndex--;clearAllTimers();renderStep();renderSVG();renderSVGLedger();runPhase(PHASE.QUESTION);}});
+  DOM.btnPrev.addEventListener('click',()=>{if(App.stepIndex>0){App.stepIndex--;clearAllTimers();renderStep();renderSVG();renderSVGLedger();if(App.quizMode)renderQuizStep();else runPhase(PHASE.QUESTION);}});
   DOM.btnNext.addEventListener('click',()=>{
-    if(App.phase===PHASE.QUESTION){runPhase(PHASE.REVEAL);}
-    else if(App.phase===PHASE.REVEAL){runPhase(PHASE.UPDATE);}
-    else{advanceStep();}
+    if(App.quizMode){
+      if(App.phase===PHASE.QUESTION) quizRevealStep();
+      else quizNextStep();
+    } else {
+      if(App.phase===PHASE.QUESTION){runPhase(PHASE.REVEAL);}
+      else if(App.phase===PHASE.REVEAL){runPhase(PHASE.UPDATE);}
+      else{advanceStep();}
+    }
+  });
+
+  // Quiz panel
+  $('btn-start-quiz').addEventListener('click',()=>{
+    const ct=$('quiz-case-select').value;
+    let preset;
+    if(ct==='random'){
+      const active=Object.entries(App.filters).filter(([,v])=>v).map(([k])=>k);
+      const pool=TRIANGLE_LIBRARY.filter(t=>active.includes(t.tag));
+      preset=pool[Math.floor(Math.random()*pool.length)];
+    } else {
+      const pool=TRIANGLE_LIBRARY.filter(t=>t.case===ct);
+      preset=pool[Math.floor(Math.random()*pool.length)];
+    }
+    if(!preset){showToast('No triangle found for that case.','error');return;}
+    startQuizMode(preset);
+    $('quiz-controls').classList.remove('hidden');
+    $('btn-quiz-reveal').classList.remove('hidden');
+    $('btn-quiz-next').classList.add('hidden');
+  });
+  $('btn-quiz-reveal').addEventListener('click',()=>quizRevealStep());
+  $('btn-quiz-next').addEventListener('click',()=>quizNextStep());
+  $('btn-quiz-skip').addEventListener('click',()=>{
+    // Skip: reveal answer and advance
+    const step=App.steps[App.stepIndex];
+    if(step&&step.key) App.revealedKeys.add(step.key);
+    quizNextStep();
+  });
+  $('btn-quiz-exit').addEventListener('click',()=>{
+    App.quizMode=false; App.quizVaultItem=null;
+    DOM.inputArea.classList.add('hidden'); DOM.hintArea.classList.add('hidden');
+    $('quiz-controls').classList.add('hidden');
+    renderVault();
+    startScreensaver();
+    showToast('Quiz exited.');
   });
   DOM.btnPause.addEventListener('click',togglePause);
   DOM.btnSave.addEventListener('click',saveProblem);
@@ -948,8 +1141,12 @@ function togglePause(){
   App.paused=!App.paused;
   DOM.btnPause.textContent=App.paused?'▶':'⏸';
   DOM.btnPause.title=App.paused?'Resume (Space)':'Pause (Space)';
-  if(App.paused){clearAllTimers();}
-  else{runPhase(App.phase);}
+  if(App.paused){
+    clearAllTimers();
+  } else {
+    // Resume: restart the current phase (timers reset, spoilers stay as-is)
+    runPhase(App.phase);
+  }
 }
 
 function handleKeyboard(e){
