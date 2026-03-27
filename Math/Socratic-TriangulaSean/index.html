@@ -7,15 +7,49 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<!-- ═══ TOP BAR ═══ -->
+<header id="top-bar">
+  <div id="top-bar-left">
+    <span id="app-title">📐 Socratic TriangulaSean</span>
+  </div>
+  <nav id="top-bar-nav">
+    <button class="tb-btn" data-panel="tools-panel">🔧 Tools</button>
+    <button class="tb-btn" data-panel="vault-panel">🏛 Vault</button>
+    <button class="tb-btn" data-panel="mistake-ledger-panel">❌ Mistakes</button>
+    <button class="tb-btn" data-panel="calculator-panel">🧮 Calc</button>
+    <button class="tb-btn" data-panel="scratchpad-panel">📝 Scratch</button>
+    <button class="tb-btn" id="btn-cheatsheet">📖 Cheatsheet</button>
+  </nav>
+  <div id="top-bar-right">
+    <button id="btn-save" title="Save problem (Enter)">💾 Save</button>
+    <button id="btn-share">🔗 Share</button>
+    <button id="btn-screensaver">📺 Screensaver</button>
+  </div>
+</header>
+
 <div id="app">
 
-  <!-- LEFT COLUMN: Socratic Dialogue & Tools -->
+  <!-- LEFT COLUMN -->
   <aside id="col-left">
+
+    <!-- Socratic Panel -->
     <div id="socratic-panel">
       <div id="state-badge">SCREENSAVER</div>
-      <div id="tutor-prompt">
+
+      <!-- QUESTION phase -->
+      <div id="phase-question" class="phase-block">
+        <div class="phase-label">❓ Question</div>
         <p id="tutor-text">Welcome to Socratic TriangulaSean. Press Space to begin or let the screensaver run.</p>
       </div>
+
+      <!-- REVEAL phase (hidden until question timer ends) -->
+      <div id="phase-reveal" class="phase-block hidden">
+        <div class="phase-label">💡 Method <span id="reveal-countdown"></span></div>
+        <div id="reveal-text"></div>
+      </div>
+
+      <!-- Input for quiz mode -->
       <div id="input-area" class="hidden">
         <input type="number" id="answer-input" placeholder="Your answer..." step="any" aria-label="Answer input">
         <button id="btn-submit">Submit</button>
@@ -27,74 +61,166 @@
       <div id="feedback-area"></div>
     </div>
 
-    <div id="tools-panel">
-      <h3>🔧 Tools</h3>
-      <div class="tool-section">
-        <label>Triangle Case</label>
-        <select id="case-select">
-          <option value="random">Random</option>
-          <option value="SSS">SSS</option>
-          <option value="SAS">SAS</option>
-          <option value="ASA">ASA</option>
-          <option value="AAS">AAS</option>
-          <option value="SSA">SSA (Ambiguous)</option>
-          <option value="HL">HL (Right Triangle)</option>
-        </select>
+    <!-- Tools Panel -->
+    <div id="tools-panel" class="side-panel collapsed">
+      <div class="panel-header" data-toggle="tools-panel">
+        <span>🔧 Tools</span><span class="chevron">▾</span>
       </div>
-      <div class="tool-section">
-        <label>Preset Triangle</label>
-        <select id="preset-select">
-          <option value="">None (Generate)</option>
-        </select>
-      </div>
-      <div class="tool-section">
-        <button id="btn-generate">▶ Generate</button>
-        <button id="btn-screensaver">📺 Screensaver</button>
-      </div>
-      <div class="tool-section">
-        <label>Speed</label>
-        <input type="range" id="speed-slider" min="0.5" max="3" step="0.5" value="1">
-        <span id="speed-label">1×</span>
+      <div class="panel-body">
+        <div class="tool-section">
+          <label>Triangle Case</label>
+          <select id="case-select">
+            <option value="random">Random</option>
+            <option value="SSS">SSS</option>
+            <option value="SAS">SAS</option>
+            <option value="ASA">ASA</option>
+            <option value="AAS">AAS</option>
+            <option value="SSA">SSA (Ambiguous)</option>
+            <option value="HL">HL (Right Triangle)</option>
+          </select>
+        </div>
+        <div class="tool-section">
+          <label>Preset Triangle</label>
+          <select id="preset-select"><option value="">None (Generate)</option></select>
+        </div>
+        <div class="tool-section">
+          <button id="btn-generate">▶ Generate</button>
+        </div>
+        <div class="tool-section">
+          <label>Speed</label>
+          <input type="range" id="speed-slider" min="0.5" max="3" step="0.5" value="1">
+          <span id="speed-label">1×</span>
+        </div>
       </div>
     </div>
+
+    <!-- Calculator -->
+    <div id="calculator-panel" class="side-panel collapsed">
+      <div class="panel-header" data-toggle="calculator-panel">
+        <span>🧮 Calculator</span><span class="chevron">▾</span>
+      </div>
+      <div class="panel-body">
+        <div id="calc-display">
+          <div id="calc-expr"></div>
+          <div id="calc-result">0</div>
+        </div>
+        <div id="calc-grid">
+          <button class="calc-btn fn" data-fn="sin">sin</button>
+          <button class="calc-btn fn" data-fn="cos">cos</button>
+          <button class="calc-btn fn" data-fn="tan">tan</button>
+          <button class="calc-btn fn" data-fn="asin">sin⁻¹</button>
+          <button class="calc-btn fn" data-fn="acos">cos⁻¹</button>
+          <button class="calc-btn fn" data-fn="atan">tan⁻¹</button>
+          <button class="calc-btn fn" data-fn="sqrt">√</button>
+          <button class="calc-btn fn" data-fn="sq">x²</button>
+          <button class="calc-btn op" data-val="π">π</button>
+          <button class="calc-btn num" data-val="7">7</button>
+          <button class="calc-btn num" data-val="8">8</button>
+          <button class="calc-btn num" data-val="9">9</button>
+          <button class="calc-btn op" data-val="÷">÷</button>
+          <button class="calc-btn num" data-val="4">4</button>
+          <button class="calc-btn num" data-val="5">5</button>
+          <button class="calc-btn num" data-val="6">6</button>
+          <button class="calc-btn op" data-val="×">×</button>
+          <button class="calc-btn num" data-val="1">1</button>
+          <button class="calc-btn num" data-val="2">2</button>
+          <button class="calc-btn num" data-val="3">3</button>
+          <button class="calc-btn op" data-val="−">−</button>
+          <button class="calc-btn num" data-val="0">0</button>
+          <button class="calc-btn num" data-val=".">.</button>
+          <button class="calc-btn op" data-val="(">()</button>
+          <button class="calc-btn op" data-val="+">+</button>
+          <button class="calc-btn clear" id="calc-clear">C</button>
+          <button class="calc-btn clear" id="calc-back">⌫</button>
+          <button class="calc-btn equals" id="calc-equals" style="grid-column:span 2">=</button>
+        </div>
+        <div id="calc-mode">
+          <label><input type="radio" name="calc-mode" value="deg" checked> DEG</label>
+          <label><input type="radio" name="calc-mode" value="rad"> RAD</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scratchpad -->
+    <div id="scratchpad-panel" class="side-panel collapsed">
+      <div class="panel-header" data-toggle="scratchpad-panel">
+        <span>📝 Scratchpad</span><span class="chevron">▾</span>
+      </div>
+      <div class="panel-body">
+        <textarea id="scratchpad" placeholder="Work out your steps here...&#10;&#10;e.g.&#10;sin(30°) = 0.5&#10;a = 5 × 0.5 = 2.5" spellcheck="false"></textarea>
+        <button id="btn-clear-scratch">Clear</button>
+      </div>
+    </div>
+
   </aside>
 
-  <!-- MIDDLE COLUMN: SVG Visualizer -->
+  <!-- MIDDLE COLUMN: SVG -->
   <main id="col-mid">
+
+    <!-- Ledger summary bar above SVG -->
+    <div id="svg-ledger">
+      <div id="svg-ledger-angles" class="svg-ledger-row">
+        <span class="slr-label">Angles:</span>
+        <span class="slr-val" id="slv-A">∠A = ?</span>
+        <span class="slr-val" id="slv-B">∠B = ?</span>
+        <span class="slr-val" id="slv-C">∠C = ?</span>
+      </div>
+      <div id="svg-ledger-sides" class="svg-ledger-row">
+        <span class="slr-label">Sides:</span>
+        <span class="slr-val" id="slv-a">a = ?</span>
+        <span class="slr-val" id="slv-b">b = ?</span>
+        <span class="slr-val" id="slv-c">c = ?</span>
+      </div>
+    </div>
+
     <div id="svg-container">
-      <svg id="triangle-svg" viewBox="0 0 500 420" xmlns="http://www.w3.org/2000/svg" aria-label="Triangle visualization">
+      <svg id="triangle-svg" viewBox="0 0 700 520" xmlns="http://www.w3.org/2000/svg" aria-label="Triangle visualization">
         <defs>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+          <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="glow-strong" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
             <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
           </filter>
         </defs>
         <g id="svg-triangle-group">
-          <polygon id="tri-fill" points="250,50 450,370 50,370" fill="rgba(137,180,250,0.05)" stroke="none"/>
-          <line id="side-a" class="tri-side" x1="450" y1="370" x2="50" y2="370" stroke-width="2.5"/>
-          <line id="side-b" class="tri-side" x1="50" y1="370" x2="250" y2="50" stroke-width="2.5"/>
-          <line id="side-c" class="tri-side" x1="250" y1="50" x2="450" y2="370" stroke-width="2.5"/>
-          <!-- Angle arcs -->
-          <path id="arc-A" class="tri-arc" fill="none" stroke-width="1.5"/>
-          <path id="arc-B" class="tri-arc" fill="none" stroke-width="1.5"/>
-          <path id="arc-C" class="tri-arc" fill="none" stroke-width="1.5"/>
+          <!-- Fill (bottom layer) -->
+          <polygon id="tri-fill" points="350,60 600,460 100,460" fill="rgba(137,180,250,0.05)" stroke="none"/>
+          <!-- Sides -->
+          <line id="side-a" class="tri-side" x1="600" y1="460" x2="100" y2="460" stroke-width="3"/>
+          <line id="side-b" class="tri-side" x1="100" y1="460" x2="350" y2="60" stroke-width="3"/>
+          <line id="side-c" class="tri-side" x1="350" y1="60" x2="600" y2="460" stroke-width="3"/>
+          <!-- Angle arcs (drawn above sides) -->
+          <path id="arc-A" class="tri-arc" fill="none" stroke-width="2.5"/>
+          <path id="arc-B" class="tri-arc" fill="none" stroke-width="2.5"/>
+          <path id="arc-C" class="tri-arc" fill="none" stroke-width="2.5"/>
           <!-- Right angle marker -->
-          <rect id="right-angle-marker" class="hidden" fill="none" stroke-width="1.5" width="14" height="14"/>
-          <!-- Labels -->
-          <text id="lbl-A" class="tri-label vertex-label"></text>
-          <text id="lbl-B" class="tri-label vertex-label"></text>
-          <text id="lbl-C" class="tri-label vertex-label"></text>
-          <text id="lbl-a" class="tri-label side-label"></text>
-          <text id="lbl-b" class="tri-label side-label"></text>
-          <text id="lbl-c" class="tri-label side-label"></text>
-          <!-- Highlight overlay for active element -->
-          <circle id="highlight-dot" r="6" class="hidden"/>
+          <g id="right-angle-marker" class="hidden">
+            <line id="ram-h" stroke-width="2"/>
+            <line id="ram-v" stroke-width="2"/>
+          </g>
+          <!-- Vertex labels (above arcs) -->
+          <text id="lbl-A" class="tri-label vertex-label" text-anchor="middle"></text>
+          <text id="lbl-B" class="tri-label vertex-label" text-anchor="middle"></text>
+          <text id="lbl-C" class="tri-label vertex-label" text-anchor="middle"></text>
+          <!-- Angle value labels near arcs -->
+          <text id="lbl-angA" class="tri-label angle-val-label" text-anchor="middle"></text>
+          <text id="lbl-angB" class="tri-label angle-val-label" text-anchor="middle"></text>
+          <text id="lbl-angC" class="tri-label angle-val-label" text-anchor="middle"></text>
+          <!-- Side value labels (topmost) -->
+          <text id="lbl-a" class="tri-label side-label" text-anchor="middle"></text>
+          <text id="lbl-b" class="tri-label side-label" text-anchor="middle"></text>
+          <text id="lbl-c" class="tri-label side-label" text-anchor="middle"></text>
+          <!-- Highlight dot -->
+          <circle id="highlight-dot" r="8" class="hidden"/>
         </g>
       </svg>
     </div>
-    <div id="progress-bar-wrap">
-      <div id="progress-bar"></div>
-    </div>
+
+    <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+
     <div id="nav-controls">
       <button id="btn-prev" title="Previous step (←)">◀</button>
       <button id="btn-pause" title="Pause/Resume (Space)">⏸</button>
@@ -102,8 +228,10 @@
     </div>
   </main>
 
-  <!-- RIGHT COLUMN: Ledger & Vault -->
+  <!-- RIGHT COLUMN -->
   <aside id="col-right">
+
+    <!-- Ledger -->
     <div id="ledger-panel">
       <h3>📋 Ledger</h3>
       <div id="known-values">
@@ -115,36 +243,107 @@
         <div class="ledger-row" id="ledger-c"><span class="ledger-key">c</span><span class="ledger-val" id="val-c">?</span></div>
       </div>
       <div id="case-badge"></div>
-      <div id="formula-display"></div>
       <div id="ssa-alert" class="hidden">
         <strong>⚠ Ambiguous Case (SSA)</strong>
         <div id="ssa-solutions"></div>
       </div>
     </div>
 
-    <div id="vault-panel">
-      <h3>🏛 Identity Vault</h3>
-      <div id="vault-filters">
-        <label><input type="checkbox" class="vault-filter" value="pythagorean" checked> Pythagorean</label>
-        <label><input type="checkbox" class="vault-filter" value="special" checked> Special Angles</label>
-        <label><input type="checkbox" class="vault-filter" value="ssa" checked> SSA Cases</label>
-        <label><input type="checkbox" class="vault-filter" value="oblique" checked> Oblique</label>
+    <!-- Vault -->
+    <div id="vault-panel" class="side-panel collapsed">
+      <div class="panel-header" data-toggle="vault-panel">
+        <span>🏛 Identity Vault</span><span class="chevron">▾</span>
       </div>
-      <div id="vault-list"></div>
+      <div class="panel-body">
+        <div id="vault-filters">
+          <label><input type="checkbox" class="vault-filter" value="pythagorean" checked> Pythagorean</label>
+          <label><input type="checkbox" class="vault-filter" value="special" checked> Special Angles</label>
+          <label><input type="checkbox" class="vault-filter" value="ssa" checked> SSA Cases</label>
+          <label><input type="checkbox" class="vault-filter" value="oblique" checked> Oblique</label>
+        </div>
+        <div id="vault-list"></div>
+      </div>
     </div>
 
-    <div id="mistake-ledger-panel">
-      <h3>❌ Mistake Ledger</h3>
-      <div id="mistake-list"><p class="empty-msg">No mistakes yet.</p></div>
-      <button id="btn-clear-mistakes">Clear</button>
+    <!-- Mistakes -->
+    <div id="mistake-ledger-panel" class="side-panel collapsed">
+      <div class="panel-header" data-toggle="mistake-ledger-panel">
+        <span>❌ Mistake Ledger</span><span class="chevron">▾</span>
+      </div>
+      <div class="panel-body">
+        <div id="mistake-list"><p class="empty-msg">No mistakes yet.</p></div>
+        <button id="btn-clear-mistakes">Clear</button>
+      </div>
     </div>
 
-    <div id="session-controls">
-      <button id="btn-save" title="Save problem (Enter)">💾 Save</button>
-      <button id="btn-share">🔗 Share URL</button>
-    </div>
   </aside>
+</div>
 
+<!-- Cheatsheet floating panel -->
+<div id="cheatsheet-panel" class="floating-panel hidden" role="complementary" aria-label="Trig Cheatsheet">
+  <div id="cheatsheet-titlebar">
+    <span>📖 Trig Cheatsheet</span>
+    <div id="cheatsheet-controls">
+      <button class="dock-btn" data-dock="left" title="Dock left">⬅</button>
+      <button class="dock-btn" data-dock="right" title="Dock right">➡</button>
+      <button id="cheatsheet-close" title="Close (Esc)">✕</button>
+    </div>
+  </div>
+  <div id="cheatsheet-body">
+    <section class="cs-section">
+      <h4>SOHCAHTOA</h4>
+      <div class="cs-row sin">sin θ = Opposite / Hypotenuse</div>
+      <div class="cs-row cos">cos θ = Adjacent / Hypotenuse</div>
+      <div class="cs-row tan">tan θ = Opposite / Adjacent</div>
+    </section>
+    <section class="cs-section">
+      <h4>Inverse Trig</h4>
+      <div class="cs-row sin">θ = sin⁻¹(opp/hyp)</div>
+      <div class="cs-row cos">θ = cos⁻¹(adj/hyp)</div>
+      <div class="cs-row tan">θ = tan⁻¹(opp/adj)</div>
+    </section>
+    <section class="cs-section">
+      <h4>Law of Sines</h4>
+      <div class="cs-row neutral">a/sin A = b/sin B = c/sin C</div>
+    </section>
+    <section class="cs-section">
+      <h4>Law of Cosines</h4>
+      <div class="cs-row neutral">c² = a² + b² − 2ab·cos(C)</div>
+      <div class="cs-row neutral">cos C = (a²+b²−c²) / 2ab</div>
+    </section>
+    <section class="cs-section">
+      <h4>Pythagorean Theorem</h4>
+      <div class="cs-row neutral">a² + b² = c²</div>
+    </section>
+    <section class="cs-section">
+      <h4>Angle Sum</h4>
+      <div class="cs-row neutral">A + B + C = 180°</div>
+    </section>
+    <section class="cs-section">
+      <h4>Special Angles</h4>
+      <div class="cs-table">
+        <div class="cs-th">θ</div><div class="cs-th sin">sin</div><div class="cs-th cos">cos</div><div class="cs-th tan">tan</div>
+        <div>0°</div><div>0</div><div>1</div><div>0</div>
+        <div>30°</div><div>½</div><div>√3/2</div><div>1/√3</div>
+        <div>45°</div><div>√2/2</div><div>√2/2</div><div>1</div>
+        <div>60°</div><div>√3/2</div><div>½</div><div>√3</div>
+        <div>90°</div><div>1</div><div>0</div><div>—</div>
+      </div>
+    </section>
+    <section class="cs-section">
+      <h4>SSA Ambiguous Case</h4>
+      <div class="cs-row neutral">h = b·sin(A)</div>
+      <div class="cs-row sin">a &lt; h → 0 solutions</div>
+      <div class="cs-row cos">a = h → 1 solution (right △)</div>
+      <div class="cs-row tan">h &lt; a &lt; b → 2 solutions</div>
+      <div class="cs-row neutral">a ≥ b → 1 solution</div>
+    </section>
+    <section class="cs-section">
+      <h4>Pythagorean Triples</h4>
+      <div class="cs-row neutral">3-4-5 · 5-12-13 · 8-15-17</div>
+      <div class="cs-row neutral">7-24-25 · 9-40-41 · 6-8-10</div>
+    </section>
+  </div>
 </div>
 
 <!-- SSA Modal -->
@@ -157,7 +356,6 @@
   </div>
 </div>
 
-<!-- Toast notification -->
 <div id="toast" class="hidden" role="status" aria-live="polite"></div>
 
 <script src="app.js"></script>
