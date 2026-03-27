@@ -1,32 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Socratic TriangulaSean</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Socratic TriangulaSean</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="app">
-        <header>
-            <h1>Socratic TriangulaSean</h1>
-        </header>
-        
-        <main>
-            <section id="visualizer">
-                <div class="placeholder-box">Triangle Visualization</div>
-            </section>
+<div id="app">
 
-            <section id="ui-controls">
-                <button id="generate">Generate Problem</button>
-                <button id="screensaver">Screensaver Mode</button>
-            </section>
-
-            <section id="dialogue-box">
-                <p id="message">Welcome! Ready to solve some triangles?</p>
-            </section>
-        </main>
+  <!-- LEFT COLUMN: Socratic Dialogue & Tools -->
+  <aside id="col-left">
+    <div id="socratic-panel">
+      <div id="state-badge">SCREENSAVER</div>
+      <div id="tutor-prompt">
+        <p id="tutor-text">Welcome to Socratic TriangulaSean. Press Space to begin or let the screensaver run.</p>
+      </div>
+      <div id="input-area" class="hidden">
+        <input type="number" id="answer-input" placeholder="Your answer..." step="any" aria-label="Answer input">
+        <button id="btn-submit">Submit</button>
+      </div>
+      <div id="hint-area" class="hidden">
+        <button id="btn-hint">💡 Hint</button>
+        <p id="hint-text"></p>
+      </div>
+      <div id="feedback-area"></div>
     </div>
-    <script src="app.js"></script>
+
+    <div id="tools-panel">
+      <h3>🔧 Tools</h3>
+      <div class="tool-section">
+        <label>Triangle Case</label>
+        <select id="case-select">
+          <option value="random">Random</option>
+          <option value="SSS">SSS</option>
+          <option value="SAS">SAS</option>
+          <option value="ASA">ASA</option>
+          <option value="AAS">AAS</option>
+          <option value="SSA">SSA (Ambiguous)</option>
+          <option value="HL">HL (Right Triangle)</option>
+        </select>
+      </div>
+      <div class="tool-section">
+        <label>Preset Triangle</label>
+        <select id="preset-select">
+          <option value="">None (Generate)</option>
+        </select>
+      </div>
+      <div class="tool-section">
+        <button id="btn-generate">▶ Generate</button>
+        <button id="btn-screensaver">📺 Screensaver</button>
+      </div>
+      <div class="tool-section">
+        <label>Speed</label>
+        <input type="range" id="speed-slider" min="0.5" max="3" step="0.5" value="1">
+        <span id="speed-label">1×</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MIDDLE COLUMN: SVG Visualizer -->
+  <main id="col-mid">
+    <div id="svg-container">
+      <svg id="triangle-svg" viewBox="0 0 500 420" xmlns="http://www.w3.org/2000/svg" aria-label="Triangle visualization">
+        <defs>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <g id="svg-triangle-group">
+          <polygon id="tri-fill" points="250,50 450,370 50,370" fill="rgba(137,180,250,0.05)" stroke="none"/>
+          <line id="side-a" class="tri-side" x1="450" y1="370" x2="50" y2="370" stroke-width="2.5"/>
+          <line id="side-b" class="tri-side" x1="50" y1="370" x2="250" y2="50" stroke-width="2.5"/>
+          <line id="side-c" class="tri-side" x1="250" y1="50" x2="450" y2="370" stroke-width="2.5"/>
+          <!-- Angle arcs -->
+          <path id="arc-A" class="tri-arc" fill="none" stroke-width="1.5"/>
+          <path id="arc-B" class="tri-arc" fill="none" stroke-width="1.5"/>
+          <path id="arc-C" class="tri-arc" fill="none" stroke-width="1.5"/>
+          <!-- Right angle marker -->
+          <rect id="right-angle-marker" class="hidden" fill="none" stroke-width="1.5" width="14" height="14"/>
+          <!-- Labels -->
+          <text id="lbl-A" class="tri-label vertex-label"></text>
+          <text id="lbl-B" class="tri-label vertex-label"></text>
+          <text id="lbl-C" class="tri-label vertex-label"></text>
+          <text id="lbl-a" class="tri-label side-label"></text>
+          <text id="lbl-b" class="tri-label side-label"></text>
+          <text id="lbl-c" class="tri-label side-label"></text>
+          <!-- Highlight overlay for active element -->
+          <circle id="highlight-dot" r="6" class="hidden"/>
+        </g>
+      </svg>
+    </div>
+    <div id="progress-bar-wrap">
+      <div id="progress-bar"></div>
+    </div>
+    <div id="nav-controls">
+      <button id="btn-prev" title="Previous step (←)">◀</button>
+      <button id="btn-pause" title="Pause/Resume (Space)">⏸</button>
+      <button id="btn-next" title="Next step (→)">▶</button>
+    </div>
+  </main>
+
+  <!-- RIGHT COLUMN: Ledger & Vault -->
+  <aside id="col-right">
+    <div id="ledger-panel">
+      <h3>📋 Ledger</h3>
+      <div id="known-values">
+        <div class="ledger-row" id="ledger-A"><span class="ledger-key">∠A</span><span class="ledger-val" id="val-A">?</span></div>
+        <div class="ledger-row" id="ledger-B"><span class="ledger-key">∠B</span><span class="ledger-val" id="val-B">?</span></div>
+        <div class="ledger-row" id="ledger-C"><span class="ledger-key">∠C</span><span class="ledger-val" id="val-C">?</span></div>
+        <div class="ledger-row" id="ledger-a"><span class="ledger-key">a</span><span class="ledger-val" id="val-a">?</span></div>
+        <div class="ledger-row" id="ledger-b"><span class="ledger-key">b</span><span class="ledger-val" id="val-b">?</span></div>
+        <div class="ledger-row" id="ledger-c"><span class="ledger-key">c</span><span class="ledger-val" id="val-c">?</span></div>
+      </div>
+      <div id="case-badge"></div>
+      <div id="formula-display"></div>
+      <div id="ssa-alert" class="hidden">
+        <strong>⚠ Ambiguous Case (SSA)</strong>
+        <div id="ssa-solutions"></div>
+      </div>
+    </div>
+
+    <div id="vault-panel">
+      <h3>🏛 Identity Vault</h3>
+      <div id="vault-filters">
+        <label><input type="checkbox" class="vault-filter" value="pythagorean" checked> Pythagorean</label>
+        <label><input type="checkbox" class="vault-filter" value="special" checked> Special Angles</label>
+        <label><input type="checkbox" class="vault-filter" value="ssa" checked> SSA Cases</label>
+        <label><input type="checkbox" class="vault-filter" value="oblique" checked> Oblique</label>
+      </div>
+      <div id="vault-list"></div>
+    </div>
+
+    <div id="mistake-ledger-panel">
+      <h3>❌ Mistake Ledger</h3>
+      <div id="mistake-list"><p class="empty-msg">No mistakes yet.</p></div>
+      <button id="btn-clear-mistakes">Clear</button>
+    </div>
+
+    <div id="session-controls">
+      <button id="btn-save" title="Save problem (Enter)">💾 Save</button>
+      <button id="btn-share">🔗 Share URL</button>
+    </div>
+  </aside>
+
+</div>
+
+<!-- SSA Modal -->
+<div id="ssa-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="ssa-modal-title">
+  <div class="modal-content">
+    <h2 id="ssa-modal-title">⚠ Ambiguous Case Detected</h2>
+    <p id="ssa-modal-body"></p>
+    <div id="ssa-modal-choices"></div>
+    <button class="modal-close" id="ssa-modal-close">✕ Close (Esc)</button>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div id="toast" class="hidden" role="status" aria-live="polite"></div>
+
+<script src="app.js"></script>
 </body>
 </html>
