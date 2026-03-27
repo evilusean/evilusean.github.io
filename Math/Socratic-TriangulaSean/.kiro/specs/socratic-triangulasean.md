@@ -1,66 +1,59 @@
-# Specification: Socratic TriangulaSean v3.0
+# Specification: Socratic TriangulaSean v5.0
 
 ## 1. Vision & Layout
-**Goal:** A mobile-responsive, precisely-timed interactive trigonometry simulator with a focus on "Perfect Integer" cases and error-tracking persistence.
+**Goal:** A mobile-responsive, precisely-timed interactive trigonometry simulator with a unified control scheme for desktop and touch devices.
+
+### Unified Control System (State & Navigation)
+THE system SHALL support a "Global Listener" for the following inputs, affecting both the Simulation and the Workspace Tools (Calculator/Scratchpad).
+
+| Action | Desktop Keyboard | Mobile / Touch Gesture |
+| :--- | :--- | :--- |
+| **Play/Pause** | `Space` | Double Tap (on Visualizer) |
+| **Save to Ledger** | `Enter` | Press and Hold (3s) |
+| **Next Step** | `Right Arrow` | Swipe Right (Horizontal) |
+| **Previous Step** | `Left Arrow` | Swipe Left (Horizontal) |
+| **Exit / Close All** | `Esc` | Swipe Down (on Modal/Tool) |
+| **Next Problem** | `Shift + Right` | Two-Finger Swipe Right |
+
+---
+
+## 2. Interactive Tools & Overlays
+
+### Tool Management (Modals)
+* **Escape Key (`Esc`) / Swipe Down Logic:** * IF the Calculator or Scratchpad is open, `Esc` SHALL close the active tool first.
+    * IF no tools are open, `Esc` SHALL reset the current problem or return to the main menu.
+* **Scratchpad:** A transparent canvas overlay for stylus/mouse notes.
+* **Calculator:** A floating scientific calculator for "Random Mode" calculations.
+
+---
+
+## 3. UI/UX & Visual Feedback
 
 ### Three-Column Responsive Layout
-* **Left Column (Socratic Tutor):** * Displays deterministic dialogue. 
-    * Buttons: **Play/Pause**, **Next Step**, **Prev Step**, **Save**, **How to Use** (Popup Trigger).
-    * **Speed Slider:** Adjusts Screensaver delay ($0.5x$ to $3.0x$ speed).
-* **Middle Column (Interactive SVG Visualizer):**
-    * Dynamic triangle rendering. 
-    * **Visual Feedback:** When a part is solved, it MUST **Flash**, **Pulse (Grow/Shrink)**, and change from grey to its designated **Trig Color**.
-* **Right Column (Data Ledger & Error Tracker):**
-    * **Identity Cheatsheet:** Interactive accordion. Clicking an identity (e.g., Law of Sines) allows the user to trigger a "Random Practice" triangle specifically designed for that formula.
-    * **Saved/Wrong Gallery:** Lists problems the user got wrong. Allows "Copy All URLs" or "Copy Individual URL" for future review.
+* **Left Column (Socratic Tutor):** Displays deterministic dialogue. Includes a **Speed Slider** for the Screensaver and **Mode Toggles** (Integer vs. Random).
+* **Middle Column (Interactive SVG):** * **Dynamic Transformation:** SVG points update to match actual triangle ratios.
+    * **Highlighting:** When a value is updated via the Right Column or Screensaver, the SVG part SHALL **Pulse/Grow** and turn its designated color:
+        * **Red:** Sin / Y / Vertical.
+        * **Blue:** Cos / X / Horizontal.
+        * **Purple:** Tan / Cot / Slopes.
+* **Right Column (Data Ledger):** * Interactive fields that sync with the SVG. 
+    * **Mistake Ledger:** Persistent list of failed problem URLs for review.
 
 ---
 
-## 2. Prebuilt "Clean" Problem Sets
-The `TriangleEngine` SHALL include a library of non-decimal, "easy-to-work-with" triangles mapped to specific identities.
+## 4. Operation Modes
 
-### Classic Triangle Library
-| Case | Triangles (Sides/Angles) | Primary Identity Focus |
-| :--- | :--- | :--- |
-| **Pythagorean** | (3,4,5), (5,12,13), (8,15,17), (7,24,25) | SOHCAHTOA / Pythagoras |
-| **Special Right** | (45-45-90 [1,1,√2]), (30-60-90 [1,√3,2]) | Exact Trig Values |
-| **Law of Cosines** | (5,8,7 -> 60°), (3,5,7 -> 120°) | SAS / SSS Logic |
-| **Law of Sines** | (Sides: 10, 10√2, Angles: 45, 90, 45) | ASA / AAS Logic |
+### Quiz Mode (Manual)
+* The user is prompted by the Socratic dialogue.
+* The user can either input the value manually in the Right Column or press `Right Arrow` / `Swipe Right` to **Skip/Auto-Fill** the current step.
 
-* **Identity Quizzing:** If a user selects "Practice Law of Sines" from the cheatsheet, the engine SHALL pull a relevant case from this library.
+### Screensaver Mode (Auto-Pilot)
+1. **TUTOR_PROMPT (10s base):** Question displays; `Space` can pause/resume this timer.
+2. **ANIMATION_TRIGGER (5s base):** The system auto-fills the ledger and pulses the SVG part.
+3. **REVIEW (30s):** Final logic breakdown + Formula display.
 
 ---
 
-## 3. Screensaver Simulation & State Management
-
-### Step-Based Navigation
-* `Next` and `Previous` buttons SHALL navigate through **Steps** (individual side/angle discoveries), not entire problems.
-* **URL Persistence:** The URL SHALL update at every **Step** to ensure that refreshing the page returns the user to the exact sub-calculation they were on.
-
-### Timing & Feedback Loop
-1.  **TUTOR_PROMPT (10s base):** Socratic question appears.
-2.  **ANIMATION_TRIGGER (5s base):** * Part on SVG **Flashes/Grows**.
-    * Color fills: **Red (Sin/Y)**, **Blue (Cos/X)**, **Purple (Tan/Cot)**.
-3.  **REVIEW (30s):** Final logic breakdown + Formula display.
-
----
-
-## 4. User Persistence & Error Handling
-* **The "Mistake Ledger":** * If a user fails a Socratic prompt (wrong identity/value), the problem is tagged as "Wrong."
-    * These are stored in `localStorage` and displayed in the Right Column.
-    * **Export:** One-click button to "Copy all failed problem URLs" to clipboard.
-
----
-
-## 5. Controls & Accessibility
-
-### Mobile Interaction (FR-MOBILE)
-* **Press and Hold (3s):** Trigger "Save to Ledger."
-* **Swipe Right/Left:** Navigate `Next Step` / `Prev Step`.
-* **Pinch/Zoom:** Standard SVG zoom.
-
-### "How to Use" Popup
-* A modal overlay that explains:
-    1. The meaning of the color coding (Red = Y/Sin, Blue = X/Cos).
-    2. How to use the Screensaver for passive learning.
-    3. How to "Skip" steps by inputting final values.
+## 5. Persistence & State
+* **URL Sync:** `?type=SAS&a=3&b=4&C=90&mode=integer&step=2&tools=none`
+* **Local Storage:** Stores the "Mistake Ledger" and user preferences (e.g., Screensaver Speed).
