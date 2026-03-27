@@ -67,3 +67,19 @@ Since this is a static site, no build step is required.
 3. Use the "Generate" button to start a new problem or "Screensaver" to watch the logic unfold.
 
 ---
+
+## ToDo / Future Sean Problems :
+- Ran out of tokens, quiz mode is broken
+- When you click on something like 'Law of Sines' or 'Law of Cosines' or whatever - it should open it in the cheatsheet
+- It should have all steps to solve all cases (ASS, SAS, Etc) for each case solved sequentially, so you can just learn from those steps instead of sitting through a screensaver
+- what is 'h'? - I know it's height, but shouldn't that be the corresponding side? Why is it asking for height?
+- maybe get rid of the right hand ledger - I added the values to the top, so it seems superfluous 
+- increase the size of the svg triangle, on a big monitor I have alot of deadspace and free realestate that's just not being used
+- add special triangles like isoceles, or 3-4-5
+- move quiz mode to top bar beside 'screensaver'
+- quiz mode should walk you through each step of unlocking any case - it should be randomized or you can select with checkboxes what cases you want to learn
+- save feature is broken? or is that the bulk save the mistakes ledger 
+- url parameters are weird, it kind of defeats the purpose if it tells you what the solution to each problem is in the url params, maybe fix so it doesn't update that for each new question/step
+- sometimes the triangles are offset and not centered
+- some triangles are displaying all sides and angles while still going through socratic questioning, again, defeats the purpose - 'what is side C'... uh, it's '5', it says it right there
+- add custom lengths for each step so you don't have to update the code to increase the speed 
