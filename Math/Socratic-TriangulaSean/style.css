@@ -1,0 +1,42 @@
+:root {
+    --bg-color: #1e1e2e;
+    --text-color: #cdd6f4;
+    --accent-color: #89b4fa;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+}
+
+#app {
+    max-width: 800px;
+    width: 100%;
+    text-align: center;
+}
+
+.placeholder-box {
+    border: 2px dashed var(--accent-color);
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+#dialogue-box {
+    background: #313244;
+    padding: 1rem;
+    border-radius: 8px;
+    min-height: 80px;
+}
+
+button {
+    padding: 0.5rem 1rem;
+    margin: 0.5rem;
+    cursor: pointer;
+}
