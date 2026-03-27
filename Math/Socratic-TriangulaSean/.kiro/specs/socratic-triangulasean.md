@@ -1,86 +1,66 @@
-# Specification: Socratic TriangulaSean v2.0
+# Specification: Socratic TriangulaSean v3.0
 
 ## 1. Vision & Layout
-**Goal:** A mobile-responsive, precisely-timed interactive trigonometry simulator, hosted statically on GitHub.
+**Goal:** A mobile-responsive, precisely-timed interactive trigonometry simulator with a focus on "Perfect Integer" cases and error-tracking persistence.
 
 ### Three-Column Responsive Layout
-The UI SHALL use a CSS Grid/Flexbox three-column split on desktop, stacking vertically on mobile (Socratic -> Visualizer -> Ledger).
-
-* **Left Column (Socratic Tutor):**
-    * Displays the deterministic dialogue and "Leading Questions."
-    * Contains standard controls: **Pause**, **Previous**, **Next**, **Save**.
-* **Middle Column (Interactive Triangle Visualizer):**
-    * An SVG-based triangle.
-    * Uses animations and bold flashing to highlight parts as they are discovered or selected.
-* **Right Column (Data Ledger & Trig Cheatsheet):**
-    * Dynamic list of triangle parts ($a, b, c, \angle A, \angle B, \angle C$).
-    * **Calculated Values:** Shows SOHCAHTOA and inverse trig ratios ($\csc, \sec, \cot$) as they are discovered.
-    * **Trig Cheatsheet:** A dedicated accordion/section listing all the Law of Cosines, Law of Sines, and SOHCAHTOA identities used by the engine.
+* **Left Column (Socratic Tutor):** * Displays deterministic dialogue. 
+    * Buttons: **Play/Pause**, **Next Step**, **Prev Step**, **Save**, **How to Use** (Popup Trigger).
+    * **Speed Slider:** Adjusts Screensaver delay ($0.5x$ to $3.0x$ speed).
+* **Middle Column (Interactive SVG Visualizer):**
+    * Dynamic triangle rendering. 
+    * **Visual Feedback:** When a part is solved, it MUST **Flash**, **Pulse (Grow/Shrink)**, and change from grey to its designated **Trig Color**.
+* **Right Column (Data Ledger & Error Tracker):**
+    * **Identity Cheatsheet:** Interactive accordion. Clicking an identity (e.g., Law of Sines) allows the user to trigger a "Random Practice" triangle specifically designed for that formula.
+    * **Saved/Wrong Gallery:** Lists problems the user got wrong. Allows "Copy All URLs" or "Copy Individual URL" for future review.
 
 ---
 
-## 2. Dynamic State & URL Persistence
+## 2. Prebuilt "Clean" Problem Sets
+The `TriangleEngine` SHALL include a library of non-decimal, "easy-to-work-with" triangles mapped to specific identities.
 
-The state of the application SHALL be managed in the browser and persistently mirrored in the URL parameters.
+### Classic Triangle Library
+| Case | Triangles (Sides/Angles) | Primary Identity Focus |
+| :--- | :--- | :--- |
+| **Pythagorean** | (3,4,5), (5,12,13), (8,15,17), (7,24,25) | SOHCAHTOA / Pythagoras |
+| **Special Right** | (45-45-90 [1,1,√2]), (30-60-90 [1,√3,2]) | Exact Trig Values |
+| **Law of Cosines** | (5,8,7 -> 60°), (3,5,7 -> 120°) | SAS / SSS Logic |
+| **Law of Sines** | (Sides: 10, 10√2, Angles: 45, 90, 45) | ASA / AAS Logic |
 
-### Required State Model
-* `triangleType`: [SSS, SAS, ASA, AAS, SSA, HL, Custom]
-* `knowns`: Object { a, b, c, A, B, C } (stores known numerical values).
-* `activeSequence`: List of logic steps (e.g., ["LawCosines_c", "LawSines_B", "AngleSum_A"]).
-* `stepIndex`: The current active logic step in the sequence.
-* `simulationState`: [IDLE, PAUSED, TUTOR_PROMPT, DISPLAYING_VALUE, SOLVED_REVIEW].
-* `isScreensaver`: Boolean.
-
-### URL Parameter Mapping
-THE application SHALL update and read from the URL parameters using the following format:
-`?type=[TYPE]&a=[V]&b=[V]&c=[V]&A=[V]&B=[V]&C=[V]&step=[V]&mode=[screensaver/tutor]`
+* **Identity Quizzing:** If a user selects "Practice Law of Sines" from the cheatsheet, the engine SHALL pull a relevant case from this library.
 
 ---
 
-## 3. Screensaver Simulation Flow & Timing
-This sequence MUST be implemented using a rigid state machine. For each `stepIndex`:
+## 3. Screensaver Simulation & State Management
 
-1.  **State `TUTOR_PROMPT` (Duration: 10s):**
-    * THE system SHALL display the next Socratic leading question (deterministic lookup based on `stepIndex`).
-    * THE UI SHALL pause all animation on the triangle and ledger.
-2.  **State `DISPLAYING_VALUE` (Duration: 5s):**
-    * THE system SHALL notify the user of the new discovered part:
-        1.  Highlight the new numerical text on the Right Ledger in **BOLD** or **FLASHING**.
-        2.  Fill in the corresponding side/angle on the SVG visualizer, using color/animation.
-3.  **End of Sequence:**
-    * GIVEN the entire triangle is solved, THE system SHALL enter state `SOLVED_REVIEW` (Duration: 30s).
-    * The dialogue column SHALL display the **final result**, a full breakdown of the logic used ("First used Law of Cosines to find side c... then Angle Sum for Angle A...").
-    * The Trig Cheatsheet on the right column SHALL highlight the actual formulas applied.
-    * THE system SHALL generate a *new* problem case and repeat the sequence.
+### Step-Based Navigation
+* `Next` and `Previous` buttons SHALL navigate through **Steps** (individual side/angle discoveries), not entire problems.
+* **URL Persistence:** The URL SHALL update at every **Step** to ensure that refreshing the page returns the user to the exact sub-calculation they were on.
+
+### Timing & Feedback Loop
+1.  **TUTOR_PROMPT (10s base):** Socratic question appears.
+2.  **ANIMATION_TRIGGER (5s base):** * Part on SVG **Flashes/Grows**.
+    * Color fills: **Red (Sin/Y)**, **Blue (Cos/X)**, **Purple (Tan/Cot)**.
+3.  **REVIEW (30s):** Final logic breakdown + Formula display.
 
 ---
 
-## 4. User Interaction & Controls
-
-### General Controls
-* **Save:**
-    * THE system SHALL generate a unique shareable URL based on the current state and parameters.
-    * THE system SHALL copy this URL to the clipboard.
-    * THE problem data SHALL also be persisted to `localStorage`.
-* **Play/Pause:** Toggles the `simulationState` timer loop.
-* **Next / Previous:** Navigates the `stepIndex` manually. Previous steps "un-solve" parts of the triangle.
-
-### Mobile Gestures (FR-MOBILE)
-* **Press and Hold (3s):** Trigger the `Save` functionality.
-* **Swipe Right (horizontal):** Trigger the `Next` step functionality.
-* **Swipe Left (horizontal):** Trigger the `Previous` step functionality.
+## 4. User Persistence & Error Handling
+* **The "Mistake Ledger":** * If a user fails a Socratic prompt (wrong identity/value), the problem is tagged as "Wrong."
+    * These are stored in `localStorage` and displayed in the Right Column.
+    * **Export:** One-click button to "Copy all failed problem URLs" to clipboard.
 
 ---
 
-## 5. Visual Specifications
+## 5. Controls & Accessibility
 
-### Triangle Highlighting
-THE system SHALL animate the transition of a triangle part (side or angle) from unknown (dashed/grey) to known (solid/colored). Flashing text should use a distinct accent color.
+### Mobile Interaction (FR-MOBILE)
+* **Press and Hold (3s):** Trigger "Save to Ledger."
+* **Swipe Right/Left:** Navigate `Next Step` / `Prev Step`.
+* **Pinch/Zoom:** Standard SVG zoom.
 
-### Trigonometric Color Coding (Required)
-The Data Ledger column and corresponding triangle parts MUST use the specific color codes referenced in the `Unit Circle Quiz` asset provided (image_0.png):
-
-* **Sin (y) / Opposite / Angle Side: RED**
-* **Cos (x) / Adjacent / Angle Side: BLUE**
-* **Tan ($O/A$) & Cot ($A/O$): PURPLE**
-* **Sec ($H/A$) & Csc ($H/O$): (Refer to image, typically inverse/lighter variants of base color)**
+### "How to Use" Popup
+* A modal overlay that explains:
+    1. The meaning of the color coding (Red = Y/Sin, Blue = X/Cos).
+    2. How to use the Screensaver for passive learning.
+    3. How to "Skip" steps by inputting final values.
