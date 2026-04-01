@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Socratic TriangulaSean</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -24,6 +25,7 @@
   <div id="top-bar-right">
     <button id="btn-save" title="Save problem (Enter)">💾 Save</button>
     <button id="btn-share">🔗 Share</button>
+    <button id="btn-quiz-mode" title="Enter/Exit Quiz Mode">🎯 Quiz</button>
     <button id="btn-screensaver">📺 Screensaver</button>
   </div>
 </header>
@@ -90,6 +92,21 @@
           <label>Speed</label>
           <input type="range" id="speed-slider" min="0.5" max="3" step="0.5" value="1">
           <span id="speed-label">1×</span>
+        </div>
+        <div class="tool-section">
+          <label>Question Duration (s)</label>
+          <input type="range" id="question-duration-slider" min="5" max="30" step="1" value="12">
+          <span id="question-duration-label">12s</span>
+        </div>
+        <div class="tool-section">
+          <label>Reveal Duration (s)</label>
+          <input type="range" id="reveal-duration-slider" min="3" max="15" step="1" value="8">
+          <span id="reveal-duration-label">8s</span>
+        </div>
+        <div class="tool-section">
+          <label>Update Duration (s)</label>
+          <input type="range" id="update-duration-slider" min="5" max="25" step="1" value="15">
+          <span id="update-duration-label">15s</span>
         </div>
       </div>
     </div>
@@ -174,7 +191,7 @@
     </div>
 
     <div id="svg-container">
-      <svg id="triangle-svg" viewBox="0 0 700 520" xmlns="http://www.w3.org/2000/svg" aria-label="Triangle visualization">
+      <svg id="triangle-svg" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" aria-label="Triangle visualization">
         <defs>
           <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
             <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
@@ -284,6 +301,15 @@
             <option value="SSA">SSA (Ambiguous)</option>
           </select>
         </div>
+        <div class="tool-section" id="quiz-case-checkboxes">
+          <label>Select cases to include:</label>
+          <span><label><input type="checkbox" class="quiz-case" value="HL" checked>HL</label></span>
+          <span><label><input type="checkbox" class="quiz-case" value="SAS" checked>SAS</label></span>
+          <span><label><input type="checkbox" class="quiz-case" value="SSS" checked>SSS</label></span>
+          <span><label><input type="checkbox" class="quiz-case" value="ASA" checked>ASA</label></span>
+          <span><label><input type="checkbox" class="quiz-case" value="AAS" checked>AAS</label></span>
+          <span><label><input type="checkbox" class="quiz-case" value="SSA" checked>SSA</label></span>
+        </div>
         <button id="btn-start-quiz">▶ Start Quiz</button>
         <div id="quiz-controls" class="hidden">
           <button id="btn-quiz-reveal">💡 Show Method</button>
@@ -320,6 +346,11 @@
     </div>
   </div>
   <div id="cheatsheet-body">
+    <section class="cs-section" id="cs-reference">
+      <h4>Trig Cheatsheet Links</h4>
+      <div class="cs-row neutral">Open full cheat sheet: <a href="https://evilusean.github.io/Math/Trig-Identities-CheatSheet-Quiz/index.html" target="_blank" rel="noopener noreferrer">External Trig CheatSheet</a></div>
+      <div class="cs-row neutral">Click any shortcut in method text (e.g., Law of Sines) to jump to the section below.</div>
+    </section>
     <section class="cs-section" id="cs-sohcahtoa">
       <h4>SOHCAHTOA</h4>
       <div class="cs-row sin">sin θ = Opposite / Hypotenuse</div>

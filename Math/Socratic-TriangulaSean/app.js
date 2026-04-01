@@ -10,7 +10,7 @@ const RAD = 180 / Math.PI;
 // ─── PHASE SYSTEM ────────────────────────────────────────────
 // Each step cycles: QUESTION → REVEAL → UPDATE → (next step QUESTION)
 const PHASE = { QUESTION: 'question', REVEAL: 'reveal', UPDATE: 'update' };
-const PHASE_DUR = { question: 12000, reveal: 8000, update: 15000 };
+const PHASE_DUR_DEFAULT = { question: 12000, reveal: 8000, update: 15000 };
 
 const STATE = { SCREENSAVER: 'screen', ACTIVE: 'active' };
 
@@ -95,7 +95,7 @@ function buildSteps(tri) {
   if (caseType === 'HL') {
     steps.push({
       question: `You have a right triangle with hypotenuse c = ${M.fmt(solved.c)}. One angle is 90°. What relationship connects all three sides?`,
-      reveal: `Right triangles use the ${sp('Pythagorean Theorem','formula')}: ${sp('a² + b² = c²','formula')}. The hypotenuse is always opposite the right angle.`,
+      reveal: `Right triangles use the ${sp('Pythagorean Theorem','formula','pythagorean')}: ${sp('a² + b² = c²','formula','pythagorean')}. The hypotenuse is always opposite the right angle.`,
       activeEl: 'side-c', answer: null, key: null
     });
     if (!tri.knowns.a) push(
@@ -123,17 +123,17 @@ function buildSteps(tri) {
   } else if (caseType === 'SAS') {
     steps.push({
       question: `You have two sides (a = ${M.fmt(solved.a)}, b = ${M.fmt(solved.b)}) and the angle between them (C = ${M.fmt(solved.C)}°). Can you use SOHCAHTOA here? Why or why not?`,
-      reveal: `SOHCAHTOA only works for right triangles. With two sides and an included angle, use the ${sp('Law of Cosines','formula')}: ${sp('c² = a² + b² − 2ab·cos(C)','formula')}`,
+      reveal: `SOHCAHTOA only works for right triangles. With two sides and an included angle, use the ${sp('Law of Cosines','formula','law-of-cosines')}: ${sp('c² = a² + b² − 2ab·cos(C)','formula','law-of-cosines')}`,
       activeEl: null, answer: null, key: null
     });
     push(
       `Using the Law of Cosines, what is side c?`,
-      `${sp(`c² = ${M.fmt(solved.a)}² + ${M.fmt(solved.b)}² − 2(${M.fmt(solved.a)})(${M.fmt(solved.b)})cos(${M.fmt(solved.C)}°)`,'formula')} → c = ${sp(M.fmt(solved.c),'answer')}`,
+      `${sp(`c² = ${M.fmt(solved.a)}² + ${M.fmt(solved.b)}² − 2(${M.fmt(solved.a)})(${M.fmt(solved.b)})cos(${M.fmt(solved.C)}°)`,'formula','law-of-cosines')} → c = ${sp(M.fmt(solved.c),'answer')}`,
       'side-c', solved.c, 'c'
     );
     push(
       `Now you have all three sides and angle C. How do you find angle A?`,
-      `Use the ${sp('Law of Sines','formula')}: ${sp('sin(A)/a = sin(C)/c','formula')} → A = ${sp(M.fmt(solved.A)+'°','answer')}`,
+      `Use the ${sp('Law of Sines','formula','law-of-sines')}: ${sp('sin(A)/a = sin(C)/c','formula','law-of-sines')} → A = ${sp(M.fmt(solved.A)+'°','answer')}`,
       'arc-A', solved.A, 'A'
     );
     push(
@@ -241,6 +241,9 @@ const App = {
   filters: {pythagorean:true, special:true, ssa:true, oblique:true},
   // Track which values have been revealed on SVG/ledger so far
   revealedKeys: new Set(),
+  questionDur: 12,
+  revealDur: 8,
+  updateDur: 15,
 };
 
 const $ = id => document.getElementById(id);
@@ -263,6 +266,12 @@ const DOM = {
   btnScreensaver:$('btn-screensaver'),
   speedSlider:   $('speed-slider'),
   speedLabel:    $('speed-label'),
+  questionDurationSlider: $('question-duration-slider'),
+  questionDurationLabel: $('question-duration-label'),
+  revealDurationSlider: $('reveal-duration-slider'),
+  revealDurationLabel: $('reveal-duration-label'),
+  updateDurationSlider: $('update-duration-slider'),
+  updateDurationLabel: $('update-duration-label'),
   btnPrev:       $('btn-prev'),
   btnPause:      $('btn-pause'),
   btnNext:       $('btn-next'),
@@ -280,6 +289,7 @@ const DOM = {
   ssaSolutions:  $('ssa-solutions'),
   vaultList:     $('vault-list'),
   vaultFilters:  document.querySelectorAll('.vault-filter'),
+  quizCaseFilters: document.querySelectorAll('.quiz-case'),
   mistakeList:   $('mistake-list'),
   btnClearMistakes: $('btn-clear-mistakes'),
   btnSave:       $('btn-save'),
@@ -310,7 +320,8 @@ function saveStorage() {
 function syncURL() {
   if(!App.currentTri)return;
   const p=new URLSearchParams();
-  p.set('type',App.currentTri.caseType); p.set('step',App.stepIndex);
+  p.set('type',App.currentTri.caseType);
+  // Removed step to avoid spoilers
   p.set('filter',Object.entries(App.filters).filter(([,v])=>v).map(([k])=>k).join(','));
   history.replaceState(null,'','?'+p.toString());
 }
@@ -412,11 +423,11 @@ function runPhase(phase){
     showQuestionPhase();
     if(!App.quizMode){
       // startTimer handles speed internally
-      startTimer(PHASE_DUR.question, ()=>runPhase(PHASE.REVEAL));
+      startTimer(App.questionDur * 1000, ()=>runPhase(PHASE.REVEAL));
     }
   } else if(phase===PHASE.REVEAL){
     showRevealPhase();
-    startRevealCountdown(PHASE_DUR.reveal, ()=>runPhase(PHASE.UPDATE));
+    startRevealCountdown(App.revealDur * 1000, ()=>runPhase(PHASE.UPDATE));
   } else if(phase===PHASE.UPDATE){
     const step=App.steps[App.stepIndex];
     if(step&&step.key){
@@ -427,7 +438,7 @@ function runPhase(phase){
       renderSVGLedger();
     }
     if(step&&step.activeEl) applyStepColors(step);
-    startTimer(PHASE_DUR.update, ()=>advanceStep());
+    startTimer(App.updateDur * 1000, ()=>advanceStep());
   }
 }
 
@@ -748,8 +759,8 @@ function renderSVG(){
   const C=solved.C||60;
 
   const maxSide=Math.max(a,b,c,1);
-  const scale=420/maxSide;
-  const cx=350, cy=280;
+  const scale=500/maxSide;
+  const cx=400, cy=300;
 
   const Bx=cx+(c*scale)/2, By=cy+(a*scale)/2;
   const Cx=cx-(c*scale)/2, Cy=By;
@@ -775,10 +786,10 @@ function renderSVG(){
   placeAngleLabel('lbl-angC',Cx,Cy,gx,gy,arcOff,solved.C,'C');
 
   // Side labels — perpendicular offset away from centroid
-  // Only show label text if the value has been revealed
-  const aRev=App.revealedKeys.has('a')||App.currentTri.knowns['a'];
-  const bRev=App.revealedKeys.has('b')||App.currentTri.knowns['b'];
-  const cRev=App.revealedKeys.has('c')||App.currentTri.knowns['c'];
+  // Only show label text if the value has been revealed (not just known)
+  const aRev=App.revealedKeys.has('a');
+  const bRev=App.revealedKeys.has('b');
+  const cRev=App.revealedKeys.has('c');
   setSideLabel('lbl-a',pts.B,pts.C,gx,gy, aRev?`a = ${M.fmt(solved.a)}`:'a = ?');
   setSideLabel('lbl-b',pts.A,pts.C,gx,gy, bRev?`b = ${M.fmt(solved.b)}`:'b = ?');
   setSideLabel('lbl-c',pts.A,pts.B,gx,gy, cRev?`c = ${M.fmt(solved.c)}`:'c = ?');
@@ -833,7 +844,7 @@ function placeAngleLabel(id,vx,vy,gx,gy,off,val,key){
   const el=$(id);
   el.setAttribute('x',vx+dx/len*off);
   el.setAttribute('y',vy+dy/len*off+5);
-  const revealed=App.revealedKeys.has(key)||App.currentTri?.knowns[key];
+  const revealed=App.revealedKeys.has(key);  // Only revealed, not known
   // Only show numeric value when revealed; always show arc
   el.textContent=revealed&&val!=null?`${M.fmt(val)}°`:'';
   el.className.baseVal='tri-label angle-val-label'+(revealed?' visible':'');
@@ -1075,6 +1086,9 @@ function bindEvents(){
   });
   DOM.btnScreensaver.addEventListener('click',()=>startScreensaver());
   DOM.speedSlider.addEventListener('input',()=>{App.speed=parseFloat(DOM.speedSlider.value);DOM.speedLabel.textContent=App.speed+'×';});
+  DOM.questionDurationSlider.addEventListener('input',()=>{App.questionDur=parseInt(DOM.questionDurationSlider.value);DOM.questionDurationLabel.textContent=App.questionDur+'s';});
+  DOM.revealDurationSlider.addEventListener('input',()=>{App.revealDur=parseInt(DOM.revealDurationSlider.value);DOM.revealDurationLabel.textContent=App.revealDur+'s';});
+  DOM.updateDurationSlider.addEventListener('input',()=>{App.updateDur=parseInt(DOM.updateDurationSlider.value);DOM.updateDurationLabel.textContent=App.updateDur+'s';});
   DOM.btnSubmit.addEventListener('click',checkAnswer);
   DOM.answerInput.addEventListener('keydown',e=>{if(e.key==='Enter')checkAnswer();});
   $('btn-hint').addEventListener('click',()=>{const step=App.steps[App.stepIndex];DOM.hintText.textContent=step?.reveal?.replace(/<[^>]+>/g,'')||'No hint available.';});
@@ -1093,20 +1107,29 @@ function bindEvents(){
   // Quiz panel
   $('btn-start-quiz').addEventListener('click',()=>{
     const ct=$('quiz-case-select').value;
-    let preset;
+    const selectedCases=[...DOM.quizCaseFilters].filter(cb=>cb.checked).map(cb=>cb.value);
+    const active=selectedCases.length?selectedCases:[...new Set(TRIANGLE_LIBRARY.map(t=>t.case))];
+
+    let pool;
     if(ct==='random'){
-      const active=Object.entries(App.filters).filter(([,v])=>v).map(([k])=>k);
-      const pool=TRIANGLE_LIBRARY.filter(t=>active.includes(t.tag));
-      preset=pool[Math.floor(Math.random()*pool.length)];
+      pool=TRIANGLE_LIBRARY.filter(t=>active.includes(t.case));
     } else {
-      const pool=TRIANGLE_LIBRARY.filter(t=>t.case===ct);
-      preset=pool[Math.floor(Math.random()*pool.length)];
+      if(!active.includes(ct)){
+        showToast(`Case ${ct} not included in selected cases.`, 'error');
+        return;
+      }
+      pool=TRIANGLE_LIBRARY.filter(t=>t.case===ct);
     }
-    if(!preset){showToast('No triangle found for that case.','error');return;}
+    if(!pool.length){showToast('No triangle found for that case/case set.','error');return;}
+    const preset=pool[Math.floor(Math.random()*pool.length)];
     startQuizMode(preset);
     $('quiz-controls').classList.remove('hidden');
     $('btn-quiz-reveal').classList.remove('hidden');
     $('btn-quiz-next').classList.add('hidden');
+  });
+
+  $('btn-quiz-mode').addEventListener('click',()=>{
+    if(App.quizMode){ $('btn-quiz-exit').click(); } else { $('btn-start-quiz').click(); }
   });
   $('btn-quiz-reveal').addEventListener('click',()=>quizRevealStep());
   $('btn-quiz-next').addEventListener('click',()=>quizNextStep());
@@ -1176,6 +1199,10 @@ function init(){
   initScratchpad();
   initCheatsheet();
   DOM.vaultFilters.forEach(cb=>{cb.checked=App.filters[cb.value]!==false;});
+  // Set initial duration labels
+  DOM.questionDurationLabel.textContent = App.questionDur + 's';
+  DOM.revealDurationLabel.textContent = App.revealDur + 's';
+  DOM.updateDurationLabel.textContent = App.updateDur + 's';
   const params=new URLSearchParams(location.search);
   if(params.get('type')){loadFromURL();runPhase(PHASE.QUESTION);}
   else{startScreensaver();}
