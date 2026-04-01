@@ -78,12 +78,26 @@ body {
   min-height: 0;
   overflow: hidden;
 }
-aside, main { overflow-y: auto; padding: 10px; }
-#col-left  { border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
-#col-right { border-left: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+#app > aside,
+#app > main {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px;
+  -webkit-overflow-scrolling: touch;
+}
+#col-left  {
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+#col-right {
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 #ledger-panel { display: none !important; }
-#svg-container { width: 100%; max-width: 100%; min-height: 580px; }
-#triangle-svg { width: 100%; height: min(80vh, 760px); display: block; }
 
 h3 {
   font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
@@ -196,18 +210,8 @@ h3 {
   background: rgba(249,226,175,0.12) !important;
 }
 
-#input-area { display: flex; gap: 6px; margin-top: 10px; }
-#answer-input {
-  flex: 1; background: var(--bg-card); border: 1px solid var(--border);
-  border-radius: var(--radius); color: var(--text); padding: 7px 10px;
-  font-size: 15px; outline: none; transition: border-color var(--transition);
-}
-#answer-input:focus { border-color: var(--accent); }
 #hint-area { margin-top: 8px; }
 #hint-text { font-size: 13px; color: var(--warning); margin-top: 6px; font-style: italic; }
-#feedback-area { margin-top: 8px; font-size: 13px; min-height: 20px; font-weight: 600; }
-#feedback-area.correct { color: var(--success); }
-#feedback-area.wrong   { color: var(--error); }
 
 /* ===== COLLAPSIBLE PANELS ===== */
 .side-panel {
@@ -280,7 +284,7 @@ h3 {
 
 /* SVG Ledger bar */
 #svg-ledger {
-  width: 100%; max-width: 700px;
+  width: 100%; max-width: min(96vw, 980px);
   background: var(--bg-panel); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 8px 14px;
   display: flex; flex-direction: column; gap: 4px;
@@ -300,6 +304,58 @@ h3 {
 .slr-val.solved { color: var(--success);   border-color: var(--success); background: rgba(166,227,161,0.08); }
 .slr-val.active { color: var(--warning);   border-color: var(--warning); background: rgba(249,226,175,0.1); }
 
+.slr-input {
+  min-width: 0;
+  max-width: 120px;
+  font: inherit;
+  font-family: monospace;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 3px 6px;
+}
+.slr-input:read-only {
+  cursor: default;
+  background: var(--bg-card);
+}
+.slr-input.guess-active:not(:read-only) {
+  border-color: var(--warning);
+  background: rgba(249, 226, 175, 0.08);
+}
+.slr-input.correct:not(:read-only) {
+  border-color: var(--success);
+  box-shadow: 0 0 0 1px rgba(166, 227, 161, 0.35);
+}
+.slr-input.wrong:not(:read-only) {
+  border-color: var(--error);
+  box-shadow: 0 0 0 1px rgba(243, 139, 168, 0.35);
+}
+
+#ledger-feedback-wrap {
+  width: 100%;
+  max-width: min(96vw, 980px);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 6px 0;
+}
+#ledger-feedback-wrap #feedback-area {
+  flex: 1;
+  min-width: 140px;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  min-height: 22px;
+}
+#ledger-feedback-wrap #feedback-area.correct { color: var(--success); }
+#ledger-feedback-wrap #feedback-area.wrong { color: var(--error); }
+#ledger-feedback-wrap #btn-check-answer {
+  flex-shrink: 0;
+}
+
 /* Pop-in animation for newly solved values */
 @keyframes popIn {
   0%   { transform: scale(0.7); opacity: 0; }
@@ -309,11 +365,26 @@ h3 {
 .slr-val.pop { animation: popIn 0.45s cubic-bezier(0.34,1.56,0.64,1); }
 
 #svg-container {
-  width: 100%; max-width: 700px;
-  background: var(--bg-panel); border: 1px solid var(--border);
-  border-radius: var(--radius); overflow: visible; position: relative;
+  width: 100%;
+  max-width: min(96vw, 980px);
+  min-height: 0;
+  max-height: min(52vh, 520px);
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-#triangle-svg { width: 100%; height: auto; display: block; overflow: visible; }
+#triangle-svg {
+  width: 100%;
+  height: auto;
+  max-height: min(52vh, 520px);
+  display: block;
+  vertical-align: middle;
+}
 
 /* SVG elements */
 .tri-side {
@@ -397,15 +468,16 @@ h3 {
 .tri-side.pulse { animation: pulse-solve 0.8s ease 2; }
 
 /* Triangle appear animation */
+/* Opacity only — JS sets SVG transform for centering; avoid fighting CSS transform */
 @keyframes triAppear {
-  from { opacity: 0; transform: scale(0.92); }
-  to   { opacity: 1; transform: scale(1); }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 #svg-triangle-group.appear { animation: triAppear 0.5s cubic-bezier(0.34,1.2,0.64,1); }
 
 /* Progress bar */
 #progress-bar-wrap {
-  width: 100%; max-width: 700px; height: 5px;
+  width: 100%; max-width: min(96vw, 980px); height: 5px;
   background: var(--border); border-radius: 3px; overflow: hidden;
 }
 #progress-bar {
@@ -578,6 +650,58 @@ body.screensaver-active #col-right { opacity: 0.7; pointer-events: none; }
   color: var(--text-dim);
   margin-top: 6px;
   text-align: center;
+}
+
+.quiz-hint {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin: 4px 0 8px;
+  line-height: 1.45;
+}
+#quiz-custom-case {
+  width: 100%;
+  margin-bottom: 4px;
+}
+.quiz-custom-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  margin: 6px 0;
+}
+.quiz-custom-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.quiz-custom-grid input {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  padding: 5px 6px;
+  font-size: 13px;
+  outline: none;
+}
+.quiz-custom-grid input:focus { border-color: var(--accent); }
+.quiz-guess.guess-right { border-color: var(--success) !important; box-shadow: 0 0 0 1px rgba(166, 227, 161, 0.25); }
+.quiz-guess.guess-wrong  { border-color: var(--error) !important; box-shadow: 0 0 0 1px rgba(243, 139, 168, 0.25); }
+
+#btn-quiz-load-custom,
+#btn-quiz-check-guesses {
+  width: 100%;
+  margin-top: 6px;
+}
+
+#btn-add-mistake-current {
+  width: 100%;
+  margin-bottom: 10px;
+  border-color: var(--warning);
+  color: var(--warning);
+}
+#btn-add-mistake-current:hover {
+  background: rgba(249, 226, 175, 0.08);
 }
 
 /* ===== CHEATSHEET HIGHLIGHT ===== */

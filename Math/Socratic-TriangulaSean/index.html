@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Socratic TriangulaSean</title>
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -25,8 +25,8 @@
   <div id="top-bar-right">
     <button id="btn-save" title="Save problem (Enter)">💾 Save</button>
     <button id="btn-share">🔗 Share</button>
-    <button id="btn-quiz-mode" title="Enter/Exit Quiz Mode">🎯 Quiz</button>
     <button id="btn-screensaver">📺 Screensaver</button>
+    <button id="btn-quiz-mode" title="Enter / exit quiz (step-by-step, no timer)">🎯 Quiz</button>
   </div>
 </header>
 
@@ -51,16 +51,10 @@
         <div id="reveal-text"></div>
       </div>
 
-      <!-- Input for quiz mode -->
-      <div id="input-area" class="hidden">
-        <input type="number" id="answer-input" placeholder="Your answer..." step="any" aria-label="Answer input">
-        <button id="btn-submit">Submit</button>
-      </div>
       <div id="hint-area" class="hidden">
         <button id="btn-hint">💡 Hint</button>
         <p id="hint-text"></p>
       </div>
-      <div id="feedback-area"></div>
     </div>
 
     <!-- Tools Panel -->
@@ -178,16 +172,21 @@
     <div id="svg-ledger">
       <div id="svg-ledger-angles" class="svg-ledger-row">
         <span class="slr-label">Angles:</span>
-        <span class="slr-val" id="slv-A">∠A = ?</span>
-        <span class="slr-val" id="slv-B">∠B = ?</span>
-        <span class="slr-val" id="slv-C">∠C = ?</span>
+        <input type="text" inputmode="decimal" class="slr-val slr-input" id="slv-A" readonly aria-label="Angle A degrees" autocomplete="off">
+        <input type="text" inputmode="decimal" class="slr-val slr-input" id="slv-B" readonly aria-label="Angle B degrees" autocomplete="off">
+        <input type="text" inputmode="decimal" class="slr-val slr-input" id="slv-C" readonly aria-label="Angle C degrees" autocomplete="off">
       </div>
       <div id="svg-ledger-sides" class="svg-ledger-row">
         <span class="slr-label">Sides:</span>
-        <span class="slr-val" id="slv-a">a = ?</span>
-        <span class="slr-val" id="slv-b">b = ?</span>
-        <span class="slr-val" id="slv-c">c = ?</span>
+        <input type="text" inputmode="decimal" class="slr-val slr-input" id="slv-a" readonly aria-label="Side a" autocomplete="off">
+        <input type="text" inputmode="decimal" class="slr-val slr-input" id="slv-b" readonly aria-label="Side b" autocomplete="off">
+        <input type="text" inputmode="decimal" class="slr-val slr-input" id="slv-c" readonly aria-label="Side c" autocomplete="off">
       </div>
+    </div>
+
+    <div id="ledger-feedback-wrap" class="hidden">
+      <p id="feedback-area"></p>
+      <button type="button" id="btn-check-answer">Check</button>
     </div>
 
     <div id="svg-container">
@@ -241,7 +240,7 @@
     <div id="nav-controls">
       <button id="btn-prev" title="Previous step (←)">◀</button>
       <button id="btn-pause" title="Pause/Resume (Space)">⏸</button>
-      <button id="btn-next" title="Next step (→)">▶</button>
+      <button id="btn-next" title="Next step (→). After the last step, loads the next problem.">▶</button>
     </div>
   </main>
 
@@ -318,6 +317,40 @@
           <button id="btn-quiz-exit">✕ Exit</button>
         </div>
         <div id="quiz-progress-label"></div>
+        <div id="quiz-custom-block" class="tool-section">
+          <label>Custom triangle (quiz)</label>
+          <p class="quiz-hint">Pick a case, enter knowns, then Load. Example SSS: sides 5, 7, 9.</p>
+          <select id="quiz-custom-case">
+            <option value="">— Case for custom load —</option>
+            <option value="SSS">SSS (a, b, c)</option>
+            <option value="SAS">SAS (a, b, C°)</option>
+            <option value="ASA">ASA (A°, b, C°)</option>
+            <option value="AAS">AAS (A°, B°, side a or b or c)</option>
+            <option value="HL">HL (a, b — right △, c computed)</option>
+            <option value="SSA">SSA (a, b, A°)</option>
+          </select>
+          <div class="quiz-custom-grid">
+            <label>∠A° <input type="number" id="qc-A" step="any" placeholder="—"></label>
+            <label>∠B° <input type="number" id="qc-B" step="any" placeholder="—"></label>
+            <label>∠C° <input type="number" id="qc-C" step="any" placeholder="—"></label>
+            <label>a <input type="number" id="qc-a" step="any" placeholder="—"></label>
+            <label>b <input type="number" id="qc-b" step="any" placeholder="—"></label>
+            <label>c <input type="number" id="qc-c" step="any" placeholder="—"></label>
+          </div>
+          <button type="button" id="btn-quiz-load-custom">Load custom triangle</button>
+        </div>
+        <div id="quiz-guess-block" class="tool-section hidden">
+          <label>Check your guesses vs answer key</label>
+          <div class="quiz-custom-grid">
+            <label>∠A° <input type="number" class="quiz-guess" data-key="A" step="any"></label>
+            <label>∠B° <input type="number" class="quiz-guess" data-key="B" step="any"></label>
+            <label>∠C° <input type="number" class="quiz-guess" data-key="C" step="any"></label>
+            <label>a <input type="number" class="quiz-guess" data-key="a" step="any"></label>
+            <label>b <input type="number" class="quiz-guess" data-key="b" step="any"></label>
+            <label>c <input type="number" class="quiz-guess" data-key="c" step="any"></label>
+          </div>
+          <button type="button" id="btn-quiz-check-guesses">Check guesses</button>
+        </div>
       </div>
     </div>
 
@@ -327,6 +360,7 @@
         <span>❌ Mistake Ledger</span><span class="chevron">▾</span>
       </div>
       <div class="panel-body">
+        <button type="button" id="btn-add-mistake-current" title="Save current triangle to this list">＋ Add current triangle</button>
         <div id="mistake-list"><p class="empty-msg">No mistakes yet.</p></div>
         <button id="btn-clear-mistakes">Clear</button>
       </div>

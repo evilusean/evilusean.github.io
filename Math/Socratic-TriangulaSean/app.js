@@ -1,5 +1,5 @@
 /* ============================================================
-   Socratic TriangulaSean — app.js  v5.9
+   Socratic TriangulaSean — app.js  v6.1
    Socratic-first: Question → Reveal (spoilers) → Update SVG/Ledger
    ============================================================ */
 'use strict';
@@ -25,6 +25,7 @@ const TRIANGLE_LIBRARY = [
   { name:'30-60-90',          tag:'special',     case:'ASA', sides:[1,Math.sqrt(3),2], angles:[30,60,90] },
   { name:'45-45-90',          tag:'special',     case:'ASA', sides:[1,1,Math.sqrt(2)], angles:[45,45,90] },
   { name:'Equilateral',       tag:'special',     case:'SSS', sides:[5,5,5],            angles:[60,60,60] },
+  { name:'Isosceles 5-5-6',   tag:'special',     case:'SSS', sides:[5,5,6],            angles:[null,null,null] },
   { name:'Isosceles 36',      tag:'special',     case:'SAS', sides:[4,4,2.35],         angles:[72,72,36] },
   { name:'SSA-Two Solutions', tag:'ssa',         case:'SSA', sides:[7,10,null],        angles:[35,null,null], ssaKnown:{a:7,b:10,A:35} },
   { name:'SSA-One Solution',  tag:'ssa',         case:'SSA', sides:[10,7,null],        angles:[35,null,null], ssaKnown:{a:10,b:7,A:35} },
@@ -71,6 +72,93 @@ function analyzeSSA(a,b,A){
   if(C1>0)sols.push({label:'Triangle 1 (acute B)',B:M.round(B1),C:M.round(C1),valid:true});
   if(C2>0)sols.push({label:'Triangle 2 (obtuse B)',B:M.round(B2),C:M.round(C2),valid:true});
   return sols;
+}
+
+/** Full B, C, c for the first SSA solution (for accurate SVG + step answers). */
+function computeSSATriangle(a,b,A,sol){
+  if(!sol)return null;
+  if(sol.B!=null&&sol.C!=null){
+    const c=a*M.sin(sol.C)/M.sin(A);
+    return{B:sol.B,C:sol.C,c:M.round(c)};
+  }
+  if(sol.label==='Right Triangle'){
+    const B=90,C=M.round(90-A);
+    const c=a*M.sin(C)/M.sin(A);
+    return{B,C,c:M.round(c)};
+  }
+  const B=M.asin(Math.min(1,b*M.sin(A)/a));
+  const C=M.round(180-A-B);
+  const c=a*M.sin(C)/M.sin(A);
+  return{B:M.round(B),C,c:M.round(c)};
+}
+
+function buildSSASteps(tri){
+  const steps=[];
+  const{a,b,A}=tri.ssaKnown;
+  const h=M.round(b*M.sin(A),4);
+  const sols=tri.ssaSolutions||analyzeSSA(a,b,A);
+  const push=(question,reveal,activeEl,answer,key)=>
+    steps.push({question,reveal,activeEl,answer:answer!=null?M.round(answer,2):null,key});
+
+  steps.push({
+    question:`You have a=${M.fmt(a)}, b=${M.fmt(b)}, A=${M.fmt(A)}° (SSA). Why can this be ambiguous?`,
+    reveal:`Side a swings; the perpendicular from B to the line along side c has length ${sp('h = b·sin(A)','formula','ssa')} (altitude to that base — not a labeled side of the triangle). Here h ≈ ${sp(M.fmt(h),'answer')}.`,
+    activeEl:null,answer:null,key:null
+  });
+  steps.push({
+    question:`Compare a (${M.fmt(a)}) to h (${M.fmt(h)}) and to b (${M.fmt(b)}). How many triangles?`,
+    reveal:`Rules (${sp('SSA','formula','ssa')}): a < h → 0 | a = h → 1 (right) | h < a < b → 2 | a ≥ b → 1`,
+    activeEl:null,answer:null,key:null,isSSADecision:true
+  });
+
+  if(sols.length===0){
+    steps.push({question:`✓ No triangle exists (a < h).`,reveal:'',activeEl:null,answer:null,key:null,isFinal:true});
+    return steps;
+  }
+
+  const primary=computeSSATriangle(a,b,A,sols[0]);
+  if(!primary)return steps;
+
+  if(sols.length===2){
+    steps.push({
+      question:`Two triangles fit the data (acute B vs obtuse B). We walk through the first: B≈${M.fmt(sols[0].B)}°, C≈${M.fmt(sols[0].C)}°. (Alternate: B≈${M.fmt(sols[1].B)}°.)`,
+      reveal:`Same SSA givens can yield two non-congruent triangles — always check both when h < a < b.`,
+      activeEl:null,answer:null,key:null
+    });
+  }
+
+  const{B,C,c}=primary;
+  if(Math.abs(B-90)<0.5){
+    push(
+      `When a = h, the triangle is right at B. What is angle B?`,
+      `${sp('B = 90°','answer')} — boundary case where the altitude equals side a (see SSA cheatsheet).`,
+      'arc-B',90,'B'
+    );
+  }else{
+    push(
+      `Using the Law of Sines, what is angle B?`,
+      `${sp('sin(B)/b = sin(A)/a','formula','law-of-sines')} → B = ${sp('sin⁻¹(b·sin(A)/a)','formula')} ≈ ${sp(M.fmt(B)+'°','answer')}`,
+      'arc-B',B,'B'
+    );
+  }
+  push(
+    `What is angle C?`,
+    `${sp('C = 180° − A − B','formula','angle-sum')} = ${sp(M.fmt(C)+'°','answer')}`,
+    'arc-C',C,'C'
+  );
+  push(
+    `What is side c?`,
+    `${sp('Law of Sines','formula','law-of-sines')}: ${sp('c = a·sin(C)/sin(A)','formula','law-of-sines')} = ${sp(M.fmt(c),'answer')}`,
+    'side-c',c,'c'
+  );
+  steps.push({question:`✓ Triangle solved: a=${M.fmt(a)}, b=${M.fmt(b)}, c=${M.fmt(c)}, A=${M.fmt(A)}°, B=${M.fmt(B)}°, C=${M.fmt(C)}°`,reveal:'',activeEl:null,answer:null,key:null,isFinal:true});
+  return steps;
+}
+
+/** Questions must be plain text only (reveal may contain HTML/spoilers). */
+function plainQuestionText(q){
+  if(q==null)return'';
+  return String(q).replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim();
 }
 
 // ─── SPOILER BUILDER ─────────────────────────────────────────
@@ -138,7 +226,7 @@ function buildSteps(tri) {
     );
     push(
       `You have A and C. What's the quickest way to find B?`,
-      `${sp('Angle Sum Theorem','formula')}: ${sp('B = 180° − A − C','formula')} = ${sp(`180° − ${M.fmt(solved.A)}° − ${M.fmt(solved.C)}°`,'formula')} = ${sp(M.fmt(solved.B)+'°','answer')}`,
+      `${sp('Angle Sum Theorem','formula','angle-sum')}: ${sp('B = 180° − A − C','formula','angle-sum')} = ${sp(`180° − ${M.fmt(solved.A)}° − ${M.fmt(solved.C)}°`,'formula','angle-sum')} = ${sp(M.fmt(solved.B)+'°','answer')}`,
       'arc-B', solved.B, 'B'
     );
     steps.push({question:`✓ Triangle solved! a=${M.fmt(solved.a)}, b=${M.fmt(solved.b)}, c=${M.fmt(solved.c)}, A=${M.fmt(solved.A)}°, B=${M.fmt(solved.B)}°, C=${M.fmt(solved.C)}°`, reveal:'', activeEl:null, answer:null, key:null, isFinal:true});
@@ -146,7 +234,7 @@ function buildSteps(tri) {
   } else if (caseType === 'SSS') {
     steps.push({
       question: `You have all three sides: a=${M.fmt(solved.a)}, b=${M.fmt(solved.b)}, c=${M.fmt(solved.c)}. No angles yet. Which law lets you find an angle when you only have sides?`,
-      reveal: `The ${sp('Law of Cosines','formula')} rearranges to: ${sp('cos(C) = (a²+b²−c²) / (2ab)','formula')}. Start with the largest angle to avoid ambiguity.`,
+      reveal: `The ${sp('Law of Cosines','formula','law-of-cosines')} rearranges to: ${sp('cos(C) = (a²+b²−c²) / (2ab)','formula','law-of-cosines')}. Start with the largest angle to avoid ambiguity.`,
       activeEl: null, answer: null, key: null
     });
     push(
@@ -161,7 +249,7 @@ function buildSteps(tri) {
     );
     push(
       `You have A and C. How do you find B without any more trig?`,
-      `${sp('Angle Sum','formula')}: ${sp('B = 180° − A − C','formula')} = ${sp(M.fmt(solved.B)+'°','answer')}`,
+      `${sp('Angle Sum','formula','angle-sum')}: ${sp('B = 180° − A − C','formula','angle-sum')} = ${sp(M.fmt(solved.B)+'°','answer')}`,
       'arc-B', solved.B, 'B'
     );
     steps.push({question:`✓ Triangle solved! A=${M.fmt(solved.A)}°, B=${M.fmt(solved.B)}°, C=${M.fmt(solved.C)}°`, reveal:'', activeEl:null, answer:null, key:null, isFinal:true});
@@ -169,7 +257,7 @@ function buildSteps(tri) {
   } else if (caseType === 'ASA' || caseType === 'AAS') {
     steps.push({
       question: `You have two angles and a side. Before using any trig, what can you figure out immediately from the angles alone?`,
-      reveal: `The ${sp('Angle Sum Theorem','formula')}: ${sp('A + B + C = 180°','formula')}. Always find the third angle first — it unlocks the Law of Sines for all sides.`,
+      reveal: `The ${sp('Angle Sum Theorem','formula','angle-sum')}: ${sp('A + B + C = 180°','formula','angle-sum')}. Always find the third angle first — it unlocks the Law of Sines for all sides.`,
       activeEl: null, answer: null, key: null
     });
     if (!tri.knowns.A) push(
@@ -207,17 +295,7 @@ function buildSteps(tri) {
     steps.push({question:`✓ Triangle fully solved!`, reveal:'', activeEl:null, answer:null, key:null, isFinal:true});
 
   } else if (caseType === 'SSA') {
-    steps.push({
-      question: `You have a=${M.fmt(tri.ssaKnown.a)}, b=${M.fmt(tri.ssaKnown.b)}, A=${M.fmt(tri.ssaKnown.A)}°. This is the Ambiguous Case (SSA). Why might this give more than one triangle?`,
-      reveal: `With SSA, the side opposite the known angle might "swing" to hit the base in two places. Compute the altitude: ${sp('h = b·sin(A)','formula')} = ${sp(M.fmt(M.round(tri.ssaKnown.b*M.sin(tri.ssaKnown.A),3)),'answer')}`,
-      activeEl: null, answer: null, key: null
-    });
-    const h=M.round(tri.ssaKnown.b*M.sin(tri.ssaKnown.A),3);
-    steps.push({
-      question: `h = ${h}. You have a=${M.fmt(tri.ssaKnown.a)}, b=${M.fmt(tri.ssaKnown.b)}. Compare a to h and b. How many triangles are possible?`,
-      reveal: `Rules: ${sp('a < h → 0 solutions','formula')} | ${sp('a = h → 1 (right △)','formula')} | ${sp('h < a < b → 2 solutions','formula')} | ${sp('a ≥ b → 1 solution','formula')}`,
-      activeEl: null, answer: null, key: null, isSSADecision: true
-    });
+    return buildSSASteps(tri);
   }
 
   return steps;
@@ -236,6 +314,8 @@ const App = {
   revealCountdownTimer: null,
   quizMode: false,
   quizVaultItem: null,
+  /** Presets available for “next problem” in quiz (from last Start Quiz). */
+  quizPool: [],
   mistakes: [],
   savedProblems: [],
   filters: {pythagorean:true, special:true, ssa:true, oblique:true},
@@ -244,6 +324,8 @@ const App = {
   questionDur: 12,
   revealDur: 8,
   updateDur: 15,
+  _quizLedgerStepSnapshot: -1,
+  _ledgerFreshStep: false,
 };
 
 const $ = id => document.getElementById(id);
@@ -254,9 +336,8 @@ const DOM = {
   tutorText:     $('tutor-text'),
   revealText:    $('reveal-text'),
   revealCountdown: $('reveal-countdown'),
-  inputArea:     $('input-area'),
-  answerInput:   $('answer-input'),
-  btnSubmit:     $('btn-submit'),
+  btnCheckAnswer:$('btn-check-answer'),
+  ledgerFeedbackWrap: $('ledger-feedback-wrap'),
   hintArea:      $('hint-area'),
   hintText:      $('hint-text'),
   feedbackArea:  $('feedback-area'),
@@ -327,15 +408,23 @@ function syncURL() {
 }
 function loadFromURL() {
   const p=new URLSearchParams(location.search);
-  const type=p.get('type'),step=parseInt(p.get('step'))||0,filter=p.get('filter');
+  const type=p.get('type'),filter=p.get('filter');
   if(filter){const a=filter.split(',');Object.keys(App.filters).forEach(k=>App.filters[k]=a.includes(k));}
-  if(type){const preset=TRIANGLE_LIBRARY.find(t=>t.case===type);if(preset){generateFromPreset(preset);App.stepIndex=Math.min(step,App.steps.length-1);renderStep();}}
+  // Always start at step 0 — do not restore step from URL (avoids spoilers in shared links)
+  if(type){const preset=TRIANGLE_LIBRARY.find(t=>t.case===type);if(preset){generateFromPreset(preset);}}
 }
 
 // ─── GENERATION ──────────────────────────────────────────────
-function generateFromPreset(preset) {
+/** @param {object} opts keepQuiz — do not exit quiz mode (used by quiz + next problem). */
+function generateFromPreset(preset, opts={}) {
   clearAllTimers();
-  App.quizMode=false; App.quizVaultItem=null;
+  if(opts.keepQuiz){
+    App.quizMode=true;
+  }else{
+    App.quizMode=false;
+    App.quizVaultItem=null;
+    if(DOM.ledgerFeedbackWrap)DOM.ledgerFeedbackWrap.classList.add('hidden');
+  }
   App.revealedKeys=new Set();
 
   if(preset.case==='SSA'){
@@ -350,15 +439,23 @@ function generateFromPreset(preset) {
     App.currentTri={caseType:preset.case,knowns,solved:solveTriangle(partial),name:preset.name};
   }
 
-  // Pre-reveal known values
+  finalizeTriangleGeneration();
+}
+
+function finalizeTriangleGeneration(){
+  App._quizLedgerStepSnapshot=-1;
+  if(App.quizMode)App._ledgerFreshStep=true;
   Object.keys(App.currentTri.knowns).forEach(k=>App.revealedKeys.add(k));
 
   App.currentTri.steps=buildSteps(App.currentTri);
+  if(App.currentTri.caseType==='SSA'&&App.currentTri.ssaSolutions?.length){
+    const p=computeSSATriangle(App.currentTri.ssaKnown.a,App.currentTri.ssaKnown.b,App.currentTri.ssaKnown.A,App.currentTri.ssaSolutions[0]);
+    if(p)Object.assign(App.currentTri.solved,p);
+  }
   App.stepIndex=0;
   App.steps=App.currentTri.steps;
   App.phase=PHASE.QUESTION;
 
-  // Animate triangle in
   const grp=$('svg-triangle-group');
   grp.classList.remove('appear');
   void grp.offsetWidth;
@@ -369,6 +466,133 @@ function generateFromPreset(preset) {
   renderSVGLedger();
   renderStep();
   syncURL();
+}
+
+function buildQuizPoolFromUI(){
+  const ct=$('quiz-case-select').value;
+  const selectedCases=[...DOM.quizCaseFilters].filter(cb=>cb.checked).map(cb=>cb.value);
+  const active=selectedCases.length?selectedCases:[...new Set(TRIANGLE_LIBRARY.map(t=>t.case))];
+  if(ct==='random')return TRIANGLE_LIBRARY.filter(t=>active.includes(t.case));
+  if(!active.includes(ct))return [];
+  return TRIANGLE_LIBRARY.filter(t=>t.case===ct);
+}
+
+function readQc(id){
+  const el=$(id);
+  if(!el)return null;
+  const v=parseFloat(el.value);
+  return isNaN(v)?null:v;
+}
+
+/** Build triangle from quiz panel custom form; stays in quiz mode. */
+function loadCustomQuizTriangle(){
+  const ct=$('quiz-custom-case').value;
+  if(!ct){showToast('Select a case for custom load.','error');return;}
+  stopScreensaver();
+  App.quizMode=true;
+  if(!App.quizPool.length)App.quizPool=buildQuizPoolFromUI();
+
+  let tri;
+  try{
+    if(ct==='SSS'){
+      const a=readQc('qc-a'),b=readQc('qc-b'),c=readQc('qc-c');
+      if(a==null||b==null||c==null){showToast('SSS needs sides a, b, and c.','error');return;}
+      if(a+b<=c||a+c<=b||b+c<=a){showToast('Those sides violate the triangle inequality.','error');return;}
+      tri={caseType:'SSS',knowns:{a:true,b:true,c:true},solved:solveTriangle({a,b,c}),name:'Custom SSS'};
+    }else if(ct==='SAS'){
+      const a=readQc('qc-a'),b=readQc('qc-b'),C=readQc('qc-C');
+      if(a==null||b==null||C==null){showToast('SAS needs a, b, and ∠C (angle between them).','error');return;}
+      tri={caseType:'SAS',knowns:{a:true,b:true,C:true},solved:solveTriangle({a,b,C}),name:'Custom SAS'};
+    }else if(ct==='ASA'){
+      const A=readQc('qc-A'),b=readQc('qc-b'),C=readQc('qc-C');
+      if(A==null||b==null||C==null){showToast('ASA needs ∠A, side b (included), and ∠C.','error');return;}
+      tri={caseType:'ASA',knowns:{A:true,b:true,C:true},solved:solveTriangle({A,b,C}),name:'Custom ASA'};
+    }else if(ct==='AAS'){
+      const A=readQc('qc-A'),B=readQc('qc-B'),a=readQc('qc-a');
+      if(A==null||B==null||a==null){showToast('AAS needs ∠A, ∠B, and side a (adjust fields if your known side is b or c).','error');return;}
+      tri={caseType:'AAS',knowns:{A:true,B:true,a:true},solved:solveTriangle({A,B,a}),name:'Custom AAS'};
+    }else if(ct==='HL'){
+      const a=readQc('qc-a'),b=readQc('qc-b');
+      if(a==null||b==null){showToast('HL needs the two legs a and b (∠C = 90°).','error');return;}
+      tri={caseType:'HL',knowns:{a:true,b:true,C:true},solved:solveTriangle({a,b,C:90}),name:'Custom HL'};
+    }else if(ct==='SSA'){
+      const a=readQc('qc-a'),b=readQc('qc-b'),A=readQc('qc-A');
+      if(a==null||b==null||A==null){showToast('SSA needs side a, side b, and ∠A (non-included).','error');return;}
+      tri={caseType:'SSA',knowns:{a:true,b:true,A:true},solved:{a,b,A,B:null,C:null,c:null},ssaKnown:{a,b,A},ssaSolutions:analyzeSSA(a,b,A),name:'Custom SSA'};
+    }else{
+      showToast('Unknown case.','error');return;
+    }
+  }catch(e){
+    showToast('Could not build that triangle.','error');return;
+  }
+
+  App.currentTri=tri;
+  App.quizVaultItem=null;
+  App.revealedKeys=new Set();
+  finalizeTriangleGeneration();
+  clearAllTimers();
+  DOM.progressBar.style.width='0%';
+  showQuizUI();
+  showQuestionPhase();
+  $('quiz-controls').classList.remove('hidden');
+  showToast(`Loaded: ${tri.name}`);
+}
+
+function startNextQuizProblem(){
+  if(!App.quizMode){
+    clearAllTimers();
+    generateRandom();
+    runPhase(PHASE.QUESTION);
+    return;
+  }
+  if(!App.quizPool||!App.quizPool.length)App.quizPool=buildQuizPoolFromUI();
+  if(!App.quizPool.length){
+    showToast('No triangles in quiz pool — adjust case filters.','error');
+    return;
+  }
+  let candidates=App.quizPool;
+  if(App.currentTri&&candidates.length>1){
+    candidates=candidates.filter(p=>p.name!==(App.currentTri.name||''));
+    if(!candidates.length)candidates=App.quizPool;
+  }
+  const preset=candidates[Math.floor(Math.random()*candidates.length)];
+  generateFromPreset(preset,{keepQuiz:true});
+  App.quizVaultItem=preset;
+  clearAllTimers();
+  DOM.progressBar.style.width='0%';
+  showQuizUI();
+  showQuestionPhase();
+  renderVault();
+  showToast(`Next: ${preset.name}`);
+}
+
+function checkQuizGuesses(){
+  if(!App.currentTri)return;
+  document.querySelectorAll('.quiz-guess').forEach(inp=>{
+    const k=inp.dataset.key;
+    const v=parseFloat(inp.value);
+    inp.classList.remove('guess-right','guess-wrong');
+    if(inp.value===''||isNaN(v))return;
+    const tgt=App.currentTri.solved[k];
+    if(tgt==null)return;
+    const tol=k===k.toUpperCase()?0.12:0.08;
+    if(Math.abs(v-tgt)<tol)inp.classList.add('guess-right');
+    else inp.classList.add('guess-wrong');
+  });
+}
+
+function addCurrentToMistakeLedger(){
+  if(!App.currentTri){showToast('No triangle to save.','error');return;}
+  App.mistakes.push({
+    type:'saved',
+    triName:App.currentTri.name||App.currentTri.caseType,
+    caseType:App.currentTri.caseType,
+    solved:{...App.currentTri.solved},
+    savedAt:new Date().toISOString(),
+  });
+  saveStorage();
+  renderMistakes();
+  showToast('Saved to mistake ledger.');
 }
 
 function generateRandom(){
@@ -465,15 +689,15 @@ function showRevealPhase(){
   });
 }
 
-// Map topic keys to cheatsheet section IDs
+// Map data-topic values (from sp(..., topic)) to cheatsheet section IDs
 const TOPIC_MAP = {
-  'sohcahtoa':     'cs-sohcahtoa',
-  'inverse-trig':  'cs-inverse',
-  'law-of-sines':  'cs-sines',
-  'law-of-cosines':'cs-cosines',
-  'pythagorean':   'cs-pythagorean',
-  'angle-sum':     'cs-anglesum',
-  'ssa':           'cs-ssa',
+  'sohcahtoa':      'cs-sohcahtoa',
+  'inverse-trig':   'cs-inverse',
+  'law-of-sines':   'cs-sines',
+  'law-of-cosines': 'cs-cosines',
+  'pythagorean':    'cs-pythagorean',
+  'angle-sum':      'cs-anglesum',
+  'ssa':            'cs-ssa',
 };
 
 function highlightCheatsheetTopic(topic){
@@ -535,9 +759,11 @@ function advanceStep(){
     }
   } else {
     if(!App.quizMode){
-      setTimeout(()=>{generateRandom();startScreensaver();},2500);
+      clearAllTimers();
+      generateRandom();
+      runPhase(PHASE.QUESTION);
     } else {
-      showToast('Triangle solved! 🎉','success');
+      startNextQuizProblem();
     }
   }
 }
@@ -546,7 +772,8 @@ function advanceStep(){
 function startScreensaver(){
   App.state=STATE.SCREENSAVER; App.quizMode=false;
   document.body.classList.add('screensaver-active');
-  DOM.inputArea.classList.add('hidden'); DOM.hintArea.classList.add('hidden');
+  DOM.hintArea.classList.add('hidden');
+  if(DOM.ledgerFeedbackWrap)DOM.ledgerFeedbackWrap.classList.add('hidden');
   updateStateBadge();
   generateRandom();
   runPhase(PHASE.QUESTION);
@@ -558,49 +785,56 @@ function stopScreensaver(){
 }
 function startQuizMode(preset){
   stopScreensaver();
-  App.quizMode=true; App.quizVaultItem=preset;
-  generateFromPreset(preset);
-  // Quiz: no timers, user drives each step manually
+  App.quizPool=buildQuizPoolFromUI();
+  App.quizVaultItem=preset;
+  generateFromPreset(preset,{keepQuiz:true});
   clearAllTimers();
   DOM.progressBar.style.width='0%';
   showQuizUI();
   renderVault();
   showToast(`Quiz: ${preset.name}`);
-  // Show question phase but don't start timer
   App.phase=PHASE.QUESTION;
   updateStateBadge();
   showQuestionPhase();
 }
 
 function showQuizUI(){
-  DOM.inputArea.classList.remove('hidden');
   DOM.hintArea.classList.remove('hidden');
-  DOM.feedbackArea.textContent=''; DOM.feedbackArea.className='';
-  // Update quiz step prompt
+  if(DOM.feedbackArea){DOM.feedbackArea.textContent=''; DOM.feedbackArea.className='';}
+  const gb=$('quiz-guess-block');
+  if(gb)gb.classList.remove('hidden');
   renderQuizStep();
 }
 
 function renderQuizStep(){
   const step=App.steps[App.stepIndex];
   if(!step)return;
-  DOM.tutorText.textContent=step.question;
+  if(App._quizLedgerStepSnapshot!==App.stepIndex){
+    App._quizLedgerStepSnapshot=App.stepIndex;
+    App._ledgerFreshStep=true;
+  }
+  DOM.tutorText.textContent=plainQuestionText(step.question);
   DOM.phaseReveal.classList.add('hidden');
   DOM.phaseQuestion.classList.remove('hidden');
   const hasAnswer=step.answer!=null;
-  DOM.inputArea.classList.toggle('hidden',!hasAnswer);
-  // Progress bar
+  if(DOM.ledgerFeedbackWrap){
+    DOM.ledgerFeedbackWrap.classList.toggle('hidden',!hasAnswer);
+  }
   const total=App.steps.length;
   const pct=total>1?(App.stepIndex/(total-1))*100:0;
   DOM.progressBar.style.width=pct+'%';
   DOM.progressBar.style.background='var(--state-review)';
-  // Progress label
   const lbl=$('quiz-progress-label');
   if(lbl) lbl.textContent=`Step ${App.stepIndex+1} of ${total}`;
-  // Button states
   const revealBtn=$('btn-quiz-reveal');
   const nextBtn=$('btn-quiz-next');
   if(revealBtn) revealBtn.classList.toggle('hidden', App.phase!==PHASE.QUESTION||!step.reveal);
   if(nextBtn)   nextBtn.classList.toggle('hidden', App.phase===PHASE.QUESTION);
+  renderSVGLedger();
+  renderSVG();
+  if(hasAnswer&&step.key){
+    requestAnimationFrame(()=>{const el=$(`slv-${step.key}`);if(el&&!el.readOnly)el.focus();});
+  }
 }
 
 function quizRevealStep(){
@@ -622,7 +856,6 @@ function quizNextStep(){
     animateLedgerReveal(step.key);
     popSVGLedger(step.key);
     renderSVG();
-    renderSVGLedger();
   }
   if(step&&step.activeEl) applyStepColors(step);
   if(App.stepIndex<App.steps.length-1){
@@ -634,10 +867,7 @@ function quizNextStep(){
     $('btn-quiz-reveal').classList.remove('hidden');
     $('btn-quiz-next').classList.add('hidden');
   } else {
-    // Done
-    showToast('Triangle solved! 🎉','success');
-    $('btn-quiz-next').classList.add('hidden');
-    $('btn-quiz-reveal').classList.add('hidden');
+    startNextQuizProblem();
   }
 }
 function checkAnswer(){
@@ -647,19 +877,28 @@ function checkAnswer(){
     else advanceStep();
     return;
   }
-  const raw=parseFloat(DOM.answerInput.value);
-  if(isNaN(raw)){showToast('Enter a number.','error');return;}
+  const key=step.key;
+  const inp=key?$(`slv-${key}`):null;
+  const raw=inp?parseFloat(inp.value):NaN;
+  if(isNaN(raw)){showToast('Enter a number in the highlighted box above the triangle.','error');return;}
   const correct=Math.abs(raw-step.answer)<0.1;
-  DOM.feedbackArea.textContent=correct?`✓ Correct! ${step.answer}`:`✗ Expected ≈${step.answer}`;
-  DOM.feedbackArea.className=correct?'correct':'wrong';
+  if(inp){
+    inp.classList.toggle('correct',correct);
+    inp.classList.toggle('wrong',!correct);
+  }
+  if(DOM.feedbackArea){
+    DOM.feedbackArea.textContent=correct?`✓ Correct! ${step.answer}`:`✗ Expected ≈${step.answer}`;
+    DOM.feedbackArea.className=correct?'correct':'wrong';
+  }
   if(!correct){
-    App.mistakes.push({triName:App.currentTri.name,step:step.question.slice(0,40),expected:step.answer,got:raw});
+    const pq=plainQuestionText(step.question);
+    App.mistakes.push({triName:App.currentTri.name,step:pq.slice(0,40),expected:step.answer,got:raw});
     saveStorage(); renderMistakes();
   }
-  DOM.answerInput.value='';
   if(correct){
     setTimeout(()=>{
-      DOM.feedbackArea.textContent='';
+      if(inp)inp.classList.remove('correct','wrong');
+      if(DOM.feedbackArea)DOM.feedbackArea.textContent='';
       if(App.quizMode) quizRevealStep();
       else runPhase(PHASE.REVEAL);
     },600);
@@ -672,11 +911,9 @@ function renderStep(){
   if(!step)return;
   DOM.tutorText.innerHTML='';
   void DOM.tutorText.offsetWidth;
-  DOM.tutorText.textContent=step.question;
+  DOM.tutorText.textContent=plainQuestionText(step.question);
   DOM.phaseReveal.classList.add('hidden');
   DOM.phaseQuestion.classList.remove('hidden');
-  // No SSA modal popup — SSA is handled inline in the step questions
-  syncURL();
 }
 
 // Ledger (right column) — only shows known givens + revealed values
@@ -706,27 +943,27 @@ function animateLedgerReveal(key){
   if(!valEl)return;
   const v=App.currentTri.solved[key];
   if(v==null)return;
-  // Update right-column ledger
   valEl.textContent=M.fmt(v)+(key===key.toUpperCase()?'°':'');
   valEl.className='ledger-val solved';
   DOM['ledger'+key].className='ledger-row solved';
   valEl.classList.remove('pop'); void valEl.offsetWidth; valEl.classList.add('pop');
-  // Update SVG ledger bar with pop
   const slvEl=DOM['slv'+key];
   if(slvEl){
     const label=key===key.toUpperCase()?`∠${key}`:`${key}`;
-    slvEl.textContent=`${label} = ${M.fmt(v)}${key===key.toUpperCase()?'°':''}`;
-    slvEl.className='slr-val solved';
+    slvEl.readOnly=true;
+    slvEl.value=`${label} = ${M.fmt(v)}${key===key.toUpperCase()?'°':''}`;
+    slvEl.className='slr-val slr-input solved';
     slvEl.classList.remove('pop'); void slvEl.offsetWidth; slvEl.classList.add('pop');
     setTimeout(()=>slvEl.classList.remove('pop'),600);
   }
 }
 
-// SVG ledger bar (above triangle) — only show revealed values
+// SVG ledger bar (above triangle) — inputs: readonly display, or editable for quiz answer step
 function renderSVGLedger(){
   if(!App.currentTri)return;
   const{knowns,solved}=App.currentTri;
   const step=App.steps[App.stepIndex]||{};
+  const quizActive=App.quizMode&&step.answer!=null&&step.key;
   ['A','B','C','a','b','c'].forEach(k=>{
     const el=DOM['slv'+k];
     if(!el)return;
@@ -734,10 +971,31 @@ function renderSVGLedger(){
     const revealed=App.revealedKeys.has(k);
     const v=solved[k];
     const label=k===k.toUpperCase()?`∠${k}`:`${k}`;
-    // Only show value if it's a known given OR has been revealed in UPDATE phase
     const showVal=(isKnown||revealed)&&v!=null;
-    el.textContent=`${label} = ${showVal?M.fmt(v)+(k===k.toUpperCase()?'°':''):'?'}`;
-    el.className='slr-val';
+
+    el.classList.remove('known','solved','active','guess-active');
+    const isQuizCell=quizActive&&k===step.key;
+    if(!isQuizCell||App._ledgerFreshStep)el.classList.remove('correct','wrong');
+    el.classList.add('slr-val','slr-input');
+
+    if(quizActive&&k===step.key){
+      el.readOnly=false;
+      el.classList.add('guess-active','active');
+      if(App._ledgerFreshStep){
+        el.value='';
+        el.placeholder=label+(k===k.toUpperCase()?' (°)':'');
+        App._ledgerFreshStep=false;
+      }
+      el.setAttribute('aria-label',`Enter ${label} for this step`);
+    }else{
+      el.readOnly=true;
+      el.placeholder='';
+      el.value=showVal
+        ?`${label} = ${M.fmt(v)}${k===k.toUpperCase()?'°':''}`
+        :`${label} = ?`;
+      el.setAttribute('aria-label',`${label}`);
+    }
+
     if(isKnown)el.classList.add('known');
     else if(revealed&&v!=null)el.classList.add('solved');
     if(step.key===k)el.classList.add('active');
@@ -759,7 +1017,7 @@ function renderSVG(){
   const C=solved.C||60;
 
   const maxSide=Math.max(a,b,c,1);
-  const scale=500/maxSide;
+  const scale=520/maxSide;
   const cx=400, cy=300;
 
   const Bx=cx+(c*scale)/2, By=cy+(a*scale)/2;
@@ -794,12 +1052,15 @@ function renderSVG(){
   setSideLabel('lbl-b',pts.A,pts.C,gx,gy, bRev?`b = ${M.fmt(solved.b)}`:'b = ?');
   setSideLabel('lbl-c',pts.A,pts.B,gx,gy, cRev?`c = ${M.fmt(solved.c)}`:'c = ?');
 
-  // Color side labels
+  // Color side labels (SVG: use classList, not className.baseVal)
   ['a','b','c'].forEach(k=>{
     const el=$('lbl-'+k);
     const isKnown=App.currentTri.knowns[k];
     const revealed=App.revealedKeys.has(k);
-    el.className.baseVal='tri-label side-label'+(isKnown?' known':(revealed?' solved':''));
+    el.classList.remove('known','solved');
+    el.classList.add('tri-label','side-label');
+    if(isKnown)el.classList.add('known');
+    else if(revealed)el.classList.add('solved');
     el.style.opacity='1';
   });
 
@@ -829,6 +1090,9 @@ function renderSVG(){
   }
 
   applyStepColors(App.steps[App.stepIndex]||{});
+
+  // Center triangle in viewBox (fixes off-center drawings on wide/narrow shapes)
+  $('svg-triangle-group').setAttribute('transform',`translate(${400-gx} ${300-gy})`);
 }
 
 function placeLabel(id,vx,vy,gx,gy,off,text){
@@ -847,7 +1111,9 @@ function placeAngleLabel(id,vx,vy,gx,gy,off,val,key){
   const revealed=App.revealedKeys.has(key);  // Only revealed, not known
   // Only show numeric value when revealed; always show arc
   el.textContent=revealed&&val!=null?`${M.fmt(val)}°`:'';
-  el.className.baseVal='tri-label angle-val-label'+(revealed?' visible':'');
+  el.classList.remove('visible');
+  el.classList.add('tri-label','angle-val-label');
+  if(revealed)el.classList.add('visible');
 }
 
 function setSideLabel(id,p1,p2,gx,gy,text){
@@ -882,18 +1148,29 @@ function drawArc(id,vertex,p1,p2,r){
 }
 
 function applyStepColors(step){
-  ['side-a','side-b','side-c'].forEach(id=>{const el=$(id);el.className.baseVal='tri-side';el.style.filter='';});
-  ['arc-A','arc-B','arc-C'].forEach(id=>{$(id).className.baseVal='tri-arc';});
+  ['side-a','side-b','side-c'].forEach(id=>{
+    const el=$(id);
+    el.classList.remove('sin-active','cos-active','tan-active','hyp-active','pulse');
+    el.classList.add('tri-side');
+    el.style.filter='';
+  });
+  ['arc-A','arc-B','arc-C'].forEach(id=>{
+    const el=$(id);
+    el.classList.remove('active');
+    el.classList.add('tri-arc');
+  });
   if(!step.activeEl)return;
   const el=$(step.activeEl);
   if(!el)return;
   if(step.activeEl.startsWith('side')){
     const f=(step.reveal||'').toLowerCase();
     const cls=f.includes('sin')?'sin-active':f.includes('cos')?'cos-active':f.includes('tan')?'tan-active':'hyp-active';
-    el.className.baseVal='tri-side '+cls;
+    el.classList.remove('tri-side');
+    el.classList.add('tri-side',cls);
     if(step.isFinal)el.classList.add('pulse');
   } else if(step.activeEl.startsWith('arc')){
-    el.className.baseVal='tri-arc active';
+    el.classList.remove('tri-arc');
+    el.classList.add('tri-arc','active');
   }
 }
 
@@ -914,10 +1191,15 @@ function renderVault(){
 function renderMistakes(){
   DOM.mistakeList.innerHTML='';
   if(!App.mistakes.length){DOM.mistakeList.innerHTML='<p class="empty-msg">No mistakes yet.</p>';return;}
-  App.mistakes.slice(-10).reverse().forEach(m=>{
+  App.mistakes.slice(-20).reverse().forEach(m=>{
     const div=document.createElement('div');
     div.className='mistake-item';
-    div.textContent=`${m.triName}: expected ${m.expected}, got ${m.got}`;
+    if(m.type==='saved'){
+      div.textContent=`📌 ${m.triName} (${m.caseType}) · ${m.savedAt.slice(0,10)}`;
+      div.title=typeof m.solved==='object'?JSON.stringify(m.solved):'';
+    }else{
+      div.textContent=`${m.triName}: expected ${m.expected}, got ${m.got}`;
+    }
     DOM.mistakeList.appendChild(div);
   });
 }
@@ -977,8 +1259,13 @@ function showToast(msg,type=''){
 }
 function saveProblem(){
   if(!App.currentTri){showToast('Nothing to save.','error');return;}
-  App.savedProblems.push({name:App.currentTri.name||App.currentTri.caseType,solved:App.currentTri.solved,caseType:App.currentTri.caseType,savedAt:new Date().toISOString()});
-  saveStorage();showToast(`Saved: ${App.currentTri.name||App.currentTri.caseType}`,'success');
+  try{
+    App.savedProblems.push({name:App.currentTri.name||App.currentTri.caseType,solved:App.currentTri.solved,caseType:App.currentTri.caseType,savedAt:new Date().toISOString()});
+    saveStorage();
+    showToast(`Saved: ${App.currentTri.name||App.currentTri.caseType}`,'success');
+  }catch(e){
+    showToast('Could not save (storage full or blocked).','error');
+  }
 }
 
 // ─── TOP BAR & PANEL TOGGLES ─────────────────────────────────
@@ -1089,15 +1376,31 @@ function bindEvents(){
   DOM.questionDurationSlider.addEventListener('input',()=>{App.questionDur=parseInt(DOM.questionDurationSlider.value);DOM.questionDurationLabel.textContent=App.questionDur+'s';});
   DOM.revealDurationSlider.addEventListener('input',()=>{App.revealDur=parseInt(DOM.revealDurationSlider.value);DOM.revealDurationLabel.textContent=App.revealDur+'s';});
   DOM.updateDurationSlider.addEventListener('input',()=>{App.updateDur=parseInt(DOM.updateDurationSlider.value);DOM.updateDurationLabel.textContent=App.updateDur+'s';});
-  DOM.btnSubmit.addEventListener('click',checkAnswer);
-  DOM.answerInput.addEventListener('keydown',e=>{if(e.key==='Enter')checkAnswer();});
+  DOM.btnCheckAnswer.addEventListener('click',checkAnswer);
+  $('svg-ledger').addEventListener('keydown',e=>{
+    if(e.key==='Enter'&&e.target.classList?.contains('slr-input'))checkAnswer();
+  });
+  $('btn-quiz-load-custom').addEventListener('click',loadCustomQuizTriangle);
+  $('btn-quiz-check-guesses').addEventListener('click',checkQuizGuesses);
+  $('btn-add-mistake-current').addEventListener('click',addCurrentToMistakeLedger);
   $('btn-hint').addEventListener('click',()=>{const step=App.steps[App.stepIndex];DOM.hintText.textContent=step?.reveal?.replace(/<[^>]+>/g,'')||'No hint available.';});
   DOM.btnPrev.addEventListener('click',()=>{if(App.stepIndex>0){App.stepIndex--;clearAllTimers();renderStep();renderSVG();renderSVGLedger();if(App.quizMode)renderQuizStep();else runPhase(PHASE.QUESTION);}});
   DOM.btnNext.addEventListener('click',()=>{
+    const st=App.steps[App.stepIndex];
     if(App.quizMode){
+      if(st?.isFinal&&App.phase===PHASE.QUESTION){
+        startNextQuizProblem();
+        return;
+      }
       if(App.phase===PHASE.QUESTION) quizRevealStep();
       else quizNextStep();
     } else {
+      if(st?.isFinal&&App.phase===PHASE.QUESTION){
+        clearAllTimers();
+        generateRandom();
+        runPhase(PHASE.QUESTION);
+        return;
+      }
       if(App.phase===PHASE.QUESTION){runPhase(PHASE.REVEAL);}
       else if(App.phase===PHASE.REVEAL){runPhase(PHASE.UPDATE);}
       else{advanceStep();}
@@ -1140,9 +1443,12 @@ function bindEvents(){
     quizNextStep();
   });
   $('btn-quiz-exit').addEventListener('click',()=>{
-    App.quizMode=false; App.quizVaultItem=null;
-    DOM.inputArea.classList.add('hidden'); DOM.hintArea.classList.add('hidden');
+    App.quizMode=false; App.quizVaultItem=null; App.quizPool=[];
+    DOM.hintArea.classList.add('hidden');
+    if(DOM.ledgerFeedbackWrap)DOM.ledgerFeedbackWrap.classList.add('hidden');
     $('quiz-controls').classList.add('hidden');
+    const gb=$('quiz-guess-block');
+    if(gb)gb.classList.add('hidden');
     renderVault();
     startScreensaver();
     showToast('Quiz exited.');
@@ -1173,7 +1479,8 @@ function togglePause(){
 }
 
 function handleKeyboard(e){
-  if(e.target===DOM.answerInput||e.target===DOM.scratchpad)return;
+  const t=e.target;
+  if(t===DOM.scratchpad||t.classList?.contains('quiz-guess')||t.closest?.('#quiz-custom-block')||t.closest?.('#svg-ledger'))return;
   switch(e.code){
     case 'Space':      e.preventDefault();togglePause();break;
     case 'Enter':      e.preventDefault();saveProblem();break;
@@ -1183,7 +1490,7 @@ function handleKeyboard(e){
       e.preventDefault();
       if(!DOM.ssaModal.classList.contains('hidden')){closeSSAModal();break;}
       if(!DOM.cheatsheet.classList.contains('hidden')){DOM.cheatsheet.classList.add('hidden');DOM.cheatsheet.classList.remove('docked-left','docked-right');$('btn-cheatsheet').classList.remove('active');break;}
-      if(App.quizMode){App.quizMode=false;App.quizVaultItem=null;renderVault();showToast('Quiz closed.');}
+      if(App.quizMode){$('btn-quiz-exit').click();}
       break;
   }
 }
