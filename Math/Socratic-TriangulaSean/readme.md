@@ -79,4 +79,8 @@ Since this is a static site, no build step is required.
 - some triangles are displaying all sides and angles while still going through socratic questioning, again, defeats the purpose - 'what is side C'... uh, it's '5', it says it right there
 
 - quiz mode still broken, now displaying all answers at start
+- Screensaver also broken now and displaying all answers at start instead of going through each step sequentially and displaying for each socratic question section
+- Ok, I just watched a few play, some screensaver triangles are displaying properly, some aren't
+- screensaver mode on hover of the hidden text also doesn't display - quiz mode on hover is working correctly
 - size of triangle is now too big and overflowing
+- Put the 'check' button during quiz mode inside the angles/sides input section (currently gets a new line)
