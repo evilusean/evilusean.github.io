@@ -123,4 +123,6 @@ See [Fix Origin Error Guide](docs/FIX_ORIGIN_ERROR.md) for the most common issue
 Check browser console (F12) for detailed error messages.
 
 ## TODO/Future Sean Problems :
-- Just tested on mobile : Screen Autolocks after 1 min
+- Just tested on mobile :
+- Screen Autolocks after 1 min
+- Audio isn't playing correctly
