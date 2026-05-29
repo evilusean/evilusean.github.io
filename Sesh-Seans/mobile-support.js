@@ -74,26 +74,34 @@ const MobileSupport = {
     enableKeepAwake() {
         if (this.keepAwakeActive) return;
         this.keepAwakeActive = true;
-        this._acquireWakeLock();
         this._showKeepAwakeIndicator(true);
+        // Defer so timer intervals register first in the click handler
+        setTimeout(() => {
+            if (this.keepAwakeActive) {
+                this._acquireWakeLock();
+            }
+        }, 0);
     },
 
     disableKeepAwake() {
         if (!this.keepAwakeActive) return;
         this.keepAwakeActive = false;
         this._releaseWakeLock();
-        this.stopSilentKeepalive();
         this._showKeepAwakeIndicator(false);
     },
 
     startSilentKeepalive() {
-        if (!this.silentKeepaliveAudio) {
-            this.silentKeepaliveAudio = new Audio(this._createSilentWavUrl());
-            this.silentKeepaliveAudio.loop = true;
-            this.silentKeepaliveAudio.volume = 0.01;
-            this.silentKeepaliveAudio.setAttribute('playsinline', '');
+        try {
+            if (!this.silentKeepaliveAudio) {
+                this.silentKeepaliveAudio = new Audio(this._createSilentWavUrl());
+                this.silentKeepaliveAudio.loop = true;
+                this.silentKeepaliveAudio.volume = 0.01;
+                this.silentKeepaliveAudio.setAttribute('playsinline', '');
+            }
+            this.silentKeepaliveAudio.play().catch(() => {});
+        } catch (e) {
+            console.warn('Silent keepalive unavailable:', e);
         }
-        this.silentKeepaliveAudio.play().catch(() => {});
     },
 
     stopSilentKeepalive() {
@@ -166,17 +174,7 @@ const MobileSupport = {
         mp4Source.type = 'video/mp4';
         video.appendChild(mp4Source);
 
-        video.addEventListener('loadedmetadata', () => {
-            if (video.duration <= 1) {
-                video.setAttribute('loop', '');
-            } else {
-                video.addEventListener('timeupdate', () => {
-                    if (video.currentTime > 0.5) {
-                        video.currentTime = 0.1;
-                    }
-                });
-            }
-        });
+        video.loop = true;
 
         document.body.appendChild(video);
         this.noSleepVideo = video;
@@ -325,9 +323,21 @@ const MobileSupport = {
     },
 
     requestNotificationPermission() {
-        if ('Notification' in window && Notification.permission === 'default') {
-            return Notification.requestPermission();
+        try {
+            if ('Notification' in window && Notification.permission === 'default') {
+                return Notification.requestPermission();
+            }
+        } catch (e) {
+            console.warn('Notification permission unavailable:', e);
         }
-        return Promise.resolve(Notification.permission);
+        return Promise.resolve(
+            typeof Notification !== 'undefined' ? Notification.permission : 'denied'
+        );
+    },
+
+    // Run after timers start — must not block the click handler (iOS user-gesture rules)
+    setupAfterTimerStart() {
+        this.unlockAudio().catch(() => {});
+        this.requestNotificationPermission().catch(() => {});
     }
 };

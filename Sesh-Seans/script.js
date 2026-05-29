@@ -1551,18 +1551,7 @@ function syncTimersOnVisibility() {
     }
 
     if (state.alarmCountdownEndTime) {
-        const remaining = Math.max(0, Math.ceil((state.alarmCountdownEndTime - now) / 1000));
-        if (remaining === 0) {
-            playAlarmSound();
-            cancelAlarm();
-            showStatus('⏰ Countdown complete!', 'success');
-        } else {
-            state.alarmCountdownSeconds = remaining;
-            const mins = Math.floor(remaining / 60);
-            const secs = remaining % 60;
-            elements.alarmDisplay.textContent =
-                `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-        }
+        tickAlarmCountdown();
     }
 
     if (state.alarmTime) {
@@ -1597,17 +1586,16 @@ function updateTimerDisplay() {
 
 function setupTimerListeners() {
     // Interval Timer (Continuous)
-    elements.startTimer.addEventListener('click', async () => {
+    elements.startTimer.addEventListener('click', () => {
         if (!state.timerRunning) {
-            if (typeof MobileSupport !== 'undefined') {
-                await MobileSupport.unlockAudio();
-                MobileSupport.requestNotificationPermission();
-            }
             state.timerRunning = true;
             state.timerEndTime = Date.now() + (state.timerSeconds * 1000);
             elements.startTimer.classList.add('hidden');
             elements.pauseTimer.classList.remove('hidden');
             updateKeepAwakeState();
+            if (typeof MobileSupport !== 'undefined') {
+                MobileSupport.setupAfterTimerStart();
+            }
             
             state.intervalTimerHandle = setInterval(() => {
                 const remaining = Math.max(0, Math.ceil((state.timerEndTime - Date.now()) / 1000));
@@ -1646,16 +1634,16 @@ function setupTimerListeners() {
     });
 
     // Workout Timer
-    elements.startWorkoutTimer.addEventListener('click', async () => {
+    elements.startWorkoutTimer.addEventListener('click', () => {
         if (!state.workoutTimerRunning) {
-            if (typeof MobileSupport !== 'undefined') {
-                await MobileSupport.unlockAudio();
-            }
             state.workoutTimerRunning = true;
             state.workoutTimerEndTime = Date.now() + (state.workoutTimerSeconds * 1000);
             elements.startWorkoutTimer.classList.add('hidden');
             elements.pauseWorkoutTimer.classList.remove('hidden');
             updateKeepAwakeState();
+            if (typeof MobileSupport !== 'undefined') {
+                MobileSupport.setupAfterTimerStart();
+            }
             
             state.workoutTimerHandle = setInterval(() => {
                 const remaining = Math.max(0, Math.ceil((state.workoutTimerEndTime - Date.now()) / 1000));
@@ -1923,16 +1911,16 @@ function setupPomodoroListeners() {
     });
 
     // Start Pomodoro
-    elements.startPomodoro.addEventListener('click', async () => {
+    elements.startPomodoro.addEventListener('click', () => {
         if (!state.pomodoroRunning) {
-            if (typeof MobileSupport !== 'undefined') {
-                await MobileSupport.unlockAudio();
-            }
             state.pomodoroRunning = true;
             state.pomodoroEndTime = Date.now() + (state.pomodoroSeconds * 1000);
             elements.startPomodoro.classList.add('hidden');
             elements.pausePomodoro.classList.remove('hidden');
             updateKeepAwakeState();
+            if (typeof MobileSupport !== 'undefined') {
+                MobileSupport.setupAfterTimerStart();
+            }
             
             state.pomodoroTimerHandle = setInterval(() => {
                 const remaining = Math.max(0, Math.ceil((state.pomodoroEndTime - Date.now()) / 1000));
@@ -2120,16 +2108,17 @@ function setupAlarmListeners() {
         });
     });
 
-    // Set alarm
-    elements.setAlarm.addEventListener('click', async () => {
-        if (typeof MobileSupport !== 'undefined') {
-            await MobileSupport.unlockAudio();
-            await MobileSupport.requestNotificationPermission();
-        }
-        if (state.alarmMode === 'time') {
+    // Set alarm — start timer synchronously first (iOS requires this in the click handler)
+    elements.setAlarm.addEventListener('click', () => {
+        const mode = document.querySelector('.alarm-mode-toggle .mode-btn.active')?.dataset.mode || state.alarmMode;
+        state.alarmMode = mode;
+        if (mode === 'time') {
             setTimeAlarm();
         } else {
             setCountdownAlarm();
+        }
+        if (typeof MobileSupport !== 'undefined') {
+            MobileSupport.setupAfterTimerStart();
         }
     });
 
@@ -2178,42 +2167,52 @@ function setTimeAlarm() {
     updateKeepAwakeState();
 }
 
+function tickAlarmCountdown() {
+    if (!state.alarmCountdownEndTime) return false;
+
+    const remaining = Math.max(0, Math.ceil((state.alarmCountdownEndTime - Date.now()) / 1000));
+    state.alarmCountdownSeconds = remaining;
+    const mins = Math.floor(remaining / 60);
+    const secs = remaining % 60;
+    elements.alarmDisplay.textContent =
+        `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+    if (remaining === 0) {
+        playAlarmSound();
+        cancelAlarm();
+        showStatus('⏰ Countdown complete!', 'success');
+        return true;
+    }
+    return false;
+}
+
 function setCountdownAlarm() {
-    const minutes = parseInt(elements.countdownMinutes.value) || 0;
-    const seconds = parseInt(elements.countdownSeconds.value) || 0;
-    
+    const minutes = parseInt(elements.countdownMinutes.value, 10) || 0;
+    const seconds = parseInt(elements.countdownSeconds.value, 10) || 0;
+
     const totalSeconds = (minutes * 60) + seconds;
-    
+
     if (totalSeconds === 0) {
         alert('Please enter a countdown time');
         return;
     }
-    
+
     state.alarmCountdownSeconds = totalSeconds;
     state.alarmCountdownEndTime = Date.now() + (totalSeconds * 1000);
-    
+
     elements.setAlarm.classList.add('hidden');
     elements.cancelAlarm.classList.remove('hidden');
-    elements.alarmStatus.textContent = `Countdown started`;
-    
-    // Start countdown
+    elements.alarmStatus.textContent = 'Countdown started';
+
     if (state.alarmCountdownHandle) {
         clearInterval(state.alarmCountdownHandle);
     }
-    
+
+    tickAlarmCountdown();
+
     state.alarmCountdownHandle = setInterval(() => {
-        const remaining = Math.max(0, Math.ceil((state.alarmCountdownEndTime - Date.now()) / 1000));
-        state.alarmCountdownSeconds = remaining;
-        const mins = Math.floor(remaining / 60);
-        const secs = remaining % 60;
-        elements.alarmDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-        
-        if (remaining === 0) {
-            playAlarmSound();
-            cancelAlarm();
-            showStatus('⏰ Countdown complete!', 'success');
-        }
-    }, 100);
+        tickAlarmCountdown();
+    }, 250);
 
     if (typeof MobileSupport !== 'undefined') {
         MobileSupport.startSilentKeepalive();
