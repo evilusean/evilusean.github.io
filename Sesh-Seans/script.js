@@ -1491,8 +1491,69 @@ function updateKeepAwakeState() {
     if (typeof MobileSupport === 'undefined') return;
     if (isAnyTimerOrAlarmActive()) {
         MobileSupport.enableKeepAwake();
+        MobileSupport.startSilentKeepalive();
     } else {
         MobileSupport.disableKeepAwake();
+        MobileSupport.stopSilentKeepalive();
+    }
+}
+
+const TIMER_TICK_MS = 250;
+
+function tickIntervalTimer() {
+    if (!state.timerRunning || !state.timerEndTime) return;
+
+    const remaining = Math.max(0, Math.ceil((state.timerEndTime - Date.now()) / 1000));
+    state.timerSeconds = remaining;
+    updateTimerDisplay();
+
+    if (remaining === 0) {
+        playIntervalSound();
+        const intervalMinutes = parseInt(elements.timerInterval.value, 10) || 15;
+        state.timerSeconds = intervalMinutes * 60;
+        state.timerEndTime = Date.now() + (state.timerSeconds * 1000);
+        updateTimerDisplay();
+    }
+}
+
+function tickWorkoutTimer() {
+    if (!state.workoutTimerRunning || !state.workoutTimerEndTime) return;
+
+    const remaining = Math.max(0, Math.ceil((state.workoutTimerEndTime - Date.now()) / 1000));
+    state.workoutTimerSeconds = remaining;
+    updateWorkoutTimerDisplay();
+
+    if (remaining === 0) {
+        playWorkoutSound();
+        resetWorkoutTimer();
+    }
+}
+
+function tickPomodoroTimer() {
+    if (!state.pomodoroRunning || !state.pomodoroEndTime) return;
+
+    const remaining = Math.max(0, Math.ceil((state.pomodoroEndTime - Date.now()) / 1000));
+    state.pomodoroSeconds = remaining;
+    updatePomodoroTimerDisplay();
+
+    if (remaining === 0) {
+        if (state.pomodoroOnBreak) {
+            playPomodoroStudySound();
+            state.pomodoroOnBreak = false;
+            const studyMinutes = parseInt(elements.pomodoroStudyTime.value, 10) || 20;
+            state.pomodoroSeconds = studyMinutes * 60;
+            state.pomodoroEndTime = Date.now() + (state.pomodoroSeconds * 1000);
+            elements.pomodoroStatus.textContent = 'Study Session';
+        } else {
+            playPomodoroBreakSound();
+            state.pomodoroOnBreak = true;
+            const breakMinutes = parseInt(elements.pomodoroBreakTime.value, 10) || 5;
+            state.pomodoroSeconds = breakMinutes * 60;
+            state.pomodoroEndTime = Date.now() + (state.pomodoroSeconds * 1000);
+            elements.pomodoroStatus.textContent = 'Break Time!';
+            showStatus('⏸️ Break time! Don\'t forget to log your study session!', 'success');
+        }
+        updatePomodoroTimerDisplay();
     }
 }
 
@@ -1500,54 +1561,16 @@ function updateKeepAwakeState() {
 function syncTimersOnVisibility() {
     if (document.hidden) return;
 
-    const now = Date.now();
-
     if (state.timerRunning && state.timerEndTime) {
-        const remaining = Math.max(0, Math.ceil((state.timerEndTime - now) / 1000));
-        if (remaining === 0) {
-            playIntervalSound();
-            const intervalMinutes = parseInt(elements.timerInterval.value) || 15;
-            state.timerSeconds = intervalMinutes * 60;
-            state.timerEndTime = now + (state.timerSeconds * 1000);
-        } else {
-            state.timerSeconds = remaining;
-        }
-        updateTimerDisplay();
+        tickIntervalTimer();
     }
 
     if (state.workoutTimerRunning && state.workoutTimerEndTime) {
-        const remaining = Math.max(0, Math.ceil((state.workoutTimerEndTime - now) / 1000));
-        if (remaining === 0) {
-            playWorkoutSound();
-            resetWorkoutTimer();
-        } else {
-            state.workoutTimerSeconds = remaining;
-            updateWorkoutTimerDisplay();
-        }
+        tickWorkoutTimer();
     }
 
     if (state.pomodoroRunning && state.pomodoroEndTime) {
-        let remaining = Math.max(0, Math.ceil((state.pomodoroEndTime - now) / 1000));
-        if (remaining === 0) {
-            if (state.pomodoroOnBreak) {
-                playPomodoroStudySound();
-                state.pomodoroOnBreak = false;
-                const studyMinutes = parseInt(elements.pomodoroStudyTime.value) || 20;
-                state.pomodoroSeconds = studyMinutes * 60;
-                elements.pomodoroStatus.textContent = 'Study Session';
-            } else {
-                playPomodoroBreakSound();
-                state.pomodoroOnBreak = true;
-                const breakMinutes = parseInt(elements.pomodoroBreakTime.value) || 5;
-                state.pomodoroSeconds = breakMinutes * 60;
-                elements.pomodoroStatus.textContent = 'Break Time!';
-                showStatus('⏸️ Break time! Don\'t forget to log your study session!', 'success');
-            }
-            state.pomodoroEndTime = now + (state.pomodoroSeconds * 1000);
-        } else {
-            state.pomodoroSeconds = remaining;
-        }
-        updatePomodoroTimerDisplay();
+        tickPomodoroTimer();
     }
 
     if (state.alarmCountdownEndTime) {
@@ -1588,6 +1611,8 @@ function setupTimerListeners() {
     // Interval Timer (Continuous)
     elements.startTimer.addEventListener('click', () => {
         if (!state.timerRunning) {
+            const intervalMinutes = parseInt(elements.timerInterval.value, 10) || 15;
+            state.timerSeconds = intervalMinutes * 60;
             state.timerRunning = true;
             state.timerEndTime = Date.now() + (state.timerSeconds * 1000);
             elements.startTimer.classList.add('hidden');
@@ -1596,21 +1621,9 @@ function setupTimerListeners() {
             if (typeof MobileSupport !== 'undefined') {
                 MobileSupport.setupAfterTimerStart();
             }
-            
-            state.intervalTimerHandle = setInterval(() => {
-                const remaining = Math.max(0, Math.ceil((state.timerEndTime - Date.now()) / 1000));
-                state.timerSeconds = remaining;
-                updateTimerDisplay();
-                
-                if (remaining === 0) {
-                    // Timer reached zero - play sound and restart
-                    playIntervalSound();
-                    const intervalMinutes = parseInt(elements.timerInterval.value) || 15;
-                    state.timerSeconds = intervalMinutes * 60;
-                    state.timerEndTime = Date.now() + (state.timerSeconds * 1000);
-                    updateTimerDisplay();
-                }
-            }, 100); // Check more frequently for accuracy
+
+            tickIntervalTimer();
+            state.intervalTimerHandle = setInterval(tickIntervalTimer, TIMER_TICK_MS);
         }
     });
 
@@ -1633,9 +1646,19 @@ function setupTimerListeners() {
         }
     });
 
+    elements.timerInterval.addEventListener('input', () => {
+        if (!state.timerRunning) {
+            const intervalMinutes = parseInt(elements.timerInterval.value, 10) || 15;
+            state.timerSeconds = intervalMinutes * 60;
+            updateTimerDisplay();
+        }
+    });
+
     // Workout Timer
     elements.startWorkoutTimer.addEventListener('click', () => {
         if (!state.workoutTimerRunning) {
+            const duration = parseInt(elements.workoutTimerDuration.value, 10) || 30;
+            state.workoutTimerSeconds = duration;
             state.workoutTimerRunning = true;
             state.workoutTimerEndTime = Date.now() + (state.workoutTimerSeconds * 1000);
             elements.startWorkoutTimer.classList.add('hidden');
@@ -1644,18 +1667,9 @@ function setupTimerListeners() {
             if (typeof MobileSupport !== 'undefined') {
                 MobileSupport.setupAfterTimerStart();
             }
-            
-            state.workoutTimerHandle = setInterval(() => {
-                const remaining = Math.max(0, Math.ceil((state.workoutTimerEndTime - Date.now()) / 1000));
-                state.workoutTimerSeconds = remaining;
-                updateWorkoutTimerDisplay();
-                
-                if (remaining === 0) {
-                    // Workout timer complete
-                    playWorkoutSound();
-                    resetWorkoutTimer();
-                }
-            }, 100);
+
+            tickWorkoutTimer();
+            state.workoutTimerHandle = setInterval(tickWorkoutTimer, TIMER_TICK_MS);
         }
     });
 
@@ -1921,38 +1935,9 @@ function setupPomodoroListeners() {
             if (typeof MobileSupport !== 'undefined') {
                 MobileSupport.setupAfterTimerStart();
             }
-            
-            state.pomodoroTimerHandle = setInterval(() => {
-                const remaining = Math.max(0, Math.ceil((state.pomodoroEndTime - Date.now()) / 1000));
-                state.pomodoroSeconds = remaining;
-                updatePomodoroTimerDisplay();
-                
-                if (remaining === 0) {
-                    // Timer complete - switch between study and break
-                    if (state.pomodoroOnBreak) {
-                        // Break complete - back to study
-                        playPomodoroStudySound();
-                        state.pomodoroOnBreak = false;
-                        const studyMinutes = parseInt(elements.pomodoroStudyTime.value) || 20;
-                        state.pomodoroSeconds = studyMinutes * 60;
-                        state.pomodoroEndTime = Date.now() + (state.pomodoroSeconds * 1000);
-                        elements.pomodoroStatus.textContent = 'Study Session';
-                        updatePomodoroTimerDisplay();
-                    } else {
-                        // Study complete - start break
-                        playPomodoroBreakSound();
-                        state.pomodoroOnBreak = true;
-                        const breakMinutes = parseInt(elements.pomodoroBreakTime.value) || 5;
-                        state.pomodoroSeconds = breakMinutes * 60;
-                        state.pomodoroEndTime = Date.now() + (state.pomodoroSeconds * 1000);
-                        elements.pomodoroStatus.textContent = 'Break Time!';
-                        updatePomodoroTimerDisplay();
-                        
-                        // Remind user to log session
-                        showStatus('⏸️ Break time! Don\'t forget to log your study session!', 'success');
-                    }
-                }
-            }, 100);
+
+            tickPomodoroTimer();
+            state.pomodoroTimerHandle = setInterval(tickPomodoroTimer, TIMER_TICK_MS);
         }
     });
 
@@ -2161,9 +2146,6 @@ function setTimeAlarm() {
         }
     }, 1000);
 
-    if (typeof MobileSupport !== 'undefined') {
-        MobileSupport.startSilentKeepalive();
-    }
     updateKeepAwakeState();
 }
 
@@ -2212,11 +2194,8 @@ function setCountdownAlarm() {
 
     state.alarmCountdownHandle = setInterval(() => {
         tickAlarmCountdown();
-    }, 250);
+    }, TIMER_TICK_MS);
 
-    if (typeof MobileSupport !== 'undefined') {
-        MobileSupport.startSilentKeepalive();
-    }
     updateKeepAwakeState();
 }
 
@@ -2240,9 +2219,6 @@ function cancelAlarm() {
     elements.alarmStatus.textContent = '';
     elements.alarmDisplay.textContent = '--:--';
 
-    if (typeof MobileSupport !== 'undefined') {
-        MobileSupport.stopSilentKeepalive();
-    }
     updateKeepAwakeState();
 }
 
