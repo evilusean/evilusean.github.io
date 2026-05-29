@@ -106,6 +106,7 @@ let state = {
     tokenRefreshInterval: null,
     tokenCheckInterval: null, // Frequent token check interval
     visibilityListenerAdded: false, // Track if visibility listener is added
+    timerSyncListenerAdded: false,
     audioContext: null, // Shared audio context for all sounds
     allExercises: [], // Store all exercises for filtering
     sortCategories: [], // Store sort categories
@@ -1477,6 +1478,115 @@ async function appendToSheet(values, sheetName = null) {
     }
 }
 
+// Mobile: keep screen awake while timers/alarms are active
+function isAnyTimerOrAlarmActive() {
+    return state.timerRunning ||
+        state.workoutTimerRunning ||
+        state.pomodoroRunning ||
+        state.alarmTime !== null ||
+        state.alarmCountdownEndTime !== null;
+}
+
+function updateKeepAwakeState() {
+    if (typeof MobileSupport === 'undefined') return;
+    if (isAnyTimerOrAlarmActive()) {
+        MobileSupport.enableKeepAwake();
+    } else {
+        MobileSupport.disableKeepAwake();
+    }
+}
+
+// Recover timer state after iOS background/sleep
+function syncTimersOnVisibility() {
+    if (document.hidden) return;
+
+    const now = Date.now();
+
+    if (state.timerRunning && state.timerEndTime) {
+        const remaining = Math.max(0, Math.ceil((state.timerEndTime - now) / 1000));
+        if (remaining === 0) {
+            playIntervalSound();
+            const intervalMinutes = parseInt(elements.timerInterval.value) || 15;
+            state.timerSeconds = intervalMinutes * 60;
+            state.timerEndTime = now + (state.timerSeconds * 1000);
+        } else {
+            state.timerSeconds = remaining;
+        }
+        updateTimerDisplay();
+    }
+
+    if (state.workoutTimerRunning && state.workoutTimerEndTime) {
+        const remaining = Math.max(0, Math.ceil((state.workoutTimerEndTime - now) / 1000));
+        if (remaining === 0) {
+            playWorkoutSound();
+            resetWorkoutTimer();
+        } else {
+            state.workoutTimerSeconds = remaining;
+            updateWorkoutTimerDisplay();
+        }
+    }
+
+    if (state.pomodoroRunning && state.pomodoroEndTime) {
+        let remaining = Math.max(0, Math.ceil((state.pomodoroEndTime - now) / 1000));
+        if (remaining === 0) {
+            if (state.pomodoroOnBreak) {
+                playPomodoroStudySound();
+                state.pomodoroOnBreak = false;
+                const studyMinutes = parseInt(elements.pomodoroStudyTime.value) || 20;
+                state.pomodoroSeconds = studyMinutes * 60;
+                elements.pomodoroStatus.textContent = 'Study Session';
+            } else {
+                playPomodoroBreakSound();
+                state.pomodoroOnBreak = true;
+                const breakMinutes = parseInt(elements.pomodoroBreakTime.value) || 5;
+                state.pomodoroSeconds = breakMinutes * 60;
+                elements.pomodoroStatus.textContent = 'Break Time!';
+                showStatus('⏸️ Break time! Don\'t forget to log your study session!', 'success');
+            }
+            state.pomodoroEndTime = now + (state.pomodoroSeconds * 1000);
+        } else {
+            state.pomodoroSeconds = remaining;
+        }
+        updatePomodoroTimerDisplay();
+    }
+
+    if (state.alarmCountdownEndTime) {
+        const remaining = Math.max(0, Math.ceil((state.alarmCountdownEndTime - now) / 1000));
+        if (remaining === 0) {
+            playAlarmSound();
+            cancelAlarm();
+            showStatus('⏰ Countdown complete!', 'success');
+        } else {
+            state.alarmCountdownSeconds = remaining;
+            const mins = Math.floor(remaining / 60);
+            const secs = remaining % 60;
+            elements.alarmDisplay.textContent =
+                `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+    }
+
+    if (state.alarmTime) {
+        const currentTime = `${String(new Date().getHours()).padStart(2, '0')}:${String(new Date().getMinutes()).padStart(2, '0')}`;
+        if (currentTime === state.alarmTime) {
+            playAlarmSound();
+            cancelAlarm();
+            showStatus('⏰ Alarm ringing!', 'success');
+        }
+    }
+
+    updateKeepAwakeState();
+}
+
+function setupTimerVisibilitySync() {
+    if (state.timerSyncListenerAdded) return;
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+            syncTimersOnVisibility();
+        }
+    });
+    state.timerSyncListenerAdded = true;
+}
+
 // Timer functions
 function updateTimerDisplay() {
     const minutes = Math.floor(state.timerSeconds / 60);
@@ -1487,12 +1597,17 @@ function updateTimerDisplay() {
 
 function setupTimerListeners() {
     // Interval Timer (Continuous)
-    elements.startTimer.addEventListener('click', () => {
+    elements.startTimer.addEventListener('click', async () => {
         if (!state.timerRunning) {
+            if (typeof MobileSupport !== 'undefined') {
+                await MobileSupport.unlockAudio();
+                MobileSupport.requestNotificationPermission();
+            }
             state.timerRunning = true;
             state.timerEndTime = Date.now() + (state.timerSeconds * 1000);
             elements.startTimer.classList.add('hidden');
             elements.pauseTimer.classList.remove('hidden');
+            updateKeepAwakeState();
             
             state.intervalTimerHandle = setInterval(() => {
                 const remaining = Math.max(0, Math.ceil((state.timerEndTime - Date.now()) / 1000));
@@ -1517,6 +1632,7 @@ function setupTimerListeners() {
         state.timerEndTime = null;
         elements.startTimer.classList.remove('hidden');
         elements.pauseTimer.classList.add('hidden');
+        updateKeepAwakeState();
     });
 
     elements.resetTimer.addEventListener('click', () => {
@@ -1530,12 +1646,16 @@ function setupTimerListeners() {
     });
 
     // Workout Timer
-    elements.startWorkoutTimer.addEventListener('click', () => {
+    elements.startWorkoutTimer.addEventListener('click', async () => {
         if (!state.workoutTimerRunning) {
+            if (typeof MobileSupport !== 'undefined') {
+                await MobileSupport.unlockAudio();
+            }
             state.workoutTimerRunning = true;
             state.workoutTimerEndTime = Date.now() + (state.workoutTimerSeconds * 1000);
             elements.startWorkoutTimer.classList.add('hidden');
             elements.pauseWorkoutTimer.classList.remove('hidden');
+            updateKeepAwakeState();
             
             state.workoutTimerHandle = setInterval(() => {
                 const remaining = Math.max(0, Math.ceil((state.workoutTimerEndTime - Date.now()) / 1000));
@@ -1557,6 +1677,7 @@ function setupTimerListeners() {
         state.workoutTimerEndTime = null;
         elements.startWorkoutTimer.classList.remove('hidden');
         elements.pauseWorkoutTimer.classList.add('hidden');
+        updateKeepAwakeState();
     });
 
     elements.resetWorkoutTimer.addEventListener('click', () => {
@@ -1575,9 +1696,11 @@ function resetTimer() {
     clearInterval(state.intervalTimerHandle);
     const intervalMinutes = parseInt(elements.timerInterval.value) || 15;
     state.timerSeconds = intervalMinutes * 60;
+    state.timerEndTime = null;
     updateTimerDisplay();
     elements.startTimer.classList.remove('hidden');
     elements.pauseTimer.classList.add('hidden');
+    updateKeepAwakeState();
 }
 
 function resetWorkoutTimer() {
@@ -1585,9 +1708,11 @@ function resetWorkoutTimer() {
     clearInterval(state.workoutTimerHandle);
     const duration = parseInt(elements.workoutTimerDuration.value) || 15;
     state.workoutTimerSeconds = duration;
+    state.workoutTimerEndTime = null;
     updateWorkoutTimerDisplay();
     elements.startWorkoutTimer.classList.remove('hidden');
     elements.pauseWorkoutTimer.classList.add('hidden');
+    updateKeepAwakeState();
 }
 
 function updateWorkoutTimerDisplay() {
@@ -1798,12 +1923,16 @@ function setupPomodoroListeners() {
     });
 
     // Start Pomodoro
-    elements.startPomodoro.addEventListener('click', () => {
+    elements.startPomodoro.addEventListener('click', async () => {
         if (!state.pomodoroRunning) {
+            if (typeof MobileSupport !== 'undefined') {
+                await MobileSupport.unlockAudio();
+            }
             state.pomodoroRunning = true;
             state.pomodoroEndTime = Date.now() + (state.pomodoroSeconds * 1000);
             elements.startPomodoro.classList.add('hidden');
             elements.pausePomodoro.classList.remove('hidden');
+            updateKeepAwakeState();
             
             state.pomodoroTimerHandle = setInterval(() => {
                 const remaining = Math.max(0, Math.ceil((state.pomodoroEndTime - Date.now()) / 1000));
@@ -1846,6 +1975,7 @@ function setupPomodoroListeners() {
         state.pomodoroEndTime = null;
         elements.startPomodoro.classList.remove('hidden');
         elements.pausePomodoro.classList.add('hidden');
+        updateKeepAwakeState();
     });
 
     // Reset Pomodoro
@@ -1991,7 +2121,11 @@ function setupAlarmListeners() {
     });
 
     // Set alarm
-    elements.setAlarm.addEventListener('click', () => {
+    elements.setAlarm.addEventListener('click', async () => {
+        if (typeof MobileSupport !== 'undefined') {
+            await MobileSupport.unlockAudio();
+            await MobileSupport.requestNotificationPermission();
+        }
         if (state.alarmMode === 'time') {
             setTimeAlarm();
         } else {
@@ -2030,13 +2164,18 @@ function setTimeAlarm() {
     state.alarmCheckInterval = setInterval(() => {
         const now = new Date();
         const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-        
+
         if (currentTime === state.alarmTime) {
             playAlarmSound();
             cancelAlarm();
             showStatus('⏰ Alarm ringing!', 'success');
         }
     }, 1000);
+
+    if (typeof MobileSupport !== 'undefined') {
+        MobileSupport.startSilentKeepalive();
+    }
+    updateKeepAwakeState();
 }
 
 function setCountdownAlarm() {
@@ -2075,6 +2214,11 @@ function setCountdownAlarm() {
             showStatus('⏰ Countdown complete!', 'success');
         }
     }, 100);
+
+    if (typeof MobileSupport !== 'undefined') {
+        MobileSupport.startSilentKeepalive();
+    }
+    updateKeepAwakeState();
 }
 
 function cancelAlarm() {
@@ -2096,6 +2240,11 @@ function cancelAlarm() {
     elements.cancelAlarm.classList.add('hidden');
     elements.alarmStatus.textContent = '';
     elements.alarmDisplay.textContent = '--:--';
+
+    if (typeof MobileSupport !== 'undefined') {
+        MobileSupport.stopSilentKeepalive();
+    }
+    updateKeepAwakeState();
 }
 
 function resetPomodoro() {
@@ -2104,10 +2253,12 @@ function resetPomodoro() {
     clearInterval(state.pomodoroTimerHandle);
     const studyMinutes = parseInt(elements.pomodoroStudyTime.value) || 20;
     state.pomodoroSeconds = studyMinutes * 60;
+    state.pomodoroEndTime = null;
     elements.pomodoroStatus.textContent = 'Study Session';
     updatePomodoroTimerDisplay();
     elements.startPomodoro.classList.remove('hidden');
     elements.pausePomodoro.classList.add('hidden');
+    updateKeepAwakeState();
 }
 
 async function playPomodoroBreakSound() {
@@ -2176,44 +2327,47 @@ async function playAlarmSound() {
         </div>
     `;
     document.body.appendChild(modal);
-    
-    // Get shared audio context
-    const audioContext = await getAudioContext();
-    if (!audioContext) return;
-    
-    // Loop alarm sound continuously
-    let alarmInterval;
-    const playAlarmBeep = () => {
-        try {
-            
-            for (let i = 0; i < 5; i++) {
-                const osc = audioContext.createOscillator();
-                const gain = audioContext.createGain();
-                osc.connect(gain);
-                gain.connect(audioContext.destination);
-                osc.frequency.value = 1000;
-                osc.type = 'sawtooth';
-                const startTime = audioContext.currentTime + (i * 0.4);
-                gain.gain.setValueAtTime(0.4, startTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
-                osc.start(startTime);
-                osc.stop(startTime + 0.3);
-            }
-        } catch (e) {
-            console.error('Error playing alarm sound:', e);
+
+    if (typeof MobileSupport !== 'undefined') {
+        await MobileSupport.startAlarmSound();
+    } else {
+        const audioContext = await getAudioContext();
+        if (audioContext) {
+            let alarmInterval;
+            const playAlarmBeep = () => {
+                try {
+                    for (let i = 0; i < 5; i++) {
+                        const osc = audioContext.createOscillator();
+                        const gain = audioContext.createGain();
+                        osc.connect(gain);
+                        gain.connect(audioContext.destination);
+                        osc.frequency.value = 1000;
+                        osc.type = 'sawtooth';
+                        const startTime = audioContext.currentTime + (i * 0.4);
+                        gain.gain.setValueAtTime(0.4, startTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+                        osc.start(startTime);
+                        osc.stop(startTime + 0.3);
+                    }
+                } catch (e) {
+                    console.error('Error playing alarm sound:', e);
+                }
+            };
+            playAlarmBeep();
+            alarmInterval = setInterval(playAlarmBeep, 2000);
+            document.getElementById('dismissAlarm').addEventListener('click', () => {
+                clearInterval(alarmInterval);
+            }, { once: true });
         }
-    };
-    
-    // Play immediately and then every 2 seconds
-    playAlarmBeep();
-    alarmInterval = setInterval(playAlarmBeep, 2000);
-    
-    // Dismiss button handler
+    }
+
     document.getElementById('dismissAlarm').addEventListener('click', () => {
-        clearInterval(alarmInterval);
+        if (typeof MobileSupport !== 'undefined') {
+            MobileSupport.stopAlarmSound();
+        }
         document.body.removeChild(modal);
-    });
-    
+    }, { once: true });
+
     // Browser notification
     if ('Notification' in window && Notification.permission === 'granted') {
         new Notification('⏰ Alarm!', {
@@ -3521,6 +3675,17 @@ async function createWorkoutInSheet(workoutName) {
 window.addEventListener('load', () => {
     console.log('Page loaded, initializing...');
     initElements();
+
+    if (typeof MobileSupport !== 'undefined') {
+        MobileSupport.init();
+        if (MobileSupport.isMobile()) {
+            const mobileTip = document.getElementById('mobileTip');
+            if (mobileTip) {
+                mobileTip.classList.remove('hidden');
+            }
+        }
+    }
+    setupTimerVisibilitySync();
     
     // Ensure app content is hidden until signed in
     if (elements.appContent) {

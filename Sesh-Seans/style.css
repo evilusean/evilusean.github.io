@@ -695,6 +695,25 @@ textarea:focus {
         font-size: 2.5em;
     }
 }
+.keep-awake-status {
+    text-align: center;
+    color: #ffd700;
+    font-size: 0.85em;
+    margin-bottom: 8px;
+    opacity: 0.9;
+}
+
+.mobile-tip {
+    text-align: center;
+    color: #88ccff;
+    font-size: 0.8em;
+    margin-bottom: 10px;
+    padding: 6px 10px;
+    background: rgba(0, 80, 120, 0.25);
+    border-radius: 6px;
+    line-height: 1.4;
+}
+
 /*
  Alarm Modal */
 .alarm-modal {

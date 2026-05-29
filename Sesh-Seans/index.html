@@ -2,8 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Sesh Seans">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1a1a2e">
     <title>Sesh Seans Workout/Study Tracker and Timer</title>
+    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -21,6 +27,8 @@
             <!-- Timer Section -->
             <section class="timer-section">
                 <h3>Interval Timer (Continuous)</h3>
+                <div id="keepAwakeStatus" class="keep-awake-status hidden">☀️ Screen stay-awake active</div>
+                <div id="mobileTip" class="mobile-tip hidden">📱 Keep app in foreground for reliable timers and alarms</div>
                 <div class="timer-display" id="timerDisplay">15:00</div>
                 <div class="timer-controls">
                     <button id="startTimer" class="btn btn-success">Start Interval Timer</button>
@@ -265,6 +273,8 @@
     <script src="config.js"></script>
     <script src="exercise-data.js"></script>
     <script src="workout-data.js"></script>
+    <script src="nosleep-media.js"></script>
+    <script src="mobile-support.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

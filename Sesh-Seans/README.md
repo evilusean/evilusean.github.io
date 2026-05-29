@@ -122,7 +122,22 @@ See [Fix Origin Error Guide](docs/FIX_ORIGIN_ERROR.md) for the most common issue
 
 Check browser console (F12) for detailed error messages.
 
-## TODO/Future Sean Problems :
-- Just tested on mobile :
-- Screen Autolocks after 1 min
-- Audio isn't playing correctly
+## Mobile / iPhone Support
+
+Improvements for keeping timers and alarms working on iPhone and other mobile browsers:
+
+- **Screen stay-awake** — While any timer or alarm is active, the app requests the [Screen Wake Lock API](https://developer.mozilla.org/en-US/docs/Web/API/Screen_Wake_Lock_API) (iOS 16.4+). On older iOS or when wake lock is denied, a NoSleep-style silent video fallback is used.
+- **Alarm audio** — Alarms use a looping HTML5 audio track (unlocked on "Set Alarm") plus Web Audio beeps and vibration as backup.
+- **Background recovery** — When you return to the app after the screen locks, timers and alarms catch up using stored end timestamps.
+- **PWA** — Add to Home Screen via Safari Share menu for standalone mode (`manifest.json` included).
+
+**Still limited on iOS (platform restrictions):**
+- If the phone locks or the app is fully backgrounded, JavaScript pauses — alarms fire when you reopen the app, not as a system alarm.
+- Web push notifications require a server and only work for installed PWAs on iOS 16.4+.
+- For critical wake-up alarms, use the built-in Clock app as a backup.
+
+**Tips for iPhone users:**
+1. Add the app to your Home Screen (Safari → Share → Add to Home Screen).
+2. Allow notifications when prompted (helps when the app is in the background).
+3. Keep the app in the foreground during countdowns for the most reliable alarm sound.
+4. Disable Low Power Mode if wake lock fails.

@@ -1,0 +1,10 @@
+{
+  "name": "Sesh Seans Workout/Study Tracker",
+  "short_name": "Sesh Seans",
+  "description": "Workout and study tracker with interval, pomodoro, and alarm timers",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#1a1a2e",
+  "orientation": "any"
+}
