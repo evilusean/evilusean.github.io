@@ -16,17 +16,18 @@ const STATE = { SCREENSAVER: 'screen', ACTIVE: 'active' };
 
 // ─── TRIANGLE LIBRARY ────────────────────────────────────────
 const TRIANGLE_LIBRARY = [
-  { name:'3-4-5',             tag:'pythagorean', case:'HL',  sides:[3,4,5],            angles:[53.13,36.87,90] },
-  { name:'5-12-13',           tag:'pythagorean', case:'HL',  sides:[5,12,13],          angles:[67.38,22.62,90] },
-  { name:'8-15-17',           tag:'pythagorean', case:'HL',  sides:[8,15,17],          angles:[61.93,28.07,90] },
-  { name:'7-24-25',           tag:'pythagorean', case:'HL',  sides:[7,24,25],          angles:[73.74,16.26,90] },
-  { name:'9-40-41',           tag:'pythagorean', case:'HL',  sides:[9,40,41],          angles:[77.32,12.68,90] },
-  { name:'6-8-10',            tag:'pythagorean', case:'HL',  sides:[6,8,10],           angles:[53.13,36.87,90] },
-  { name:'30-60-90',          tag:'special',     case:'ASA', sides:[1,Math.sqrt(3),2], angles:[30,60,90] },
-  { name:'45-45-90',          tag:'special',     case:'ASA', sides:[1,1,Math.sqrt(2)], angles:[45,45,90] },
-  { name:'Equilateral',       tag:'special',     case:'SSS', sides:[5,5,5],            angles:[60,60,60] },
+  // HL: legs + right angle only — hypotenuse and acute angles are discovered in steps
+  { name:'3-4-5',             tag:'pythagorean', case:'HL',  sides:[3,4,null],         angles:[null,null,90] },
+  { name:'5-12-13',           tag:'pythagorean', case:'HL',  sides:[5,12,null],        angles:[null,null,90] },
+  { name:'8-15-17',           tag:'pythagorean', case:'HL',  sides:[8,15,null],        angles:[null,null,90] },
+  { name:'7-24-25',           tag:'pythagorean', case:'HL',  sides:[7,24,null],        angles:[null,null,90] },
+  { name:'9-40-41',           tag:'pythagorean', case:'HL',  sides:[9,40,null],        angles:[null,null,90] },
+  { name:'6-8-10',            tag:'pythagorean', case:'HL',  sides:[6,8,null],         angles:[null,null,90] },
+  { name:'30-60-90',          tag:'special',     case:'AAS', sides:[1,null,null],      angles:[30,null,90],   aasKnown:{a:1,A:30,C:90} },
+  { name:'45-45-90',          tag:'special',     case:'ASA', sides:[null,1,null],      angles:[45,null,90] },
+  { name:'Equilateral',       tag:'special',     case:'SSS', sides:[5,5,5],            angles:[null,null,null] },
   { name:'Isosceles 5-5-6',   tag:'special',     case:'SSS', sides:[5,5,6],            angles:[null,null,null] },
-  { name:'Isosceles 36',      tag:'special',     case:'SAS', sides:[4,4,2.35],         angles:[72,72,36] },
+  { name:'Isosceles 36',      tag:'special',     case:'SAS', sides:[4,4,null],         angles:[null,null,36], sasKnown:{a:4,b:4,C:36} },
   { name:'SSA-Two Solutions', tag:'ssa',         case:'SSA', sides:[7,10,null],        angles:[35,null,null], ssaKnown:{a:7,b:10,A:35} },
   { name:'SSA-One Solution',  tag:'ssa',         case:'SSA', sides:[10,7,null],        angles:[35,null,null], ssaKnown:{a:10,b:7,A:35} },
   { name:'SSA-No Solution',   tag:'ssa',         case:'SSA', sides:[3,10,null],        angles:[35,null,null], ssaKnown:{a:3,b:10,A:35} },
@@ -161,6 +162,18 @@ function plainQuestionText(q){
   return String(q).replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim();
 }
 
+/** Format a value only if it is a given (not computed) — keeps questions from leaking answers. */
+function fmtGiven(tri, key){
+  if(!tri?.knowns?.[key]||tri.solved[key]==null)return'?';
+  const v=M.fmt(tri.solved[key]);
+  return key===key.toUpperCase()?`${v}°`:v;
+}
+
+function isLabelVisible(key){
+  if(!App.currentTri)return false;
+  return App.currentTri.knowns[key]||App.revealedKeys.has(key);
+}
+
 // ─── SPOILER BUILDER ─────────────────────────────────────────
 // type: 'formula' | 'answer' | ''
 // topic: optional cheatsheet section id to highlight on click
@@ -181,19 +194,27 @@ function buildSteps(tri) {
     steps.push({question, reveal, activeEl, answer: M.round(answer,2), key});
 
   if (caseType === 'HL') {
+    const hlGivens=tri.knowns.c
+      ?`hypotenuse c = ${fmtGiven(tri,'c')}`
+      :`legs a = ${fmtGiven(tri,'a')} and b = ${fmtGiven(tri,'b')}`;
     steps.push({
-      question: `You have a right triangle with hypotenuse c = ${M.fmt(solved.c)}. One angle is 90°. What relationship connects all three sides?`,
+      question: `You have a right triangle (${hlGivens}). ∠C = 90°. What relationship connects all three sides?`,
       reveal: `Right triangles use the ${sp('Pythagorean Theorem','formula','pythagorean')}: ${sp('a² + b² = c²','formula','pythagorean')}. The hypotenuse is always opposite the right angle.`,
-      activeEl: 'side-c', answer: null, key: null
+      activeEl: null, answer: null, key: null
     });
+    if (!tri.knowns.c) push(
+      `Using the Pythagorean Theorem, what is the hypotenuse c?`,
+      `${sp(`c² = ${fmtGiven(tri,'a')}² + ${fmtGiven(tri,'b')}²`,'formula','pythagorean')} → c = ${sp(M.fmt(solved.c),'answer')}`,
+      'side-c', solved.c, 'c'
+    );
     if (!tri.knowns.a) push(
-      `You know angle B = ${M.fmt(solved.B)}° and hypotenuse c = ${M.fmt(solved.c)}. Side a is opposite to B. Which trig ratio uses opposite and hypotenuse?`,
-      `${sp('sin','formula')} uses Opposite/Hypotenuse. So: ${sp(`sin(${M.fmt(solved.B)}°) = a / ${M.fmt(solved.c)}`,'formula')} → a = ${sp(M.fmt(solved.a),'answer')}`,
+      `You know ∠B and hypotenuse c. Side a is opposite ∠B. Which trig ratio uses opposite and hypotenuse?`,
+      `${sp('sin','formula','sohcahtoa')} uses Opposite/Hypotenuse. So: ${sp(`sin(B°) = a / c`,'formula','sohcahtoa')} → a = ${sp(M.fmt(solved.a),'answer')}`,
       'side-a', solved.a, 'a'
     );
     if (!tri.knowns.b) push(
       `Side b is adjacent to angle B. Which trig ratio uses adjacent and hypotenuse?`,
-      `${sp('cos','formula')} uses Adjacent/Hypotenuse. So: ${sp(`cos(${M.fmt(solved.B)}°) = b / ${M.fmt(solved.c)}`,'formula')} → b = ${sp(M.fmt(solved.b),'answer')}`,
+      `${sp('cos','formula','sohcahtoa')} uses Adjacent/Hypotenuse. So: ${sp(`cos(B°) = b / c`,'formula','sohcahtoa')} → b = ${sp(M.fmt(solved.b),'answer')}`,
       'side-b', solved.b, 'b'
     );
     if (!tri.knowns.A) push(
@@ -210,7 +231,7 @@ function buildSteps(tri) {
 
   } else if (caseType === 'SAS') {
     steps.push({
-      question: `You have two sides (a = ${M.fmt(solved.a)}, b = ${M.fmt(solved.b)}) and the angle between them (C = ${M.fmt(solved.C)}°). Can you use SOHCAHTOA here? Why or why not?`,
+      question: `You have two sides (a = ${fmtGiven(tri,'a')}, b = ${fmtGiven(tri,'b')}) and the angle between them (C = ${fmtGiven(tri,'C')}). Can you use SOHCAHTOA here? Why or why not?`,
       reveal: `SOHCAHTOA only works for right triangles. With two sides and an included angle, use the ${sp('Law of Cosines','formula','law-of-cosines')}: ${sp('c² = a² + b² − 2ab·cos(C)','formula','law-of-cosines')}`,
       activeEl: null, answer: null, key: null
     });
@@ -233,7 +254,7 @@ function buildSteps(tri) {
 
   } else if (caseType === 'SSS') {
     steps.push({
-      question: `You have all three sides: a=${M.fmt(solved.a)}, b=${M.fmt(solved.b)}, c=${M.fmt(solved.c)}. No angles yet. Which law lets you find an angle when you only have sides?`,
+      question: `You have all three sides: a=${fmtGiven(tri,'a')}, b=${fmtGiven(tri,'b')}, c=${fmtGiven(tri,'c')}. No angles yet. Which law lets you find an angle when you only have sides?`,
       reveal: `The ${sp('Law of Cosines','formula','law-of-cosines')} rearranges to: ${sp('cos(C) = (a²+b²−c²) / (2ab)','formula','law-of-cosines')}. Start with the largest angle to avoid ambiguity.`,
       activeEl: null, answer: null, key: null
     });
@@ -244,7 +265,7 @@ function buildSteps(tri) {
     );
     push(
       `Now you have C and all three sides. What's the most efficient way to find A?`,
-      `Switch to ${sp('Law of Sines','formula')}: ${sp('sin(A)/a = sin(C)/c','formula')} → A = ${sp(M.fmt(solved.A)+'°','answer')}`,
+      `Switch to ${sp('Law of Sines','formula','law-of-sines')}: ${sp('sin(A)/a = sin(C)/c','formula','law-of-sines')} → A = ${sp(M.fmt(solved.A)+'°','answer')}`,
       'arc-A', solved.A, 'A'
     );
     push(
@@ -278,7 +299,7 @@ function buildSteps(tri) {
     const ks=tri.knowns.a?'a':tri.knowns.b?'b':'c';
     const ka=ks==='a'?'A':ks==='b'?'B':'C';
     if (!tri.knowns.a) push(
-      `You know side ${ks} = ${M.fmt(solved[ks])} and all three angles. Which law connects sides to angles?`,
+      `You know side ${ks} = ${fmtGiven(tri,ks)} and all three angles. Which law connects sides to angles?`,
       `${sp('Law of Sines','formula')}: ${sp(`a/sin(A) = ${M.fmt(solved[ks])}/sin(${M.fmt(solved[ka])}°)`,'formula')} → a = ${sp(M.fmt(solved.a),'answer')}`,
       'side-a', solved.a, 'a'
     );
@@ -670,6 +691,8 @@ function showQuestionPhase(){
   DOM.phaseQuestion.classList.remove('hidden');
   DOM.phaseReveal.classList.add('hidden');
   DOM.progressBar.style.background='var(--state-tutor)';
+  renderSVGLedger();
+  renderSVG();
 }
 
 function showRevealPhase(){
@@ -681,7 +704,6 @@ function showRevealPhase(){
   DOM.revealText.querySelectorAll('.spoiler').forEach(el=>{
     el.addEventListener('click',()=>{
       el.classList.add('revealed');
-      // If spoiler has a topic, highlight that section in the cheatsheet
       const topic=el.dataset.topic;
       if(topic) highlightCheatsheetTopic(topic);
     });
@@ -914,6 +936,10 @@ function renderStep(){
   DOM.tutorText.textContent=plainQuestionText(step.question);
   DOM.phaseReveal.classList.add('hidden');
   DOM.phaseQuestion.classList.remove('hidden');
+  if(!App.quizMode){
+    renderSVGLedger();
+    renderSVG();
+  }
 }
 
 // Ledger (right column) — only shows known givens + revealed values
@@ -1017,7 +1043,7 @@ function renderSVG(){
   const C=solved.C||60;
 
   const maxSide=Math.max(a,b,c,1);
-  const scale=520/maxSide;
+  const scale=360/maxSide;
   const cx=400, cy=300;
 
   const Bx=cx+(c*scale)/2, By=cy+(a*scale)/2;
@@ -1045,12 +1071,9 @@ function renderSVG(){
 
   // Side labels — perpendicular offset away from centroid
   // Only show label text if the value has been revealed (not just known)
-  const aRev=App.revealedKeys.has('a');
-  const bRev=App.revealedKeys.has('b');
-  const cRev=App.revealedKeys.has('c');
-  setSideLabel('lbl-a',pts.B,pts.C,gx,gy, aRev?`a = ${M.fmt(solved.a)}`:'a = ?');
-  setSideLabel('lbl-b',pts.A,pts.C,gx,gy, bRev?`b = ${M.fmt(solved.b)}`:'b = ?');
-  setSideLabel('lbl-c',pts.A,pts.B,gx,gy, cRev?`c = ${M.fmt(solved.c)}`:'c = ?');
+  setSideLabel('lbl-a',pts.B,pts.C,gx,gy, isLabelVisible('a')?`a = ${M.fmt(solved.a)}`:'a = ?');
+  setSideLabel('lbl-b',pts.A,pts.C,gx,gy, isLabelVisible('b')?`b = ${M.fmt(solved.b)}`:'b = ?');
+  setSideLabel('lbl-c',pts.A,pts.B,gx,gy, isLabelVisible('c')?`c = ${M.fmt(solved.c)}`:'c = ?');
 
   // Color side labels (SVG: use classList, not className.baseVal)
   ['a','b','c'].forEach(k=>{
@@ -1108,12 +1131,11 @@ function placeAngleLabel(id,vx,vy,gx,gy,off,val,key){
   const el=$(id);
   el.setAttribute('x',vx+dx/len*off);
   el.setAttribute('y',vy+dy/len*off+5);
-  const revealed=App.revealedKeys.has(key);  // Only revealed, not known
-  // Only show numeric value when revealed; always show arc
-  el.textContent=revealed&&val!=null?`${M.fmt(val)}°`:'';
+  const visible=isLabelVisible(key);
+  el.textContent=visible&&val!=null?`${M.fmt(val)}°`:'';
   el.classList.remove('visible');
   el.classList.add('tri-label','angle-val-label');
-  if(revealed)el.classList.add('visible');
+  if(visible)el.classList.add('visible');
 }
 
 function setSideLabel(id,p1,p2,gx,gy,text){
@@ -1262,7 +1284,7 @@ function saveProblem(){
   try{
     App.savedProblems.push({name:App.currentTri.name||App.currentTri.caseType,solved:App.currentTri.solved,caseType:App.currentTri.caseType,savedAt:new Date().toISOString()});
     saveStorage();
-    showToast(`Saved: ${App.currentTri.name||App.currentTri.caseType}`,'success');
+    showToast(`Saved to browser (${App.savedProblems.length} stored). Use ＋ in Mistake Ledger for review notes.`,'success');
   }catch(e){
     showToast('Could not save (storage full or blocked).','error');
   }

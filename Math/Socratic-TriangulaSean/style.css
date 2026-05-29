@@ -97,7 +97,7 @@ body {
   flex-direction: column;
   gap: 8px;
 }
-#ledger-panel { display: none !important; }
+#ledger-panel { display: none !important; } /* values live in #svg-ledger above triangle */
 
 h3 {
   font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
@@ -334,26 +334,29 @@ h3 {
 }
 
 #ledger-feedback-wrap {
-  width: 100%;
-  max-width: min(96vw, 980px);
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  padding: 6px 0;
+  gap: 8px;
+  flex-wrap: nowrap;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 #ledger-feedback-wrap #feedback-area {
-  flex: 1;
-  min-width: 140px;
   margin: 0;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  min-height: 22px;
+  min-height: 20px;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 #ledger-feedback-wrap #feedback-area.correct { color: var(--success); }
 #ledger-feedback-wrap #feedback-area.wrong { color: var(--error); }
 #ledger-feedback-wrap #btn-check-answer {
   flex-shrink: 0;
+  padding: 4px 10px;
+  font-size: 12px;
 }
 
 /* Pop-in animation for newly solved values */
@@ -366,9 +369,9 @@ h3 {
 
 #svg-container {
   width: 100%;
-  max-width: min(96vw, 980px);
+  max-width: min(96vw, 720px);
   min-height: 0;
-  max-height: min(52vh, 520px);
+  max-height: min(48vh, 440px);
   background: var(--bg-panel);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -381,7 +384,7 @@ h3 {
 #triangle-svg {
   width: 100%;
   height: auto;
-  max-height: min(52vh, 520px);
+  max-height: min(48vh, 440px);
   display: block;
   vertical-align: middle;
 }
@@ -609,6 +612,9 @@ button:active { background: rgba(137,180,250,0.15); }
 .hidden { display: none !important; }
 body.screensaver-active #col-left  { opacity: 0.5; pointer-events: none; }
 body.screensaver-active #col-right { opacity: 0.7; pointer-events: none; }
+/* Keep socratic text + spoilers interactive during screensaver */
+body.screensaver-active #socratic-panel { pointer-events: auto; }
+body.screensaver-active #reveal-text .spoiler { pointer-events: auto; cursor: pointer; }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
@@ -714,3 +720,5 @@ body.screensaver-active #col-right { opacity: 0.7; pointer-events: none; }
   background: rgba(249,226,175,0.12);
   box-shadow: 0 0 0 2px var(--warning);
 }
+.cs-section a { color: var(--accent); }
+.cs-section a:hover { text-decoration: underline; }
