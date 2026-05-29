@@ -2,7 +2,7 @@
 
 ## Overview
 
-Responsive interactive web app: compound interest from user inputs, dynamic LaTeX with substituted values, exponential growth chart, Socratic quiz mode.
+Responsive interactive web app: compound interest from user inputs, dynamic LaTeX with substituted values, exponential growth chart.
 
 ## Functional Requirements
 
@@ -16,8 +16,7 @@ Responsive interactive web app: compound interest from user inputs, dynamic LaTe
 
 - Vanilla HTML/CSS/JS, GitHub Pages
 - Header ledger only (no right column)
-- Quiz: `displayAll` false on init; spoilers until step validated
-- URL params: `quiz`, `P`, `r`, `n`, `t`, `pmt` only (no answers)
+- URL params: `P`, `r`, `n`, `t`, `pmt`
 
 ## Files
 

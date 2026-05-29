@@ -34,31 +34,22 @@
     </div>
     <div class="ledger-item">
       <span class="ledger-label">Accrued Interest</span>
-      <span class="ledger-value spoiler-target" id="ledger-interest" data-spoiler="interest">—</span>
+      <span class="ledger-value" id="ledger-interest">—</span>
     </div>
     <div class="ledger-item">
       <span class="ledger-label">Future Value</span>
-      <span class="ledger-value spoiler-target" id="ledger-balance" data-spoiler="balance">—</span>
+      <span class="ledger-value" id="ledger-balance">—</span>
     </div>
   </div>
   <div id="top-bar-right">
-    <button id="btn-quiz-mode" type="button" title="Step-by-step formula walkthrough">🎯 Quiz</button>
-    <button id="btn-reset" type="button" title="Reset inputs and quiz">↺ Reset</button>
+    <button id="btn-reset" type="button" title="Reset inputs to defaults">↺ Reset</button>
   </div>
 </header>
 
 <div id="app">
   <aside id="col-left">
-    <section id="socratic-panel">
-      <div id="state-badge">EXPLORE</div>
-      <div class="phase-label">❓ Socratic Step</div>
-      <p id="tutor-text">Adjust the inputs or enter Quiz mode to identify each part of the compound interest formula before revealing the balance.</p>
-      <div id="quiz-progress" class="hidden">
-        <div id="quiz-progress-bar"><div id="quiz-progress-fill"></div></div>
-        <span id="quiz-step-label">Step 1 of 7</span>
-      </div>
-      <button type="button" id="btn-quiz-check" class="btn-check hidden">Check step</button>
-      <div id="feedback-area" class="hidden" role="status"></div>
+    <section id="help-panel">
+      <p id="help-text">Adjust the inputs to see values substituted into the formulas and watch the growth curve update in real time.</p>
     </section>
 
     <section id="inputs-panel">
@@ -69,7 +60,6 @@
         <div class="input-row">
           <span class="input-prefix">$</span>
           <input type="number" id="input-principal" min="0" step="100" value="10000" inputmode="decimal">
-          <button type="button" class="btn-check" data-check="principal">Check</button>
         </div>
       </div>
 
@@ -78,7 +68,6 @@
         <div class="input-row">
           <input type="number" id="input-rate" min="0" max="100" step="0.01" value="5" inputmode="decimal">
           <span class="input-suffix">%</span>
-          <button type="button" class="btn-check" data-check="rate">Check</button>
         </div>
       </div>
 
@@ -92,7 +81,6 @@
             <option value="12" selected>Monthly (12)</option>
             <option value="365">Daily (365)</option>
           </select>
-          <button type="button" class="btn-check" data-check="frequency">Check</button>
         </div>
       </div>
 
@@ -100,7 +88,6 @@
         <label for="input-time">Time <span class="var">t</span> (years)</label>
         <div class="input-row">
           <input type="number" id="input-time" min="0" max="100" step="1" value="10" inputmode="decimal">
-          <button type="button" class="btn-check" data-check="time">Check</button>
         </div>
       </div>
 
@@ -109,7 +96,6 @@
         <div class="input-row">
           <span class="input-prefix">$</span>
           <input type="number" id="input-pmt" min="0" step="50" value="0" inputmode="decimal">
-          <button type="button" class="btn-check" data-check="pmt">Check</button>
         </div>
       </div>
     </section>
@@ -118,15 +104,15 @@
       <h3>Formulas</h3>
       <div class="formula-block">
         <div class="formula-title">Compound interest (principal)</div>
-        <div id="formula-compound" class="formula-math spoiler-target" data-spoiler="compound-formula"></div>
+        <div id="formula-compound" class="formula-math"></div>
       </div>
       <div class="formula-block hidden" id="annuity-formula-block">
         <div class="formula-title">Future value of monthly contributions</div>
-        <div id="formula-annuity" class="formula-math spoiler-target" data-spoiler="annuity-formula"></div>
+        <div id="formula-annuity" class="formula-math"></div>
       </div>
       <div class="formula-block">
         <div class="formula-title">Total balance</div>
-        <div id="formula-total" class="formula-math spoiler-target" data-spoiler="total-formula"></div>
+        <div id="formula-total" class="formula-math"></div>
       </div>
     </section>
   </aside>

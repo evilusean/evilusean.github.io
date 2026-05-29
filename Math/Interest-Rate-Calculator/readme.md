@@ -1,6 +1,6 @@
 # Compound Interest & Growth Calculator
 
-Interactive calculator with live formula substitution, exponential growth chart, and Socratic quiz mode.
+Interactive calculator with live formula substitution and an exponential growth chart.
 
 **[Open the app](index.html)**
 
