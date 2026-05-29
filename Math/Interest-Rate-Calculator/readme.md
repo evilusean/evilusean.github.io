@@ -1,3 +1,9 @@
+# Compound Interest & Growth Calculator
+
+Interactive calculator with live formula substitution, exponential growth chart, and Socratic quiz mode.
+
+**[Open the app](index.html)**
+
 Making an interest rate calculator with the correct formulas and drop down menu to display how the formula changes based on the inputs
 
 Review of Compound Interest (Precalculus - College Algebra 65) :

@@ -78,9 +78,4 @@ Since this is a static site, no build step is required.
 - url parameters are weird, it kind of defeats the purpose if it tells you what the solution to each problem is in the url params, maybe fix so it doesn't update that for each new question/step
 - some triangles are displaying all sides and angles while still going through socratic questioning, again, defeats the purpose - 'what is side C'... uh, it's '5', it says it right there
 
-- quiz mode still broken, now displaying all answers at start
-- Screensaver also broken now and displaying all answers at start instead of going through each step sequentially and displaying for each socratic question section
-- Ok, I just watched a few play, some screensaver triangles are displaying properly, some aren't
-- screensaver mode on hover of the hidden text also doesn't display - quiz mode on hover is working correctly
-- size of triangle is now too big and overflowing
 - Put the 'check' button during quiz mode inside the angles/sides input section (currently gets a new line)

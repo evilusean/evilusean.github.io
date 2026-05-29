@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compound Interest & Growth Calculator</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+</head>
+<body>
+
+<header id="top-bar">
+  <div id="top-bar-left">
+    <span id="app-title">📈 Compound Interest Calculator</span>
+  </div>
+  <div id="header-ledger" aria-live="polite">
+    <div class="ledger-item">
+      <span class="ledger-label">Principal</span>
+      <span class="ledger-value" id="ledger-principal">—</span>
+    </div>
+    <div class="ledger-item">
+      <span class="ledger-label">Rate</span>
+      <span class="ledger-value" id="ledger-rate">—</span>
+    </div>
+    <div class="ledger-item">
+      <span class="ledger-label">Accrued Interest</span>
+      <span class="ledger-value spoiler-target" id="ledger-interest" data-spoiler="interest">—</span>
+    </div>
+    <div class="ledger-item">
+      <span class="ledger-label">Future Value</span>
+      <span class="ledger-value spoiler-target" id="ledger-balance" data-spoiler="balance">—</span>
+    </div>
+  </div>
+  <div id="top-bar-right">
+    <button id="btn-quiz-mode" type="button" title="Step-by-step formula walkthrough">🎯 Quiz</button>
+    <button id="btn-reset" type="button" title="Reset inputs and quiz">↺ Reset</button>
+  </div>
+</header>
+
+<div id="app">
+  <aside id="col-left">
+    <section id="socratic-panel">
+      <div id="state-badge">EXPLORE</div>
+      <div class="phase-label">❓ Socratic Step</div>
+      <p id="tutor-text">Adjust the inputs or enter Quiz mode to identify each part of the compound interest formula before revealing the balance.</p>
+      <div id="quiz-progress" class="hidden">
+        <div id="quiz-progress-bar"><div id="quiz-progress-fill"></div></div>
+        <span id="quiz-step-label">Step 1 of 7</span>
+      </div>
+      <button type="button" id="btn-quiz-check" class="btn-check hidden">Check step</button>
+      <div id="feedback-area" class="hidden" role="status"></div>
+    </section>
+
+    <section id="inputs-panel">
+      <h3>Inputs</h3>
+
+      <div class="input-group" data-field="principal">
+        <label for="input-principal">Principal <span class="var">P</span></label>
+        <div class="input-row">
+          <span class="input-prefix">$</span>
+          <input type="number" id="input-principal" min="0" step="100" value="10000" inputmode="decimal">
+          <button type="button" class="btn-check" data-check="principal">Check</button>
+        </div>
+      </div>
+
+      <div class="input-group" data-field="rate">
+        <label for="input-rate">Annual rate <span class="var">r</span></label>
+        <div class="input-row">
+          <input type="number" id="input-rate" min="0" max="100" step="0.01" value="5" inputmode="decimal">
+          <span class="input-suffix">%</span>
+          <button type="button" class="btn-check" data-check="rate">Check</button>
+        </div>
+      </div>
+
+      <div class="input-group" data-field="frequency">
+        <label for="input-frequency">Compounding <span class="var">n</span> / year</label>
+        <div class="input-row">
+          <select id="input-frequency">
+            <option value="1">Annually (1)</option>
+            <option value="2">Semi-annually (2)</option>
+            <option value="4">Quarterly (4)</option>
+            <option value="12" selected>Monthly (12)</option>
+            <option value="365">Daily (365)</option>
+          </select>
+          <button type="button" class="btn-check" data-check="frequency">Check</button>
+        </div>
+      </div>
+
+      <div class="input-group" data-field="time">
+        <label for="input-time">Time <span class="var">t</span> (years)</label>
+        <div class="input-row">
+          <input type="number" id="input-time" min="0" max="100" step="1" value="10" inputmode="decimal">
+          <button type="button" class="btn-check" data-check="time">Check</button>
+        </div>
+      </div>
+
+      <div class="input-group" data-field="pmt">
+        <label for="input-pmt">Monthly contribution <span class="var">PMT</span> <span class="optional">(optional)</span></label>
+        <div class="input-row">
+          <span class="input-prefix">$</span>
+          <input type="number" id="input-pmt" min="0" step="50" value="0" inputmode="decimal">
+          <button type="button" class="btn-check" data-check="pmt">Check</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="formula-panel">
+      <h3>Formulas</h3>
+      <div class="formula-block">
+        <div class="formula-title">Compound interest (principal)</div>
+        <div id="formula-compound" class="formula-math spoiler-target" data-spoiler="compound-formula"></div>
+      </div>
+      <div class="formula-block hidden" id="annuity-formula-block">
+        <div class="formula-title">Future value of monthly contributions</div>
+        <div id="formula-annuity" class="formula-math spoiler-target" data-spoiler="annuity-formula"></div>
+      </div>
+      <div class="formula-block">
+        <div class="formula-title">Total balance</div>
+        <div id="formula-total" class="formula-math spoiler-target" data-spoiler="total-formula"></div>
+      </div>
+    </section>
+  </aside>
+
+  <main id="col-center">
+    <div id="chart-wrap">
+      <canvas id="growth-chart" aria-label="Exponential growth of account balance over time"></canvas>
+      <div id="chart-tooltip" class="hidden"></div>
+    </div>
+    <div id="chart-legend">
+      <span class="legend-swatch principal"></span> Principal growth
+      <span class="legend-swatch contributions"></span> Contributions
+      <span class="legend-swatch total"></span> Total balance
+    </div>
+  </main>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
