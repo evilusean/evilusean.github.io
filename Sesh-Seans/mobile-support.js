@@ -7,7 +7,9 @@ const MobileSupport = {
     alarmAudioUrl: null,
     alarmStopFn: null,
     keepAwakeActive: false,
+    keepAwakeRenewalInterval: null,
     initialized: false,
+    KEEP_AWAKE_RENEW_MS: 4 * 60 * 1000, // iOS can drop wake lock after ~30 min
 
     isIOS() {
         return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
@@ -28,11 +30,16 @@ const MobileSupport = {
 
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden && this.keepAwakeActive) {
-                this._acquireWakeLock();
+                this._renewKeepAwake('visibility');
             }
         });
 
-        // Unlock audio on first user interaction (required on iOS)
+        window.addEventListener('pageshow', () => {
+            if (this.keepAwakeActive) {
+                this._renewKeepAwake('pageshow');
+            }
+        });
+
         const unlockOnce = () => {
             this.unlockAudio();
             document.removeEventListener('touchstart', unlockOnce, true);
@@ -60,6 +67,7 @@ const MobileSupport = {
             this.silentKeepaliveAudio.loop = true;
             this.silentKeepaliveAudio.volume = 0.01;
             this.silentKeepaliveAudio.setAttribute('playsinline', '');
+            this.silentKeepaliveAudio.setAttribute('webkit-playsinline', '');
         }
 
         try {
@@ -72,13 +80,16 @@ const MobileSupport = {
     },
 
     enableKeepAwake() {
-        if (this.keepAwakeActive) return;
+        if (this.keepAwakeActive) {
+            this._renewKeepAwake('already-active');
+            return;
+        }
         this.keepAwakeActive = true;
         this._showKeepAwakeIndicator(true);
-        // Defer so timer intervals register first in the click handler
         setTimeout(() => {
             if (this.keepAwakeActive) {
-                this._acquireWakeLock();
+                this._renewKeepAwake('enable');
+                this._startKeepAwakeRenewal();
             }
         }, 0);
     },
@@ -86,22 +97,38 @@ const MobileSupport = {
     disableKeepAwake() {
         if (!this.keepAwakeActive) return;
         this.keepAwakeActive = false;
+        this._stopKeepAwakeRenewal();
         this._releaseWakeLock();
         this._showKeepAwakeIndicator(false);
     },
 
-    startSilentKeepalive() {
-        try {
-            if (!this.silentKeepaliveAudio) {
-                this.silentKeepaliveAudio = new Audio(this._createSilentWavUrl());
-                this.silentKeepaliveAudio.loop = true;
-                this.silentKeepaliveAudio.volume = 0.01;
-                this.silentKeepaliveAudio.setAttribute('playsinline', '');
+    _startKeepAwakeRenewal() {
+        this._stopKeepAwakeRenewal();
+        this.keepAwakeRenewalInterval = setInterval(() => {
+            if (this.keepAwakeActive) {
+                this._renewKeepAwake('periodic');
             }
-            this.silentKeepaliveAudio.play().catch(() => {});
-        } catch (e) {
-            console.warn('Silent keepalive unavailable:', e);
+        }, this.KEEP_AWAKE_RENEW_MS);
+    },
+
+    _stopKeepAwakeRenewal() {
+        if (this.keepAwakeRenewalInterval) {
+            clearInterval(this.keepAwakeRenewalInterval);
+            this.keepAwakeRenewalInterval = null;
         }
+    },
+
+    _renewKeepAwake(reason) {
+        this._ensureSilentKeepalive();
+        // On iOS, run video + wake lock together — wake lock alone often expires ~30 min
+        if (this.isIOS() || !this.hasWakeLock()) {
+            this._enableVideoFallback();
+        }
+        this._acquireWakeLock();
+    },
+
+    startSilentKeepalive() {
+        this._ensureSilentKeepalive();
     },
 
     stopSilentKeepalive() {
@@ -111,28 +138,41 @@ const MobileSupport = {
         }
     },
 
-    async _acquireWakeLock() {
-        if (this.hasWakeLock()) {
-            try {
-                if (this.wakeLockSentinel && !this.wakeLockSentinel.released) {
-                    return;
-                }
-                this._disableVideoFallback();
-                this.wakeLockSentinel = await navigator.wakeLock.request('screen');
-                this.wakeLockSentinel.addEventListener('release', () => {
-                    this.wakeLockSentinel = null;
-                    if (this.keepAwakeActive) {
-                        this._enableVideoFallback();
-                    }
-                });
-                console.log('Screen wake lock active');
-                return;
-            } catch (e) {
-                console.warn('Wake lock unavailable, using video fallback:', e.message);
+    _ensureSilentKeepalive() {
+        try {
+            if (!this.silentKeepaliveAudio) {
+                this.silentKeepaliveAudio = new Audio(this._createSilentWavUrl());
+                this.silentKeepaliveAudio.loop = true;
+                this.silentKeepaliveAudio.volume = 0.01;
+                this.silentKeepaliveAudio.setAttribute('playsinline', '');
+                this.silentKeepaliveAudio.setAttribute('webkit-playsinline', '');
             }
+            if (this.silentKeepaliveAudio.paused) {
+                this.silentKeepaliveAudio.play().catch(() => {});
+            }
+        } catch (e) {
+            console.warn('Silent keepalive unavailable:', e);
         }
+    },
 
-        this._enableVideoFallback();
+    async _acquireWakeLock() {
+        if (!this.hasWakeLock()) return;
+
+        try {
+            if (this.wakeLockSentinel && !this.wakeLockSentinel.released) {
+                return;
+            }
+            this.wakeLockSentinel = await navigator.wakeLock.request('screen');
+            this.wakeLockSentinel.addEventListener('release', () => {
+                this.wakeLockSentinel = null;
+                if (this.keepAwakeActive) {
+                    setTimeout(() => this._renewKeepAwake('wake-lock-released'), 100);
+                }
+            });
+            console.log('Screen wake lock active');
+        } catch (e) {
+            console.warn('Wake lock unavailable:', e.message);
+        }
     },
 
     _releaseWakeLock() {
@@ -141,11 +181,14 @@ const MobileSupport = {
             this.wakeLockSentinel = null;
         }
         this._disableVideoFallback();
+        this.stopSilentKeepalive();
     },
 
     _enableVideoFallback() {
         if (this.noSleepVideo) {
-            this.noSleepVideo.play().catch(() => {});
+            if (this.noSleepVideo.paused) {
+                this.noSleepVideo.play().catch(() => {});
+            }
             return;
         }
 
@@ -157,8 +200,10 @@ const MobileSupport = {
 
         const video = document.createElement('video');
         video.setAttribute('playsinline', '');
+        video.setAttribute('webkit-playsinline', '');
         video.setAttribute('muted', '');
         video.muted = true;
+        video.loop = true;
         video.style.cssText = 'position:fixed;opacity:0;pointer-events:none;width:1px;height:1px;left:-9999px';
         video.setAttribute('title', 'Keep Awake');
 
@@ -174,7 +219,11 @@ const MobileSupport = {
         mp4Source.type = 'video/mp4';
         video.appendChild(mp4Source);
 
-        video.loop = true;
+        video.addEventListener('pause', () => {
+            if (this.keepAwakeActive) {
+                video.play().catch(() => {});
+            }
+        });
 
         document.body.appendChild(video);
         this.noSleepVideo = video;
@@ -201,7 +250,6 @@ const MobileSupport = {
             navigator.vibrate([800, 400, 800, 400, 800, 400, 800]);
         }
 
-        // HTML5 Audio loop — more reliable on iOS than Web Audio intervals
         if (!this.alarmAudio) {
             this.alarmAudio = new Audio(this.alarmAudioUrl || this._createAlarmWavUrl());
             this.alarmAudio.loop = true;
@@ -216,7 +264,6 @@ const MobileSupport = {
             console.warn('HTML5 alarm play failed, trying Web Audio:', e);
         }
 
-        // Web Audio backup beeps
         let alarmInterval;
         const playBeep = async () => {
             try {
@@ -335,7 +382,6 @@ const MobileSupport = {
         );
     },
 
-    // Run after timers start — must not block the click handler (iOS user-gesture rules)
     setupAfterTimerStart() {
         this.unlockAudio().catch(() => {});
         this.requestNotificationPermission().catch(() => {});

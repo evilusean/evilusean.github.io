@@ -57,7 +57,7 @@ A comprehensive productivity app that tracks workouts and study sessions to Goog
 3. **Add your credentials** to `config.js`
 4. **Test locally:** `python -m http.server 8000`
 5. **Visit:** http://localhost:8000
-6. **⚠️ IMPORTANT: Allow popups** - The app uses popups to refresh your login every 50 minutes. If popups are blocked, you'll be logged out after 1 hour. Enable popups for this site to stay logged in indefinitely.
+6. **⚠️ IMPORTANT: Allow popups** - The app silently refreshes your Google login about once per hour. If popups are blocked, you may need to sign in again after the token expires. Enable popups for this site to stay logged in.
 
 ## 📚 Documentation
 
@@ -126,12 +126,13 @@ Check browser console (F12) for detailed error messages.
 
 Improvements for keeping timers and alarms working on iPhone and other mobile browsers:
 
-- **Screen stay-awake** — While any timer or alarm is active, the app requests the [Screen Wake Lock API](https://developer.mozilla.org/en-US/docs/Web/API/Screen_Wake_Lock_API) (iOS 16.4+). On older iOS or when wake lock is denied, a NoSleep-style silent video fallback is used.
+- **Screen stay-awake** — While any timer or alarm is active, the app uses wake lock plus silent audio/video keepalive (iOS runs all three). Stay-awake is renewed every 4 minutes because iOS can drop wake lock after ~30 minutes.
 - **Alarm audio** — Alarms use a looping HTML5 audio track (unlocked on "Set Alarm") plus Web Audio beeps and vibration as backup.
 - **Background recovery** — When you return to the app after the screen locks, timers and alarms catch up using stored end timestamps.
 - **PWA** — Add to Home Screen via Safari Share menu for standalone mode (`manifest.json` included).
 
 **Still limited on iOS (platform restrictions):**
+- iOS may still auto-lock after extended periods despite keep-awake — check Settings → Display & Brightness → Auto-Lock and set to **Never** during workouts if needed.
 - If the phone locks or the app is fully backgrounded, JavaScript pauses — alarms fire when you reopen the app, not as a system alarm.
 - Web push notifications require a server and only work for installed PWAs on iOS 16.4+.
 - For critical wake-up alarms, use the built-in Clock app as a backup.
@@ -141,3 +142,4 @@ Improvements for keeping timers and alarms working on iPhone and other mobile br
 2. Allow notifications when prompted (helps when the app is in the background).
 3. Keep the app in the foreground during countdowns for the most reliable alarm sound.
 4. Disable Low Power Mode if wake lock fails.
+5. Set **Auto-Lock → Never** in iOS Settings while using timers for long sessions.

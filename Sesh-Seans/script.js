@@ -104,7 +104,8 @@ let state = {
     todayPomodoros: [],
     tokenClient: null,
     tokenRefreshInterval: null,
-    tokenCheckInterval: null, // Frequent token check interval
+    tokenCheckInterval: null,
+    lastTokenRefreshAttempt: 0,
     visibilityListenerAdded: false, // Track if visibility listener is added
     timerSyncListenerAdded: false,
     audioContext: null, // Shared audio context for all sounds
@@ -221,6 +222,88 @@ function checkCredentials() {
     return true;
 }
 
+// Google OAuth tokens last ~60 min; refresh proactively before expiry
+const TOKEN_REFRESH_BUFFER_MS = 5 * 60 * 1000;       // refresh when < 5 min left
+const TOKEN_CHECK_INTERVAL_MS = 15 * 60 * 1000;      // check expiry every 15 min
+const TOKEN_PROACTIVE_REFRESH_MS = 52 * 60 * 1000;   // refresh at ~52 min regardless
+const TOKEN_REFRESH_COOLDOWN_MS = 10 * 60 * 1000;    // min gap between refresh attempts
+const DEFAULT_TOKEN_LIFETIME_MS = 55 * 60 * 1000;    // fallback if expires_in missing
+
+function persistAccessToken(response) {
+    state.accessToken = response.access_token;
+    state.isSignedIn = true;
+
+    gapi.client.setToken({ access_token: response.access_token });
+
+    const lifetimeMs = response.expires_in
+        ? Math.max((response.expires_in - 300) * 1000, 5 * 60 * 1000)
+        : DEFAULT_TOKEN_LIFETIME_MS;
+
+    localStorage.setItem('googleAccessToken', response.access_token);
+    localStorage.setItem('tokenExpiry', String(Date.now() + lifetimeMs));
+    localStorage.setItem('userConsent', 'true');
+    localStorage.setItem('lastActivity', String(Date.now()));
+}
+
+function clearTokenRefreshIntervals() {
+    if (state.tokenRefreshInterval) {
+        clearInterval(state.tokenRefreshInterval);
+        state.tokenRefreshInterval = null;
+    }
+    if (state.tokenCheckInterval) {
+        clearInterval(state.tokenCheckInterval);
+        state.tokenCheckInterval = null;
+    }
+}
+
+function setupTokenRefresh() {
+    clearTokenRefreshIntervals();
+
+    state.tokenRefreshInterval = setInterval(() => {
+        if (state.isSignedIn) {
+            console.log('🔄 Proactive token refresh (~52 min)...');
+            requestTokenRefresh('proactive');
+        }
+    }, TOKEN_PROACTIVE_REFRESH_MS);
+
+    state.tokenCheckInterval = setInterval(() => {
+        if (state.isSignedIn) {
+            refreshTokenIfNeeded();
+        }
+    }, TOKEN_CHECK_INTERVAL_MS);
+
+    if (!state.visibilityListenerAdded) {
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && state.isSignedIn) {
+                refreshTokenIfNeeded();
+            }
+        });
+        state.visibilityListenerAdded = true;
+    }
+}
+
+function requestTokenRefresh(reason) {
+    const now = Date.now();
+    if (now - state.lastTokenRefreshAttempt < TOKEN_REFRESH_COOLDOWN_MS) {
+        console.log(`⏳ Token refresh skipped (${reason}, cooldown active)`);
+        return;
+    }
+    state.lastTokenRefreshAttempt = now;
+    console.log(`🔄 Requesting token refresh (${reason})...`);
+    state.tokenClient.requestAccessToken({ prompt: 'none' });
+}
+
+function refreshTokenIfNeeded() {
+    const tokenExpiry = localStorage.getItem('tokenExpiry');
+    if (!tokenExpiry || !state.tokenClient) return;
+
+    const timeUntilExpiry = parseInt(tokenExpiry, 10) - Date.now();
+
+    if (timeUntilExpiry < TOKEN_REFRESH_BUFFER_MS) {
+        requestTokenRefresh('expiring-soon');
+    }
+}
+
 // Wrapper for API calls that handles auth errors
 async function apiCallWithAuth(apiFunction) {
     try {
@@ -247,8 +330,8 @@ async function apiCallWithAuth(apiFunction) {
                             alert('Session expired. Please sign in again.');
                             reject(error);
                         } else {
-                            // Token refreshed successfully, retry the API call
                             console.log('✅ Token refreshed, retrying API call...');
+                            persistAccessToken(response);
                             try {
                                 const result = await apiFunction();
                                 resolve(result);
@@ -296,56 +379,10 @@ function initGoogleAPI() {
                         console.error('Token error:', response);
                         return;
                     }
-                    state.accessToken = response.access_token;
-                    state.isSignedIn = true;
-                    
-                    // Set access token for gapi.client
-                    gapi.client.setToken({
-                        access_token: response.access_token
-                    });
-                    
-                    // Save session to localStorage
-                    // Google tokens expire after 1 hour, so we set expiry to 50 minutes
-                    localStorage.setItem('googleAccessToken', response.access_token);
-                    localStorage.setItem('tokenExpiry', Date.now() + (50 * 60 * 1000)); // 50 minutes
-                    localStorage.setItem('userConsent', 'true'); // Remember user gave consent
-                    localStorage.setItem('lastActivity', Date.now().toString()); // Track last activity
-                    
+                    persistAccessToken(response);
                     updateSignInStatus(true);
                     initializeApp();
-                    
-                    // Auto-refresh token every 45 minutes (well before 60 min expiry)
-                    if (state.tokenRefreshInterval) {
-                        clearInterval(state.tokenRefreshInterval);
-                    }
-                    state.tokenRefreshInterval = setInterval(() => {
-                        console.log('🔄 Auto-refreshing access token (50 min interval)...');
-                        if (state.isSignedIn) {
-                            // Request new token (will show popup if needed)
-                            state.tokenClient.requestAccessToken({ prompt: 'none' });
-                        }
-                    }, 50 * 60 * 1000); // 50 minutes
-                    
-                    // Also check on visibility change (when user returns to tab)
-                    if (!state.visibilityListenerAdded) {
-                        document.addEventListener('visibilitychange', () => {
-                            if (!document.hidden && state.isSignedIn) {
-                                console.log('👀 Tab visible, checking token...');
-                                refreshTokenIfNeeded();
-                            }
-                        });
-                        state.visibilityListenerAdded = true;
-                    }
-                    
-                    // Add token check every 10 minutes
-                    if (state.tokenCheckInterval) {
-                        clearInterval(state.tokenCheckInterval);
-                    }
-                    state.tokenCheckInterval = setInterval(() => {
-                        if (state.isSignedIn) {
-                            refreshTokenIfNeeded();
-                        }
-                    }, 2 * 60 * 1000); // 2 minutes
+                    setupTokenRefresh();
                 }
             });
             
@@ -363,28 +400,7 @@ function initGoogleAPI() {
     });
 }
 
-// Refresh token if it's close to expiring
-function refreshTokenIfNeeded() {
-    const tokenExpiry = localStorage.getItem('tokenExpiry');
-    if (!tokenExpiry) {
-        console.log('⚠️ No token expiry found');
-        return;
-    }
-    
-    const now = Date.now();
-    const expiryTime = parseInt(tokenExpiry);
-    const timeUntilExpiry = expiryTime - now;
-    
-    // If less than 10 minutes until expiry, refresh now
-    if (timeUntilExpiry < 10 * 60 * 1000) {
-        console.log('⚠️ Token expiring soon (less than 10 min), refreshing...');
-        localStorage.setItem('lastActivity', now.toString());
-        // Use 'none' instead of empty string for silent refresh
-        state.tokenClient.requestAccessToken({ prompt: 'none' });
-    } else {
-        console.log(`✅ Token still valid for ${Math.round(timeUntilExpiry / 60000)} minutes`);
-    }
-}
+// Refresh token if it's close to expiring — see TOKEN_* constants above
 
 // Check for existing session in localStorage
 function checkExistingSession() {
@@ -409,32 +425,8 @@ function checkExistingSession() {
             
             updateSignInStatus(true);
             initializeApp();
-            
-            // Set up auto-refresh
-            if (state.tokenRefreshInterval) {
-                clearInterval(state.tokenRefreshInterval);
-            }
-            
-            // Check if token needs immediate refresh
             refreshTokenIfNeeded();
-            
-            // Set up periodic refresh every 50 minutes
-            state.tokenRefreshInterval = setInterval(() => {
-                console.log('🔄 Periodic token refresh (50 min)...');
-                if (state.isSignedIn) {
-                    state.tokenClient.requestAccessToken({ prompt: 'none' });
-                }
-            }, 50 * 60 * 1000);
-            
-            // Add token check every 10 minutes
-            if (state.tokenCheckInterval) {
-                clearInterval(state.tokenCheckInterval);
-            }
-            state.tokenCheckInterval = setInterval(() => {
-                if (state.isSignedIn) {
-                    refreshTokenIfNeeded();
-                }
-            }, 10 * 60 * 1000); // 10 minutes
+            setupTokenRefresh();
         } else {
             // Token expired, try to refresh silently
             console.log('⚠️ Saved token expired, attempting silent refresh...');
@@ -466,14 +458,7 @@ function setupAuthButton() {
             localStorage.removeItem('userConsent');
             
             // Clear token refresh intervals
-            if (state.tokenRefreshInterval) {
-                clearInterval(state.tokenRefreshInterval);
-                state.tokenRefreshInterval = null;
-            }
-            if (state.tokenCheckInterval) {
-                clearInterval(state.tokenCheckInterval);
-                state.tokenCheckInterval = null;
-            }
+            clearTokenRefreshIntervals();
             
             google.accounts.oauth2.revoke(state.accessToken, () => {
                 console.log('Access token revoked');

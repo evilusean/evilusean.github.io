@@ -78,4 +78,5 @@ Since this is a static site, no build step is required.
 - url parameters are weird, it kind of defeats the purpose if it tells you what the solution to each problem is in the url params, maybe fix so it doesn't update that for each new question/step
 - some triangles are displaying all sides and angles while still going through socratic questioning, again, defeats the purpose - 'what is side C'... uh, it's '5', it says it right there
 
-- Put the 'check' button during quiz mode inside the angles/sides input section (currently gets a new line)
+- Put the 'check' button during quiz mode inside the angles/sides input section (currently gets a new line) 
+- Add a 'Next Problem' and 'Previous Problem' button next to the 'Next Step' and 'Previous Step' that will jump to the next problem instead of having to click through multiple times to skip a problem you know
