@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar OrientASean</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main>
+        <h1>Passive Solar Planner</h1>
+        <div id="controls">
+            <input type="number" id="lat" placeholder="Latitude" step="any">
+            <input type="number" id="lng" placeholder="Longitude" step="any">
+            <button onclick="calculateSolar()">Analyze Site</button>
+        </div>
+        <div id="result"></div>
+    </main>
+    <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
