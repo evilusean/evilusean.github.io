@@ -1,4 +1,1 @@
-body { font-family: sans-serif; padding: 2rem; line-height: 1.5; max-width: 800px; margin: auto; }
-#controls { display: flex; gap: 10px; margin-bottom: 20px; }
-input { padding: 8px; }
-#result { padding: 1rem; border: 1px solid #ccc; background: #f4f4f4; border-radius: 4px; }
+/* Tailwind CSS Play CDN is used for all styling. This file is intentionally minimal. */

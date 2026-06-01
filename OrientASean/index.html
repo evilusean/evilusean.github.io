@@ -1,22 +1,301 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solar OrientASean</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Passive Solar Planner</title>
+  <!-- Tailwind CSS Play CDN — no build step required (Req 8.1, 8.4) -->
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <main>
-        <h1>Passive Solar Planner</h1>
-        <div id="controls">
-            <input type="number" id="lat" placeholder="Latitude" step="any">
-            <input type="number" id="lng" placeholder="Longitude" step="any">
-            <button onclick="calculateSolar()">Analyze Site</button>
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+  <noscript>JavaScript is required for Passive Solar Planner to work.</noscript>
+
+  <div class="w-full max-w-screen-xl mx-auto px-4 py-6">
+
+    <!-- Page header -->
+    <header class="mb-6">
+      <h1 class="text-2xl font-bold tracking-tight">Passive Solar Planner</h1>
+      <p class="text-sm text-gray-500 mt-1">Client-side solar analysis for residential and permaculture site planning.</p>
+    </header>
+
+    <!-- Main layout: sidebar + canvas — stacks vertically on small screens, row on md+ (Req 8.2) -->
+    <div class="flex flex-col md:flex-row gap-6 w-full">
+
+      <!-- ===== Sidebar: inputs ===== -->
+      <aside class="w-full md:w-80 lg:w-96 flex-shrink-0">
+        <form id="analysis-form" novalidate class="bg-white rounded-2xl shadow p-5 space-y-5">
+
+          <!-- Coordinate inputs (Req 1.1) -->
+          <fieldset>
+            <legend class="text-sm font-semibold text-gray-700 mb-2">Site Coordinates</legend>
+            <div class="space-y-3">
+              <div>
+                <label for="lat" class="block text-xs font-medium text-gray-600 mb-1">
+                  Latitude <span class="text-gray-400">(-90 to +90)</span>
+                </label>
+                <input
+                  type="number"
+                  id="lat"
+                  name="lat"
+                  placeholder="e.g. 45.0"
+                  min="-90"
+                  max="90"
+                  step="any"
+                  class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+                >
+                <p id="lat-error" class="text-xs text-red-600 mt-1 hidden" role="alert"></p>
+              </div>
+              <div>
+                <label for="lng" class="block text-xs font-medium text-gray-600 mb-1">
+                  Longitude <span class="text-gray-400">(-180 to +180)</span>
+                </label>
+                <input
+                  type="number"
+                  id="lng"
+                  name="lng"
+                  placeholder="e.g. -93.0"
+                  min="-180"
+                  max="180"
+                  step="any"
+                  class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+                >
+                <p id="lng-error" class="text-xs text-red-600 mt-1 hidden" role="alert"></p>
+              </div>
+            </div>
+            <!-- Geolocation button (Req 1.3) -->
+            <button
+              type="button"
+              id="geolocate-btn"
+              class="mt-3 w-full flex items-center justify-center gap-2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm font-medium text-amber-700 hover:bg-amber-100 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 1.657-1.343 3-3 3S6 12.657 6 11s1.343-3 3-3 3 1.343 3 3z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+              </svg>
+              Use My Location
+            </button>
+            <p id="geo-error" class="text-xs text-red-600 mt-1 hidden" role="alert"></p>
+          </fieldset>
+
+          <!-- Unit toggle (Req 1.5) -->
+          <fieldset>
+            <legend class="text-sm font-semibold text-gray-700 mb-2">Units</legend>
+            <div class="flex rounded-lg overflow-hidden border border-gray-300 text-sm">
+              <label class="flex-1 text-center cursor-pointer">
+                <input type="radio" name="unit" id="unit-metric" value="metric" class="sr-only" checked>
+                <span
+                  id="unit-metric-label"
+                  class="block py-2 px-3 bg-amber-500 text-white font-medium transition-colors"
+                >Metric (m)</span>
+              </label>
+              <label class="flex-1 text-center cursor-pointer">
+                <input type="radio" name="unit" id="unit-imperial" value="imperial" class="sr-only">
+                <span
+                  id="unit-imperial-label"
+                  class="block py-2 px-3 bg-white text-gray-600 hover:bg-gray-50 transition-colors"
+                >Imperial (ft)</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <!-- Window / building inputs (Req 2.1, 3.1) -->
+          <fieldset>
+            <legend class="text-sm font-semibold text-gray-700 mb-2">Window & Building</legend>
+            <div class="space-y-3">
+              <div>
+                <label for="windowArea" class="block text-xs font-medium text-gray-600 mb-1">
+                  Window Area <span id="area-unit-label" class="text-gray-400">(m²)</span>
+                </label>
+                <input
+                  type="number"
+                  id="windowArea"
+                  name="windowArea"
+                  placeholder="e.g. 6"
+                  min="0.01"
+                  step="any"
+                  class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+                >
+              </div>
+              <div>
+                <label for="windowHeight" class="block text-xs font-medium text-gray-600 mb-1">
+                  Window Height <span id="height-unit-label" class="text-gray-400">(m)</span>
+                </label>
+                <input
+                  type="number"
+                  id="windowHeight"
+                  name="windowHeight"
+                  placeholder="e.g. 1.2"
+                  min="0.01"
+                  step="any"
+                  class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+                >
+              </div>
+              <div>
+                <label for="orientationAngle" class="block text-xs font-medium text-gray-600 mb-1">
+                  Building Orientation <span class="text-gray-400">(° from N, 0–360)</span>
+                </label>
+                <input
+                  type="number"
+                  id="orientationAngle"
+                  name="orientationAngle"
+                  placeholder="e.g. 180"
+                  min="0"
+                  max="359"
+                  step="1"
+                  class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+                >
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- Tree height input (Req 5.1, 5.6) -->
+          <fieldset>
+            <legend class="text-sm font-semibold text-gray-700 mb-2">Tree Placement</legend>
+            <div>
+              <label for="treeHeight" class="block text-xs font-medium text-gray-600 mb-1">
+                Tree Height <span id="tree-unit-label" class="text-gray-400">(m, default 6)</span>
+              </label>
+              <input
+                type="number"
+                id="treeHeight"
+                name="treeHeight"
+                placeholder="6"
+                min="0.1"
+                step="any"
+                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+              >
+            </div>
+          </fieldset>
+
+          <!-- Analyze button -->
+          <button
+            type="submit"
+            id="analyze-btn"
+            class="w-full rounded-lg bg-amber-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 active:bg-amber-700 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2"
+          >
+            Analyze Site
+          </button>
+
+        </form>
+
+        <!-- Export buttons (Req 7.3, 7.4) — disabled until analysis is complete -->
+        <div class="mt-4 flex gap-3">
+          <button
+            id="export-png-btn"
+            disabled
+            class="flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-500 disabled:cursor-not-allowed disabled:opacity-50 hover:not-disabled:bg-gray-50 transition-colors"
+            title="Run an analysis first to enable export"
+          >
+            Download PNG
+          </button>
+          <button
+            id="export-txt-btn"
+            disabled
+            class="flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-500 disabled:cursor-not-allowed disabled:opacity-50 hover:not-disabled:bg-gray-50 transition-colors"
+            title="Run an analysis first to enable export"
+          >
+            Download .txt
+          </button>
         </div>
-        <div id="result"></div>
-    </main>
-    <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
-    <script src="script.js"></script>
+        <p id="export-msg" class="text-xs text-gray-400 mt-1 text-center">Run an analysis to enable exports.</p>
+
+      </aside>
+      <!-- ===== End sidebar ===== -->
+
+      <!-- ===== Main area: canvas + results ===== -->
+      <main class="flex-1 min-w-0 space-y-4">
+
+        <!-- Canvas (Req 4.2, 4.5) -->
+        <div class="relative bg-white rounded-2xl shadow overflow-hidden">
+          <canvas
+            id="site-canvas"
+            class="w-full block"
+            width="800"
+            height="600"
+            aria-label="Sun arc and site analysis canvas"
+            role="img"
+          ></canvas>
+          <!-- Tooltip overlay (Req 4.4) -->
+          <div
+            id="canvas-tooltip"
+            class="pointer-events-none absolute hidden rounded-md bg-gray-900/90 px-2.5 py-1.5 text-xs text-white shadow-lg"
+            role="tooltip"
+            aria-live="polite"
+          ></div>
+        </div>
+
+        <!-- Results sections (Req 2.6, 3.6, 6.3) -->
+        <div id="results-panel" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+          <!-- Solar gain results (Req 2.6) -->
+          <section id="result-solar-gain" class="bg-white rounded-2xl shadow p-4 space-y-1">
+            <h2 class="text-sm font-semibold text-gray-700">Passive Solar Gain</h2>
+            <p id="result-gain-value" class="text-xs text-gray-500">—</p>
+            <p id="result-gain-ratio" class="text-xs text-gray-500">—</p>
+            <p id="result-gain-recommendation" class="text-xs text-gray-500">—</p>
+            <p id="result-orientation-warning" class="text-xs text-amber-600 hidden" role="alert">
+              ⚠ Building orientation deviates more than 30° from optimal — solar gain is significantly reduced.
+            </p>
+          </section>
+
+          <!-- Overhang results (Req 3.6) -->
+          <section id="result-overhang" class="bg-white rounded-2xl shadow p-4 space-y-1">
+            <h2 class="text-sm font-semibold text-gray-700">Overhang Depth</h2>
+            <p id="result-overhang-min" class="text-xs text-gray-500">—</p>
+            <p id="result-overhang-max" class="text-xs text-gray-500">—</p>
+            <p id="result-overhang-na" class="text-xs text-gray-400 hidden">Overhang calculation not applicable at this latitude.</p>
+          </section>
+
+          <!-- Sunlight duration results (Req 6.3) -->
+          <section id="result-sunlight" class="bg-white rounded-2xl shadow p-4 space-y-1">
+            <h2 class="text-sm font-semibold text-gray-700">Sunlight Duration</h2>
+            <p id="result-summer-duration" class="text-xs text-gray-500">Summer solstice: —</p>
+            <p id="result-winter-duration" class="text-xs text-gray-500">Winter solstice: —</p>
+            <p id="result-polar-msg" class="text-xs text-blue-600 hidden" role="status"></p>
+          </section>
+
+          <!-- Tree placement results (Req 5.2, 5.3, 5.5) -->
+          <section id="result-trees" class="bg-white rounded-2xl shadow p-4 space-y-1">
+            <h2 class="text-sm font-semibold text-gray-700">Tree Placement</h2>
+            <p id="result-deciduous" class="text-xs text-gray-500">—</p>
+            <p id="result-evergreen" class="text-xs text-gray-500">—</p>
+            <!-- Canvas legend (Req 5.5) -->
+            <div id="canvas-legend" class="mt-2 space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="inline-block w-4 h-1.5 rounded bg-amber-400"></span>
+                <span class="text-xs text-gray-500">Summer sun arc</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="inline-block w-4 h-1.5 rounded bg-blue-400"></span>
+                <span class="text-xs text-gray-500">Winter sun arc</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="inline-block w-4 h-1.5 rounded bg-green-400 opacity-70"></span>
+                <span class="text-xs text-gray-500">Deciduous tree zone</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="inline-block w-4 h-1.5 rounded bg-emerald-800 opacity-70"></span>
+                <span class="text-xs text-gray-500">Evergreen tree zone</span>
+              </div>
+            </div>
+          </section>
+
+        </div>
+        <!-- End results panel -->
+
+      </main>
+      <!-- ===== End main area ===== -->
+
+    </div>
+    <!-- End flex layout -->
+
+  </div>
+  <!-- End max-width wrapper -->
+
+  <!-- SunCalc 1.9.0 — non-module, must load before module scripts (Req 8.4) -->
+  <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
+  <!-- App entry point — ES module (Req 8.4) -->
+  <script type="module" src="app.js"></script>
+
 </body>
 </html>
