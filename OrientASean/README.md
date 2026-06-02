@@ -63,5 +63,4 @@ After **Analyze Site**, open the **How to read this map** section under the diag
 Why Your House is Facing the Wrong Way : https://www.youtube.com/watch?v=9_q0CYygJlc
 
 ## Future Sean / TODO :
-- Add an explanasean - how to use / what it means 
-- I just tested, and the long/lat for hawaii said it should be south facing? I thought it would be inverted and need to be north facing? 
+- just tested, still wrong angle facing - need to optimize the function that says which way the house should be facing based on long/lat
