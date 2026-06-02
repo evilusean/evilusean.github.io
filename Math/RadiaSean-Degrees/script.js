@@ -12,8 +12,143 @@ const dmsInput = document.getElementById('dms');
 const canvas = document.getElementById('angleCanvas');
 const angleDisplay = document.getElementById('angleDisplay');
 
+// Get modal elements
+const modal = document.getElementById('infoModal');
+const infoBtn = document.getElementById('infoBtn');
+const closeBtn = document.getElementById('closeBtn');
+
+// Get share elements
+const shareBtn = document.getElementById('shareBtn');
+const copyNotification = document.getElementById('copyNotification');
+
 // Track which input was changed to avoid circular updates
 let activeInput = null;
+
+/**
+ * Modal Functions
+ */
+function openModal() {
+    modal.classList.remove('hidden');
+}
+
+function closeModal() {
+    modal.classList.add('hidden');
+}
+
+/**
+ * Generate shareable URL with current angle
+ */
+function generateShareUrl() {
+    const currentDegrees = parseFloat(degreesInput.value);
+    
+    if (isNaN(currentDegrees)) {
+        return window.location.origin + window.location.pathname;
+    }
+    
+    const baseUrl = window.location.origin + window.location.pathname;
+    const params = new URLSearchParams({
+        angle: currentDegrees.toFixed(2),
+        unit: 'degrees'
+    });
+    
+    return baseUrl + '?' + params.toString();
+}
+
+/**
+ * Copy share URL to clipboard
+ */
+function copyShareUrl() {
+    const shareUrl = generateShareUrl();
+    
+    // Use modern Clipboard API
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            showCopyNotification();
+        }).catch(() => {
+            fallbackCopyToClipboard(shareUrl);
+        });
+    } else {
+        fallbackCopyToClipboard(shareUrl);
+    }
+}
+
+/**
+ * Fallback method to copy to clipboard (older browsers)
+ */
+function fallbackCopyToClipboard(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    
+    try {
+        document.execCommand('copy');
+        showCopyNotification();
+    } catch (err) {
+        console.error('Failed to copy to clipboard:', err);
+    }
+    
+    document.body.removeChild(textarea);
+}
+
+/**
+ * Show copy notification
+ */
+function showCopyNotification() {
+    copyNotification.classList.remove('hidden');
+    
+    setTimeout(() => {
+        copyNotification.classList.add('hidden');
+    }, 2500);
+}
+
+/**
+ * Load angle from URL parameters
+ */
+function loadAngleFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const angle = params.get('angle');
+    const unit = params.get('unit') || 'degrees';
+    
+    if (angle && !isNaN(parseFloat(angle))) {
+        const angleValue = parseFloat(angle);
+        
+        if (unit === 'radians') {
+            radiansInput.value = angleValue;
+            activeInput = 'radians';
+            const decimalDegrees = angleValue * RAD_TO_DEG;
+            updateAllInputs(decimalDegrees);
+        } else if (unit === 'gradians') {
+            gradiansInput.value = angleValue;
+            activeInput = 'gradians';
+            const decimalDegrees = angleValue * GRAD_TO_DEG;
+            updateAllInputs(decimalDegrees);
+        } else {
+            // Default to degrees
+            degreesInput.value = angleValue;
+            activeInput = 'degrees';
+            updateAllInputs(angleValue);
+        }
+        
+        activeInput = null;
+    }
+}
+
+// Event listeners for modal
+infoBtn.addEventListener('click', openModal);
+closeBtn.addEventListener('click', closeModal);
+
+// Event listener for share button
+shareBtn.addEventListener('click', copyShareUrl);
+
+// Close modal when clicking outside of it
+window.addEventListener('click', function(event) {
+    if (event.target === modal) {
+        closeModal();
+    }
+});
 
 /**
  * Convert decimal degrees to DMS (Degrees, Minutes, Seconds)
@@ -117,14 +252,14 @@ function drawAngleArc(degrees) {
 
     // Draw angle arc
     const angleRad = degrees * DEG_TO_RAD;
-    ctx.strokeStyle = '#667eea';
+    ctx.strokeStyle = '#dc143c';
     ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius * 0.4, 0, angleRad, false);
     ctx.stroke();
 
     // Draw angle arc fill (sector)
-    ctx.fillStyle = 'rgba(102, 126, 234, 0.1)';
+    ctx.fillStyle = 'rgba(220, 20, 60, 0.1)';
     ctx.beginPath();
     ctx.moveTo(centerX, centerY);
     ctx.arc(centerX, centerY, radius * 0.4, 0, angleRad, false);
@@ -134,7 +269,7 @@ function drawAngleArc(degrees) {
     // Draw endpoint ray
     const endX = centerX + radius * Math.cos(angleRad);
     const endY = centerY + radius * Math.sin(angleRad);
-    ctx.strokeStyle = '#667eea';
+    ctx.strokeStyle = '#dc143c';
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(centerX, centerY);
@@ -149,13 +284,13 @@ function drawAngleArc(degrees) {
     ctx.stroke();
 
     // Draw center point
-    ctx.fillStyle = '#667eea';
+    ctx.fillStyle = '#dc143c';
     ctx.beginPath();
     ctx.arc(centerX, centerY, 5, 0, Math.PI * 2);
     ctx.fill();
 
     // Draw angle label
-    ctx.fillStyle = '#667eea';
+    ctx.fillStyle = '#dc143c';
     ctx.font = 'bold 14px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -216,3 +351,6 @@ dmsInput.addEventListener('keypress', createConversionHandler('dms'));
 // Initialize canvas with 0 degrees
 drawAngleArc(0);
 angleDisplay.textContent = '0.00°';
+
+// Load angle from URL parameters if present
+loadAngleFromUrl();

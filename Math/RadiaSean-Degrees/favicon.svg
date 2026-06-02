@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <!-- Compass Rose with Cardinal Directions -->
+  <!-- Compass Rose with Cardinal Directions - Red/White/Black Theme -->
   
   <!-- Background Circle -->
-  <circle cx="50" cy="50" r="48" fill="#667eea" stroke="#764ba2" stroke-width="2"/>
+  <circle cx="50" cy="50" r="48" fill="#dc143c" stroke="#000000" stroke-width="2"/>
   
   <!-- Outer Circle -->
-  <circle cx="50" cy="50" r="45" fill="none" stroke="#764ba2" stroke-width="1.5"/>
+  <circle cx="50" cy="50" r="45" fill="none" stroke="#000000" stroke-width="1.5"/>
   
   <!-- Cardinal Direction Lines -->
   <!-- North -->
@@ -28,14 +28,14 @@
   <line x1="29.3" y1="29.3" x2="35.4" y2="35.4" stroke="white" stroke-width="1"/>
   
   <!-- Angle Arc Example (showing 45 degrees) -->
-  <path d="M 50 50 L 75 50 A 25 25 0 0 0 67.7 32.3" fill="none" stroke="#FFD700" stroke-width="2.5"/>
-  <circle cx="50" cy="50" r="25" fill="none" stroke="#FFD700" stroke-width="0.8" opacity="0.3"/>
+  <path d="M 50 50 L 75 50 A 25 25 0 0 0 67.7 32.3" fill="none" stroke="white" stroke-width="2.5"/>
+  <circle cx="50" cy="50" r="25" fill="none" stroke="white" stroke-width="0.8" opacity="0.3"/>
   
   <!-- Center Point -->
   <circle cx="50" cy="50" r="3" fill="white"/>
   
   <!-- Needle/Pointer (North) -->
-  <polygon points="50,50 48,28 50,18 52,28" fill="white" stroke="#764ba2" stroke-width="0.5"/>
+  <polygon points="50,50 48,28 50,18 52,28" fill="white" stroke="#000000" stroke-width="0.5"/>
   
   <!-- Cardinal Letters -->
   <text x="50" y="16" font-size="8" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="middle">N</text>

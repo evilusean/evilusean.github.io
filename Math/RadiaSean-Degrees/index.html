@@ -3,13 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal Angle Converter</title>
+    <title>RadiaSean Degrees : Universal Angle Converter</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
 </head>
 <body>
     <div class="container">
-        <h1>🔄 Universal Angle Converter</h1>
+        <div class="header-section">
+            <h1>RadiaSean Degrees : Universal Angle Converter</h1>
+            <div class="button-group">
+                <button id="shareBtn" class="action-button" title="Copy shareable link to clipboard">🔗 Share</button>
+                <button id="infoBtn" class="action-button" title="Show help and unit information">ℹ️ Help & Info</button>
+            </div>
+        </div>
+        
+        <!-- Copy Notification -->
+        <div id="copyNotification" class="copy-notification hidden">
+            ✓ Link copied to clipboard!
+        </div>
+        
+        <!-- Info Modal -->
+        <div id="infoModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>How to Use & Unit Measurements</h2>
+                    <button id="closeBtn" class="close-button">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <h3>🎯 How to Use</h3>
+                    <p>Enter a value in any input field and press <strong>Enter</strong> to convert to all other angle units. The canvas visualization updates in real-time to show the angle visually.</p>
+
+                    <h3>📐 Units of Measurement</h3>
+                    
+                    <div class="unit-info">
+                        <h4>Degrees (°)</h4>
+                        <p>The most common unit for measuring angles. A full circle equals 360 degrees. One degree is subdivided into 60 minutes, and one minute into 60 seconds.</p>
+                        <p><strong>Example:</strong> A right angle = 90°</p>
+                    </div>
+
+                    <div class="unit-info">
+                        <h4>Radians (rad)</h4>
+                        <p>The standard unit in mathematics and physics. A full circle equals 2π radians (≈ 6.283 radians). Radians measure angles by the length of the arc they subtend on a unit circle.</p>
+                        <p><strong>Example:</strong> A right angle = π/2 ≈ 1.5708 radians</p>
+                        <p><strong>Conversion:</strong> radians = degrees × (π / 180)</p>
+                    </div>
+
+                    <div class="unit-info">
+                        <h4>Gradians (grad)</h4>
+                        <p>Also called "grads" or "gons," used primarily in surveying and civil engineering. A full circle equals 400 gradians. This system divides a circle into 400 equal parts instead of 360.</p>
+                        <p><strong>Example:</strong> A right angle = 100 grad</p>
+                        <p><strong>Conversion:</strong> gradians = degrees × (10 / 9)</p>
+                    </div>
+
+                    <div class="unit-info">
+                        <h4>Degrees/Minutes/Seconds (DD MM SS)</h4>
+                        <p>A sexagesimal (base-60) system commonly used in navigation, astronomy, and geography. One degree = 60 minutes (arcminutes), one minute = 60 seconds (arcseconds).</p>
+                        <p><strong>Format:</strong> DD MM SS.SS (example: 45 30 25.5 means 45°30'25.5")</p>
+                        <p><strong>Example:</strong> A right angle = 90 0 0</p>
+                        <p><strong>Conversion:</strong> decimal degrees = DD + (MM/60) + (SS/3600)</p>
+                    </div>
+
+                    <h3>💡 Tips</h3>
+                    <ul>
+                        <li>Use decimal values for precise conversions (e.g., 45.5 for 45.5°)</li>
+                        <li>The canvas shows angles from 0° to 360° (angles normalize to this range)</li>
+                        <li>All conversions support floating-point precision</li>
+                        <li>For DMS input, use spaces to separate degrees, minutes, and seconds</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
         
         <div class="main-grid">
             <div class="inputs-section">
