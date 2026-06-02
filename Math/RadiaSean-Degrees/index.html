@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Angle Converter</title>
+    <style>
+        body { font-family: sans-serif; padding: 2rem; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        canvas { border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>Angle Converter</h1>
+    <div class="grid">
+        <div>
+            <input type="number" id="inputVal" placeholder="Enter angle" oninput="convert()">
+            <select id="inputType" onchange="convert()">
+                <option value="deg">Degrees</option>
+                <option value="rad">Radians</option>
+            </select>
+            <div id="results"></div>
+        </div>
+        <canvas id="protractor" width="300" height="300"></canvas>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
