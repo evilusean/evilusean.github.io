@@ -19,6 +19,118 @@
       <p class="text-sm text-gray-500 mt-1">Client-side solar analysis for residential and permaculture site planning.</p>
     </header>
 
+    <!-- ===== How to use / Explanations ===== -->
+    <details class="mb-6 bg-white rounded-2xl shadow" id="explainer">
+      <summary class="flex items-center justify-between px-5 py-4 cursor-pointer select-none list-none">
+        <span class="font-semibold text-gray-800 text-sm">How to use this tool &amp; what the results mean</span>
+        <svg id="explainer-chevron" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </summary>
+
+      <div class="px-5 pb-6 pt-1 space-y-6 text-sm text-gray-700 border-t border-gray-100">
+
+        <!-- Quick start -->
+        <section>
+          <h3 class="font-semibold text-gray-900 mb-2">Quick start</h3>
+          <ol class="list-decimal list-inside space-y-1 text-gray-700">
+            <li>Click <strong>Use My Location</strong> or type your latitude and longitude.</li>
+            <li>Adjust the window area, window height, and building orientation if needed (defaults are fine for a first look).</li>
+            <li>Hit <strong>Analyze Site</strong>.</li>
+            <li>Read the results below the map and hover over the sun paths to explore time and angle data.</li>
+            <li>Download a PNG of the map or a plain-text report when you're done.</li>
+          </ol>
+        </section>
+
+        <!-- Hemisphere note -->
+        <section class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+          <h3 class="font-semibold text-amber-900 mb-1">🌐 Which way should my windows face?</h3>
+          <p class="text-amber-800">
+            <strong>Northern Hemisphere (latitude &gt; 0°, e.g. USA, Europe, Japan, Hawaii):</strong>
+            the sun always tracks through the <em>southern</em> sky, so south-facing windows (180°) capture the most winter sun. This includes Hawaii at ~21°N — it is firmly in the Northern Hemisphere.
+          </p>
+          <p class="mt-2 text-amber-800">
+            <strong>Southern Hemisphere (latitude &lt; 0°, e.g. Australia, South America, South Africa):</strong>
+            the sun tracks through the <em>northern</em> sky, so north-facing windows (0°) are optimal.
+          </p>
+          <p class="mt-2 text-amber-800">
+            The app detects your hemisphere automatically and sets the optimal orientation accordingly.
+          </p>
+        </section>
+
+        <!-- Inputs explained -->
+        <section>
+          <h3 class="font-semibold text-gray-900 mb-2">Inputs explained</h3>
+          <dl class="space-y-2">
+            <div>
+              <dt class="font-medium text-gray-800">Latitude / Longitude</dt>
+              <dd class="text-gray-600 ml-3">Your site's map coordinates. Positive latitude = north of the equator. Negative = south.</dd>
+            </div>
+            <div>
+              <dt class="font-medium text-gray-800">Window Area</dt>
+              <dd class="text-gray-600 ml-3">Total area of south-facing (NH) or north-facing (SH) glazing — the windows that are supposed to collect winter sun. Bigger area = more potential heat gain.</dd>
+            </div>
+            <div>
+              <dt class="font-medium text-gray-800">Window Height</dt>
+              <dd class="text-gray-600 ml-3">Vertical height of those windows. Used to calculate overhang depth — the roof projection that blocks high summer sun while still letting low winter sun in.</dd>
+            </div>
+            <div>
+              <dt class="font-medium text-gray-800">Main Wall Bearing</dt>
+              <dd class="text-gray-600 ml-3">Which compass direction your main solar wall faces, measured clockwise from north. 0° = north, 90° = east, 180° = south, 270° = west. The app compares this to the ideal and tells you how much gain you're losing.</dd>
+            </div>
+            <div>
+              <dt class="font-medium text-gray-800">Tree Height</dt>
+              <dd class="text-gray-600 ml-3">Mature height of trees you plan to plant. Used to calculate how far their shadows reach on each solstice and where to position them for maximum benefit.</dd>
+            </div>
+          </dl>
+        </section>
+
+        <!-- Results explained -->
+        <section>
+          <h3 class="font-semibold text-gray-900 mb-2">Results explained</h3>
+          <dl class="space-y-2">
+            <div>
+              <dt class="font-medium text-gray-800">Passive Solar Gain</dt>
+              <dd class="text-gray-600 ml-3">A relative measure of how much winter sunlight energy enters through your glazing at solar noon on the winter solstice. Higher is warmer. The <em>relative gain ratio</em> shows how close your orientation is to the theoretical maximum — 100% means perfectly aligned, 70% means you're losing roughly 30% of potential heat.</dd>
+            </div>
+            <div>
+              <dt class="font-medium text-gray-800">Overhang Depth</dt>
+              <dd class="text-gray-600 ml-3">
+                The range for a horizontal overhang (like an eave) above your solar windows:<br>
+                <strong>Min depth</strong> — the shortest overhang that fully shades the window at the peak of summer (high sun angle = short overhang needed).<br>
+                <strong>Max depth</strong> — the longest overhang that still lets the full winter sun beam hit the window sill (low sun angle = don't go deeper than this or you block winter sun).
+              </dd>
+            </div>
+            <div>
+              <dt class="font-medium text-gray-800">Sunlight Duration</dt>
+              <dd class="text-gray-600 ml-3">Hours of direct sunlight on the summer and winter solstice — useful for planning growing seasons, solar panel sizing, and energy budgets. Polar sites may show polar day or polar night instead of a duration.</dd>
+            </div>
+            <div>
+              <dt class="font-medium text-gray-800">Tree Placement</dt>
+              <dd class="text-gray-600 ml-3">
+                <strong>Deciduous trees</strong> (lose leaves in winter) belong on the side where summer shade is most useful — south and west in the Northern Hemisphere. In winter they're bare, so they don't block the low sun you want inside.<br>
+                <strong>Evergreen trees</strong> (keep leaves all year) belong on the side where winter wind usually comes from — north and northwest in the Northern Hemisphere. They act as a windbreak without shading your solar windows.
+              </dd>
+            </div>
+            <div>
+              <dt class="font-medium text-gray-800">Site Map</dt>
+              <dd class="text-gray-600 ml-3">Top-down view of your property. North is always at the top. The orange arc is the summer solstice sun path; the blue arc is the winter solstice sun path. The green ring slices show where to plant trees (not shadow shapes). Hover any arc point to see the exact time, altitude, and compass bearing of the sun at that moment.</dd>
+            </div>
+          </dl>
+        </section>
+
+      </div>
+    </details>
+    <script>
+      // Rotate chevron when details open/close
+      const det = document.getElementById('explainer');
+      const chev = document.getElementById('explainer-chevron');
+      det.addEventListener('toggle', () => {
+        chev.style.transform = det.open ? 'rotate(180deg)' : '';
+      });
+    </script>
+    <!-- ===== End explainer ===== -->
+
     <!-- Main layout: sidebar + canvas — stacks vertically on small screens, row on md+ (Req 8.2) -->
     <div class="flex flex-col md:flex-row gap-6 w-full">
 
