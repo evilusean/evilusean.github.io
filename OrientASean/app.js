@@ -15,7 +15,9 @@ import {
   calcOverhangMax,
   convertDistance,
   getSunlightDuration,
-  isPolarLatitude,
+  calcOrientationTurn,
+  getGardenPlacement,
+  azimuthToCompass,
 } from './solar-engine.js';
 
 import {
@@ -73,6 +75,13 @@ const resultWinterDuration     = document.getElementById('result-winter-duration
 const resultPolarMsg           = document.getElementById('result-polar-msg');
 const resultDeciduous          = document.getElementById('result-deciduous');
 const resultEvergreen          = document.getElementById('result-evergreen');
+const resultPlacement          = document.getElementById('result-placement');
+const mapLegend                = document.getElementById('map-legend');
+const resultOrientationOffset  = document.getElementById('result-orientation-offset');
+const resultGarden             = document.getElementById('result-garden');
+const resultCurrentFacing      = document.getElementById('result-current-facing');
+
+const GEO_BTN_HTML = geoBtn.innerHTML;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -211,9 +220,15 @@ form.addEventListener('submit', (e) => {
   const referenceLen = isFinite(summerShadowLen) ? summerShadowLen : 20;
   const metersPerPixel = (referenceLen * 3) / (canvas.width / 2);
 
+  const orientationTurn = calcOrientationTurn(orientationAngle, lat);
+  const garden = getGardenPlacement(lat);
+
   renderAll(canvas, summerArc, winterArc, deciduousZone, evergreenZone, {
     unit,
     metersPerPixel,
+    orientationDeg: orientationAngle,
+    optimalAzimuth,
+    gardenAzimuthDeg: garden.azimuthDeg,
   });
 
   // ── Populate result DOM elements ──
@@ -225,7 +240,15 @@ form.addEventListener('submit', (e) => {
   resultGainValue.textContent = `Passive solar gain: ${gainDisplay}`;
   resultGainRatio.textContent = `Relative gain ratio: ${relativeGainRatio.toFixed(1)}%`;
   resultGainRecommendation.textContent =
-    `Optimal orientation: ${optimalAzimuth === 180 ? 'South-facing (180°)' : 'North-facing (0°)'}`;
+    `Optimal orientation: ${optimalAzimuth === 180 ? 'South-facing (180°)' : 'North-facing (0°)'} — ` +
+    `your wall is ${orientationTurn.deviationDeg.toFixed(0)}° off`;
+
+  resultCurrentFacing.textContent =
+    `Main wall / bay window faces: ${orientationAngle.toFixed(0)}° (${azimuthToCompass(orientationAngle)})`;
+  resultOrientationOffset.textContent = orientationTurn.turnLabel;
+  resultGarden.textContent = garden.description;
+  resultPlacement.classList.remove('hidden');
+  mapLegend.classList.remove('hidden');
 
   if (warnOrientation) {
     resultOrientationWarning.classList.remove('hidden');
@@ -289,6 +312,7 @@ form.addEventListener('submit', (e) => {
   // Store result for export
   currentResult = {
     lat, lng, unit, optimalAzimuth,
+    orientationAngle, orientationTurn, garden,
     winterAltitudeDeg: gainAltitude, summerAltitudeDeg,
     passiveSolarGain, relativeGainRatio,
     overhangMin, overhangMax,
@@ -307,12 +331,27 @@ form.addEventListener('submit', (e) => {
 
 // ─── Geolocation handler ──────────────────────────────────────────────────────
 
+function resetGeoButton() {
+  geoBtn.disabled = false;
+  geoBtn.innerHTML = GEO_BTN_HTML;
+}
+
 geoBtn.addEventListener('click', () => {
   clearError(geoError);
+
   if (!navigator.geolocation) {
     showError(geoError, 'Geolocation is not supported by this browser.');
     return;
   }
+
+  if (!window.isSecureContext) {
+    showError(
+      geoError,
+      'Location needs HTTPS or localhost. Open via a local server (e.g. python3 -m http.server 8080) instead of file://.',
+    );
+    return;
+  }
+
   geoBtn.disabled = true;
   geoBtn.textContent = 'Locating…';
 
@@ -320,20 +359,18 @@ geoBtn.addEventListener('click', () => {
     (pos) => {
       latInput.value = pos.coords.latitude.toFixed(6);
       lngInput.value = pos.coords.longitude.toFixed(6);
-      geoBtn.disabled = false;
-      geoBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 1.657-1.343 3-3 3S6 12.657 6 11s1.343-3 3-3 3 1.343 3 3z"/><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg> Use My Location`;
+      resetGeoButton();
     },
     (err) => {
-      geoBtn.disabled = false;
-      geoBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 1.657-1.343 3-3 3S6 12.657 6 11s1.343-3 3-3 3 1.343 3 3z"/><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg> Use My Location`;
+      resetGeoButton();
       const messages = {
-        1: 'Location access was denied. Please enter coordinates manually.',
-        2: 'Location could not be determined. Please enter coordinates manually.',
-        3: 'Location request timed out. Please enter coordinates manually.',
+        1: 'Location access was denied. Allow location in the browser bar, or enter coordinates manually.',
+        2: 'Location could not be determined. Check GPS/Wi‑Fi or enter coordinates manually.',
+        3: 'Location request timed out. Try again or enter coordinates manually.',
       };
       showError(geoError, messages[err.code] || 'Geolocation failed. Please enter coordinates manually.');
     },
-    { timeout: 10000 },
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 },
   );
 });
 
@@ -354,7 +391,13 @@ geoBtn.addEventListener('click', () => {
         currentResult.winterArc,
         currentResult.deciduousZone,
         currentResult.evergreenZone,
-        { unit: newUnit, metersPerPixel: currentResult.metersPerPixel },
+        {
+          unit: newUnit,
+          metersPerPixel: currentResult.metersPerPixel,
+          orientationDeg: currentResult.orientationAngle,
+          optimalAzimuth: currentResult.optimalAzimuth,
+          gardenAzimuthDeg: currentResult.garden.azimuthDeg,
+        },
       );
 
       // Update overhang display
@@ -485,6 +528,11 @@ export function generateTextExport(result) {
   lines.push(`Deciduous trees: plant on ${deciduousSide} side (summer shadow ~${shadowDisp})`);
   lines.push(`Evergreen trees: plant on ${evergreenSide} side for wind buffering`);
 
+  lines.push('', '--- House & Garden Placement ---');
+  lines.push(`Main wall bearing: ${result.orientationAngle.toFixed(0)}°`);
+  lines.push(result.orientationTurn.turnLabel);
+  lines.push(result.garden.description);
+
   lines.push('', '=== End of Report ===');
   return lines.join('\n');
 }
@@ -499,6 +547,23 @@ exportTxtBtn.addEventListener('click', () => {
   a.download = 'passive-solar-analysis.txt';
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 5000);
+});
+
+// ─── Optimal orientation shortcut ─────────────────────────────────────────────
+
+document.getElementById('optimal-orientation-btn').addEventListener('click', () => {
+  clearError(latError);
+  const lat = parseFloat(latInput.value);
+  if (isNaN(lat)) {
+    showError(latError, 'Enter latitude first, then click this button.');
+    return;
+  }
+  const { valid } = validateCoordinates(lat, parseFloat(lngInput.value) || 0);
+  if (!valid && (isNaN(parseFloat(lngInput.value)))) {
+    showError(latError, 'Enter valid coordinates first.');
+    return;
+  }
+  document.getElementById('orientationAngle').value = String(getOptimalAzimuth(lat));
 });
 
 // ─── Init ─────────────────────────────────────────────────────────────────────

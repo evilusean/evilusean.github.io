@@ -110,7 +110,8 @@
                   type="number"
                   id="windowArea"
                   name="windowArea"
-                  placeholder="e.g. 6"
+                  value="6"
+                  placeholder="6"
                   min="0.01"
                   step="any"
                   class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
@@ -124,7 +125,8 @@
                   type="number"
                   id="windowHeight"
                   name="windowHeight"
-                  placeholder="e.g. 1.2"
+                  value="1.2"
+                  placeholder="1.2"
                   min="0.01"
                   step="any"
                   class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
@@ -132,18 +134,27 @@
               </div>
               <div>
                 <label for="orientationAngle" class="block text-xs font-medium text-gray-600 mb-1">
-                  Building Orientation <span class="text-gray-400">(° from N, 0–360)</span>
+                  Main Wall Bearing <span class="text-gray-400">(bay window faces this direction, ° from N)</span>
                 </label>
                 <input
                   type="number"
                   id="orientationAngle"
                   name="orientationAngle"
-                  placeholder="e.g. 180"
+                  value="180"
+                  placeholder="180 = south"
                   min="0"
                   max="359"
                   step="1"
                   class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
                 >
+                <p class="text-xs text-gray-500 mt-1">180° = south-facing (typical NH passive solar). Use 0° if the bay window currently faces north.</p>
+                <button
+                  type="button"
+                  id="optimal-orientation-btn"
+                  class="mt-2 text-xs font-medium text-amber-700 hover:text-amber-900 underline"
+                >
+                  Set to optimal for my latitude (after coordinates entered)
+                </button>
               </div>
             </div>
           </fieldset>
@@ -159,6 +170,7 @@
                 type="number"
                 id="treeHeight"
                 name="treeHeight"
+                value="6"
                 placeholder="6"
                 min="0.1"
                 step="any"
@@ -205,34 +217,58 @@
       <!-- ===== Main area: canvas + results ===== -->
       <main class="flex-1 min-w-0 space-y-4">
 
-        <!-- Canvas (Req 4.2, 4.5) -->
-        <div class="relative bg-white rounded-2xl shadow overflow-hidden">
-          <canvas
-            id="site-canvas"
-            class="w-full block"
-            width="800"
-            height="600"
-            aria-label="Sun arc and site analysis canvas"
-            role="img"
-          ></canvas>
-          <!-- Tooltip overlay (Req 4.4) -->
-          <div
-            id="canvas-tooltip"
-            class="pointer-events-none absolute hidden rounded-md bg-gray-900/90 px-2.5 py-1.5 text-xs text-white shadow-lg"
-            role="tooltip"
-            aria-live="polite"
-          ></div>
+        <!-- Site map -->
+        <div class="bg-white rounded-2xl shadow overflow-hidden">
+          <div class="px-4 py-3 border-b border-gray-100">
+            <h2 class="text-sm font-semibold text-gray-800">Site map</h2>
+            <p class="text-xs text-gray-500 mt-0.5">Top-down view: north up, house in the center. Hover sun paths for time and angle.</p>
+          </div>
+          <div class="relative">
+            <canvas
+              id="site-canvas"
+              class="w-full block"
+              width="800"
+              height="560"
+              aria-label="Top-down site map with sun paths and tree planting bands"
+              role="img"
+            ></canvas>
+            <div
+              id="canvas-tooltip"
+              class="pointer-events-none absolute hidden z-10 rounded-md bg-gray-900/90 px-2.5 py-1.5 text-xs text-white shadow-lg"
+              role="tooltip"
+              aria-live="polite"
+            ></div>
+          </div>
+          <div id="map-legend" class="hidden border-t border-gray-100 px-4 py-4 bg-gray-50 text-sm text-gray-700">
+            <p class="font-semibold text-gray-800 mb-2">How to read this map</p>
+            <ul class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 text-xs leading-relaxed">
+              <li class="flex gap-2"><span class="shrink-0 w-3 h-3 mt-0.5 rounded-sm bg-amber-100 border border-amber-700"></span><span><strong>House</strong> — your building; arrow labeled <strong>FRONT</strong> is the bay-window wall. Green dashed line (if shown) points toward the best direction for winter sun.</span></li>
+              <li class="flex gap-2"><span class="shrink-0 w-3 h-3 mt-0.5 rounded-full border-2 border-green-600 bg-amber-50"></span><span><strong>Garden dot</strong> — suggested open garden bed on the sunniest side of the house.</span></li>
+              <li class="flex gap-2"><span class="shrink-0 w-4 h-0.5 mt-1.5 rounded bg-amber-400"></span><span><strong>Orange curve</strong> — where the sun travels on the <strong>summer</strong> solstice (longest day).</span></li>
+              <li class="flex gap-2"><span class="shrink-0 w-4 h-0.5 mt-1.5 rounded bg-blue-400"></span><span><strong>Blue curve</strong> — sun path on the <strong>winter</strong> solstice (shortest day).</span></li>
+              <li class="flex gap-2"><span class="shrink-0 w-8 h-3 mt-0.5 rounded border border-dashed border-green-500 bg-green-200/40"></span><span><strong>Green bands</strong> (ring slices) — <em>where to plant trees</em>, not shadows. Light green = deciduous (summer shade). Darker green = evergreen (winter wind break). Width ≈ tree shadow reach.</span></li>
+              <li class="flex gap-2"><span class="shrink-0 flex gap-0.5 mt-1"><span class="w-2 h-2 rounded-full bg-amber-400"></span><span class="w-2 h-2 rounded-full bg-blue-400"></span></span><span><strong>Colored dots</strong> on the curves — sun position at solar noon on each solstice.</span></li>
+            </ul>
+          </div>
         </div>
 
         <!-- Results sections (Req 2.6, 3.6, 6.3) -->
         <div id="results-panel" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
+          <!-- House & garden placement -->
+          <section id="result-placement" class="hidden sm:col-span-2 bg-amber-50 border border-amber-200 rounded-2xl shadow p-4 space-y-2">
+            <h2 class="text-sm font-semibold text-amber-900">House &amp; Garden Placement</h2>
+            <p id="result-current-facing" class="text-sm text-gray-800">—</p>
+            <p id="result-orientation-offset" class="text-sm font-medium text-amber-900">—</p>
+            <p id="result-garden" class="text-sm text-gray-700">—</p>
+          </section>
+
           <!-- Solar gain results (Req 2.6) -->
           <section id="result-solar-gain" class="bg-white rounded-2xl shadow p-4 space-y-1">
             <h2 class="text-sm font-semibold text-gray-700">Passive Solar Gain</h2>
-            <p id="result-gain-value" class="text-xs text-gray-500">—</p>
-            <p id="result-gain-ratio" class="text-xs text-gray-500">—</p>
-            <p id="result-gain-recommendation" class="text-xs text-gray-500">—</p>
+            <p id="result-gain-value" class="text-sm text-gray-700">—</p>
+            <p id="result-gain-ratio" class="text-sm text-gray-700">—</p>
+            <p id="result-gain-recommendation" class="text-sm text-gray-700">—</p>
             <p id="result-orientation-warning" class="text-xs text-amber-600 hidden" role="alert">
               ⚠ Building orientation deviates more than 30° from optimal — solar gain is significantly reduced.
             </p>
@@ -241,43 +277,25 @@
           <!-- Overhang results (Req 3.6) -->
           <section id="result-overhang" class="bg-white rounded-2xl shadow p-4 space-y-1">
             <h2 class="text-sm font-semibold text-gray-700">Overhang Depth</h2>
-            <p id="result-overhang-min" class="text-xs text-gray-500">—</p>
-            <p id="result-overhang-max" class="text-xs text-gray-500">—</p>
+            <p id="result-overhang-min" class="text-sm text-gray-700">—</p>
+            <p id="result-overhang-max" class="text-sm text-gray-700">—</p>
             <p id="result-overhang-na" class="text-xs text-gray-400 hidden">Overhang calculation not applicable at this latitude.</p>
           </section>
 
           <!-- Sunlight duration results (Req 6.3) -->
           <section id="result-sunlight" class="bg-white rounded-2xl shadow p-4 space-y-1">
             <h2 class="text-sm font-semibold text-gray-700">Sunlight Duration</h2>
-            <p id="result-summer-duration" class="text-xs text-gray-500">Summer solstice: —</p>
-            <p id="result-winter-duration" class="text-xs text-gray-500">Winter solstice: —</p>
+            <p id="result-summer-duration" class="text-sm text-gray-700">Summer solstice: —</p>
+            <p id="result-winter-duration" class="text-sm text-gray-700">Winter solstice: —</p>
             <p id="result-polar-msg" class="text-xs text-blue-600 hidden" role="status"></p>
           </section>
 
           <!-- Tree placement results (Req 5.2, 5.3, 5.5) -->
           <section id="result-trees" class="bg-white rounded-2xl shadow p-4 space-y-1">
             <h2 class="text-sm font-semibold text-gray-700">Tree Placement</h2>
-            <p id="result-deciduous" class="text-xs text-gray-500">—</p>
-            <p id="result-evergreen" class="text-xs text-gray-500">—</p>
-            <!-- Canvas legend (Req 5.5) -->
-            <div id="canvas-legend" class="mt-2 space-y-1">
-              <div class="flex items-center gap-2">
-                <span class="inline-block w-4 h-1.5 rounded bg-amber-400"></span>
-                <span class="text-xs text-gray-500">Summer sun arc</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="inline-block w-4 h-1.5 rounded bg-blue-400"></span>
-                <span class="text-xs text-gray-500">Winter sun arc</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="inline-block w-4 h-1.5 rounded bg-green-400 opacity-70"></span>
-                <span class="text-xs text-gray-500">Deciduous tree zone</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="inline-block w-4 h-1.5 rounded bg-emerald-800 opacity-70"></span>
-                <span class="text-xs text-gray-500">Evergreen tree zone</span>
-              </div>
-            </div>
+            <p id="result-deciduous" class="text-sm text-gray-700">—</p>
+            <p id="result-evergreen" class="text-sm text-gray-700">—</p>
+            <p class="text-xs text-gray-500 mt-1">See the green ring bands on the site map — planting sectors, not shadow shapes.</p>
           </section>
 
         </div>

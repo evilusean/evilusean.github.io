@@ -216,3 +216,84 @@ function _isPolarDay(lat, solstice) {
   if (lat >= 0) return solstice === 'summer';
   return solstice === 'winter';
 }
+
+/**
+ * Shortest signed angle from `fromDeg` to `toDeg` (north-clockwise, degrees).
+ * Positive = clockwise when viewed from above.
+ * @param {number} fromDeg
+ * @param {number} toDeg
+ * @returns {number}  in (−180, +180]
+ */
+export function shortestSignedTurn(fromDeg, toDeg) {
+  let delta = ((toDeg - fromDeg) % 360 + 360) % 360;
+  if (delta > 180) delta -= 360;
+  return delta;
+}
+
+/**
+ * How to rotate the building so the main wall (bay window) faces optimal solar gain.
+ * @param {number} orientationDeg  Current main-wall bearing from north (0–360)
+ * @param {number} lat
+ * @returns {{
+ *   optimalAzimuth: number,
+ *   deviationDeg: number,
+ *   turnDegrees: number,
+ *   turnDirection: 'clockwise'|'counterclockwise'|'none',
+ *   turnLabel: string,
+ * }}
+ */
+export function calcOrientationTurn(orientationDeg, lat) {
+  const optimalAzimuth = getOptimalAzimuth(lat);
+  const turn = shortestSignedTurn(orientationDeg, optimalAzimuth);
+  const deviationDeg = Math.abs(turn);
+  if (deviationDeg < 0.5) {
+    return {
+      optimalAzimuth,
+      deviationDeg: 0,
+      turnDegrees: 0,
+      turnDirection: 'none',
+      turnLabel: 'Your main wall already faces the optimal direction for passive solar gain.',
+    };
+  }
+  const turnDirection = turn > 0 ? 'clockwise' : 'counterclockwise';
+  const turnLabel =
+    `Rotate the house ${deviationDeg.toFixed(0)}° ${turnDirection} ` +
+    `(from ${orientationDeg.toFixed(0)}° toward ${optimalAzimuth}°) ` +
+    `so the bay window faces ${lat >= 0 ? 'south' : 'north'}.`;
+  return {
+    optimalAzimuth,
+    deviationDeg,
+    turnDegrees: deviationDeg,
+    turnDirection,
+    turnLabel,
+  };
+}
+
+/**
+ * Best garden placement: open ground on the sunniest side of the house.
+ * @param {number} lat
+ * @returns {{ azimuthDeg: number, label: string, description: string }}
+ */
+export function getGardenPlacement(lat) {
+  const azimuthDeg = getOptimalAzimuth(lat);
+  const compass = lat >= 0 ? 'south' : 'north';
+  return {
+    azimuthDeg,
+    label: compass.charAt(0).toUpperCase() + compass.slice(1),
+    description:
+      `Place the vegetable garden ${compass} of the house (${azimuthDeg}° from north) ` +
+      `for maximum winter sun and all-day summer light.`,
+  };
+}
+
+/**
+ * Compass label for a north-clockwise azimuth.
+ * @param {number} azimuthDeg
+ * @returns {string}
+ */
+export function azimuthToCompass(azimuthDeg) {
+  const dirs = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
+    'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+  const idx = Math.round(((azimuthDeg % 360) + 360) % 360 / 22.5) % 16;
+  return dirs[idx];
+}

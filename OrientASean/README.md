@@ -53,13 +53,8 @@ python3 -m http.server 8080
 Then visit `http://localhost:8080`.
 
 
-## Future Sean / ToDo's : 
-- Burned through all my tokens 
-- It's hard to read, works, burned all my tokens writing tests and doing tests, so next time explicitly say 'ignore the tests'
-- Add a marker showing the front of the house (where the main bay window is)
-- show a marker for base place to plant a garden for maximum sunlight and what direction
-- add indicators for summer sun and winter sun
-- add defaults for window area/height and maybe an optimized 
-- use my location doesn't work
-- make it more obvious where the house should be placed with windows and garden
-- add a feature that shows the degree offset from north and placement of house (if the house was facing north with the main bay window facing that direction, how much would you turn in degrees and what direction)
+## Site map
+
+After **Analyze Site**, open the **How to read this map** section under the diagram. The green **ring bands** are tree-planting sectors (by compass direction from the house), not shadow cones.
+
+**Use My Location** requires HTTPS or `localhost` (not `file://`). Run `python3 -m http.server 8080` if the button shows a secure-context error.
