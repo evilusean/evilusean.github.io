@@ -2,26 +2,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Angle Converter</title>
-    <style>
-        body { font-family: sans-serif; padding: 2rem; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        canvas { border: 1px solid #ccc; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Angle Converter</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
 </head>
 <body>
-    <h1>Angle Converter</h1>
-    <div class="grid">
-        <div>
-            <input type="number" id="inputVal" placeholder="Enter angle" oninput="convert()">
-            <select id="inputType" onchange="convert()">
-                <option value="deg">Degrees</option>
-                <option value="rad">Radians</option>
-            </select>
-            <div id="results"></div>
+    <div class="container">
+        <h1>🔄 Universal Angle Converter</h1>
+        
+        <div class="main-grid">
+            <div class="inputs-section">
+                <div class="input-group">
+                    <label for="degrees">Degrees <span class="unit-symbol">(°)</span></label>
+                    <input type="number" id="degrees" placeholder="0.00" step="0.01">
+                </div>
+
+                <div class="input-group">
+                    <label for="radians">Radians <span class="unit-symbol">(rad)</span></label>
+                    <input type="number" id="radians" placeholder="0.00" step="0.0001">
+                </div>
+
+                <div class="input-group">
+                    <label for="gradians">Gradians <span class="unit-symbol">(grad)</span></label>
+                    <input type="number" id="gradians" placeholder="0.00" step="0.01">
+                </div>
+
+                <div class="input-group">
+                    <label for="dms">Degrees Minutes Seconds <span class="unit-symbol">(DD MM SS)</span></label>
+                    <input type="text" id="dms" placeholder="0 0 0 (DD MM SS.SS)">
+                </div>
+            </div>
+
+            <div class="canvas-section">
+                <canvas id="angleCanvas" width="300" height="300"></canvas>
+                <div class="angle-display" id="angleDisplay">0.00°</div>
+            </div>
         </div>
-        <canvas id="protractor" width="300" height="300"></canvas>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
