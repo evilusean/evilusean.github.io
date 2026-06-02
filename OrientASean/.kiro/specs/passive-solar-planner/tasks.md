@@ -17,10 +17,10 @@ Transform the existing SunCalc scaffold into a full passive solar analysis tool 
   - Input fields: lat, lng, windowArea, windowHeight, orientationAngle, treeHeight, unit toggle (metric/imperial), geolocation button, analyze button
   - _Requirements: 1.1, 1.3, 8.1, 8.2, 8.4, 8.5_
 
-- [-] 2. Implement solar-engine.js — coordinate validation and unit conversion
-  - [-] 2.1 Implement `validateCoordinates(lat, lng)` returning `{ valid, errors[] }`; reject lat outside [−90, +90] and lng outside [−180, +180]
+- [x] 2. Implement solar-engine.js — coordinate validation and unit conversion
+  - [x] 2.1 Implement `validateCoordinates(lat, lng)` returning `{ valid, errors[] }`; reject lat outside [−90, +90] and lng outside [−180, +180]
     - _Requirements: 1.1, 1.2_
-  - [-] 2.2 Write property test for coordinate validation (Property 1)
+  - [ ] 2.2 Write property test for coordinate validation (Property 1)
     - **Property 1: Out-of-range coordinates are always rejected**
     - **Validates: Requirements 1.2**
   - [x] 2.3 Implement `convertDistance(value, from, to)` using factor 3.28084 (metres → feet)
@@ -29,37 +29,37 @@ Transform the existing SunCalc scaffold into a full passive solar analysis tool 
     - **Property 2: Unit conversion is reversible**
     - **Validates: Requirements 1.5**
 
-- [ ] 3. Implement solar-engine.js — altitude approximations and polar detection
-  - [ ] 3.1 Implement `getSummerAltitudeApprox(lat)` as `min(|lat| + 23.5, 90)` with hemisphere sign handling
+- [x] 3. Implement solar-engine.js — altitude approximations and polar detection
+  - [x] 3.1 Implement `getSummerAltitudeApprox(lat)` as `min(|lat| + 23.5, 90)` with hemisphere sign handling
     - _Requirements: 3.1_
   - [ ]* 3.2 Write property test for summer altitude cap (Property 7)
     - **Property 7: Summer altitude approximation is capped at 90°**
     - **Validates: Requirements 3.1**
-  - [ ] 3.3 Implement `getWinterAltitudeApprox(lat)` as `max(|lat| − 23.5, 0)` with hemisphere sign handling
+  - [x] 3.3 Implement `getWinterAltitudeApprox(lat)` as `max(|lat| − 23.5, 0)` with hemisphere sign handling
     - _Requirements: 3.2_
   - [ ]* 3.4 Write property test for winter altitude floor (Property 8)
     - **Property 8: Winter altitude approximation is floored at 0°**
     - **Validates: Requirements 3.2**
-  - [ ] 3.5 Implement `isPolarLatitude(lat)` returning `true` when `|lat| >= 66.5`
+  - [x] 3.5 Implement `isPolarLatitude(lat)` returning `true` when `|lat| >= 66.5`
     - _Requirements: 6.4_
   - [ ]* 3.6 Write property test for polar latitude detection (Property 15)
     - **Property 15: Polar latitude detection is correct**
     - **Validates: Requirements 6.4**
 
-- [ ] 4. Implement solar-engine.js — passive solar gain and orientation
-  - [ ] 4.1 Implement `getOptimalAzimuth(lat)` returning 180 for Northern Hemisphere, 0 for Southern
+- [x] 4. Implement solar-engine.js — passive solar gain and orientation
+  - [x] 4.1 Implement `getOptimalAzimuth(lat)` returning 180 for Northern Hemisphere, 0 for Southern
     - _Requirements: 2.5_
-  - [ ] 4.2 Implement `calcPassiveSolarGain(windowArea, altitudeDeg)` as `windowArea × cos(altitudeDeg × π/180)`
+  - [x] 4.2 Implement `calcPassiveSolarGain(windowArea, altitudeDeg)` as `windowArea × cos(altitudeDeg × π/180)`
     - _Requirements: 2.2_
   - [ ]* 4.3 Write property test for passive solar gain formula (Property 4)
     - **Property 4: Passive solar gain equals the formula**
     - **Validates: Requirements 2.2**
-  - [ ] 4.4 Implement `calcRelativeGainRatio(orientationDeg, altitudeDeg)` returning 0–100; ratio = 100 at deviation 0°
+  - [x] 4.4 Implement `calcRelativeGainRatio(orientationDeg, altitudeDeg)` returning 0–100; ratio = 100 at deviation 0°
     - _Requirements: 2.3_
   - [ ]* 4.5 Write property test for relative gain ratio bounds and maximum at zero deviation (Property 5)
     - **Property 5: Relative gain ratio is bounded and maximised at zero deviation**
     - **Validates: Requirements 2.3**
-  - [ ] 4.6 Implement orientation warning logic: return `true` when `|deviation_from_optimal| > 30`
+  - [x] 4.6 Implement orientation warning logic: return `true` when `|deviation_from_optimal| > 30`
     - _Requirements: 2.4_
   - [ ]* 4.7 Write property test for orientation warning threshold (Property 6)
     - **Property 6: Orientation warning fires exactly when deviation exceeds 30°**
@@ -68,10 +68,10 @@ Transform the existing SunCalc scaffold into a full passive solar analysis tool 
     - **Property 10: Hemisphere determines optimal orientation**
     - **Validates: Requirements 2.5**
 
-- [ ] 5. Implement solar-engine.js — overhang calculator and SunCalc integration
-  - [ ] 5.1 Implement `calcOverhangMin(windowHeight, summerAltitudeDeg)` as `windowHeight / tan(summerAltitudeDeg × π/180)`; return `null` when `summerAltitudeDeg <= 0`
+- [x] 5. Implement solar-engine.js — overhang calculator and SunCalc integration
+  - [x] 5.1 Implement `calcOverhangMin(windowHeight, summerAltitudeDeg)` as `windowHeight / tan(summerAltitudeDeg × π/180)`; return `null` when `summerAltitudeDeg <= 0`
     - _Requirements: 3.3, 3.5_
-  - [ ] 5.2 Implement `calcOverhangMax(windowHeight, winterAltitudeDeg)` as `windowHeight / tan(winterAltitudeDeg × π/180)`; return `null` when `winterAltitudeDeg <= 0`
+  - [x] 5.2 Implement `calcOverhangMax(windowHeight, winterAltitudeDeg)` as `windowHeight / tan(winterAltitudeDeg × π/180)`; return `null` when `winterAltitudeDeg <= 0`
     - _Requirements: 3.4_
   - [ ]* 5.3 Write property test for overhang depth formula (Property 9)
     - **Property 9: Overhang depth equals the formula**
@@ -79,9 +79,9 @@ Transform the existing SunCalc scaffold into a full passive solar analysis tool 
   - [ ]* 5.4 Write property test for all distance outputs respecting selected unit (Property 3)
     - **Property 3: All distance outputs respect the selected unit**
     - **Validates: Requirements 1.5**
-  - [ ] 5.5 Implement `getWinterSolsticeAltitude(lat, lng)` using `SunCalc.getPosition` at solar noon on the appropriate December/June solstice date; convert radians to degrees
+  - [x] 5.5 Implement `getWinterSolsticeAltitude(lat, lng)` using `SunCalc.getPosition` at solar noon on the appropriate December/June solstice date; convert radians to degrees
     - _Requirements: 2.1_
-  - [ ] 5.6 Implement `getSunlightDuration(lat, lng, solstice)` using `SunCalc.getTimes`; detect polar day/night via `isNaN(sunrise)` / `isNaN(sunset)`; return `{ durationMs, isPolarDay, isPolarNight }`
+  - [x] 5.6 Implement `getSunlightDuration(lat, lng, solstice)` using `SunCalc.getTimes`; detect polar day/night via `isNaN(sunrise)` / `isNaN(sunset)`; return `{ durationMs, isPolarDay, isPolarNight }`
     - _Requirements: 6.1, 6.2, 6.4_
   - [ ]* 5.7 Write property test for sunrise < noon < sunset ordering (Property 13)
     - **Property 13: Sunrise precedes solar noon precedes sunset (non-polar)**
@@ -93,52 +93,52 @@ Transform the existing SunCalc scaffold into a full passive solar analysis tool 
 - [ ] 6. Checkpoint — Ensure all solar-engine tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 7. Implement site-planner.js
-  - [ ] 7.1 Implement `buildArcData(lat, lng, solstice)`: call `SunCalc.getTimes` to get sunrise/sunset, then loop in 30-minute steps calling `SunCalc.getPosition`; convert azimuth from SunCalc south-based radians to north-clockwise degrees via `(azimuth * 180/π) + 180`; tag sunrise, solar noon, and sunset points with `label`
+- [x] 7. Implement site-planner.js
+  - [x] 7.1 Implement `buildArcData(lat, lng, solstice)`: call `SunCalc.getTimes` to get sunrise/sunset, then loop in 30-minute steps calling `SunCalc.getPosition`; convert azimuth from SunCalc south-based radians to north-clockwise degrees via `(azimuth * 180/π) + 180`; tag sunrise, solar noon, and sunset points with `label`
     - _Requirements: 4.1, 4.3_
   - [ ]* 7.2 Write property test for arc points ordered and within daylight bounds (Property 11)
     - **Property 11: Sun arc points are ordered and within daylight bounds**
     - **Validates: Requirements 4.1**
-  - [ ] 7.3 Implement `calcShadowLength(objectHeight, altitudeDeg)` as `objectHeight / tan(altitudeDeg × π/180)`; return `Infinity` when `altitudeDeg <= 0`
+  - [x] 7.3 Implement `calcShadowLength(objectHeight, altitudeDeg)` as `objectHeight / tan(altitudeDeg × π/180)`; return `Infinity` when `altitudeDeg <= 0`
     - _Requirements: 5.1_
   - [ ]* 7.4 Write property test for shadow length formula (Property 12)
     - **Property 12: Shadow length equals the formula**
     - **Validates: Requirements 5.1**
-  - [ ] 7.5 Implement `calcPlantingZones(lat, summerShadowLength, winterShadowLength)`: return `{ deciduous: ZoneGeometry, evergreen: ZoneGeometry }` with hemisphere-correct angle sectors — Northern Hemisphere: deciduous south/west (90°–270°), evergreen north/northwest (270°–360°/0°–45°); Southern Hemisphere: mirror
+  - [x] 7.5 Implement `calcPlantingZones(lat, summerShadowLength, winterShadowLength)`: return `{ deciduous: ZoneGeometry, evergreen: ZoneGeometry }` with hemisphere-correct angle sectors — Northern Hemisphere: deciduous south/west (90°–270°), evergreen north/northwest (270°–360°/0°–45°); Southern Hemisphere: mirror
     - _Requirements: 5.2, 5.3_
   - [ ]* 7.6 Write property test for hemisphere planting zone placement (Property 10 — site-planner portion)
     - **Property 10: Hemisphere determines planting zones**
     - **Validates: Requirements 5.2, 5.3**
 
-- [ ] 8. Implement canvas-renderer.js
-  - [ ] 8.1 Implement `clearCanvas(canvas)`: fill with background colour and reset transform
+- [x] 8. Implement canvas-renderer.js
+  - [x] 8.1 Implement `clearCanvas(canvas)`: fill with background colour and reset transform
     - _Requirements: 4.2_
-  - [ ] 8.2 Implement arc drawing helper: map each `ArcPoint` to canvas coordinates using `canvasX = cx + r × sin(θ_rad)`, `canvasY = cy − r × cos(θ_rad)`; draw summer arc in amber, winter arc in blue; connect points as a polyline
+  - [x] 8.2 Implement arc drawing helper: map each `ArcPoint` to canvas coordinates using `canvasX = cx + r × sin(θ_rad)`, `canvasY = cy − r × cos(θ_rad)`; draw summer arc in amber, winter arc in blue; connect points as a polyline
     - _Requirements: 4.2, 4.5_
-  - [ ] 8.3 Implement label drawing: place "Sunrise", "Noon", "Sunset" text at the labelled `ArcPoint` positions on each arc
+  - [x] 8.3 Implement label drawing: place "Sunrise", "Noon", "Sunset" text at the labelled `ArcPoint` positions on each arc
     - _Requirements: 4.3_
-  - [ ] 8.4 Implement planting zone overlay: draw filled arc sectors for deciduous zone (green, semi-transparent) and evergreen zone (dark-green, semi-transparent) using `ctx.arc()` with the `ZoneGeometry` angle ranges; draw compass rose (N/S/E/W labels) and scale bar in user-selected units
+  - [x] 8.4 Implement planting zone overlay: draw filled arc sectors for deciduous zone (green, semi-transparent) and evergreen zone (dark-green, semi-transparent) using `ctx.arc()` with the `ZoneGeometry` angle ranges; draw compass rose (N/S/E/W labels) and scale bar in user-selected units
     - _Requirements: 4.5, 5.4, 4.6_
-  - [ ] 8.5 Implement `hitTestArcPoint(canvasX, canvasY, points, thresholdPx)`: iterate all points, compute pixel distance, return nearest within threshold or `null`
+  - [x] 8.5 Implement `hitTestArcPoint(canvasX, canvasY, points, thresholdPx)`: iterate all points, compute pixel distance, return nearest within threshold or `null`
     - _Requirements: 4.4_
-  - [ ] 8.6 Implement `renderAll(canvas, summerArc, winterArc, deciduousZone, evergreenZone, options)`: call clear, draw zones, draw arcs, draw labels, draw scale bar in sequence
+  - [x] 8.6 Implement `renderAll(canvas, summerArc, winterArc, deciduousZone, evergreenZone, options)`: call clear, draw zones, draw arcs, draw labels, draw scale bar in sequence
     - _Requirements: 4.2, 4.3, 4.5, 4.6, 5.4_
 
-- [ ] 9. Implement app.js — orchestration and DOM wiring
-  - [ ] 9.1 Implement form submit handler: read all input values, call `validateCoordinates`, display per-field errors below inputs on failure; on success call all engine and planner functions, collect into `AnalysisResult`, call `renderAll`, populate all result DOM elements (gain, ratio, overhang range, sunlight durations, orientation recommendation, warning if deviation > 30°)
+- [x] 9. Implement app.js — orchestration and DOM wiring
+  - [x] 9.1 Implement form submit handler: read all input values, call `validateCoordinates`, display per-field errors below inputs on failure; on success call all engine and planner functions, collect into `AnalysisResult`, call `renderAll`, populate all result DOM elements (gain, ratio, overhang range, sunlight durations, orientation recommendation, warning if deviation > 30°)
     - _Requirements: 1.1, 1.2, 2.1, 2.2, 2.3, 2.4, 2.6, 3.6, 6.3_
-  - [ ] 9.2 Implement geolocation handler: call `navigator.geolocation.getCurrentPosition`, populate lat/lng fields on success; on error map codes 1/2/3 to the specified messages and display in the UI
+  - [x] 9.2 Implement geolocation handler: call `navigator.geolocation.getCurrentPosition`, populate lat/lng fields on success; on error map codes 1/2/3 to the specified messages and display in the UI
     - _Requirements: 1.3, 1.4_
-  - [ ] 9.3 Implement unit toggle: on change re-run `convertDistance` on all displayed distance values and update labels; re-render canvas with updated `metersPerPixel` scale
+  - [x] 9.3 Implement unit toggle: on change re-run `convertDistance` on all displayed distance values and update labels; re-render canvas with updated `metersPerPixel` scale
     - _Requirements: 1.5_
-  - [ ] 9.4 Implement canvas `mousemove` listener: call `hitTestArcPoint` for both arcs; show tooltip div with time, altitude, and azimuth when a point is within threshold; hide tooltip otherwise
+  - [x] 9.4 Implement canvas `mousemove` listener: call `hitTestArcPoint` for both arcs; show tooltip div with time, altitude, and azimuth when a point is within threshold; hide tooltip otherwise
     - _Requirements: 4.4_
-  - [ ] 9.5 Implement `generateTextExport(result)`: build a plain-text string containing passive solar gain, overhang depth range, summer/winter sunlight durations, and tree placement recommendations; export as `.txt` via `URL.createObjectURL(new Blob([text]))`
+  - [x] 9.5 Implement `generateTextExport(result)`: build a plain-text string containing passive solar gain, overhang depth range, summer/winter sunlight durations, and tree placement recommendations; export as `.txt` via `URL.createObjectURL(new Blob([text]))`
     - _Requirements: 7.2, 7.3_
   - [ ]* 9.6 Write property test for text export completeness (Property 16)
     - **Property 16: Text export contains all required fields**
     - **Validates: Requirements 7.2**
-  - [ ] 9.7 Implement PNG export: call `canvas.toDataURL('image/png')` and trigger download via a temporary `<a>` element; enable/disable export buttons based on `analysisComplete` flag
+  - [x] 9.7 Implement PNG export: call `canvas.toDataURL('image/png')` and trigger download via a temporary `<a>` element; enable/disable export buttons based on `analysisComplete` flag
     - _Requirements: 7.1, 7.3, 7.4_
 
 - [ ] 10. Checkpoint — Ensure all module tests pass and canvas renders correctly
