@@ -58,3 +58,10 @@ Then visit `http://localhost:8080`.
 After **Analyze Site**, open the **How to read this map** section under the diagram. The green **ring bands** are tree-planting sectors (by compass direction from the house), not shadow cones.
 
 **Use My Location** requires HTTPS or `localhost` (not `file://`). Run `python3 -m http.server 8080` if the button shows a secure-context error.
+
+## Original Source :
+Why Your House is Facing the Wrong Way : https://www.youtube.com/watch?v=9_q0CYygJlc
+
+## Future Sean / TODO :
+- Add an explanasean - how to use / what it means 
+- I just tested, and the long/lat for hawaii said it should be south facing? I thought it would be inverted and need to be north facing? 
