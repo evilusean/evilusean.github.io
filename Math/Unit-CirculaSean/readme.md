@@ -110,7 +110,7 @@ Add a way to teach ASTC and know which quadrant has how many pi over what for le
 - add a checklist of what trig identities you want to study on quiz mode (realistically future Sean will only need a few)
 - add a way to remove the black unit circle, it is very distracting during the quiz app when going through trig identities
 - app to have a selection where you can choose what trig identities you are quizzed on (**Memorizing the "Big 5"** (Pythagorean, Double Angle, and basic definitions) as defaults)
-
+- add a section that explains how the radians work 'bottom cuts, top counts' = numerator counts the amount, denominator shows you how many sections per pi
 
 
 
