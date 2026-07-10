@@ -445,6 +445,9 @@ function renderComparison(metrics) {
 function renderContract(metrics) {
   const iconCount = Math.max(1, Math.min(120, Math.round(metrics.paperPerPhysical)));
   const ratioLabel = `${metrics.paperPerPhysical.toFixed(1)}:1`;
+  const leverageText = metrics.paperPerPhysical >= 100
+    ? 'At this scale, the paper market can easily exceed a hundred paper claims for each ounce of deliverable metal once futures, ETFs, and rehypothecated collateral are counted together.'
+    : 'The gap between paper claims and physical metal is already meaningful, and it can become much larger once futures, ETFs, and rehypothecated collateral are layered on top of the same ounces.';
 
   elements.contractVisual.innerHTML = `
     <div class="contract-meter">
@@ -460,6 +463,11 @@ function renderContract(metrics) {
             .join('')}
         </div>
       </div>
+    </div>
+    <div class="contract-note">
+      <p>${leverageText}</p>
+      <p>In other words, many more paper contracts can be tied to each ounce of physical metal than the visible inventory alone would suggest.</p>
+      <p><a class="contract-link" href="https://www.usdebtclock.org/" target="_blank" rel="noreferrer">Explore more context at usdebtclock.org</a></p>
     </div>
   `;
 }
