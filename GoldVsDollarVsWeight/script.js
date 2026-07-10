@@ -1,0 +1,3 @@
+// Logic to calculate bill counts (1g per bill) and render SVG rects
+// Formula: (Gold Price / Denomination) = Number of bills
+// SVG generation code here...
