@@ -4,28 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Euclid's Elements — Screensaver</title>
+    <title>EuclidiSean</title>
 </head>
 <body>
     <header id="header">
-        <h1 id="title">Euclid's Elements</h1>
-        <div class="header-right">
-            <span id="book-label" class="book-label"></span>
+        <h1 id="title">EuclidiSean</h1>
+        <span id="book-label" class="book-label"></span>
+        <nav class="header-nav">
+            <button id="browse-toggle" class="header-btn" aria-expanded="false" aria-controls="browse-panel">
+                Browse
+            </button>
+            <button id="book-toggle" class="header-btn" aria-expanded="false" aria-controls="book-filters">
+                Books <span id="book-count" class="book-count">13/13</span>
+            </button>
             <details id="how-to-use" class="how-to-use">
-                <summary>How to Use</summary>
+                <summary class="header-btn">How to Use</summary>
                 <div class="how-to-content">
                     <p>This screensaver cycles through propositions and definitions from Euclid's <em>Elements</em>, animating each geometric construction step by step.</p>
                     <ul>
                         <li><strong>Play / Pause</strong> — toggle automatic advancement.</li>
                         <li><strong>Previous / Next</strong> — step through entries manually.</li>
-                        <li><strong>Randomize</strong> — jump to a random step.</li>
-                        <li><strong>Book filters</strong> — check or uncheck books to include in rotation.</li>
+                        <li><strong>Randomize</strong> — toggle random mode (highlighted when active).</li>
+                        <li><strong>Browse</strong> — read through any book and click an entry to view its construction.</li>
+                        <li><strong>Books</strong> — check or uncheck books to include in rotation.</li>
                     </ul>
                     <p>Move the mouse to reveal controls. They fade away during passive viewing.</p>
                 </div>
             </details>
-        </div>
+        </nav>
     </header>
+
+    <aside id="browse-panel" class="side-panel browse-panel" hidden>
+        <div class="panel-header">
+            <span>Browse the Elements</span>
+            <button id="browse-close" class="panel-close" aria-label="Close browse">&times;</button>
+        </div>
+        <div id="browse-list" class="browse-list"></div>
+    </aside>
+
+    <aside id="book-panel" class="side-panel book-panel" hidden>
+        <div class="panel-header">
+            <span>Include in rotation</span>
+            <div class="panel-header-actions">
+                <button id="select-all" class="link-btn">All</button>
+                <button id="select-none" class="link-btn">None</button>
+                <button id="book-close" class="panel-close" aria-label="Close books">&times;</button>
+            </div>
+        </div>
+        <div id="book-checkboxes" class="book-checkboxes"></div>
+    </aside>
 
     <main id="stage">
         <svg id="canvas" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
@@ -47,22 +74,8 @@
         <button id="prev" class="ctrl-btn" title="Previous" aria-label="Previous step">&#9664;</button>
         <button id="play-pause" class="ctrl-btn" title="Play / Pause" aria-label="Play or pause">&#10074;&#10074;</button>
         <button id="next" class="ctrl-btn" title="Next" aria-label="Next step">&#9654;</button>
-        <button id="randomize" class="ctrl-btn" title="Randomize" aria-label="Random step">&#8635;</button>
+        <button id="randomize" class="ctrl-btn" title="Toggle random mode" aria-label="Toggle random mode" aria-pressed="false">&#8635;</button>
     </nav>
-
-    <aside id="book-panel" class="book-panel">
-        <button id="book-toggle" class="book-toggle" aria-expanded="false" aria-controls="book-filters">
-            Books <span id="book-count" class="book-count">13/13</span>
-        </button>
-        <div id="book-filters" class="book-filters" hidden>
-            <div class="book-filters-header">
-                <span>Include in rotation</span>
-                <button id="select-all" class="link-btn">All</button>
-                <button id="select-none" class="link-btn">None</button>
-            </div>
-            <div id="book-checkboxes" class="book-checkboxes"></div>
-        </div>
-    </aside>
 
     <script src="script.js"></script>
 </body>

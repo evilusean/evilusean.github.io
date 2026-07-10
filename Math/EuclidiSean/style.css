@@ -6,8 +6,10 @@
     --fg-dim: #7a756c;
     --accent: #c9a84c;
     --stroke: #b8a88a;
-    --panel-bg: rgba(14, 14, 16, 0.88);
+    --panel-bg: rgba(14, 14, 16, 0.94);
     --fade-duration: 0.6s;
+    --header-h: 3.5rem;
+    --footer-h: 9rem;
 }
 
 html, body {
@@ -22,12 +24,14 @@ html, body {
 #header {
     position: fixed;
     top: 0; left: 0; right: 0;
-    z-index: 20;
-    display: flex;
+    z-index: 30;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
-    justify-content: space-between;
-    padding: 1rem 1.5rem;
-    background: linear-gradient(to bottom, var(--panel-bg) 60%, transparent);
+    gap: 1rem;
+    padding: 0.75rem 1.25rem;
+    min-height: var(--header-h);
+    background: linear-gradient(to bottom, var(--panel-bg) 70%, transparent);
     opacity: 0;
     transition: opacity var(--fade-duration);
     pointer-events: none;
@@ -35,55 +39,83 @@ html, body {
 
 body.ui-visible #header,
 body.ui-visible #controls,
-body.ui-visible #book-panel {
+body.ui-visible .side-panel:not([hidden]) {
     opacity: 1;
     pointer-events: auto;
 }
 
 #title {
-    font-size: 1rem;
+    font-size: clamp(1rem, 3vw, 1.35rem);
     font-weight: 400;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--fg-dim);
-}
-
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    white-space: nowrap;
 }
 
 .book-label {
-    font-size: 0.85rem;
-    color: var(--accent);
+    font-size: clamp(0.75rem, 2vw, 0.9rem);
+    color: var(--fg-dim);
+    letter-spacing: 0.04em;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.header-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+}
+
+.header-btn {
+    padding: 0.35rem 0.7rem;
+    border: 1px solid #333;
+    border-radius: 3px;
+    background: var(--panel-bg);
+    color: var(--fg-dim);
+    font-family: inherit;
+    font-size: 0.78rem;
     letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+    white-space: nowrap;
+    list-style: none;
+    user-select: none;
+}
+
+.header-btn:hover,
+.header-btn:focus-visible {
+    color: var(--accent);
+    border-color: var(--accent);
+    outline: none;
+}
+
+.book-count {
+    color: var(--accent);
+    margin-left: 0.2rem;
 }
 
 /* How to Use dropdown */
-.how-to-use summary {
-    cursor: pointer;
-    font-size: 0.8rem;
-    color: var(--fg-dim);
-    letter-spacing: 0.06em;
-    list-style: none;
-    user-select: none;
+.how-to-use {
+    position: relative;
 }
 
 .how-to-use summary::-webkit-details-marker { display: none; }
 
 .how-to-use summary::after {
     content: " ▾";
-    font-size: 0.7rem;
+    font-size: 0.65rem;
 }
 
 .how-to-use[open] summary::after { content: " ▴"; }
 
 .how-to-content {
     position: absolute;
-    right: 1.5rem;
-    top: 3rem;
-    width: 22rem;
+    right: 0;
+    top: calc(100% + 0.4rem);
+    width: min(22rem, 90vw);
     padding: 1rem 1.2rem;
     background: var(--panel-bg);
     border: 1px solid #2a2a2e;
@@ -91,6 +123,7 @@ body.ui-visible #book-panel {
     font-size: 0.82rem;
     line-height: 1.55;
     color: var(--fg-dim);
+    z-index: 40;
 }
 
 .how-to-content p { margin-bottom: 0.6rem; }
@@ -98,189 +131,66 @@ body.ui-visible #book-panel {
 .how-to-content li { margin-bottom: 0.3rem; }
 .how-to-content strong { color: var(--fg); font-weight: 400; }
 
-/* ── Stage (SVG visualizer) ── */
-#stage {
+/* ── Side panels (Browse & Books) ── */
+.side-panel {
     position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#canvas {
-    width: 100%;
-    height: 100%;
-    max-height: 72vh;
-    color: var(--stroke);
-}
-
-#drawing-layer line,
-#drawing-layer circle,
-#drawing-layer polygon,
-#drawing-layer path,
-#drawing-layer rect {
-    fill: none;
-    stroke: var(--stroke);
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-#drawing-layer .point {
-    fill: var(--accent);
-    stroke: none;
-}
-
-#drawing-layer .label {
-    fill: var(--fg-dim);
-    stroke: none;
-    font-family: inherit;
-    font-size: 14px;
-    font-style: italic;
-}
-
-#drawing-layer .highlight {
-    stroke: var(--accent);
-    stroke-width: 2.5;
-}
-
-/* Animated stroke reveal */
-.anim-draw {
-    stroke-dasharray: var(--dash-len);
-    stroke-dashoffset: var(--dash-len);
-    animation: draw-stroke 0.9s ease forwards;
-}
-
-.anim-fade {
-    opacity: 0;
-    animation: fade-in 0.5s ease forwards;
-}
-
-@keyframes draw-stroke {
-    to { stroke-dashoffset: 0; }
-}
-
-@keyframes fade-in {
-    to { opacity: 1; }
-}
-
-/* ── Footer (text) ── */
-#footer {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    z-index: 10;
-    padding: 2rem 3rem 1.5rem;
-    background: linear-gradient(to top, var(--panel-bg) 70%, transparent);
-    text-align: center;
-    pointer-events: none;
-}
-
-.content-text {
-    font-size: clamp(0.95rem, 2vw, 1.15rem);
-    line-height: 1.65;
-    max-width: 52rem;
-    margin: 0 auto;
-    color: var(--fg);
-}
-
-.step-indicator {
-    margin-top: 0.5rem;
-    font-size: 0.75rem;
-    color: var(--fg-dim);
-    letter-spacing: 0.08em;
-}
-
-/* ── Navigation controls ── */
-.controls {
-    position: fixed;
-    bottom: 5.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 20;
-    display: flex;
-    gap: 0.5rem;
-    opacity: 0;
-    transition: opacity var(--fade-duration);
-    pointer-events: none;
-}
-
-.ctrl-btn {
-    width: 2.6rem;
-    height: 2.6rem;
-    border: 1px solid #333;
-    border-radius: 50%;
-    background: var(--panel-bg);
-    color: var(--fg-dim);
-    font-size: 1rem;
-    cursor: pointer;
-    transition: color 0.2s, border-color 0.2s;
-    line-height: 1;
-}
-
-.ctrl-btn:hover {
-    color: var(--accent);
-    border-color: var(--accent);
-}
-
-#play-pause { font-size: 0.85rem; }
-
-/* ── Book filter panel ── */
-.book-panel {
-    position: fixed;
-    top: 3.5rem;
-    right: 1.5rem;
-    z-index: 20;
-    opacity: 0;
-    transition: opacity var(--fade-duration);
-    pointer-events: none;
-}
-
-body.ui-visible .book-panel { pointer-events: auto; }
-
-.book-toggle {
-    padding: 0.4rem 0.8rem;
-    border: 1px solid #333;
-    border-radius: 3px;
-    background: var(--panel-bg);
-    color: var(--fg-dim);
-    font-family: inherit;
-    font-size: 0.78rem;
-    letter-spacing: 0.06em;
-    cursor: pointer;
-    transition: color 0.2s, border-color 0.2s;
-}
-
-.book-toggle:hover {
-    color: var(--accent);
-    border-color: var(--accent);
-}
-
-.book-count {
-    color: var(--accent);
-    margin-left: 0.3rem;
-}
-
-.book-filters {
-    margin-top: 0.4rem;
-    padding: 0.8rem;
+    top: var(--header-h);
+    z-index: 25;
+    width: min(22rem, 92vw);
+    max-height: calc(100vh - var(--header-h) - 1rem);
     background: var(--panel-bg);
     border: 1px solid #2a2a2e;
     border-radius: 4px;
-    width: 16rem;
-    max-height: 60vh;
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transition: opacity var(--fade-duration);
+    pointer-events: none;
+    overflow: hidden;
 }
 
-.book-filters-header {
+.side-panel:not([hidden]) {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.browse-panel {
+    left: 1rem;
+}
+
+.book-panel {
+    right: 1rem;
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.7rem 0.9rem;
+    border-bottom: 1px solid #2a2a2e;
+    font-size: 0.78rem;
+    color: var(--fg-dim);
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+}
+
+.panel-header-actions {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: 0.6rem;
-    font-size: 0.72rem;
-    color: var(--fg-dim);
-    letter-spacing: 0.04em;
 }
 
-.book-filters-header span { flex: 1; }
+.panel-close {
+    background: none;
+    border: none;
+    color: var(--fg-dim);
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 0.2rem;
+}
+
+.panel-close:hover { color: var(--accent); }
 
 .link-btn {
     background: none;
@@ -293,7 +203,100 @@ body.ui-visible .book-panel { pointer-events: auto; }
     text-underline-offset: 2px;
 }
 
+/* Browse list */
+.browse-list {
+    overflow-y: auto;
+    flex: 1;
+    padding: 0.5rem 0;
+}
+
+.browse-book {
+    border-bottom: 1px solid #1e1e22;
+}
+
+.browse-book summary {
+    padding: 0.55rem 0.9rem;
+    font-size: 0.82rem;
+    color: var(--fg);
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+.browse-book summary::-webkit-details-marker { display: none; }
+
+.browse-book summary::before {
+    content: "▸";
+    font-size: 0.7rem;
+    color: var(--accent);
+    transition: transform 0.15s;
+}
+
+.browse-book[open] summary::before {
+    transform: rotate(90deg);
+}
+
+.browse-book-num {
+    color: var(--accent);
+    font-weight: 400;
+    min-width: 1.5rem;
+}
+
+.browse-book-title {
+    color: var(--fg-dim);
+    font-size: 0.75rem;
+}
+
+.browse-entries {
+    padding: 0.2rem 0 0.5rem;
+}
+
+.browse-entry {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.55rem 1rem 0.55rem 2rem;
+    border: none;
+    background: none;
+    color: var(--fg-dim);
+    font-family: inherit;
+    font-size: 0.88rem;
+    line-height: 1.45;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.browse-entry:hover {
+    background: rgba(201, 168, 76, 0.08);
+    color: var(--fg);
+}
+
+.browse-entry.active {
+    background: rgba(201, 168, 76, 0.15);
+    color: var(--accent);
+    border-left: 2px solid var(--accent);
+    padding-left: calc(2rem - 2px);
+}
+
+.browse-entry-id {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--accent);
+    margin-bottom: 0.15rem;
+    letter-spacing: 0.04em;
+}
+
+.browse-entry.disabled {
+    opacity: 0.45;
+}
+
+/* Book checkboxes */
 .book-checkboxes {
+    overflow-y: auto;
+    flex: 1;
+    padding: 0.6rem 0.9rem;
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
@@ -321,4 +324,217 @@ body.ui-visible .book-panel { pointer-events: auto; }
 .book-checkboxes .book-num {
     color: var(--accent);
     min-width: 1.2rem;
+}
+
+/* ── Stage (SVG visualizer) ── */
+#stage {
+    position: fixed;
+    top: var(--header-h);
+    bottom: var(--footer-h);
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+}
+
+#canvas {
+    width: 100%;
+    height: 100%;
+    max-width: 900px;
+    color: var(--stroke);
+}
+
+#drawing-layer line,
+#drawing-layer circle,
+#drawing-layer polygon,
+#drawing-layer path,
+#drawing-layer rect,
+#drawing-layer ellipse {
+    fill: none;
+    stroke: var(--stroke);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+#drawing-layer .point {
+    fill: var(--accent);
+    stroke: none;
+}
+
+#drawing-layer .label {
+    fill: var(--fg-dim);
+    stroke: none;
+    font-family: inherit;
+    font-size: 14px;
+    font-style: italic;
+}
+
+#drawing-layer .highlight {
+    stroke: var(--accent);
+    stroke-width: 2.5;
+}
+
+.anim-draw {
+    stroke-dasharray: var(--dash-len);
+    stroke-dashoffset: var(--dash-len);
+    animation: draw-stroke 0.9s ease forwards;
+}
+
+.anim-fade {
+    opacity: 0;
+    animation: fade-in 0.5s ease forwards;
+}
+
+@keyframes draw-stroke {
+    to { stroke-dashoffset: 0; }
+}
+
+@keyframes fade-in {
+    to { opacity: 1; }
+}
+
+/* ── Footer (text) ── */
+#footer {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 10;
+    padding: 1.5rem 1.5rem 1.25rem;
+    background: linear-gradient(to top, var(--panel-bg) 75%, transparent);
+    text-align: center;
+    pointer-events: none;
+}
+
+.content-text {
+    font-size: clamp(1.15rem, 3.2vw, 1.65rem);
+    line-height: 1.6;
+    max-width: 48rem;
+    margin: 0 auto;
+    color: var(--fg);
+}
+
+.step-indicator {
+    margin-top: 0.6rem;
+    font-size: clamp(0.8rem, 2vw, 0.95rem);
+    color: var(--fg-dim);
+    letter-spacing: 0.06em;
+}
+
+/* ── Navigation controls ── */
+.controls {
+    position: fixed;
+    bottom: calc(var(--footer-h) - 1rem);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    display: flex;
+    gap: 0.5rem;
+    opacity: 0;
+    transition: opacity var(--fade-duration);
+    pointer-events: none;
+}
+
+.ctrl-btn {
+    width: clamp(2.4rem, 8vw, 3rem);
+    height: clamp(2.4rem, 8vw, 3rem);
+    border: 1px solid #333;
+    border-radius: 50%;
+    background: var(--panel-bg);
+    color: var(--fg-dim);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    line-height: 1;
+}
+
+.ctrl-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.ctrl-btn.active {
+    color: var(--bg);
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 12px rgba(201, 168, 76, 0.45);
+}
+
+#play-pause { font-size: 0.85rem; }
+
+/* ── Responsive ── */
+@media (max-width: 720px) {
+    :root {
+        --header-h: auto;
+        --footer-h: 11rem;
+    }
+
+    #header {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+        gap: 0.4rem;
+        padding: 0.6rem 1rem;
+    }
+
+    .book-label {
+        text-align: left;
+    }
+
+    .header-nav {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+
+    .how-to-content {
+        left: 0;
+        right: auto;
+    }
+
+    .browse-panel,
+    .book-panel {
+        left: 0.5rem;
+        right: 0.5rem;
+        width: auto;
+        max-height: 50vh;
+    }
+
+    .book-panel {
+        top: auto;
+        bottom: calc(var(--footer-h) + 3.5rem);
+    }
+
+    #stage {
+        top: 5.5rem;
+    }
+
+    .controls {
+        bottom: calc(var(--footer-h) - 0.5rem);
+    }
+}
+
+@media (max-width: 400px) {
+    .header-nav {
+        gap: 0.3rem;
+    }
+
+    .header-btn {
+        font-size: 0.72rem;
+        padding: 0.3rem 0.5rem;
+    }
+}
+
+/* When both panels could overlap on tablet */
+@media (min-width: 721px) {
+    body.browse-open #stage,
+    body.book-open #stage {
+        transition: padding 0.3s;
+    }
+
+    body.browse-open #stage {
+        padding-left: min(23rem, 40vw);
+    }
+
+    body.book-open #stage {
+        padding-right: min(23rem, 40vw);
+    }
 }

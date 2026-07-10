@@ -567,6 +567,8 @@ let pool = [];
 let entryIndex = 0;
 let stepIndex = 0;
 let isPlaying = true;
+let isRandomMode = false;
+let currentEntryId = null;
 let stepTimer = null;
 let entryTimer = null;
 let uiTimer = null;
@@ -578,6 +580,7 @@ const contentEl = $("content");
 const stepIndicator = $("step-indicator");
 const bookLabel = $("book-label");
 const playPauseBtn = $("play-pause");
+const randomizeBtn = $("randomize");
 const bookCountEl = $("book-count");
 
 /* ── Build flat pool from selected books ── */
@@ -728,26 +731,39 @@ function clearCanvas() {
     drawnElements = [];
 }
 
+function displayEntry(entry, poolIdx) {
+    if (poolIdx !== undefined && poolIdx >= 0) entryIndex = poolIdx;
+    stepIndex = 0;
+    currentEntryId = entry.id;
+
+    bookLabel.textContent = `Book ${entry.book} · ${entry.id}`;
+    contentEl.textContent = entry.text;
+    stepIndicator.textContent = "";
+    updateBrowseHighlight();
+
+    clearCanvas();
+    clearTimers();
+    playSteps(entry);
+}
+
 function showEntry(idx) {
     if (pool.length === 0) {
         contentEl.textContent = "No books selected. Enable at least one book to begin.";
         bookLabel.textContent = "";
         stepIndicator.textContent = "";
+        currentEntryId = null;
         clearCanvas();
+        updateBrowseHighlight();
         return;
     }
 
-    entryIndex = ((idx % pool.length) + pool.length) % pool.length;
-    stepIndex = 0;
-    const entry = pool[entryIndex];
+    const poolIdx = ((idx % pool.length) + pool.length) % pool.length;
+    displayEntry(pool[poolIdx], poolIdx);
+}
 
-    bookLabel.textContent = `Book ${entry.book} · ${entry.id}`;
-    contentEl.textContent = entry.text;
-    stepIndicator.textContent = "";
-
-    clearCanvas();
-    clearTimers();
-    playSteps(entry);
+function showEntryByRef(entry) {
+    const poolIdx = pool.findIndex(e => e.id === entry.id && e.book === entry.book);
+    displayEntry(entry, poolIdx >= 0 ? poolIdx : entryIndex);
 }
 
 function playSteps(entry) {
@@ -755,7 +771,10 @@ function playSteps(entry) {
 
     function advance() {
         if (stepIndex >= entry.visualSteps.length) {
-            entryTimer = setTimeout(() => nextEntry(), ENTRY_DELAY);
+            entryTimer = setTimeout(() => {
+                if (isRandomMode) randomEntry();
+                else nextEntry();
+            }, ENTRY_DELAY);
             return;
         }
         renderStep(entry.visualSteps[stepIndex]);
@@ -790,6 +809,13 @@ function randomEntry() {
     showEntry(idx);
 }
 
+function toggleRandomMode() {
+    isRandomMode = !isRandomMode;
+    randomizeBtn.classList.toggle("active", isRandomMode);
+    randomizeBtn.setAttribute("aria-pressed", String(isRandomMode));
+    if (isRandomMode) randomEntry();
+}
+
 function togglePlay() {
     isPlaying = !isPlaying;
     playPauseBtn.innerHTML = isPlaying ? "&#10074;&#10074;" : "&#9654;";
@@ -819,6 +845,7 @@ function buildBookCheckboxes() {
             if (cb.checked) activeBooks.add(book.number);
             else activeBooks.delete(book.number);
             rebuildPool();
+            buildBrowseList();
             showEntry(0);
         });
         const num = document.createElement("span");
@@ -843,7 +870,95 @@ function setAllBooks(on) {
         cb.checked = on;
     });
     rebuildPool();
+    buildBrowseList();
     showEntry(0);
+}
+
+/* ── Browse panel ── */
+function buildBrowseList() {
+    const container = $("browse-list");
+    container.innerHTML = "";
+
+    for (const book of euclidData.books) {
+        const details = document.createElement("details");
+        details.className = "browse-book";
+        details.open = book.number === 1;
+
+        const summary = document.createElement("summary");
+        const num = document.createElement("span");
+        num.className = "browse-book-num";
+        num.textContent = `Book ${book.number}`;
+        const title = document.createElement("span");
+        title.className = "browse-book-title";
+        title.textContent = book.title;
+        summary.appendChild(num);
+        summary.appendChild(title);
+        details.appendChild(summary);
+
+        const entriesDiv = document.createElement("div");
+        entriesDiv.className = "browse-entries";
+
+        for (const entry of book.entries) {
+            const btn = document.createElement("button");
+            btn.className = "browse-entry";
+            btn.dataset.id = entry.id;
+            if (!activeBooks.has(book.number)) btn.classList.add("disabled");
+
+            const idSpan = document.createElement("span");
+            idSpan.className = "browse-entry-id";
+            idSpan.textContent = entry.id;
+            btn.appendChild(idSpan);
+            btn.appendChild(document.createTextNode(entry.text));
+
+            btn.addEventListener("click", () => {
+                showUI();
+                isPlaying = true;
+                playPauseBtn.innerHTML = "&#10074;&#10074;";
+                showEntryByRef({ ...entry, bookTitle: book.title });
+                if (window.innerWidth <= 720) closePanel("browse");
+            });
+
+            entriesDiv.appendChild(btn);
+        }
+
+        details.appendChild(entriesDiv);
+        container.appendChild(details);
+    }
+}
+
+function updateBrowseHighlight() {
+    document.querySelectorAll(".browse-entry").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.id === currentEntryId);
+    });
+    if (currentEntryId) {
+        const active = document.querySelector(`.browse-entry[data-id="${currentEntryId}"]`);
+        if (active) active.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+}
+
+/* ── Panel toggles ── */
+function closePanel(which) {
+    if (which === "browse") {
+        $("browse-panel").hidden = true;
+        $("browse-toggle").setAttribute("aria-expanded", "false");
+        document.body.classList.remove("browse-open");
+    } else {
+        $("book-panel").hidden = true;
+        $("book-toggle").setAttribute("aria-expanded", "false");
+        document.body.classList.remove("book-open");
+    }
+}
+
+function togglePanel(which) {
+    const isBrowse = which === "browse";
+    const panel = $(isBrowse ? "browse-panel" : "book-panel");
+    const toggle = $(isBrowse ? "browse-toggle" : "book-toggle");
+    const opening = panel.hidden;
+
+    closePanel(isBrowse ? "book" : "browse");
+    panel.hidden = !opening;
+    toggle.setAttribute("aria-expanded", String(opening));
+    document.body.classList.toggle(isBrowse ? "browse-open" : "book-open", opening);
 }
 
 /* ── UI visibility (auto-hide for screensaver) ── */
@@ -858,31 +973,30 @@ function showUI() {
 /* ── Event bindings ── */
 function init() {
     buildBookCheckboxes();
+    buildBrowseList();
     rebuildPool();
     showEntry(0);
 
-    $("prev").addEventListener("click", () => { showUI(); prevEntry(); });
-    $("next").addEventListener("click", () => { showUI(); nextEntry(); });
+    $("prev").addEventListener("click", () => { showUI(); isRandomMode = false; randomizeBtn.classList.remove("active"); randomizeBtn.setAttribute("aria-pressed", "false"); prevEntry(); });
+    $("next").addEventListener("click", () => { showUI(); isRandomMode = false; randomizeBtn.classList.remove("active"); randomizeBtn.setAttribute("aria-pressed", "false"); nextEntry(); });
     $("play-pause").addEventListener("click", () => { showUI(); togglePlay(); });
-    $("randomize").addEventListener("click", () => { showUI(); randomEntry(); });
+    $("randomize").addEventListener("click", () => { showUI(); toggleRandomMode(); });
     $("select-all").addEventListener("click", () => { showUI(); setAllBooks(true); });
     $("select-none").addEventListener("click", () => { showUI(); setAllBooks(false); });
 
-    $("book-toggle").addEventListener("click", () => {
-        showUI();
-        const panel = $("book-filters");
-        const open = !panel.hidden;
-        panel.hidden = open;
-        $("book-toggle").setAttribute("aria-expanded", String(!open));
-    });
+    $("browse-toggle").addEventListener("click", () => { showUI(); togglePanel("browse"); });
+    $("book-toggle").addEventListener("click", () => { showUI(); togglePanel("book"); });
+    $("browse-close").addEventListener("click", () => { showUI(); closePanel("browse"); });
+    $("book-close").addEventListener("click", () => { showUI(); closePanel("book"); });
 
     document.addEventListener("mousemove", showUI);
     document.addEventListener("keydown", e => {
         showUI();
         if (e.key === " ") { e.preventDefault(); togglePlay(); }
-        if (e.key === "ArrowRight") nextEntry();
-        if (e.key === "ArrowLeft") prevEntry();
-        if (e.key === "r" || e.key === "R") randomEntry();
+        if (e.key === "ArrowRight") { isRandomMode = false; randomizeBtn.classList.remove("active"); randomizeBtn.setAttribute("aria-pressed", "false"); nextEntry(); }
+        if (e.key === "ArrowLeft") { isRandomMode = false; randomizeBtn.classList.remove("active"); randomizeBtn.setAttribute("aria-pressed", "false"); prevEntry(); }
+        if (e.key === "r" || e.key === "R") toggleRandomMode();
+        if (e.key === "Escape") { closePanel("browse"); closePanel("book"); }
     });
 
     showUI();
