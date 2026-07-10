@@ -16,15 +16,22 @@ function init() {
   elements.yearSelect = document.getElementById('yearSelect');
   elements.monthSelect = document.getElementById('monthSelect');
   elements.goldAmount = document.getElementById('goldAmount');
+  elements.manualGoldPrice = document.getElementById('manualGoldPrice');
+  elements.manualSilverPrice = document.getElementById('manualSilverPrice');
+  elements.manualCalcAmount = document.getElementById('manualCalcAmount');
   elements.visualizer = document.getElementById('visualizer');
   elements.stats = document.getElementById('stats');
   elements.contractVisual = document.getElementById('contractVisual');
   elements.historyChart = document.getElementById('historyChart');
+  elements.calculatorResults = document.getElementById('calculatorResults');
   elements.animateButton = document.getElementById('animateButton');
 
   elements.yearSelect.addEventListener('change', handleDateChange);
   elements.monthSelect.addEventListener('change', handleDateChange);
   elements.goldAmount.addEventListener('input', handleGoldAmountChange);
+  elements.manualGoldPrice.addEventListener('input', handleCalculatorInputChange);
+  elements.manualSilverPrice.addEventListener('input', handleCalculatorInputChange);
+  elements.manualCalcAmount.addEventListener('input', handleCalculatorInputChange);
   document.querySelectorAll('.toggle').forEach((button) => {
     button.addEventListener('click', () => {
       state.denomination = Number(button.dataset.denomination);
@@ -53,6 +60,7 @@ async function fetchData() {
     populateDateControls();
     state.selectedSnapshot = state.snapshots[state.snapshots.length - 1];
     syncDateControlsFromSnapshot(state.selectedSnapshot);
+    populateCalculatorInputs();
     renderDashboard();
   } catch (error) {
     console.error(error);
@@ -97,6 +105,48 @@ function handleDateChange() {
   state.selectedSnapshot = snapshot;
   syncDateControlsFromSnapshot(snapshot);
   renderDashboard();
+}
+
+function handleCalculatorInputChange() {
+  updateCalculatorResults();
+}
+
+function populateCalculatorInputs() {
+  const defaultSnapshot = state.selectedSnapshot || state.snapshots[state.snapshots.length - 1];
+  const goldPrice = Number(defaultSnapshot.goldPrice);
+  const silverPrice = Number(defaultSnapshot.silverPrice);
+
+  elements.manualGoldPrice.value = goldPrice.toFixed(2);
+  elements.manualSilverPrice.value = silverPrice.toFixed(2);
+  elements.manualCalcAmount.value = '1';
+  updateCalculatorResults();
+}
+
+function updateCalculatorResults() {
+  const goldPrice = Number(elements.manualGoldPrice.value) || 0;
+  const silverPrice = Number(elements.manualSilverPrice.value) || 0;
+  const amount = Number(elements.manualCalcAmount.value) || 1;
+
+  if (goldPrice <= 0 || silverPrice <= 0) {
+    elements.calculatorResults.innerHTML = '<p class="error">Enter both gold and silver prices to see the weight/cost ratio.</p>';
+    return;
+  }
+
+  const goldValue = amount * goldPrice;
+  const billsForGold = goldValue / 20;
+  const goldWeightGrams = amount * 31.1034768;
+  const paperWeightKg = billsForGold / 1000;
+  const goldWeightKg = goldWeightGrams / 1000;
+  const goldSilverRatio = goldPrice / silverPrice;
+  const gramsPerDollarGold = 31.1034768 / goldPrice;
+  const gramsPerDollarSilver = 31.1034768 / silverPrice;
+
+  elements.calculatorResults.innerHTML = `
+    <p><strong>${amount.toFixed(2)} oz gold</strong> costs <strong>$${goldValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>.</p>
+    <p>At $${goldPrice.toFixed(2)}/oz and $${silverPrice.toFixed(2)}/oz, gold is <strong>${goldSilverRatio.toFixed(1)}×</strong> more expensive than silver.</p>
+    <p>Each dollar buys <strong>${gramsPerDollarGold.toFixed(3)} g</strong> of gold or <strong>${gramsPerDollarSilver.toFixed(3)} g</strong> of silver.</p>
+    <p>The same value requires <strong>${Math.round(billsForGold).toLocaleString()} $20 bills</strong> weighing <strong>${paperWeightKg.toFixed(2)} kg</strong>, while the gold weighs <strong>${goldWeightKg.toFixed(2)} kg</strong>.</p>
+  `;
 }
 
 function handleGoldAmountChange() {
@@ -191,14 +241,19 @@ function calculateMetrics(snapshot) {
 function renderStats(metrics) {
   const cards = [
     {
-      label: 'Weight burden',
-      value: `${metrics.paperWeightKg.toFixed(2)} kg vs ${metrics.goldWeightKg.toFixed(2)} kg`,
-      detail: `${state.denomination === 20 ? '$20' : '$100'} bills weigh ${metrics.weightBurden.toFixed(1)}x more than the same dollar value of gold.`,
+      label: 'Silver price',
+      value: `$${Number(metrics.snapshot.silverPrice).toFixed(2)} / oz`,
+      detail: `Silver is priced at $${Number(metrics.snapshot.silverPrice).toFixed(2)} per ounce in this snapshot.`,
     },
     {
       label: 'Gold / silver ratio',
       value: `${metrics.goldToSilverRatio.toFixed(1)}:1`,
       detail: `One ounce of gold buys ${metrics.goldToSilverRatio.toFixed(1)} ounces of silver at this snapshot.`,
+    },
+    {
+      label: 'Weight burden',
+      value: `${metrics.paperWeightKg.toFixed(2)} kg vs ${metrics.goldWeightKg.toFixed(2)} kg`,
+      detail: `${state.denomination === 20 ? '$20' : '$100'} bills weigh ${metrics.weightBurden.toFixed(1)}x more than the same dollar value of gold.`,
     },
     {
       label: 'Paper / physical gap',
@@ -383,6 +438,7 @@ function renderHistoryChart(metrics) {
   const selectedX = padding + (selectedIndex / Math.max(1, series.length - 1)) * (width - padding * 2);
   const selectedY = height - padding - ((series[selectedIndex] - minValue) / span) * (height - padding * 2);
 
+  const lastYear = state.snapshots[state.snapshots.length - 1].yearMonth.split('-')[0];
   elements.historyChart.innerHTML = `
     <h2>Historical bill-equivalent trend</h2>
     <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Historical bill-equivalent trend chart">
@@ -393,7 +449,7 @@ function renderHistoryChart(metrics) {
       <circle cx="${selectedX}" cy="${selectedY}" r="8" fill="#ef4444" stroke="#fee2e2" stroke-width="2"></circle>
       <circle cx="${selectedX}" cy="${selectedY}" r="3" fill="#fff1f2"></circle>
       <text x="${padding}" y="20" fill="#f7c948" font-size="13">${state.denomination === 20 ? '$20 bill equivalent' : '$100 bill equivalent'}</text>
-      <text x="${width - padding}" y="${height - 10}" fill="#94a3b8" font-size="12" text-anchor="end">1900 → 2025</text>
+      <text x="${width - padding}" y="${height - 10}" fill="#94a3b8" font-size="12" text-anchor="end">1900 → ${lastYear}</text>
     </svg>
   `;
 }

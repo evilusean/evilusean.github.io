@@ -9070,5 +9070,23 @@
     "goldPrice": 2680.34,
     "silverPrice": 30.65,
     "comexCoverageRatio": 0.36
+  },
+  {
+    "yearMonth": "2026-01",
+    "goldPrice": 2805.12,
+    "silverPrice": 31.05,
+    "comexCoverageRatio": 0.37
+  },
+  {
+    "yearMonth": "2026-02",
+    "goldPrice": 2822.44,
+    "silverPrice": 31.15,
+    "comexCoverageRatio": 0.38
+  },
+  {
+    "yearMonth": "2026-03",
+    "goldPrice": 2850.09,
+    "silverPrice": 31.80,
+    "comexCoverageRatio": 0.39
   }
 ]

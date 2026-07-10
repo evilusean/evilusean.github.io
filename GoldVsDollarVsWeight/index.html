@@ -16,7 +16,21 @@
             Enter an amount of gold and compare it to the paper stack needed to match its value. The default uses $20 bills because a $20 gold piece once represented roughly one ounce of gold.
           </p>
         </div>
-        <div class="badge">Static · SVG · Vanilla JS</div>
+        <div class="hero-extra">
+          <div class="badge">Static · SVG · Vanilla JS</div>
+          <div class="hero-visual" aria-hidden="true">
+            <svg viewBox="0 0 340 120" width="340" height="120" role="img" aria-label="Historic value of one $20 bill relative to one ounce of gold">
+              <rect x="10" y="30" width="150" height="70" rx="14" fill="#18304a" stroke="#f5d98a" stroke-width="2" />
+              <text x="85" y="60" fill="#f5d98a" font-size="14" text-anchor="middle">$20 bill</text>
+              <text x="85" y="78" fill="#cbd5e1" font-size="12" text-anchor="middle">~1 oz gold in 1900</text>
+              <circle cx="255" cy="65" r="34" fill="#f4c945" stroke="#8b5a00" stroke-width="3" />
+              <text x="255" y="58" fill="#111" font-size="14" font-weight="700" text-anchor="middle">1 oz</text>
+              <text x="255" y="76" fill="#111" font-size="12" text-anchor="middle">gold</text>
+              <line x1="165" y1="70" x2="221" y2="70" stroke="#f7c948" stroke-width="2" stroke-dasharray="6 4" />
+            </svg>
+            <p class="hero-callout">Originally, one $20 bill represented roughly one ounce of gold. Today it takes far more paper to buy the same metal.</p>
+          </div>
+        </div>
       </header>
 
       <section class="controls card">
@@ -51,6 +65,30 @@
       </section>
 
       <section class="stats card" id="stats"></section>
+
+      <section class="calculator card" id="priceCalculator">
+        <h2>Price & weight calculator</h2>
+        <div class="calc-grid">
+          <div class="calc-inputs">
+            <label>
+              Gold price
+              <input id="manualGoldPrice" type="number" min="0.01" step="0.01" value="0" />
+            </label>
+            <label>
+              Silver price
+              <input id="manualSilverPrice" type="number" min="0.01" step="0.01" value="0" />
+            </label>
+            <label>
+              Gold weight
+              <div class="input-row">
+                <input id="manualCalcAmount" type="number" min="0.01" step="0.01" value="1" />
+                <span class="unit">oz</span>
+              </div>
+            </label>
+          </div>
+          <div class="calc-output" id="calculatorResults"></div>
+        </div>
+      </section>
 
       <section class="visuals card">
         <div class="comparison-shell">
