@@ -1,0 +1,4 @@
+body { background: #1a1a1a; color: #e0e0e0; font-family: serif; display: flex; justify-content: center; }
+#app { width: 80%; text-align: center; margin-top: 50px; }
+#visualizer { height: 400px; border: 1px solid #444; margin: 20px 0; }
+#content { font-size: 1.2rem; line-height: 1.6; }
