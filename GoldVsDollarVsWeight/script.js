@@ -13,7 +13,8 @@ const elements = {};
 window.addEventListener('DOMContentLoaded', init);
 
 function init() {
-  elements.snapshotSelect = document.getElementById('snapshotSelect');
+  elements.yearSelect = document.getElementById('yearSelect');
+  elements.monthSelect = document.getElementById('monthSelect');
   elements.goldAmount = document.getElementById('goldAmount');
   elements.visualizer = document.getElementById('visualizer');
   elements.stats = document.getElementById('stats');
@@ -21,7 +22,8 @@ function init() {
   elements.historyChart = document.getElementById('historyChart');
   elements.animateButton = document.getElementById('animateButton');
 
-  elements.snapshotSelect.addEventListener('change', handleSnapshotChange);
+  elements.yearSelect.addEventListener('change', handleDateChange);
+  elements.monthSelect.addEventListener('change', handleDateChange);
   elements.goldAmount.addEventListener('input', handleGoldAmountChange);
   document.querySelectorAll('.toggle').forEach((button) => {
     button.addEventListener('click', () => {
@@ -48,9 +50,9 @@ async function fetchData() {
     }
 
     state.snapshots = snapshots;
-    populateSnapshotSelect();
-    state.selectedSnapshot = state.snapshots[0];
-    elements.snapshotSelect.value = state.selectedSnapshot.yearMonth;
+    populateDateControls();
+    state.selectedSnapshot = state.snapshots[state.snapshots.length - 1];
+    syncDateControlsFromSnapshot(state.selectedSnapshot);
     renderDashboard();
   } catch (error) {
     console.error(error);
@@ -58,14 +60,42 @@ async function fetchData() {
   }
 }
 
-function populateSnapshotSelect() {
-  elements.snapshotSelect.innerHTML = state.snapshots
-    .map((snapshot) => `<option value="${snapshot.yearMonth}">${formatLabel(snapshot.yearMonth)}</option>`)
+function populateDateControls() {
+  const years = [...new Set(state.snapshots.map((snapshot) => snapshot.yearMonth.split('-')[0]))];
+  elements.yearSelect.innerHTML = years
+    .map((year) => `<option value="${year}">${year}</option>`)
+    .join('');
+
+  const selectedYear = elements.yearSelect.value || years[years.length - 1];
+  populateMonthSelect(selectedYear);
+}
+
+function populateMonthSelect(year) {
+  const matchingSnapshots = state.snapshots.filter((snapshot) => snapshot.yearMonth.startsWith(`${year}-`));
+  elements.monthSelect.innerHTML = matchingSnapshots
+    .map((snapshot) => {
+      const [, month] = snapshot.yearMonth.split('-');
+      return `<option value="${month}">${new Date(Number(year), Number(month) - 1).toLocaleDateString('en', { month: 'long' })}</option>`;
+    })
     .join('');
 }
 
-function handleSnapshotChange() {
-  state.selectedSnapshot = state.snapshots.find((snapshot) => snapshot.yearMonth === elements.snapshotSelect.value) || state.snapshots[0];
+function syncDateControlsFromSnapshot(snapshot) {
+  const [year, month] = snapshot.yearMonth.split('-');
+  if (!elements.yearSelect.querySelector(`option[value="${year}"]`)) {
+    populateDateControls();
+  }
+  elements.yearSelect.value = year;
+  populateMonthSelect(year);
+  elements.monthSelect.value = month;
+}
+
+function handleDateChange() {
+  const year = elements.yearSelect.value;
+  const month = elements.monthSelect.value;
+  const snapshot = state.snapshots.find((entry) => entry.yearMonth === `${year}-${month}`) || state.snapshots[state.snapshots.length - 1];
+  state.selectedSnapshot = snapshot;
+  syncDateControlsFromSnapshot(snapshot);
   renderDashboard();
 }
 
@@ -87,16 +117,27 @@ function toggleAnimation() {
 
   state.isAnimating = true;
   elements.animateButton.textContent = 'Pause History';
-  state.animationIndex = state.snapshots.findIndex((snapshot) => snapshot.yearMonth === elements.snapshotSelect.value);
-  if (state.animationIndex < 0) {
-    state.animationIndex = 0;
-  }
+  state.animationIndex = 0;
+  state.selectedSnapshot = state.snapshots[0];
+  syncDateControlsFromSnapshot(state.selectedSnapshot);
+  renderDashboard();
 
   state.animationTimer = window.setInterval(() => {
-    state.animationIndex = (state.animationIndex + 1) % state.snapshots.length;
+    state.animationIndex += 1;
+    if (state.animationIndex >= state.snapshots.length) {
+      clearInterval(state.animationTimer);
+      state.isAnimating = false;
+      state.animationTimer = null;
+      state.selectedSnapshot = state.snapshots[state.snapshots.length - 1];
+      syncDateControlsFromSnapshot(state.selectedSnapshot);
+      renderDashboard();
+      elements.animateButton.textContent = 'Animate History';
+      return;
+    }
+
     const nextSnapshot = state.snapshots[state.animationIndex];
     state.selectedSnapshot = nextSnapshot;
-    elements.snapshotSelect.value = nextSnapshot.yearMonth;
+    syncDateControlsFromSnapshot(nextSnapshot);
     renderDashboard();
   }, 1400);
 }
@@ -349,7 +390,8 @@ function renderHistoryChart(metrics) {
       <line x1="${padding}" y1="${height - padding}" x2="${width - padding}" y2="${height - padding}" stroke="#334155" stroke-width="1"></line>
       <line x1="${padding}" y1="${padding}" x2="${padding}" y2="${height - padding}" stroke="#334155" stroke-width="1"></line>
       <polyline fill="none" stroke="#f59e0b" stroke-width="3" points="${points}"></polyline>
-      <circle cx="${selectedX}" cy="${selectedY}" r="6" fill="#f7c948"></circle>
+      <circle cx="${selectedX}" cy="${selectedY}" r="8" fill="#ef4444" stroke="#fee2e2" stroke-width="2"></circle>
+      <circle cx="${selectedX}" cy="${selectedY}" r="3" fill="#fff1f2"></circle>
       <text x="${padding}" y="20" fill="#f7c948" font-size="13">${state.denomination === 20 ? '$20 bill equivalent' : '$100 bill equivalent'}</text>
       <text x="${width - padding}" y="${height - 10}" fill="#94a3b8" font-size="12" text-anchor="end">1900 → 2025</text>
     </svg>
