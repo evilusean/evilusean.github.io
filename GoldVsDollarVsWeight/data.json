@@ -1,74 +1,9074 @@
 [
   {
-    "yearMonth": "2020-01",
-    "goldPrice": 1580,
-    "silverPrice": 18.6,
-    "comexCoverageRatio": 0.16
+    "yearMonth": "1900-01",
+    "goldPrice": 20.67,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.05
   },
   {
-    "yearMonth": "2020-07",
-    "goldPrice": 1950,
-    "silverPrice": 19.3,
+    "yearMonth": "1900-02",
+    "goldPrice": 20.78,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1900-03",
+    "goldPrice": 20.89,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1900-04",
+    "goldPrice": 21.01,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1900-05",
+    "goldPrice": 21.12,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1900-06",
+    "goldPrice": 21.23,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1900-07",
+    "goldPrice": 21.34,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1900-08",
+    "goldPrice": 21.45,
+    "silverPrice": 0.78,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1900-09",
+    "goldPrice": 21.56,
+    "silverPrice": 0.78,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1900-10",
+    "goldPrice": 21.66,
+    "silverPrice": 0.78,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1900-11",
+    "goldPrice": 21.77,
+    "silverPrice": 0.78,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1900-12",
+    "goldPrice": 21.87,
+    "silverPrice": 0.78,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1901-01",
+    "goldPrice": 21.97,
+    "silverPrice": 0.78,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1901-02",
+    "goldPrice": 22.08,
+    "silverPrice": 0.78,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1901-03",
+    "goldPrice": 22.17,
+    "silverPrice": 0.77,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1901-04",
+    "goldPrice": 22.27,
+    "silverPrice": 0.77,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1901-05",
+    "goldPrice": 22.36,
+    "silverPrice": 0.77,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1901-06",
+    "goldPrice": 22.46,
+    "silverPrice": 0.77,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1901-07",
+    "goldPrice": 22.54,
+    "silverPrice": 0.77,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1901-08",
+    "goldPrice": 22.63,
+    "silverPrice": 0.76,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1901-09",
+    "goldPrice": 22.71,
+    "silverPrice": 0.76,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1901-10",
+    "goldPrice": 22.8,
+    "silverPrice": 0.76,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1901-11",
+    "goldPrice": 22.87,
+    "silverPrice": 0.76,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1901-12",
+    "goldPrice": 22.95,
+    "silverPrice": 0.75,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1902-01",
+    "goldPrice": 23.02,
+    "silverPrice": 0.75,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1902-02",
+    "goldPrice": 23.09,
+    "silverPrice": 0.75,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1902-03",
+    "goldPrice": 23.15,
+    "silverPrice": 0.75,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1902-04",
+    "goldPrice": 23.21,
+    "silverPrice": 0.74,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1902-05",
+    "goldPrice": 23.27,
+    "silverPrice": 0.74,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1902-06",
+    "goldPrice": 23.33,
+    "silverPrice": 0.74,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1902-07",
+    "goldPrice": 23.38,
+    "silverPrice": 0.73,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1902-08",
+    "goldPrice": 23.42,
+    "silverPrice": 0.73,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1902-09",
+    "goldPrice": 23.47,
+    "silverPrice": 0.73,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1902-10",
+    "goldPrice": 23.5,
+    "silverPrice": 0.73,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1902-11",
+    "goldPrice": 23.54,
+    "silverPrice": 0.72,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1902-12",
+    "goldPrice": 23.57,
+    "silverPrice": 0.72,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1903-01",
+    "goldPrice": 23.6,
+    "silverPrice": 0.72,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1903-02",
+    "goldPrice": 23.62,
+    "silverPrice": 0.71,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1903-03",
+    "goldPrice": 23.64,
+    "silverPrice": 0.71,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1903-04",
+    "goldPrice": 23.65,
+    "silverPrice": 0.7,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1903-05",
+    "goldPrice": 23.66,
+    "silverPrice": 0.7,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1903-06",
+    "goldPrice": 23.67,
+    "silverPrice": 0.7,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1903-07",
+    "goldPrice": 23.67,
+    "silverPrice": 0.69,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1903-08",
+    "goldPrice": 23.67,
+    "silverPrice": 0.69,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1903-09",
+    "goldPrice": 23.66,
+    "silverPrice": 0.69,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1903-10",
+    "goldPrice": 23.65,
+    "silverPrice": 0.68,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1903-11",
+    "goldPrice": 23.63,
+    "silverPrice": 0.68,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1903-12",
+    "goldPrice": 23.62,
+    "silverPrice": 0.67,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1904-01",
+    "goldPrice": 23.59,
+    "silverPrice": 0.67,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1904-02",
+    "goldPrice": 23.56,
+    "silverPrice": 0.67,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1904-03",
+    "goldPrice": 23.53,
+    "silverPrice": 0.66,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1904-04",
+    "goldPrice": 23.5,
+    "silverPrice": 0.66,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1904-05",
+    "goldPrice": 23.46,
+    "silverPrice": 0.65,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1904-06",
+    "goldPrice": 23.41,
+    "silverPrice": 0.65,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1904-07",
+    "goldPrice": 23.37,
+    "silverPrice": 0.65,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1904-08",
+    "goldPrice": 23.31,
+    "silverPrice": 0.64,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1904-09",
+    "goldPrice": 23.26,
+    "silverPrice": 0.64,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1904-10",
+    "goldPrice": 23.2,
+    "silverPrice": 0.63,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1904-11",
+    "goldPrice": 23.14,
+    "silverPrice": 0.63,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1904-12",
+    "goldPrice": 23.07,
+    "silverPrice": 0.62,
+    "comexCoverageRatio": 0.05
+  },
+  {
+    "yearMonth": "1905-01",
+    "goldPrice": 23,
+    "silverPrice": 0.62,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1905-02",
+    "goldPrice": 22.93,
+    "silverPrice": 0.62,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1905-03",
+    "goldPrice": 22.86,
+    "silverPrice": 0.61,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1905-04",
+    "goldPrice": 22.78,
+    "silverPrice": 0.61,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1905-05",
+    "goldPrice": 22.7,
+    "silverPrice": 0.6,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1905-06",
+    "goldPrice": 22.61,
+    "silverPrice": 0.6,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1905-07",
+    "goldPrice": 22.52,
+    "silverPrice": 0.6,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1905-08",
+    "goldPrice": 22.44,
+    "silverPrice": 0.59,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1905-09",
+    "goldPrice": 22.34,
+    "silverPrice": 0.59,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1905-10",
+    "goldPrice": 22.25,
+    "silverPrice": 0.58,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1905-11",
+    "goldPrice": 22.15,
+    "silverPrice": 0.58,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1905-12",
+    "goldPrice": 22.05,
+    "silverPrice": 0.57,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1906-01",
+    "goldPrice": 21.95,
+    "silverPrice": 0.57,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1906-02",
+    "goldPrice": 21.85,
+    "silverPrice": 0.57,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1906-03",
+    "goldPrice": 21.75,
+    "silverPrice": 0.56,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1906-04",
+    "goldPrice": 21.64,
+    "silverPrice": 0.56,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1906-05",
+    "goldPrice": 21.53,
+    "silverPrice": 0.55,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1906-06",
+    "goldPrice": 21.42,
+    "silverPrice": 0.55,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1906-07",
+    "goldPrice": 21.31,
+    "silverPrice": 0.55,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1906-08",
+    "goldPrice": 21.2,
+    "silverPrice": 0.54,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1906-09",
+    "goldPrice": 21.09,
+    "silverPrice": 0.54,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1906-10",
+    "goldPrice": 20.98,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1906-11",
+    "goldPrice": 20.87,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1906-12",
+    "goldPrice": 20.76,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1907-01",
+    "goldPrice": 20.64,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1907-02",
+    "goldPrice": 20.53,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1907-03",
+    "goldPrice": 20.42,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1907-04",
+    "goldPrice": 20.31,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1907-05",
+    "goldPrice": 20.2,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1907-06",
+    "goldPrice": 20.09,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1907-07",
+    "goldPrice": 19.98,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1907-08",
+    "goldPrice": 19.87,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1907-09",
+    "goldPrice": 19.76,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1907-10",
+    "goldPrice": 19.65,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1907-11",
+    "goldPrice": 19.55,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1907-12",
+    "goldPrice": 19.44,
+    "silverPrice": 0.48,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1908-01",
+    "goldPrice": 19.34,
+    "silverPrice": 0.48,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1908-02",
+    "goldPrice": 19.24,
+    "silverPrice": 0.48,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1908-03",
+    "goldPrice": 19.14,
+    "silverPrice": 0.48,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1908-04",
+    "goldPrice": 19.05,
+    "silverPrice": 0.47,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1908-05",
+    "goldPrice": 18.96,
+    "silverPrice": 0.47,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1908-06",
+    "goldPrice": 18.86,
+    "silverPrice": 0.47,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1908-07",
+    "goldPrice": 18.78,
+    "silverPrice": 0.46,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1908-08",
+    "goldPrice": 18.69,
+    "silverPrice": 0.46,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1908-09",
+    "goldPrice": 18.61,
+    "silverPrice": 0.46,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1908-10",
+    "goldPrice": 18.53,
+    "silverPrice": 0.46,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1908-11",
+    "goldPrice": 18.45,
+    "silverPrice": 0.45,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1908-12",
+    "goldPrice": 18.38,
+    "silverPrice": 0.45,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1909-01",
+    "goldPrice": 18.3,
+    "silverPrice": 0.45,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1909-02",
+    "goldPrice": 18.24,
+    "silverPrice": 0.45,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1909-03",
+    "goldPrice": 18.17,
+    "silverPrice": 0.45,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1909-04",
+    "goldPrice": 18.11,
+    "silverPrice": 0.44,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1909-05",
+    "goldPrice": 18.06,
+    "silverPrice": 0.44,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1909-06",
+    "goldPrice": 18,
+    "silverPrice": 0.44,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1909-07",
+    "goldPrice": 17.95,
+    "silverPrice": 0.44,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1909-08",
+    "goldPrice": 17.91,
+    "silverPrice": 0.44,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1909-09",
+    "goldPrice": 17.86,
+    "silverPrice": 0.44,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1909-10",
+    "goldPrice": 17.83,
+    "silverPrice": 0.44,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1909-11",
+    "goldPrice": 17.79,
+    "silverPrice": 0.43,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1909-12",
+    "goldPrice": 17.76,
+    "silverPrice": 0.43,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1910-01",
+    "goldPrice": 17.74,
+    "silverPrice": 0.43,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1910-02",
+    "goldPrice": 17.72,
+    "silverPrice": 0.43,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1910-03",
+    "goldPrice": 17.7,
+    "silverPrice": 0.43,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1910-04",
+    "goldPrice": 17.68,
+    "silverPrice": 0.43,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1910-05",
+    "goldPrice": 17.68,
+    "silverPrice": 0.43,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1910-06",
+    "goldPrice": 17.67,
+    "silverPrice": 0.43,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1910-07",
+    "goldPrice": 17.67,
+    "silverPrice": 0.43,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1910-08",
+    "goldPrice": 17.67,
+    "silverPrice": 0.43,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1910-09",
+    "goldPrice": 17.68,
+    "silverPrice": 0.43,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1910-10",
+    "goldPrice": 17.69,
+    "silverPrice": 0.44,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1910-11",
+    "goldPrice": 17.71,
+    "silverPrice": 0.44,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1910-12",
+    "goldPrice": 17.73,
+    "silverPrice": 0.44,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1911-01",
+    "goldPrice": 17.75,
+    "silverPrice": 0.44,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1911-02",
+    "goldPrice": 17.78,
+    "silverPrice": 0.44,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1911-03",
+    "goldPrice": 17.82,
+    "silverPrice": 0.44,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1911-04",
+    "goldPrice": 17.85,
+    "silverPrice": 0.44,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1911-05",
+    "goldPrice": 17.89,
+    "silverPrice": 0.44,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1911-06",
+    "goldPrice": 17.94,
+    "silverPrice": 0.44,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1911-07",
+    "goldPrice": 17.99,
+    "silverPrice": 0.45,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1911-08",
+    "goldPrice": 18.04,
+    "silverPrice": 0.45,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1911-09",
+    "goldPrice": 18.09,
+    "silverPrice": 0.45,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1911-10",
+    "goldPrice": 18.15,
+    "silverPrice": 0.45,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1911-11",
+    "goldPrice": 18.22,
+    "silverPrice": 0.45,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1911-12",
+    "goldPrice": 18.28,
+    "silverPrice": 0.46,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1912-01",
+    "goldPrice": 18.35,
+    "silverPrice": 0.46,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1912-02",
+    "goldPrice": 18.42,
+    "silverPrice": 0.46,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1912-03",
+    "goldPrice": 18.5,
+    "silverPrice": 0.46,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1912-04",
+    "goldPrice": 18.58,
+    "silverPrice": 0.46,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1912-05",
+    "goldPrice": 18.66,
+    "silverPrice": 0.47,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1912-06",
+    "goldPrice": 18.75,
+    "silverPrice": 0.47,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1912-07",
+    "goldPrice": 18.83,
+    "silverPrice": 0.47,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1912-08",
+    "goldPrice": 18.93,
+    "silverPrice": 0.47,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1912-09",
+    "goldPrice": 19.02,
+    "silverPrice": 0.48,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1912-10",
+    "goldPrice": 19.11,
+    "silverPrice": 0.48,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1912-11",
+    "goldPrice": 19.21,
+    "silverPrice": 0.48,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1912-12",
+    "goldPrice": 19.31,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1913-01",
+    "goldPrice": 19.41,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1913-02",
+    "goldPrice": 19.51,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1913-03",
+    "goldPrice": 19.62,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1913-04",
+    "goldPrice": 19.72,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1913-05",
+    "goldPrice": 19.83,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1913-06",
+    "goldPrice": 19.94,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1913-07",
+    "goldPrice": 20.05,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1913-08",
+    "goldPrice": 20.16,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1913-09",
+    "goldPrice": 20.27,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1913-10",
+    "goldPrice": 20.38,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1913-11",
+    "goldPrice": 20.5,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1913-12",
+    "goldPrice": 20.61,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1914-01",
+    "goldPrice": 20.72,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1914-02",
+    "goldPrice": 20.83,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1914-03",
+    "goldPrice": 20.95,
+    "silverPrice": 0.54,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1914-04",
+    "goldPrice": 21.06,
+    "silverPrice": 0.54,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1914-05",
+    "goldPrice": 21.17,
+    "silverPrice": 0.55,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1914-06",
+    "goldPrice": 21.28,
+    "silverPrice": 0.55,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1914-07",
+    "goldPrice": 21.39,
+    "silverPrice": 0.55,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1914-08",
+    "goldPrice": 21.5,
+    "silverPrice": 0.56,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1914-09",
+    "goldPrice": 21.6,
+    "silverPrice": 0.56,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1914-10",
+    "goldPrice": 21.71,
+    "silverPrice": 0.57,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1914-11",
+    "goldPrice": 21.82,
+    "silverPrice": 0.57,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1914-12",
+    "goldPrice": 21.92,
+    "silverPrice": 0.57,
+    "comexCoverageRatio": 0.06
+  },
+  {
+    "yearMonth": "1915-01",
+    "goldPrice": 22.02,
+    "silverPrice": 0.58,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1915-02",
+    "goldPrice": 22.12,
+    "silverPrice": 0.58,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1915-03",
+    "goldPrice": 22.22,
+    "silverPrice": 0.59,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1915-04",
+    "goldPrice": 22.31,
+    "silverPrice": 0.59,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1915-05",
+    "goldPrice": 22.41,
+    "silverPrice": 0.6,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1915-06",
+    "goldPrice": 22.5,
+    "silverPrice": 0.6,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1915-07",
+    "goldPrice": 22.58,
+    "silverPrice": 0.6,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1915-08",
+    "goldPrice": 22.67,
+    "silverPrice": 0.61,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1915-09",
+    "goldPrice": 22.75,
+    "silverPrice": 0.61,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1915-10",
+    "goldPrice": 22.83,
+    "silverPrice": 0.62,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1915-11",
+    "goldPrice": 22.91,
+    "silverPrice": 0.62,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1915-12",
+    "goldPrice": 22.98,
+    "silverPrice": 0.62,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1916-01",
+    "goldPrice": 23.05,
+    "silverPrice": 0.63,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1916-02",
+    "goldPrice": 23.12,
+    "silverPrice": 0.63,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1916-03",
+    "goldPrice": 23.18,
+    "silverPrice": 0.64,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1916-04",
+    "goldPrice": 23.24,
+    "silverPrice": 0.64,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1916-05",
+    "goldPrice": 23.3,
+    "silverPrice": 0.65,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1916-06",
+    "goldPrice": 23.35,
+    "silverPrice": 0.65,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1916-07",
+    "goldPrice": 23.4,
+    "silverPrice": 0.65,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1916-08",
+    "goldPrice": 23.44,
+    "silverPrice": 0.66,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1916-09",
+    "goldPrice": 23.48,
+    "silverPrice": 0.66,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1916-10",
+    "goldPrice": 23.52,
+    "silverPrice": 0.67,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1916-11",
+    "goldPrice": 23.55,
+    "silverPrice": 0.67,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1916-12",
+    "goldPrice": 23.58,
+    "silverPrice": 0.67,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1917-01",
+    "goldPrice": 23.61,
+    "silverPrice": 0.68,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1917-02",
+    "goldPrice": 23.63,
+    "silverPrice": 0.68,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1917-03",
+    "goldPrice": 23.65,
+    "silverPrice": 0.69,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1917-04",
+    "goldPrice": 23.66,
+    "silverPrice": 0.69,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1917-05",
+    "goldPrice": 23.67,
+    "silverPrice": 0.69,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1917-06",
+    "goldPrice": 23.67,
+    "silverPrice": 0.7,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1917-07",
+    "goldPrice": 23.67,
+    "silverPrice": 0.7,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1917-08",
+    "goldPrice": 23.66,
+    "silverPrice": 0.71,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1917-09",
+    "goldPrice": 23.66,
+    "silverPrice": 0.71,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1917-10",
+    "goldPrice": 23.64,
+    "silverPrice": 0.71,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1917-11",
+    "goldPrice": 23.63,
+    "silverPrice": 0.72,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1917-12",
+    "goldPrice": 23.61,
+    "silverPrice": 0.72,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1918-01",
+    "goldPrice": 23.58,
+    "silverPrice": 0.72,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1918-02",
+    "goldPrice": 23.55,
+    "silverPrice": 0.73,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1918-03",
+    "goldPrice": 23.52,
+    "silverPrice": 0.73,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1918-04",
+    "goldPrice": 23.48,
+    "silverPrice": 0.73,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1918-05",
+    "goldPrice": 23.44,
+    "silverPrice": 0.74,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1918-06",
+    "goldPrice": 23.39,
+    "silverPrice": 0.74,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1918-07",
+    "goldPrice": 23.34,
+    "silverPrice": 0.74,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1918-08",
+    "goldPrice": 23.29,
+    "silverPrice": 0.75,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1918-09",
+    "goldPrice": 23.23,
+    "silverPrice": 0.75,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1918-10",
+    "goldPrice": 23.17,
+    "silverPrice": 0.75,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1918-11",
+    "goldPrice": 23.11,
+    "silverPrice": 0.75,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1918-12",
+    "goldPrice": 23.04,
+    "silverPrice": 0.76,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1919-01",
+    "goldPrice": 22.97,
+    "silverPrice": 0.76,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1919-02",
+    "goldPrice": 22.9,
+    "silverPrice": 0.76,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1919-03",
+    "goldPrice": 22.82,
+    "silverPrice": 0.76,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1919-04",
+    "goldPrice": 22.74,
+    "silverPrice": 0.77,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1919-05",
+    "goldPrice": 22.66,
+    "silverPrice": 0.77,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1919-06",
+    "goldPrice": 22.57,
+    "silverPrice": 0.77,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1919-07",
+    "goldPrice": 22.49,
+    "silverPrice": 0.77,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1919-08",
+    "goldPrice": 22.39,
+    "silverPrice": 0.78,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1919-09",
+    "goldPrice": 22.3,
+    "silverPrice": 0.78,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1919-10",
+    "goldPrice": 22.21,
+    "silverPrice": 0.78,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1919-11",
+    "goldPrice": 22.11,
+    "silverPrice": 0.78,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1919-12",
+    "goldPrice": 22.01,
+    "silverPrice": 0.78,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1920-01",
+    "goldPrice": 21.91,
+    "silverPrice": 0.78,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1920-02",
+    "goldPrice": 21.89,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1920-03",
+    "goldPrice": 21.87,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1920-04",
+    "goldPrice": 21.85,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1920-05",
+    "goldPrice": 21.83,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1920-06",
+    "goldPrice": 21.8,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1920-07",
+    "goldPrice": 21.78,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1920-08",
+    "goldPrice": 21.75,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1920-09",
+    "goldPrice": 21.73,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1920-10",
+    "goldPrice": 21.7,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1920-11",
+    "goldPrice": 21.67,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1920-12",
+    "goldPrice": 21.65,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1921-01",
+    "goldPrice": 21.62,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1921-02",
+    "goldPrice": 21.59,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1921-03",
+    "goldPrice": 21.56,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1921-04",
+    "goldPrice": 21.54,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1921-05",
+    "goldPrice": 21.51,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1921-06",
+    "goldPrice": 21.49,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1921-07",
+    "goldPrice": 21.46,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1921-08",
+    "goldPrice": 21.44,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1921-09",
+    "goldPrice": 21.42,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1921-10",
+    "goldPrice": 21.4,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1921-11",
+    "goldPrice": 21.38,
+    "silverPrice": 0.78,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1921-12",
+    "goldPrice": 21.36,
+    "silverPrice": 0.78,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1922-01",
+    "goldPrice": 21.34,
+    "silverPrice": 0.78,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1922-02",
+    "goldPrice": 21.33,
+    "silverPrice": 0.78,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1922-03",
+    "goldPrice": 21.32,
+    "silverPrice": 0.78,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1922-04",
+    "goldPrice": 21.31,
+    "silverPrice": 0.78,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1922-05",
+    "goldPrice": 21.3,
+    "silverPrice": 0.78,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1922-06",
+    "goldPrice": 21.3,
+    "silverPrice": 0.78,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1922-07",
+    "goldPrice": 21.3,
+    "silverPrice": 0.77,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1922-08",
+    "goldPrice": 21.3,
+    "silverPrice": 0.77,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1922-09",
+    "goldPrice": 21.3,
+    "silverPrice": 0.77,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1922-10",
+    "goldPrice": 21.31,
+    "silverPrice": 0.77,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1922-11",
+    "goldPrice": 21.32,
+    "silverPrice": 0.77,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1922-12",
+    "goldPrice": 21.33,
+    "silverPrice": 0.76,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1923-01",
+    "goldPrice": 21.34,
+    "silverPrice": 0.76,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1923-02",
+    "goldPrice": 21.36,
+    "silverPrice": 0.76,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1923-03",
+    "goldPrice": 21.39,
+    "silverPrice": 0.76,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1923-04",
+    "goldPrice": 21.41,
+    "silverPrice": 0.76,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1923-05",
+    "goldPrice": 21.44,
+    "silverPrice": 0.75,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1923-06",
+    "goldPrice": 21.48,
+    "silverPrice": 0.75,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1923-07",
+    "goldPrice": 21.51,
+    "silverPrice": 0.75,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1923-08",
+    "goldPrice": 21.56,
+    "silverPrice": 0.75,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1923-09",
+    "goldPrice": 21.6,
+    "silverPrice": 0.74,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1923-10",
+    "goldPrice": 21.65,
+    "silverPrice": 0.74,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1923-11",
+    "goldPrice": 21.7,
+    "silverPrice": 0.74,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1923-12",
+    "goldPrice": 21.76,
+    "silverPrice": 0.73,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1924-01",
+    "goldPrice": 21.82,
+    "silverPrice": 0.73,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1924-02",
+    "goldPrice": 21.89,
+    "silverPrice": 0.73,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1924-03",
+    "goldPrice": 21.96,
+    "silverPrice": 0.73,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1924-04",
+    "goldPrice": 22.03,
+    "silverPrice": 0.72,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1924-05",
+    "goldPrice": 22.11,
+    "silverPrice": 0.72,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1924-06",
+    "goldPrice": 22.19,
+    "silverPrice": 0.72,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1924-07",
+    "goldPrice": 22.28,
+    "silverPrice": 0.71,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1924-08",
+    "goldPrice": 22.37,
+    "silverPrice": 0.71,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1924-09",
+    "goldPrice": 22.46,
+    "silverPrice": 0.71,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1924-10",
+    "goldPrice": 22.56,
+    "silverPrice": 0.7,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1924-11",
+    "goldPrice": 22.67,
+    "silverPrice": 0.7,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1924-12",
+    "goldPrice": 22.77,
+    "silverPrice": 0.7,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1925-01",
+    "goldPrice": 22.88,
+    "silverPrice": 0.69,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1925-02",
+    "goldPrice": 23,
+    "silverPrice": 0.69,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1925-03",
+    "goldPrice": 23.12,
+    "silverPrice": 0.68,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1925-04",
+    "goldPrice": 23.24,
+    "silverPrice": 0.68,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1925-05",
+    "goldPrice": 23.37,
+    "silverPrice": 0.68,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1925-06",
+    "goldPrice": 23.5,
+    "silverPrice": 0.67,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1925-07",
+    "goldPrice": 23.64,
+    "silverPrice": 0.67,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1925-08",
+    "goldPrice": 23.78,
+    "silverPrice": 0.67,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1925-09",
+    "goldPrice": 23.92,
+    "silverPrice": 0.66,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1925-10",
+    "goldPrice": 24.07,
+    "silverPrice": 0.66,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1925-11",
+    "goldPrice": 24.22,
+    "silverPrice": 0.66,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1925-12",
+    "goldPrice": 24.37,
+    "silverPrice": 0.65,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1926-01",
+    "goldPrice": 24.53,
+    "silverPrice": 0.65,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1926-02",
+    "goldPrice": 24.69,
+    "silverPrice": 0.64,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1926-03",
+    "goldPrice": 24.85,
+    "silverPrice": 0.64,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1926-04",
+    "goldPrice": 25.01,
+    "silverPrice": 0.64,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1926-05",
+    "goldPrice": 25.18,
+    "silverPrice": 0.63,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1926-06",
+    "goldPrice": 25.35,
+    "silverPrice": 0.63,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1926-07",
+    "goldPrice": 25.53,
+    "silverPrice": 0.63,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1926-08",
+    "goldPrice": 25.71,
+    "silverPrice": 0.62,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1926-09",
+    "goldPrice": 25.88,
+    "silverPrice": 0.62,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1926-10",
+    "goldPrice": 26.07,
+    "silverPrice": 0.61,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1926-11",
+    "goldPrice": 26.25,
+    "silverPrice": 0.61,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1926-12",
+    "goldPrice": 26.43,
+    "silverPrice": 0.61,
+    "comexCoverageRatio": 0.07
+  },
+  {
+    "yearMonth": "1927-01",
+    "goldPrice": 26.62,
+    "silverPrice": 0.6,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1927-02",
+    "goldPrice": 26.81,
+    "silverPrice": 0.6,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1927-03",
+    "goldPrice": 27,
+    "silverPrice": 0.6,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1927-04",
+    "goldPrice": 27.19,
+    "silverPrice": 0.59,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1927-05",
+    "goldPrice": 27.39,
+    "silverPrice": 0.59,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1927-06",
+    "goldPrice": 27.58,
+    "silverPrice": 0.59,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1927-07",
+    "goldPrice": 27.78,
+    "silverPrice": 0.58,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1927-08",
+    "goldPrice": 27.97,
+    "silverPrice": 0.58,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1927-09",
+    "goldPrice": 28.17,
+    "silverPrice": 0.58,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1927-10",
+    "goldPrice": 28.37,
+    "silverPrice": 0.57,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1927-11",
+    "goldPrice": 28.56,
+    "silverPrice": 0.57,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1927-12",
+    "goldPrice": 28.76,
+    "silverPrice": 0.57,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1928-01",
+    "goldPrice": 28.96,
+    "silverPrice": 0.56,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1928-02",
+    "goldPrice": 29.16,
+    "silverPrice": 0.56,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1928-03",
+    "goldPrice": 29.35,
+    "silverPrice": 0.56,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1928-04",
+    "goldPrice": 29.55,
+    "silverPrice": 0.55,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1928-05",
+    "goldPrice": 29.75,
+    "silverPrice": 0.55,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1928-06",
+    "goldPrice": 29.94,
+    "silverPrice": 0.55,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1928-07",
+    "goldPrice": 30.14,
+    "silverPrice": 0.54,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1928-08",
+    "goldPrice": 30.33,
+    "silverPrice": 0.54,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1928-09",
+    "goldPrice": 30.52,
+    "silverPrice": 0.54,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1928-10",
+    "goldPrice": 30.71,
+    "silverPrice": 0.54,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1928-11",
+    "goldPrice": 30.9,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1928-12",
+    "goldPrice": 31.09,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1929-01",
+    "goldPrice": 31.28,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1929-02",
+    "goldPrice": 31.46,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1929-03",
+    "goldPrice": 31.64,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1929-04",
+    "goldPrice": 31.82,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1929-05",
+    "goldPrice": 32,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1929-06",
+    "goldPrice": 32.17,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1929-07",
+    "goldPrice": 32.35,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1929-08",
+    "goldPrice": 32.52,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1929-09",
+    "goldPrice": 32.68,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1929-10",
+    "goldPrice": 32.85,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1929-11",
+    "goldPrice": 33.01,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1929-12",
+    "goldPrice": 33.16,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1930-01",
+    "goldPrice": 33.32,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1930-02",
+    "goldPrice": 33.47,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1930-03",
+    "goldPrice": 33.61,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1930-04",
+    "goldPrice": 33.76,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1930-05",
+    "goldPrice": 33.9,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1930-06",
+    "goldPrice": 34.03,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1930-07",
+    "goldPrice": 34.17,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1930-08",
+    "goldPrice": 34.29,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1930-09",
+    "goldPrice": 34.42,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1930-10",
+    "goldPrice": 34.54,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1930-11",
+    "goldPrice": 34.66,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1930-12",
+    "goldPrice": 34.77,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1931-01",
+    "goldPrice": 34.88,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1931-02",
+    "goldPrice": 34.98,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1931-03",
+    "goldPrice": 35.08,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1931-04",
+    "goldPrice": 35.18,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1931-05",
+    "goldPrice": 35.27,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1931-06",
+    "goldPrice": 35.36,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1931-07",
+    "goldPrice": 35.44,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1931-08",
+    "goldPrice": 35.52,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1931-09",
+    "goldPrice": 35.59,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1931-10",
+    "goldPrice": 35.66,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1931-11",
+    "goldPrice": 35.73,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1931-12",
+    "goldPrice": 35.79,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1932-01",
+    "goldPrice": 35.85,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1932-02",
+    "goldPrice": 35.9,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1932-03",
+    "goldPrice": 35.95,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1932-04",
+    "goldPrice": 36,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1932-05",
+    "goldPrice": 36.04,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1932-06",
+    "goldPrice": 36.08,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1932-07",
+    "goldPrice": 36.11,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1932-08",
+    "goldPrice": 36.15,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1932-09",
+    "goldPrice": 36.17,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1932-10",
+    "goldPrice": 36.2,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1932-11",
+    "goldPrice": 36.22,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1932-12",
+    "goldPrice": 36.23,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1933-01",
+    "goldPrice": 36.25,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1933-02",
+    "goldPrice": 36.26,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1933-03",
+    "goldPrice": 36.26,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1933-04",
+    "goldPrice": 36.27,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1933-05",
+    "goldPrice": 36.27,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1933-06",
+    "goldPrice": 36.27,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1933-07",
+    "goldPrice": 36.26,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1933-08",
+    "goldPrice": 36.26,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1933-09",
+    "goldPrice": 36.25,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1933-10",
+    "goldPrice": 36.24,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1933-11",
+    "goldPrice": 36.22,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1933-12",
+    "goldPrice": 36.21,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1934-01",
+    "goldPrice": 36.19,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1934-02",
+    "goldPrice": 36.09,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1934-03",
+    "goldPrice": 35.98,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1934-04",
+    "goldPrice": 35.87,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1934-05",
+    "goldPrice": 35.77,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1934-06",
+    "goldPrice": 35.66,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1934-07",
+    "goldPrice": 35.55,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1934-08",
+    "goldPrice": 35.43,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1934-09",
+    "goldPrice": 35.32,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1934-10",
+    "goldPrice": 35.21,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1934-11",
+    "goldPrice": 35.1,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1934-12",
+    "goldPrice": 34.99,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1935-01",
+    "goldPrice": 34.87,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1935-02",
+    "goldPrice": 34.76,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1935-03",
+    "goldPrice": 34.65,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1935-04",
+    "goldPrice": 34.54,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1935-05",
+    "goldPrice": 34.43,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1935-06",
+    "goldPrice": 34.32,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1935-07",
+    "goldPrice": 34.21,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1935-08",
+    "goldPrice": 34.1,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1935-09",
+    "goldPrice": 33.99,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1935-10",
+    "goldPrice": 33.89,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1935-11",
+    "goldPrice": 33.78,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1935-12",
+    "goldPrice": 33.68,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1936-01",
+    "goldPrice": 33.58,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1936-02",
+    "goldPrice": 33.48,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1936-03",
+    "goldPrice": 33.39,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1936-04",
+    "goldPrice": 33.29,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1936-05",
+    "goldPrice": 33.2,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1936-06",
+    "goldPrice": 33.11,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1936-07",
+    "goldPrice": 33.03,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1936-08",
+    "goldPrice": 32.95,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1936-09",
+    "goldPrice": 32.86,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1936-10",
+    "goldPrice": 32.79,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1936-11",
+    "goldPrice": 32.71,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1936-12",
+    "goldPrice": 32.64,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.08
+  },
+  {
+    "yearMonth": "1937-01",
+    "goldPrice": 32.57,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1937-02",
+    "goldPrice": 32.51,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1937-03",
+    "goldPrice": 32.45,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1937-04",
+    "goldPrice": 32.39,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1937-05",
+    "goldPrice": 32.34,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1937-06",
+    "goldPrice": 32.29,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1937-07",
+    "goldPrice": 32.24,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1937-08",
+    "goldPrice": 32.2,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1937-09",
+    "goldPrice": 32.16,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1937-10",
+    "goldPrice": 32.13,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1937-11",
+    "goldPrice": 32.1,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1937-12",
+    "goldPrice": 32.07,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1938-01",
+    "goldPrice": 32.05,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1938-02",
+    "goldPrice": 32.03,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1938-03",
+    "goldPrice": 32.02,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1938-04",
+    "goldPrice": 32.01,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1938-05",
+    "goldPrice": 32,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1938-06",
+    "goldPrice": 32,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1938-07",
+    "goldPrice": 32,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1938-08",
+    "goldPrice": 32.01,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1938-09",
+    "goldPrice": 32.02,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1938-10",
+    "goldPrice": 32.04,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1938-11",
+    "goldPrice": 32.06,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1938-12",
+    "goldPrice": 32.08,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1939-01",
+    "goldPrice": 32.11,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1939-02",
+    "goldPrice": 32.14,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1939-03",
+    "goldPrice": 32.18,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1939-04",
+    "goldPrice": 32.22,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1939-05",
+    "goldPrice": 32.26,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1939-06",
+    "goldPrice": 32.31,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1939-07",
+    "goldPrice": 32.36,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1939-08",
+    "goldPrice": 32.42,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1939-09",
+    "goldPrice": 32.48,
+    "silverPrice": 0.48,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1939-10",
+    "goldPrice": 32.54,
+    "silverPrice": 0.48,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1939-11",
+    "goldPrice": 32.6,
+    "silverPrice": 0.48,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1939-12",
+    "goldPrice": 32.67,
+    "silverPrice": 0.48,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1940-01",
+    "goldPrice": 32.75,
+    "silverPrice": 0.48,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1940-02",
+    "goldPrice": 32.82,
+    "silverPrice": 0.48,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1940-03",
+    "goldPrice": 32.9,
+    "silverPrice": 0.48,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1940-04",
+    "goldPrice": 32.98,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1940-05",
+    "goldPrice": 33.07,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1940-06",
+    "goldPrice": 33.16,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1940-07",
+    "goldPrice": 33.25,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1940-08",
+    "goldPrice": 33.34,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1940-09",
+    "goldPrice": 33.43,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1940-10",
+    "goldPrice": 33.53,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1940-11",
+    "goldPrice": 33.63,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1940-12",
+    "goldPrice": 33.73,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1941-01",
+    "goldPrice": 33.83,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1941-02",
+    "goldPrice": 33.94,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1941-03",
+    "goldPrice": 34.04,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1941-04",
+    "goldPrice": 34.15,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1941-05",
+    "goldPrice": 34.26,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1941-06",
+    "goldPrice": 34.37,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1941-07",
+    "goldPrice": 34.48,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1941-08",
+    "goldPrice": 34.59,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1941-09",
+    "goldPrice": 34.7,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1941-10",
+    "goldPrice": 34.81,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1941-11",
+    "goldPrice": 34.93,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1941-12",
+    "goldPrice": 35.04,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1942-01",
+    "goldPrice": 35.15,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1942-02",
+    "goldPrice": 35.26,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1942-03",
+    "goldPrice": 35.38,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1942-04",
+    "goldPrice": 35.49,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1942-05",
+    "goldPrice": 35.6,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1942-06",
+    "goldPrice": 35.71,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1942-07",
+    "goldPrice": 35.82,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1942-08",
+    "goldPrice": 35.92,
+    "silverPrice": 0.54,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1942-09",
+    "goldPrice": 36.03,
+    "silverPrice": 0.54,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1942-10",
+    "goldPrice": 36.13,
+    "silverPrice": 0.54,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1942-11",
+    "goldPrice": 36.24,
+    "silverPrice": 0.54,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1942-12",
+    "goldPrice": 36.34,
+    "silverPrice": 0.54,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1943-01",
+    "goldPrice": 36.44,
+    "silverPrice": 0.54,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1943-02",
+    "goldPrice": 36.54,
+    "silverPrice": 0.54,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1943-03",
+    "goldPrice": 36.63,
+    "silverPrice": 0.54,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1943-04",
+    "goldPrice": 36.73,
+    "silverPrice": 0.54,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1943-05",
+    "goldPrice": 36.82,
+    "silverPrice": 0.54,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1943-06",
+    "goldPrice": 36.9,
+    "silverPrice": 0.54,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1943-07",
+    "goldPrice": 36.99,
+    "silverPrice": 0.54,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1943-08",
+    "goldPrice": 37.07,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1943-09",
+    "goldPrice": 37.15,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1943-10",
+    "goldPrice": 37.23,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1943-11",
+    "goldPrice": 37.3,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1943-12",
+    "goldPrice": 37.37,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1944-01",
+    "goldPrice": 37.44,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1944-02",
+    "goldPrice": 37.5,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1944-03",
+    "goldPrice": 37.56,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1944-04",
+    "goldPrice": 37.62,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1944-05",
+    "goldPrice": 37.67,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1944-06",
+    "goldPrice": 37.72,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1944-07",
+    "goldPrice": 37.77,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1944-08",
+    "goldPrice": 37.81,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1944-09",
+    "goldPrice": 37.85,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1944-10",
+    "goldPrice": 37.88,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1944-11",
+    "goldPrice": 37.91,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1944-12",
+    "goldPrice": 37.94,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.09
+  },
+  {
+    "yearMonth": "1945-01",
+    "goldPrice": 37.96,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1945-02",
+    "goldPrice": 37.97,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1945-03",
+    "goldPrice": 37.99,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1945-04",
+    "goldPrice": 37.99,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1945-05",
+    "goldPrice": 38,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1945-06",
+    "goldPrice": 38,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1945-07",
+    "goldPrice": 38,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1945-08",
+    "goldPrice": 37.99,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1945-09",
+    "goldPrice": 37.97,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1945-10",
+    "goldPrice": 37.96,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1945-11",
+    "goldPrice": 37.94,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1945-12",
+    "goldPrice": 37.91,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1946-01",
+    "goldPrice": 37.88,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1946-02",
+    "goldPrice": 37.85,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1946-03",
+    "goldPrice": 37.81,
+    "silverPrice": 0.48,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1946-04",
+    "goldPrice": 37.77,
+    "silverPrice": 0.48,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1946-05",
+    "goldPrice": 37.73,
+    "silverPrice": 0.48,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1946-06",
+    "goldPrice": 37.68,
+    "silverPrice": 0.48,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1946-07",
+    "goldPrice": 37.63,
+    "silverPrice": 0.48,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1946-08",
+    "goldPrice": 37.57,
+    "silverPrice": 0.47,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1946-09",
+    "goldPrice": 37.51,
+    "silverPrice": 0.47,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1946-10",
+    "goldPrice": 37.45,
+    "silverPrice": 0.47,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1946-11",
+    "goldPrice": 37.38,
+    "silverPrice": 0.47,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1946-12",
+    "goldPrice": 37.31,
+    "silverPrice": 0.46,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1947-01",
+    "goldPrice": 37.24,
+    "silverPrice": 0.46,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1947-02",
+    "goldPrice": 37.16,
+    "silverPrice": 0.46,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1947-03",
+    "goldPrice": 37.08,
+    "silverPrice": 0.46,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1947-04",
+    "goldPrice": 37,
+    "silverPrice": 0.45,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1947-05",
+    "goldPrice": 36.91,
+    "silverPrice": 0.45,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1947-06",
+    "goldPrice": 36.82,
+    "silverPrice": 0.45,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1947-07",
+    "goldPrice": 36.73,
+    "silverPrice": 0.45,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1947-08",
+    "goldPrice": 36.64,
+    "silverPrice": 0.44,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1947-09",
+    "goldPrice": 36.55,
+    "silverPrice": 0.44,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1947-10",
+    "goldPrice": 36.45,
+    "silverPrice": 0.44,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1947-11",
+    "goldPrice": 36.35,
+    "silverPrice": 0.44,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1947-12",
+    "goldPrice": 36.25,
+    "silverPrice": 0.43,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1948-01",
+    "goldPrice": 36.14,
+    "silverPrice": 0.43,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1948-02",
+    "goldPrice": 36.04,
+    "silverPrice": 0.43,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1948-03",
+    "goldPrice": 35.93,
+    "silverPrice": 0.43,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1948-04",
+    "goldPrice": 35.83,
+    "silverPrice": 0.42,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1948-05",
+    "goldPrice": 35.72,
+    "silverPrice": 0.42,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1948-06",
+    "goldPrice": 35.61,
+    "silverPrice": 0.42,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1948-07",
+    "goldPrice": 35.5,
+    "silverPrice": 0.42,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1948-08",
+    "goldPrice": 35.38,
+    "silverPrice": 0.42,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1948-09",
+    "goldPrice": 35.27,
+    "silverPrice": 0.41,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1948-10",
+    "goldPrice": 35.16,
+    "silverPrice": 0.41,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1948-11",
+    "goldPrice": 35.05,
+    "silverPrice": 0.41,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1948-12",
+    "goldPrice": 34.94,
+    "silverPrice": 0.41,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1949-01",
+    "goldPrice": 34.82,
+    "silverPrice": 0.4,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1949-02",
+    "goldPrice": 34.71,
+    "silverPrice": 0.4,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1949-03",
+    "goldPrice": 34.6,
+    "silverPrice": 0.4,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1949-04",
+    "goldPrice": 34.49,
+    "silverPrice": 0.4,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1949-05",
+    "goldPrice": 34.38,
+    "silverPrice": 0.4,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1949-06",
+    "goldPrice": 34.27,
+    "silverPrice": 0.4,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1949-07",
+    "goldPrice": 34.16,
+    "silverPrice": 0.39,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1949-08",
+    "goldPrice": 34.05,
+    "silverPrice": 0.39,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1949-09",
+    "goldPrice": 33.95,
+    "silverPrice": 0.39,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1949-10",
+    "goldPrice": 33.84,
+    "silverPrice": 0.39,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1949-11",
+    "goldPrice": 33.74,
+    "silverPrice": 0.39,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1949-12",
+    "goldPrice": 33.64,
+    "silverPrice": 0.39,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1950-01",
+    "goldPrice": 33.54,
+    "silverPrice": 0.39,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1950-02",
+    "goldPrice": 33.44,
+    "silverPrice": 0.39,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1950-03",
+    "goldPrice": 33.35,
+    "silverPrice": 0.39,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1950-04",
+    "goldPrice": 33.25,
+    "silverPrice": 0.39,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1950-05",
+    "goldPrice": 33.16,
+    "silverPrice": 0.39,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1950-06",
+    "goldPrice": 33.08,
+    "silverPrice": 0.39,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1950-07",
+    "goldPrice": 32.99,
+    "silverPrice": 0.39,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1950-08",
+    "goldPrice": 32.91,
+    "silverPrice": 0.39,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1950-09",
+    "goldPrice": 32.83,
+    "silverPrice": 0.4,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1950-10",
+    "goldPrice": 32.75,
+    "silverPrice": 0.4,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1950-11",
+    "goldPrice": 32.68,
+    "silverPrice": 0.4,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1950-12",
+    "goldPrice": 32.61,
+    "silverPrice": 0.4,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1951-01",
+    "goldPrice": 32.54,
+    "silverPrice": 0.4,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1951-02",
+    "goldPrice": 32.48,
+    "silverPrice": 0.41,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1951-03",
+    "goldPrice": 32.42,
+    "silverPrice": 0.41,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1951-04",
+    "goldPrice": 32.37,
+    "silverPrice": 0.41,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1951-05",
+    "goldPrice": 32.31,
+    "silverPrice": 0.41,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1951-06",
+    "goldPrice": 32.27,
+    "silverPrice": 0.41,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1951-07",
+    "goldPrice": 32.22,
+    "silverPrice": 0.42,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1951-08",
+    "goldPrice": 32.18,
+    "silverPrice": 0.42,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1951-09",
+    "goldPrice": 32.14,
+    "silverPrice": 0.42,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1951-10",
+    "goldPrice": 32.11,
+    "silverPrice": 0.42,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1951-11",
+    "goldPrice": 32.08,
+    "silverPrice": 0.43,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1951-12",
+    "goldPrice": 32.06,
+    "silverPrice": 0.43,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1952-01",
+    "goldPrice": 32.04,
+    "silverPrice": 0.43,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1952-02",
+    "goldPrice": 32.02,
+    "silverPrice": 0.44,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1952-03",
+    "goldPrice": 32.01,
+    "silverPrice": 0.44,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1952-04",
+    "goldPrice": 32,
+    "silverPrice": 0.44,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1952-05",
+    "goldPrice": 32,
+    "silverPrice": 0.45,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1952-06",
+    "goldPrice": 32,
+    "silverPrice": 0.45,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1952-07",
+    "goldPrice": 32.01,
+    "silverPrice": 0.45,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1952-08",
+    "goldPrice": 32.02,
+    "silverPrice": 0.46,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1952-09",
+    "goldPrice": 32.03,
+    "silverPrice": 0.46,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1952-10",
+    "goldPrice": 32.05,
+    "silverPrice": 0.46,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1952-11",
+    "goldPrice": 32.07,
+    "silverPrice": 0.47,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1952-12",
+    "goldPrice": 32.09,
+    "silverPrice": 0.47,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1953-01",
+    "goldPrice": 32.12,
+    "silverPrice": 0.48,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1953-02",
+    "goldPrice": 32.16,
+    "silverPrice": 0.48,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1953-03",
+    "goldPrice": 32.2,
+    "silverPrice": 0.48,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1953-04",
+    "goldPrice": 32.24,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1953-05",
+    "goldPrice": 32.28,
+    "silverPrice": 0.49,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1953-06",
+    "goldPrice": 32.33,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1953-07",
+    "goldPrice": 32.39,
+    "silverPrice": 0.5,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1953-08",
+    "goldPrice": 32.44,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1953-09",
+    "goldPrice": 32.5,
+    "silverPrice": 0.51,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1953-10",
+    "goldPrice": 32.57,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1953-11",
+    "goldPrice": 32.64,
+    "silverPrice": 0.52,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1953-12",
+    "goldPrice": 32.71,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1954-01",
+    "goldPrice": 32.78,
+    "silverPrice": 0.53,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1954-02",
+    "goldPrice": 32.86,
+    "silverPrice": 0.54,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1954-03",
+    "goldPrice": 32.94,
+    "silverPrice": 0.54,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1954-04",
+    "goldPrice": 33.02,
+    "silverPrice": 0.55,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1954-05",
+    "goldPrice": 33.11,
+    "silverPrice": 0.55,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1954-06",
+    "goldPrice": 33.2,
+    "silverPrice": 0.56,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1954-07",
+    "goldPrice": 33.29,
+    "silverPrice": 0.56,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1954-08",
+    "goldPrice": 33.38,
+    "silverPrice": 0.57,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1954-09",
+    "goldPrice": 33.48,
+    "silverPrice": 0.58,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1954-10",
+    "goldPrice": 33.57,
+    "silverPrice": 0.58,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1954-11",
+    "goldPrice": 33.67,
+    "silverPrice": 0.59,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1954-12",
+    "goldPrice": 33.78,
+    "silverPrice": 0.59,
+    "comexCoverageRatio": 0.1
+  },
+  {
+    "yearMonth": "1955-01",
+    "goldPrice": 33.88,
+    "silverPrice": 0.6,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1955-02",
+    "goldPrice": 33.98,
+    "silverPrice": 0.61,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1955-03",
+    "goldPrice": 34.09,
+    "silverPrice": 0.61,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1955-04",
+    "goldPrice": 34.2,
+    "silverPrice": 0.62,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1955-05",
+    "goldPrice": 34.31,
+    "silverPrice": 0.62,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1955-06",
+    "goldPrice": 34.42,
+    "silverPrice": 0.63,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1955-07",
+    "goldPrice": 34.53,
+    "silverPrice": 0.64,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1955-08",
+    "goldPrice": 34.64,
+    "silverPrice": 0.64,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1955-09",
+    "goldPrice": 34.75,
+    "silverPrice": 0.65,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1955-10",
+    "goldPrice": 34.86,
+    "silverPrice": 0.66,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1955-11",
+    "goldPrice": 34.98,
+    "silverPrice": 0.66,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1955-12",
+    "goldPrice": 35.09,
+    "silverPrice": 0.67,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1956-01",
+    "goldPrice": 35.2,
+    "silverPrice": 0.68,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1956-02",
+    "goldPrice": 35.31,
+    "silverPrice": 0.68,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1956-03",
+    "goldPrice": 35.43,
+    "silverPrice": 0.69,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1956-04",
+    "goldPrice": 35.54,
+    "silverPrice": 0.7,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1956-05",
+    "goldPrice": 35.65,
+    "silverPrice": 0.7,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1956-06",
+    "goldPrice": 35.76,
+    "silverPrice": 0.71,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1956-07",
+    "goldPrice": 35.86,
+    "silverPrice": 0.72,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1956-08",
+    "goldPrice": 35.97,
+    "silverPrice": 0.73,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1956-09",
+    "goldPrice": 36.08,
+    "silverPrice": 0.73,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1956-10",
+    "goldPrice": 36.18,
+    "silverPrice": 0.74,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1956-11",
+    "goldPrice": 36.28,
+    "silverPrice": 0.75,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1956-12",
+    "goldPrice": 36.38,
+    "silverPrice": 0.75,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1957-01",
+    "goldPrice": 36.48,
+    "silverPrice": 0.76,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1957-02",
+    "goldPrice": 36.58,
+    "silverPrice": 0.77,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1957-03",
+    "goldPrice": 36.67,
+    "silverPrice": 0.77,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1957-04",
+    "goldPrice": 36.77,
+    "silverPrice": 0.78,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1957-05",
+    "goldPrice": 36.86,
+    "silverPrice": 0.79,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1957-06",
+    "goldPrice": 36.94,
+    "silverPrice": 0.8,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1957-07",
+    "goldPrice": 37.03,
+    "silverPrice": 0.8,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1957-08",
+    "goldPrice": 37.11,
+    "silverPrice": 0.81,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1957-09",
+    "goldPrice": 37.19,
+    "silverPrice": 0.82,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1957-10",
+    "goldPrice": 37.26,
+    "silverPrice": 0.82,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1957-11",
+    "goldPrice": 37.34,
+    "silverPrice": 0.83,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1957-12",
+    "goldPrice": 37.4,
+    "silverPrice": 0.84,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1958-01",
+    "goldPrice": 37.47,
+    "silverPrice": 0.85,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1958-02",
+    "goldPrice": 37.53,
+    "silverPrice": 0.85,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1958-03",
+    "goldPrice": 37.59,
+    "silverPrice": 0.86,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1958-04",
+    "goldPrice": 37.65,
+    "silverPrice": 0.87,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1958-05",
+    "goldPrice": 37.7,
+    "silverPrice": 0.87,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1958-06",
+    "goldPrice": 37.74,
+    "silverPrice": 0.88,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1958-07",
+    "goldPrice": 37.79,
+    "silverPrice": 0.89,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1958-08",
+    "goldPrice": 37.83,
+    "silverPrice": 0.9,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1958-09",
+    "goldPrice": 37.86,
+    "silverPrice": 0.9,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1958-10",
+    "goldPrice": 37.89,
+    "silverPrice": 0.91,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1958-11",
+    "goldPrice": 37.92,
+    "silverPrice": 0.92,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1958-12",
+    "goldPrice": 37.95,
+    "silverPrice": 0.92,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1959-01",
+    "goldPrice": 37.96,
+    "silverPrice": 0.93,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1959-02",
+    "goldPrice": 37.98,
+    "silverPrice": 0.94,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1959-03",
+    "goldPrice": 37.99,
+    "silverPrice": 0.94,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1959-04",
+    "goldPrice": 38,
+    "silverPrice": 0.95,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1959-05",
+    "goldPrice": 38,
+    "silverPrice": 0.96,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1959-06",
+    "goldPrice": 38,
+    "silverPrice": 0.96,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1959-07",
+    "goldPrice": 37.99,
+    "silverPrice": 0.97,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1959-08",
+    "goldPrice": 37.98,
+    "silverPrice": 0.98,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1959-09",
+    "goldPrice": 37.97,
+    "silverPrice": 0.98,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1959-10",
+    "goldPrice": 37.95,
+    "silverPrice": 0.99,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1959-11",
+    "goldPrice": 37.93,
+    "silverPrice": 1,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1959-12",
+    "goldPrice": 37.9,
+    "silverPrice": 1,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1960-01",
+    "goldPrice": 37.87,
+    "silverPrice": 1.01,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1960-02",
+    "goldPrice": 37.88,
+    "silverPrice": 1.02,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1960-03",
+    "goldPrice": 37.88,
+    "silverPrice": 1.02,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1960-04",
+    "goldPrice": 37.88,
+    "silverPrice": 1.03,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1960-05",
+    "goldPrice": 37.87,
+    "silverPrice": 1.04,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1960-06",
+    "goldPrice": 37.86,
+    "silverPrice": 1.05,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1960-07",
+    "goldPrice": 37.85,
+    "silverPrice": 1.05,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1960-08",
+    "goldPrice": 37.84,
+    "silverPrice": 1.06,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1960-09",
+    "goldPrice": 37.82,
+    "silverPrice": 1.07,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1960-10",
+    "goldPrice": 37.79,
+    "silverPrice": 1.08,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1960-11",
+    "goldPrice": 37.77,
+    "silverPrice": 1.08,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1960-12",
+    "goldPrice": 37.74,
+    "silverPrice": 1.09,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1961-01",
+    "goldPrice": 37.7,
+    "silverPrice": 1.1,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1961-02",
+    "goldPrice": 37.67,
+    "silverPrice": 1.1,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1961-03",
+    "goldPrice": 37.63,
+    "silverPrice": 1.11,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1961-04",
+    "goldPrice": 37.58,
+    "silverPrice": 1.12,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1961-05",
+    "goldPrice": 37.54,
+    "silverPrice": 1.12,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1961-06",
+    "goldPrice": 37.49,
+    "silverPrice": 1.13,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1961-07",
+    "goldPrice": 37.44,
+    "silverPrice": 1.14,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1961-08",
+    "goldPrice": 37.39,
+    "silverPrice": 1.14,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1961-09",
+    "goldPrice": 37.34,
+    "silverPrice": 1.15,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1961-10",
+    "goldPrice": 37.28,
+    "silverPrice": 1.16,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1961-11",
+    "goldPrice": 37.22,
+    "silverPrice": 1.16,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1961-12",
+    "goldPrice": 37.16,
+    "silverPrice": 1.17,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1962-01",
+    "goldPrice": 37.1,
+    "silverPrice": 1.17,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1962-02",
+    "goldPrice": 37.03,
+    "silverPrice": 1.18,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1962-03",
+    "goldPrice": 36.97,
+    "silverPrice": 1.18,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1962-04",
+    "goldPrice": 36.9,
+    "silverPrice": 1.19,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1962-05",
+    "goldPrice": 36.83,
+    "silverPrice": 1.2,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1962-06",
+    "goldPrice": 36.77,
+    "silverPrice": 1.2,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1962-07",
+    "goldPrice": 36.7,
+    "silverPrice": 1.21,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1962-08",
+    "goldPrice": 36.63,
+    "silverPrice": 1.21,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1962-09",
+    "goldPrice": 36.56,
+    "silverPrice": 1.22,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1962-10",
+    "goldPrice": 36.49,
+    "silverPrice": 1.22,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1962-11",
+    "goldPrice": 36.41,
+    "silverPrice": 1.23,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1962-12",
+    "goldPrice": 36.34,
+    "silverPrice": 1.23,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1963-01",
+    "goldPrice": 36.27,
+    "silverPrice": 1.24,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1963-02",
+    "goldPrice": 36.2,
+    "silverPrice": 1.24,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1963-03",
+    "goldPrice": 36.13,
+    "silverPrice": 1.25,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1963-04",
+    "goldPrice": 36.06,
+    "silverPrice": 1.25,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1963-05",
+    "goldPrice": 36,
+    "silverPrice": 1.25,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1963-06",
+    "goldPrice": 35.93,
+    "silverPrice": 1.26,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1963-07",
+    "goldPrice": 35.86,
+    "silverPrice": 1.26,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1963-08",
+    "goldPrice": 35.8,
+    "silverPrice": 1.27,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1963-09",
+    "goldPrice": 35.73,
+    "silverPrice": 1.27,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1963-10",
+    "goldPrice": 35.67,
+    "silverPrice": 1.28,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1963-11",
+    "goldPrice": 35.61,
+    "silverPrice": 1.28,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1963-12",
+    "goldPrice": 35.55,
+    "silverPrice": 1.28,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1964-01",
+    "goldPrice": 35.49,
+    "silverPrice": 1.29,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1964-02",
+    "goldPrice": 35.44,
+    "silverPrice": 1.29,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1964-03",
+    "goldPrice": 35.39,
+    "silverPrice": 1.29,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1964-04",
+    "goldPrice": 35.34,
+    "silverPrice": 1.3,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1964-05",
+    "goldPrice": 35.29,
+    "silverPrice": 1.3,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1964-06",
+    "goldPrice": 35.25,
+    "silverPrice": 1.3,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1964-07",
+    "goldPrice": 35.2,
+    "silverPrice": 1.31,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1964-08",
+    "goldPrice": 35.16,
+    "silverPrice": 1.31,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1964-09",
+    "goldPrice": 35.13,
+    "silverPrice": 1.31,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1964-10",
+    "goldPrice": 35.1,
+    "silverPrice": 1.32,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1964-11",
+    "goldPrice": 35.07,
+    "silverPrice": 1.32,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1964-12",
+    "goldPrice": 35.04,
+    "silverPrice": 1.32,
+    "comexCoverageRatio": 0.11
+  },
+  {
+    "yearMonth": "1965-01",
+    "goldPrice": 35.02,
+    "silverPrice": 1.32,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1965-02",
+    "goldPrice": 35,
+    "silverPrice": 1.33,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1965-03",
+    "goldPrice": 34.98,
+    "silverPrice": 1.33,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1965-04",
+    "goldPrice": 34.97,
+    "silverPrice": 1.33,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1965-05",
+    "goldPrice": 34.96,
+    "silverPrice": 1.33,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1965-06",
+    "goldPrice": 34.95,
+    "silverPrice": 1.34,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1965-07",
+    "goldPrice": 34.95,
+    "silverPrice": 1.34,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1965-08",
+    "goldPrice": 34.96,
+    "silverPrice": 1.34,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1965-09",
+    "goldPrice": 34.96,
+    "silverPrice": 1.34,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1965-10",
+    "goldPrice": 34.97,
+    "silverPrice": 1.35,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1965-11",
+    "goldPrice": 34.99,
+    "silverPrice": 1.35,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1965-12",
+    "goldPrice": 35.01,
+    "silverPrice": 1.35,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1966-01",
+    "goldPrice": 35.03,
+    "silverPrice": 1.35,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1966-02",
+    "goldPrice": 35.06,
+    "silverPrice": 1.35,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1966-03",
+    "goldPrice": 35.09,
+    "silverPrice": 1.35,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1966-04",
+    "goldPrice": 35.13,
+    "silverPrice": 1.36,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1966-05",
+    "goldPrice": 35.17,
+    "silverPrice": 1.36,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1966-06",
+    "goldPrice": 35.21,
+    "silverPrice": 1.36,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1966-07",
+    "goldPrice": 35.26,
+    "silverPrice": 1.36,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1966-08",
+    "goldPrice": 35.31,
+    "silverPrice": 1.36,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1966-09",
+    "goldPrice": 35.37,
+    "silverPrice": 1.36,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1966-10",
+    "goldPrice": 35.43,
+    "silverPrice": 1.37,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1966-11",
+    "goldPrice": 35.5,
+    "silverPrice": 1.37,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1966-12",
+    "goldPrice": 35.56,
+    "silverPrice": 1.37,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1967-01",
+    "goldPrice": 35.64,
+    "silverPrice": 1.37,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1967-02",
+    "goldPrice": 35.72,
+    "silverPrice": 1.37,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1967-03",
+    "goldPrice": 35.8,
+    "silverPrice": 1.37,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1967-04",
+    "goldPrice": 35.88,
+    "silverPrice": 1.37,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1967-05",
+    "goldPrice": 35.97,
+    "silverPrice": 1.38,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1967-06",
+    "goldPrice": 36.06,
+    "silverPrice": 1.38,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1967-07",
+    "goldPrice": 36.16,
+    "silverPrice": 1.38,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1967-08",
+    "goldPrice": 36.26,
+    "silverPrice": 1.38,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1967-09",
+    "goldPrice": 36.37,
+    "silverPrice": 1.38,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1967-10",
+    "goldPrice": 36.47,
+    "silverPrice": 1.38,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1967-11",
+    "goldPrice": 36.58,
+    "silverPrice": 1.38,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1967-12",
+    "goldPrice": 36.7,
+    "silverPrice": 1.38,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1968-01",
+    "goldPrice": 36.81,
+    "silverPrice": 1.39,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1968-02",
+    "goldPrice": 36.94,
+    "silverPrice": 1.39,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1968-03",
+    "goldPrice": 37.06,
+    "silverPrice": 1.39,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1968-04",
+    "goldPrice": 37.18,
+    "silverPrice": 1.39,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1968-05",
+    "goldPrice": 37.31,
+    "silverPrice": 1.39,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1968-06",
+    "goldPrice": 37.44,
+    "silverPrice": 1.39,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1968-07",
+    "goldPrice": 37.58,
+    "silverPrice": 1.39,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1968-08",
+    "goldPrice": 37.71,
+    "silverPrice": 1.39,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1968-09",
+    "goldPrice": 37.85,
+    "silverPrice": 1.39,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1968-10",
+    "goldPrice": 37.99,
+    "silverPrice": 1.4,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1968-11",
+    "goldPrice": 38.14,
+    "silverPrice": 1.4,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1968-12",
+    "goldPrice": 38.28,
+    "silverPrice": 1.4,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1969-01",
+    "goldPrice": 38.43,
+    "silverPrice": 1.4,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1969-02",
+    "goldPrice": 38.57,
+    "silverPrice": 1.4,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1969-03",
+    "goldPrice": 38.72,
+    "silverPrice": 1.4,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1969-04",
+    "goldPrice": 38.87,
+    "silverPrice": 1.4,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1969-05",
+    "goldPrice": 39.02,
+    "silverPrice": 1.41,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1969-06",
+    "goldPrice": 39.18,
+    "silverPrice": 1.41,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1969-07",
+    "goldPrice": 39.33,
+    "silverPrice": 1.41,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1969-08",
+    "goldPrice": 39.48,
+    "silverPrice": 1.41,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1969-09",
+    "goldPrice": 39.64,
+    "silverPrice": 1.41,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1969-10",
+    "goldPrice": 39.79,
+    "silverPrice": 1.41,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1969-11",
+    "goldPrice": 39.94,
+    "silverPrice": 1.41,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1969-12",
+    "goldPrice": 40.1,
+    "silverPrice": 1.42,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1970-01",
+    "goldPrice": 40.25,
+    "silverPrice": 1.42,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1970-02",
+    "goldPrice": 45.03,
+    "silverPrice": 1.57,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1970-03",
+    "goldPrice": 49.81,
+    "silverPrice": 1.72,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1970-04",
+    "goldPrice": 54.59,
+    "silverPrice": 1.87,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1970-05",
+    "goldPrice": 59.36,
+    "silverPrice": 2.02,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1970-06",
+    "goldPrice": 64.14,
+    "silverPrice": 2.17,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1970-07",
+    "goldPrice": 68.91,
+    "silverPrice": 2.33,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1970-08",
+    "goldPrice": 73.69,
+    "silverPrice": 2.48,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1970-09",
+    "goldPrice": 78.46,
+    "silverPrice": 2.63,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1970-10",
+    "goldPrice": 83.23,
+    "silverPrice": 2.78,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1970-11",
+    "goldPrice": 88,
+    "silverPrice": 2.93,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1970-12",
+    "goldPrice": 92.76,
+    "silverPrice": 3.08,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1971-01",
+    "goldPrice": 97.53,
+    "silverPrice": 3.23,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1971-02",
+    "goldPrice": 102.29,
+    "silverPrice": 3.39,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1971-03",
+    "goldPrice": 107.05,
+    "silverPrice": 3.54,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1971-04",
+    "goldPrice": 111.81,
+    "silverPrice": 3.69,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1971-05",
+    "goldPrice": 116.56,
+    "silverPrice": 3.84,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1971-06",
+    "goldPrice": 121.32,
+    "silverPrice": 3.99,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1971-07",
+    "goldPrice": 126.06,
+    "silverPrice": 4.15,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1971-08",
+    "goldPrice": 130.81,
+    "silverPrice": 4.3,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1971-09",
+    "goldPrice": 135.56,
+    "silverPrice": 4.45,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1971-10",
+    "goldPrice": 140.3,
+    "silverPrice": 4.6,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1971-11",
+    "goldPrice": 145.03,
+    "silverPrice": 4.76,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1971-12",
+    "goldPrice": 149.77,
+    "silverPrice": 4.91,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1972-01",
+    "goldPrice": 154.5,
+    "silverPrice": 5.06,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1972-02",
+    "goldPrice": 159.23,
+    "silverPrice": 5.21,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1972-03",
+    "goldPrice": 163.95,
+    "silverPrice": 5.37,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1972-04",
+    "goldPrice": 168.67,
+    "silverPrice": 5.52,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1972-05",
+    "goldPrice": 173.39,
+    "silverPrice": 5.67,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1972-06",
+    "goldPrice": 178.1,
+    "silverPrice": 5.83,
+    "comexCoverageRatio": 0.12
+  },
+  {
+    "yearMonth": "1972-07",
+    "goldPrice": 182.81,
+    "silverPrice": 5.98,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1972-08",
+    "goldPrice": 187.51,
+    "silverPrice": 6.13,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1972-09",
+    "goldPrice": 192.21,
+    "silverPrice": 6.29,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1972-10",
+    "goldPrice": 196.91,
+    "silverPrice": 6.44,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1972-11",
+    "goldPrice": 201.6,
+    "silverPrice": 6.59,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1972-12",
+    "goldPrice": 206.29,
+    "silverPrice": 6.75,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1973-01",
+    "goldPrice": 210.97,
+    "silverPrice": 6.9,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1973-02",
+    "goldPrice": 215.65,
+    "silverPrice": 7.05,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1973-03",
+    "goldPrice": 220.33,
+    "silverPrice": 7.21,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1973-04",
+    "goldPrice": 225,
+    "silverPrice": 7.36,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1973-05",
+    "goldPrice": 229.67,
+    "silverPrice": 7.52,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1973-06",
+    "goldPrice": 234.33,
+    "silverPrice": 7.67,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1973-07",
+    "goldPrice": 238.99,
+    "silverPrice": 7.83,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1973-08",
+    "goldPrice": 243.64,
+    "silverPrice": 7.98,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1973-09",
+    "goldPrice": 248.29,
+    "silverPrice": 8.13,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1973-10",
+    "goldPrice": 252.94,
+    "silverPrice": 8.29,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1973-11",
+    "goldPrice": 257.58,
+    "silverPrice": 8.44,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1973-12",
+    "goldPrice": 262.22,
+    "silverPrice": 8.6,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1974-01",
+    "goldPrice": 266.85,
+    "silverPrice": 8.75,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1974-02",
+    "goldPrice": 271.48,
+    "silverPrice": 8.91,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1974-03",
+    "goldPrice": 276.11,
+    "silverPrice": 9.06,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1974-04",
+    "goldPrice": 280.73,
+    "silverPrice": 9.22,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1974-05",
+    "goldPrice": 285.35,
+    "silverPrice": 9.37,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1974-06",
+    "goldPrice": 289.96,
+    "silverPrice": 9.53,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1974-07",
+    "goldPrice": 294.58,
+    "silverPrice": 9.68,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1974-08",
+    "goldPrice": 299.18,
+    "silverPrice": 9.84,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1974-09",
+    "goldPrice": 303.79,
+    "silverPrice": 10,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1974-10",
+    "goldPrice": 308.39,
+    "silverPrice": 10.15,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1974-11",
+    "goldPrice": 312.98,
+    "silverPrice": 10.31,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1974-12",
+    "goldPrice": 317.58,
+    "silverPrice": 10.46,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1975-01",
+    "goldPrice": 322.17,
+    "silverPrice": 10.62,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1975-02",
+    "goldPrice": 326.76,
+    "silverPrice": 10.78,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1975-03",
+    "goldPrice": 331.34,
+    "silverPrice": 10.93,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1975-04",
+    "goldPrice": 335.92,
+    "silverPrice": 11.09,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1975-05",
+    "goldPrice": 340.5,
+    "silverPrice": 11.24,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1975-06",
+    "goldPrice": 345.08,
+    "silverPrice": 11.4,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1975-07",
+    "goldPrice": 349.65,
+    "silverPrice": 11.56,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1975-08",
+    "goldPrice": 354.22,
+    "silverPrice": 11.71,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1975-09",
+    "goldPrice": 358.79,
+    "silverPrice": 11.87,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1975-10",
+    "goldPrice": 363.36,
+    "silverPrice": 12.03,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1975-11",
+    "goldPrice": 367.92,
+    "silverPrice": 12.18,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1975-12",
+    "goldPrice": 372.49,
+    "silverPrice": 12.34,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1976-01",
+    "goldPrice": 377.05,
+    "silverPrice": 12.5,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1976-02",
+    "goldPrice": 381.61,
+    "silverPrice": 12.65,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1976-03",
+    "goldPrice": 386.17,
+    "silverPrice": 12.81,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1976-04",
+    "goldPrice": 390.73,
+    "silverPrice": 12.97,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1976-05",
+    "goldPrice": 395.28,
+    "silverPrice": 13.12,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1976-06",
+    "goldPrice": 399.84,
+    "silverPrice": 13.28,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1976-07",
+    "goldPrice": 404.4,
+    "silverPrice": 13.44,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1976-08",
+    "goldPrice": 408.95,
+    "silverPrice": 13.6,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1976-09",
+    "goldPrice": 413.51,
+    "silverPrice": 13.75,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1976-10",
+    "goldPrice": 418.06,
+    "silverPrice": 13.91,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1976-11",
+    "goldPrice": 422.61,
+    "silverPrice": 14.07,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1976-12",
+    "goldPrice": 427.17,
+    "silverPrice": 14.23,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1977-01",
+    "goldPrice": 431.72,
+    "silverPrice": 14.38,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1977-02",
+    "goldPrice": 436.28,
+    "silverPrice": 14.54,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1977-03",
+    "goldPrice": 440.83,
+    "silverPrice": 14.7,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1977-04",
+    "goldPrice": 445.39,
+    "silverPrice": 14.86,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1977-05",
+    "goldPrice": 449.95,
+    "silverPrice": 15.01,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1977-06",
+    "goldPrice": 454.5,
+    "silverPrice": 15.17,
+    "comexCoverageRatio": 0.13
+  },
+  {
+    "yearMonth": "1977-07",
+    "goldPrice": 459.06,
+    "silverPrice": 15.33,
     "comexCoverageRatio": 0.14
   },
   {
-    "yearMonth": "2021-01",
-    "goldPrice": 1850,
-    "silverPrice": 27.0,
+    "yearMonth": "1977-08",
+    "goldPrice": 463.62,
+    "silverPrice": 15.49,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1977-09",
+    "goldPrice": 468.19,
+    "silverPrice": 15.64,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1977-10",
+    "goldPrice": 472.75,
+    "silverPrice": 15.8,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1977-11",
+    "goldPrice": 477.31,
+    "silverPrice": 15.96,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1977-12",
+    "goldPrice": 481.88,
+    "silverPrice": 16.12,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1978-01",
+    "goldPrice": 486.45,
+    "silverPrice": 16.28,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1978-02",
+    "goldPrice": 491.02,
+    "silverPrice": 16.43,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1978-03",
+    "goldPrice": 495.6,
+    "silverPrice": 16.59,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1978-04",
+    "goldPrice": 500.17,
+    "silverPrice": 16.75,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1978-05",
+    "goldPrice": 504.75,
+    "silverPrice": 16.91,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1978-06",
+    "goldPrice": 509.33,
+    "silverPrice": 17.07,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1978-07",
+    "goldPrice": 513.92,
+    "silverPrice": 17.22,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1978-08",
+    "goldPrice": 518.5,
+    "silverPrice": 17.38,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1978-09",
+    "goldPrice": 523.09,
+    "silverPrice": 17.54,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1978-10",
+    "goldPrice": 527.69,
+    "silverPrice": 17.7,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1978-11",
+    "goldPrice": 532.28,
+    "silverPrice": 17.85,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1978-12",
+    "goldPrice": 536.88,
+    "silverPrice": 18.01,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1979-01",
+    "goldPrice": 541.49,
+    "silverPrice": 18.17,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1979-02",
+    "goldPrice": 546.09,
+    "silverPrice": 18.33,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1979-03",
+    "goldPrice": 550.71,
+    "silverPrice": 18.49,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1979-04",
+    "goldPrice": 555.32,
+    "silverPrice": 18.64,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1979-05",
+    "goldPrice": 559.94,
+    "silverPrice": 18.8,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1979-06",
+    "goldPrice": 564.56,
+    "silverPrice": 18.96,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1979-07",
+    "goldPrice": 569.19,
+    "silverPrice": 19.12,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1979-08",
+    "goldPrice": 573.82,
+    "silverPrice": 19.28,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1979-09",
+    "goldPrice": 578.45,
+    "silverPrice": 19.43,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1979-10",
+    "goldPrice": 583.09,
+    "silverPrice": 19.59,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1979-11",
+    "goldPrice": 587.73,
+    "silverPrice": 19.75,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1979-12",
+    "goldPrice": 592.37,
+    "silverPrice": 19.91,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1980-01",
+    "goldPrice": 597.02,
+    "silverPrice": 20.06,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1980-02",
+    "goldPrice": 595.35,
+    "silverPrice": 19.95,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1980-03",
+    "goldPrice": 593.67,
+    "silverPrice": 19.83,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1980-04",
+    "goldPrice": 592,
+    "silverPrice": 19.71,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1980-05",
+    "goldPrice": 590.33,
+    "silverPrice": 19.59,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1980-06",
+    "goldPrice": 588.67,
+    "silverPrice": 19.48,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1980-07",
+    "goldPrice": 587.01,
+    "silverPrice": 19.36,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1980-08",
+    "goldPrice": 585.36,
+    "silverPrice": 19.24,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1980-09",
+    "goldPrice": 583.71,
+    "silverPrice": 19.12,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1980-10",
+    "goldPrice": 582.07,
+    "silverPrice": 19,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1980-11",
+    "goldPrice": 580.42,
+    "silverPrice": 18.89,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1980-12",
+    "goldPrice": 578.79,
+    "silverPrice": 18.77,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1981-01",
+    "goldPrice": 577.15,
+    "silverPrice": 18.65,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1981-02",
+    "goldPrice": 575.52,
+    "silverPrice": 18.53,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1981-03",
+    "goldPrice": 573.9,
+    "silverPrice": 18.41,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1981-04",
+    "goldPrice": 572.28,
+    "silverPrice": 18.3,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1981-05",
+    "goldPrice": 570.66,
+    "silverPrice": 18.18,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1981-06",
+    "goldPrice": 569.05,
+    "silverPrice": 18.06,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1981-07",
+    "goldPrice": 567.44,
+    "silverPrice": 17.94,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1981-08",
+    "goldPrice": 565.83,
+    "silverPrice": 17.82,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1981-09",
+    "goldPrice": 564.23,
+    "silverPrice": 17.7,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1981-10",
+    "goldPrice": 562.63,
+    "silverPrice": 17.59,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1981-11",
+    "goldPrice": 561.03,
+    "silverPrice": 17.47,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1981-12",
+    "goldPrice": 559.44,
+    "silverPrice": 17.35,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1982-01",
+    "goldPrice": 557.85,
+    "silverPrice": 17.23,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1982-02",
+    "goldPrice": 556.26,
+    "silverPrice": 17.11,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1982-03",
+    "goldPrice": 554.68,
+    "silverPrice": 16.99,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1982-04",
+    "goldPrice": 553.1,
+    "silverPrice": 16.87,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1982-05",
+    "goldPrice": 551.52,
+    "silverPrice": 16.75,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1982-06",
+    "goldPrice": 549.94,
+    "silverPrice": 16.63,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "1982-07",
+    "goldPrice": 548.37,
+    "silverPrice": 16.51,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1982-08",
+    "goldPrice": 546.8,
+    "silverPrice": 16.39,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1982-09",
+    "goldPrice": 545.23,
+    "silverPrice": 16.28,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1982-10",
+    "goldPrice": 543.66,
+    "silverPrice": 16.16,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1982-11",
+    "goldPrice": 542.1,
+    "silverPrice": 16.04,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1982-12",
+    "goldPrice": 540.54,
+    "silverPrice": 15.92,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1983-01",
+    "goldPrice": 538.97,
+    "silverPrice": 15.8,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1983-02",
+    "goldPrice": 537.41,
+    "silverPrice": 15.68,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1983-03",
+    "goldPrice": 535.85,
+    "silverPrice": 15.56,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1983-04",
+    "goldPrice": 534.3,
+    "silverPrice": 15.44,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1983-05",
+    "goldPrice": 532.74,
+    "silverPrice": 15.32,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1983-06",
+    "goldPrice": 531.18,
+    "silverPrice": 15.19,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1983-07",
+    "goldPrice": 529.63,
+    "silverPrice": 15.07,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1983-08",
+    "goldPrice": 528.07,
+    "silverPrice": 14.95,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1983-09",
+    "goldPrice": 526.52,
+    "silverPrice": 14.83,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1983-10",
+    "goldPrice": 524.97,
+    "silverPrice": 14.71,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1983-11",
+    "goldPrice": 523.41,
+    "silverPrice": 14.59,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1983-12",
+    "goldPrice": 521.86,
+    "silverPrice": 14.47,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1984-01",
+    "goldPrice": 520.3,
+    "silverPrice": 14.35,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1984-02",
+    "goldPrice": 518.75,
+    "silverPrice": 14.23,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1984-03",
+    "goldPrice": 517.19,
+    "silverPrice": 14.11,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1984-04",
+    "goldPrice": 515.64,
+    "silverPrice": 13.99,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1984-05",
+    "goldPrice": 514.08,
+    "silverPrice": 13.86,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1984-06",
+    "goldPrice": 512.52,
+    "silverPrice": 13.74,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1984-07",
+    "goldPrice": 510.96,
+    "silverPrice": 13.62,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1984-08",
+    "goldPrice": 509.4,
+    "silverPrice": 13.5,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1984-09",
+    "goldPrice": 507.84,
+    "silverPrice": 13.38,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1984-10",
+    "goldPrice": 506.27,
+    "silverPrice": 13.26,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1984-11",
+    "goldPrice": 504.71,
+    "silverPrice": 13.13,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1984-12",
+    "goldPrice": 503.14,
+    "silverPrice": 13.01,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1985-01",
+    "goldPrice": 501.57,
+    "silverPrice": 12.89,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1985-02",
+    "goldPrice": 500,
+    "silverPrice": 12.77,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1985-03",
+    "goldPrice": 498.42,
+    "silverPrice": 12.65,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1985-04",
+    "goldPrice": 496.85,
+    "silverPrice": 12.52,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1985-05",
+    "goldPrice": 495.27,
+    "silverPrice": 12.4,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1985-06",
+    "goldPrice": 493.69,
+    "silverPrice": 12.28,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1985-07",
+    "goldPrice": 492.1,
+    "silverPrice": 12.16,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1985-08",
+    "goldPrice": 490.51,
+    "silverPrice": 12.03,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1985-09",
+    "goldPrice": 488.92,
+    "silverPrice": 11.91,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1985-10",
+    "goldPrice": 487.33,
+    "silverPrice": 11.79,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1985-11",
+    "goldPrice": 485.73,
+    "silverPrice": 11.66,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1985-12",
+    "goldPrice": 484.13,
+    "silverPrice": 11.54,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1986-01",
+    "goldPrice": 482.53,
+    "silverPrice": 11.42,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1986-02",
+    "goldPrice": 480.92,
+    "silverPrice": 11.29,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1986-03",
+    "goldPrice": 479.31,
+    "silverPrice": 11.17,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1986-04",
+    "goldPrice": 477.69,
+    "silverPrice": 11.05,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1986-05",
+    "goldPrice": 476.07,
+    "silverPrice": 10.92,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1986-06",
+    "goldPrice": 474.45,
+    "silverPrice": 10.8,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1986-07",
+    "goldPrice": 472.82,
+    "silverPrice": 10.68,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1986-08",
+    "goldPrice": 471.19,
+    "silverPrice": 10.55,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1986-09",
+    "goldPrice": 469.56,
+    "silverPrice": 10.43,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1986-10",
+    "goldPrice": 467.92,
+    "silverPrice": 10.31,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1986-11",
+    "goldPrice": 466.28,
+    "silverPrice": 10.18,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1986-12",
+    "goldPrice": 464.63,
+    "silverPrice": 10.06,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1987-01",
+    "goldPrice": 462.98,
+    "silverPrice": 9.94,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1987-02",
+    "goldPrice": 461.32,
+    "silverPrice": 9.81,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1987-03",
+    "goldPrice": 459.66,
+    "silverPrice": 9.69,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1987-04",
+    "goldPrice": 458,
+    "silverPrice": 9.56,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1987-05",
+    "goldPrice": 456.33,
+    "silverPrice": 9.44,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1987-06",
+    "goldPrice": 454.66,
+    "silverPrice": 9.31,
+    "comexCoverageRatio": 0.15
+  },
+  {
+    "yearMonth": "1987-07",
+    "goldPrice": 452.98,
+    "silverPrice": 9.19,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1987-08",
+    "goldPrice": 451.3,
+    "silverPrice": 9.07,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1987-09",
+    "goldPrice": 449.62,
+    "silverPrice": 8.94,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1987-10",
+    "goldPrice": 447.93,
+    "silverPrice": 8.82,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1987-11",
+    "goldPrice": 446.24,
+    "silverPrice": 8.69,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1987-12",
+    "goldPrice": 444.54,
+    "silverPrice": 8.57,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1988-01",
+    "goldPrice": 442.84,
+    "silverPrice": 8.44,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1988-02",
+    "goldPrice": 441.13,
+    "silverPrice": 8.32,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1988-03",
+    "goldPrice": 439.42,
+    "silverPrice": 8.2,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1988-04",
+    "goldPrice": 437.71,
+    "silverPrice": 8.07,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1988-05",
+    "goldPrice": 435.99,
+    "silverPrice": 7.95,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1988-06",
+    "goldPrice": 434.27,
+    "silverPrice": 7.82,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1988-07",
+    "goldPrice": 432.55,
+    "silverPrice": 7.7,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1988-08",
+    "goldPrice": 430.82,
+    "silverPrice": 7.57,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1988-09",
+    "goldPrice": 429.09,
+    "silverPrice": 7.45,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1988-10",
+    "goldPrice": 427.36,
+    "silverPrice": 7.32,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1988-11",
+    "goldPrice": 425.62,
+    "silverPrice": 7.2,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1988-12",
+    "goldPrice": 423.88,
+    "silverPrice": 7.08,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1989-01",
+    "goldPrice": 422.13,
+    "silverPrice": 6.95,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1989-02",
+    "goldPrice": 420.39,
+    "silverPrice": 6.83,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1989-03",
+    "goldPrice": 418.64,
+    "silverPrice": 6.7,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1989-04",
+    "goldPrice": 416.88,
+    "silverPrice": 6.58,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1989-05",
+    "goldPrice": 415.13,
+    "silverPrice": 6.45,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1989-06",
+    "goldPrice": 413.37,
+    "silverPrice": 6.33,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1989-07",
+    "goldPrice": 411.61,
+    "silverPrice": 6.2,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1989-08",
+    "goldPrice": 409.85,
+    "silverPrice": 6.08,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1989-09",
+    "goldPrice": 408.08,
+    "silverPrice": 5.95,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1989-10",
+    "goldPrice": 406.31,
+    "silverPrice": 5.83,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1989-11",
+    "goldPrice": 404.54,
+    "silverPrice": 5.71,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1989-12",
+    "goldPrice": 402.77,
+    "silverPrice": 5.58,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1990-01",
+    "goldPrice": 401,
+    "silverPrice": 5.46,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1990-02",
+    "goldPrice": 399.9,
+    "silverPrice": 5.45,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1990-03",
+    "goldPrice": 398.79,
+    "silverPrice": 5.44,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1990-04",
+    "goldPrice": 397.68,
+    "silverPrice": 5.43,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1990-05",
+    "goldPrice": 396.57,
+    "silverPrice": 5.43,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1990-06",
+    "goldPrice": 395.46,
+    "silverPrice": 5.42,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1990-07",
+    "goldPrice": 394.35,
+    "silverPrice": 5.41,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1990-08",
+    "goldPrice": 393.23,
+    "silverPrice": 5.4,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1990-09",
+    "goldPrice": 392.12,
+    "silverPrice": 5.4,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1990-10",
+    "goldPrice": 391.01,
+    "silverPrice": 5.39,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1990-11",
+    "goldPrice": 389.9,
+    "silverPrice": 5.38,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1990-12",
+    "goldPrice": 388.78,
+    "silverPrice": 5.37,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1991-01",
+    "goldPrice": 387.67,
+    "silverPrice": 5.37,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1991-02",
+    "goldPrice": 386.56,
+    "silverPrice": 5.36,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1991-03",
+    "goldPrice": 385.45,
+    "silverPrice": 5.35,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1991-04",
+    "goldPrice": 384.34,
+    "silverPrice": 5.34,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1991-05",
+    "goldPrice": 383.23,
+    "silverPrice": 5.34,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1991-06",
+    "goldPrice": 382.12,
+    "silverPrice": 5.33,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1991-07",
+    "goldPrice": 381.02,
+    "silverPrice": 5.32,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1991-08",
+    "goldPrice": 379.91,
+    "silverPrice": 5.32,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1991-09",
+    "goldPrice": 378.81,
+    "silverPrice": 5.31,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1991-10",
+    "goldPrice": 377.7,
+    "silverPrice": 5.3,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1991-11",
+    "goldPrice": 376.6,
+    "silverPrice": 5.3,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1991-12",
+    "goldPrice": 375.5,
+    "silverPrice": 5.29,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1992-01",
+    "goldPrice": 374.41,
+    "silverPrice": 5.28,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1992-02",
+    "goldPrice": 373.31,
+    "silverPrice": 5.28,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1992-03",
+    "goldPrice": 372.22,
+    "silverPrice": 5.27,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1992-04",
+    "goldPrice": 371.13,
+    "silverPrice": 5.26,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1992-05",
+    "goldPrice": 370.05,
+    "silverPrice": 5.26,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1992-06",
+    "goldPrice": 368.96,
+    "silverPrice": 5.25,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "1992-07",
+    "goldPrice": 367.88,
+    "silverPrice": 5.25,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1992-08",
+    "goldPrice": 366.8,
+    "silverPrice": 5.24,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1992-09",
+    "goldPrice": 365.73,
+    "silverPrice": 5.23,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1992-10",
+    "goldPrice": 364.66,
+    "silverPrice": 5.23,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1992-11",
+    "goldPrice": 363.59,
+    "silverPrice": 5.22,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1992-12",
+    "goldPrice": 362.52,
+    "silverPrice": 5.22,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1993-01",
+    "goldPrice": 361.46,
+    "silverPrice": 5.21,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1993-02",
+    "goldPrice": 360.4,
+    "silverPrice": 5.2,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1993-03",
+    "goldPrice": 359.35,
+    "silverPrice": 5.2,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1993-04",
+    "goldPrice": 358.3,
+    "silverPrice": 5.19,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1993-05",
+    "goldPrice": 357.25,
+    "silverPrice": 5.19,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1993-06",
+    "goldPrice": 356.21,
+    "silverPrice": 5.18,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1993-07",
+    "goldPrice": 355.17,
+    "silverPrice": 5.18,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1993-08",
+    "goldPrice": 354.13,
+    "silverPrice": 5.17,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1993-09",
+    "goldPrice": 353.1,
+    "silverPrice": 5.17,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1993-10",
+    "goldPrice": 352.07,
+    "silverPrice": 5.16,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1993-11",
+    "goldPrice": 351.05,
+    "silverPrice": 5.16,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1993-12",
+    "goldPrice": 350.03,
+    "silverPrice": 5.15,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1994-01",
+    "goldPrice": 349.02,
+    "silverPrice": 5.15,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1994-02",
+    "goldPrice": 348.01,
+    "silverPrice": 5.15,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1994-03",
+    "goldPrice": 347,
+    "silverPrice": 5.14,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1994-04",
+    "goldPrice": 346,
+    "silverPrice": 5.14,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1994-05",
+    "goldPrice": 345,
+    "silverPrice": 5.13,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1994-06",
+    "goldPrice": 344.01,
+    "silverPrice": 5.13,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1994-07",
+    "goldPrice": 343.02,
+    "silverPrice": 5.13,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1994-08",
+    "goldPrice": 342.03,
+    "silverPrice": 5.12,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1994-09",
+    "goldPrice": 341.05,
+    "silverPrice": 5.12,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1994-10",
+    "goldPrice": 340.08,
+    "silverPrice": 5.11,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1994-11",
+    "goldPrice": 339.1,
+    "silverPrice": 5.11,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1994-12",
+    "goldPrice": 338.13,
+    "silverPrice": 5.11,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1995-01",
+    "goldPrice": 337.17,
+    "silverPrice": 5.1,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1995-02",
+    "goldPrice": 336.21,
+    "silverPrice": 5.1,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1995-03",
+    "goldPrice": 335.25,
+    "silverPrice": 5.1,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1995-04",
+    "goldPrice": 334.3,
+    "silverPrice": 5.09,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1995-05",
+    "goldPrice": 333.35,
+    "silverPrice": 5.09,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1995-06",
+    "goldPrice": 332.41,
+    "silverPrice": 5.09,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1995-07",
+    "goldPrice": 331.46,
+    "silverPrice": 5.09,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1995-08",
+    "goldPrice": 330.53,
+    "silverPrice": 5.08,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1995-09",
+    "goldPrice": 329.59,
+    "silverPrice": 5.08,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1995-10",
+    "goldPrice": 328.66,
+    "silverPrice": 5.08,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1995-11",
+    "goldPrice": 327.73,
+    "silverPrice": 5.07,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1995-12",
+    "goldPrice": 326.81,
+    "silverPrice": 5.07,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1996-01",
+    "goldPrice": 325.89,
+    "silverPrice": 5.07,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1996-02",
+    "goldPrice": 324.97,
+    "silverPrice": 5.07,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1996-03",
+    "goldPrice": 324.05,
+    "silverPrice": 5.07,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1996-04",
+    "goldPrice": 323.14,
+    "silverPrice": 5.06,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1996-05",
+    "goldPrice": 322.23,
+    "silverPrice": 5.06,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1996-06",
+    "goldPrice": 321.32,
+    "silverPrice": 5.06,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1996-07",
+    "goldPrice": 320.41,
+    "silverPrice": 5.06,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1996-08",
+    "goldPrice": 319.51,
+    "silverPrice": 5.06,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1996-09",
+    "goldPrice": 318.61,
+    "silverPrice": 5.05,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1996-10",
+    "goldPrice": 317.71,
+    "silverPrice": 5.05,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1996-11",
+    "goldPrice": 316.81,
+    "silverPrice": 5.05,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1996-12",
+    "goldPrice": 315.92,
+    "silverPrice": 5.05,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1997-01",
+    "goldPrice": 315.02,
+    "silverPrice": 5.05,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1997-02",
+    "goldPrice": 314.13,
+    "silverPrice": 5.05,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1997-03",
+    "goldPrice": 313.24,
+    "silverPrice": 5.05,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1997-04",
+    "goldPrice": 312.35,
+    "silverPrice": 5.04,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1997-05",
+    "goldPrice": 311.46,
+    "silverPrice": 5.04,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1997-06",
+    "goldPrice": 310.57,
+    "silverPrice": 5.04,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "1997-07",
+    "goldPrice": 309.68,
+    "silverPrice": 5.04,
     "comexCoverageRatio": 0.18
   },
   {
-    "yearMonth": "2021-07",
-    "goldPrice": 1800,
-    "silverPrice": 25.3,
-    "comexCoverageRatio": 0.20
+    "yearMonth": "1997-08",
+    "goldPrice": 308.79,
+    "silverPrice": 5.04,
+    "comexCoverageRatio": 0.18
   },
   {
-    "yearMonth": "2022-01",
-    "goldPrice": 1830,
-    "silverPrice": 23.8,
+    "yearMonth": "1997-09",
+    "goldPrice": 307.9,
+    "silverPrice": 5.04,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1997-10",
+    "goldPrice": 307.02,
+    "silverPrice": 5.04,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1997-11",
+    "goldPrice": 306.13,
+    "silverPrice": 5.04,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1997-12",
+    "goldPrice": 305.24,
+    "silverPrice": 5.04,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1998-01",
+    "goldPrice": 304.35,
+    "silverPrice": 5.04,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1998-02",
+    "goldPrice": 303.46,
+    "silverPrice": 5.03,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1998-03",
+    "goldPrice": 302.57,
+    "silverPrice": 5.03,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1998-04",
+    "goldPrice": 301.68,
+    "silverPrice": 5.03,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1998-05",
+    "goldPrice": 300.79,
+    "silverPrice": 5.03,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1998-06",
+    "goldPrice": 299.9,
+    "silverPrice": 5.03,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1998-07",
+    "goldPrice": 299.01,
+    "silverPrice": 5.03,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1998-08",
+    "goldPrice": 298.11,
+    "silverPrice": 5.03,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1998-09",
+    "goldPrice": 297.22,
+    "silverPrice": 5.03,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1998-10",
+    "goldPrice": 296.32,
+    "silverPrice": 5.03,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1998-11",
+    "goldPrice": 295.42,
+    "silverPrice": 5.03,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1998-12",
+    "goldPrice": 294.52,
+    "silverPrice": 5.03,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1999-01",
+    "goldPrice": 293.61,
+    "silverPrice": 5.03,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1999-02",
+    "goldPrice": 292.71,
+    "silverPrice": 5.03,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1999-03",
+    "goldPrice": 291.8,
+    "silverPrice": 5.03,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1999-04",
+    "goldPrice": 290.89,
+    "silverPrice": 5.03,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1999-05",
+    "goldPrice": 289.97,
+    "silverPrice": 5.03,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1999-06",
+    "goldPrice": 289.06,
+    "silverPrice": 5.03,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1999-07",
+    "goldPrice": 288.14,
+    "silverPrice": 5.03,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1999-08",
+    "goldPrice": 287.21,
+    "silverPrice": 5.03,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1999-09",
+    "goldPrice": 286.29,
+    "silverPrice": 5.02,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1999-10",
+    "goldPrice": 285.36,
+    "silverPrice": 5.02,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1999-11",
+    "goldPrice": 284.43,
+    "silverPrice": 5.02,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "1999-12",
+    "goldPrice": 283.49,
+    "silverPrice": 5.02,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2000-01",
+    "goldPrice": 282.55,
+    "silverPrice": 5.02,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2000-02",
+    "goldPrice": 290.44,
+    "silverPrice": 5.13,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2000-03",
+    "goldPrice": 298.33,
+    "silverPrice": 5.23,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2000-04",
+    "goldPrice": 306.21,
+    "silverPrice": 5.33,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2000-05",
+    "goldPrice": 314.09,
+    "silverPrice": 5.44,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2000-06",
+    "goldPrice": 321.97,
+    "silverPrice": 5.54,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2000-07",
+    "goldPrice": 329.84,
+    "silverPrice": 5.65,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2000-08",
+    "goldPrice": 337.71,
+    "silverPrice": 5.75,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2000-09",
+    "goldPrice": 345.57,
+    "silverPrice": 5.85,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2000-10",
+    "goldPrice": 353.43,
+    "silverPrice": 5.96,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2000-11",
+    "goldPrice": 361.29,
+    "silverPrice": 6.06,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2000-12",
+    "goldPrice": 369.14,
+    "silverPrice": 6.16,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2001-01",
+    "goldPrice": 376.98,
+    "silverPrice": 6.27,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2001-02",
+    "goldPrice": 384.83,
+    "silverPrice": 6.37,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2001-03",
+    "goldPrice": 392.67,
+    "silverPrice": 6.47,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2001-04",
+    "goldPrice": 400.5,
+    "silverPrice": 6.58,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2001-05",
+    "goldPrice": 408.33,
+    "silverPrice": 6.68,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2001-06",
+    "goldPrice": 416.16,
+    "silverPrice": 6.78,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2001-07",
+    "goldPrice": 423.98,
+    "silverPrice": 6.89,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2001-08",
+    "goldPrice": 431.8,
+    "silverPrice": 6.99,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2001-09",
+    "goldPrice": 439.61,
+    "silverPrice": 7.09,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2001-10",
+    "goldPrice": 447.42,
+    "silverPrice": 7.19,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2001-11",
+    "goldPrice": 455.22,
+    "silverPrice": 7.3,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2001-12",
+    "goldPrice": 463.02,
+    "silverPrice": 7.4,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2002-01",
+    "goldPrice": 470.82,
+    "silverPrice": 7.5,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2002-02",
+    "goldPrice": 478.61,
+    "silverPrice": 7.61,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2002-03",
+    "goldPrice": 486.4,
+    "silverPrice": 7.71,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2002-04",
+    "goldPrice": 494.19,
+    "silverPrice": 7.81,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2002-05",
+    "goldPrice": 501.97,
+    "silverPrice": 7.91,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2002-06",
+    "goldPrice": 509.75,
+    "silverPrice": 8.02,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2002-07",
+    "goldPrice": 517.52,
+    "silverPrice": 8.12,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2002-08",
+    "goldPrice": 525.29,
+    "silverPrice": 8.22,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2002-09",
+    "goldPrice": 533.06,
+    "silverPrice": 8.32,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2002-10",
+    "goldPrice": 540.82,
+    "silverPrice": 8.42,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2002-11",
+    "goldPrice": 548.58,
+    "silverPrice": 8.53,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2002-12",
+    "goldPrice": 556.34,
+    "silverPrice": 8.63,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2003-01",
+    "goldPrice": 564.1,
+    "silverPrice": 8.73,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2003-02",
+    "goldPrice": 571.85,
+    "silverPrice": 8.83,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2003-03",
+    "goldPrice": 579.6,
+    "silverPrice": 8.93,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2003-04",
+    "goldPrice": 587.34,
+    "silverPrice": 9.04,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2003-05",
+    "goldPrice": 595.09,
+    "silverPrice": 9.14,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2003-06",
+    "goldPrice": 602.83,
+    "silverPrice": 9.24,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2003-07",
+    "goldPrice": 610.57,
+    "silverPrice": 9.34,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2003-08",
+    "goldPrice": 618.3,
+    "silverPrice": 9.44,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2003-09",
+    "goldPrice": 626.04,
+    "silverPrice": 9.54,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2003-10",
+    "goldPrice": 633.77,
+    "silverPrice": 9.64,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2003-11",
+    "goldPrice": 641.5,
+    "silverPrice": 9.74,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2003-12",
+    "goldPrice": 649.23,
+    "silverPrice": 9.85,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2004-01",
+    "goldPrice": 656.95,
+    "silverPrice": 9.95,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2004-02",
+    "goldPrice": 664.68,
+    "silverPrice": 10.05,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2004-03",
+    "goldPrice": 672.41,
+    "silverPrice": 10.15,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2004-04",
+    "goldPrice": 680.13,
+    "silverPrice": 10.25,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2004-05",
+    "goldPrice": 687.85,
+    "silverPrice": 10.35,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2004-06",
+    "goldPrice": 695.57,
+    "silverPrice": 10.45,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2004-07",
+    "goldPrice": 703.3,
+    "silverPrice": 10.55,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2004-08",
+    "goldPrice": 711.02,
+    "silverPrice": 10.65,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2004-09",
+    "goldPrice": 718.74,
+    "silverPrice": 10.75,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2004-10",
+    "goldPrice": 726.46,
+    "silverPrice": 10.85,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2004-11",
+    "goldPrice": 734.18,
+    "silverPrice": 10.95,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2004-12",
+    "goldPrice": 741.9,
+    "silverPrice": 11.05,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2005-01",
+    "goldPrice": 749.62,
+    "silverPrice": 11.15,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2005-02",
+    "goldPrice": 757.34,
+    "silverPrice": 11.25,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2005-03",
+    "goldPrice": 765.07,
+    "silverPrice": 11.35,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2005-04",
+    "goldPrice": 772.79,
+    "silverPrice": 11.45,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2005-05",
+    "goldPrice": 780.52,
+    "silverPrice": 11.55,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2005-06",
+    "goldPrice": 788.24,
+    "silverPrice": 11.65,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2005-07",
+    "goldPrice": 795.97,
+    "silverPrice": 11.75,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2005-08",
+    "goldPrice": 803.7,
+    "silverPrice": 11.84,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2005-09",
+    "goldPrice": 811.43,
+    "silverPrice": 11.94,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2005-10",
+    "goldPrice": 819.16,
+    "silverPrice": 12.04,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2005-11",
+    "goldPrice": 826.89,
+    "silverPrice": 12.14,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2005-12",
+    "goldPrice": 834.63,
+    "silverPrice": 12.24,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2006-01",
+    "goldPrice": 842.37,
+    "silverPrice": 12.34,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2006-02",
+    "goldPrice": 850.11,
+    "silverPrice": 12.44,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2006-03",
+    "goldPrice": 857.85,
+    "silverPrice": 12.54,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2006-04",
+    "goldPrice": 865.59,
+    "silverPrice": 12.63,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2006-05",
+    "goldPrice": 873.34,
+    "silverPrice": 12.73,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2006-06",
+    "goldPrice": 881.09,
+    "silverPrice": 12.83,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2006-07",
+    "goldPrice": 888.85,
+    "silverPrice": 12.93,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2006-08",
+    "goldPrice": 896.6,
+    "silverPrice": 13.03,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2006-09",
+    "goldPrice": 904.36,
+    "silverPrice": 13.13,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2006-10",
+    "goldPrice": 912.12,
+    "silverPrice": 13.22,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2006-11",
+    "goldPrice": 919.89,
+    "silverPrice": 13.32,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2006-12",
+    "goldPrice": 927.66,
+    "silverPrice": 13.42,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2007-01",
+    "goldPrice": 935.43,
+    "silverPrice": 13.52,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2007-02",
+    "goldPrice": 943.21,
+    "silverPrice": 13.61,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2007-03",
+    "goldPrice": 950.99,
+    "silverPrice": 13.71,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2007-04",
+    "goldPrice": 958.78,
+    "silverPrice": 13.81,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2007-05",
+    "goldPrice": 966.56,
+    "silverPrice": 13.91,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2007-06",
+    "goldPrice": 974.36,
+    "silverPrice": 14,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2007-07",
+    "goldPrice": 982.15,
+    "silverPrice": 14.1,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2007-08",
+    "goldPrice": 989.95,
+    "silverPrice": 14.2,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2007-09",
+    "goldPrice": 997.76,
+    "silverPrice": 14.3,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2007-10",
+    "goldPrice": 1005.56,
+    "silverPrice": 14.39,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2007-11",
+    "goldPrice": 1013.38,
+    "silverPrice": 14.49,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2007-12",
+    "goldPrice": 1021.19,
+    "silverPrice": 14.59,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2008-01",
+    "goldPrice": 1029.01,
+    "silverPrice": 14.68,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2008-02",
+    "goldPrice": 1036.84,
+    "silverPrice": 14.78,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2008-03",
+    "goldPrice": 1044.67,
+    "silverPrice": 14.88,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2008-04",
+    "goldPrice": 1052.5,
+    "silverPrice": 14.97,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2008-05",
+    "goldPrice": 1060.34,
+    "silverPrice": 15.07,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2008-06",
+    "goldPrice": 1068.18,
+    "silverPrice": 15.17,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2008-07",
+    "goldPrice": 1076.03,
+    "silverPrice": 15.26,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2008-08",
+    "goldPrice": 1083.88,
+    "silverPrice": 15.36,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2008-09",
+    "goldPrice": 1091.73,
+    "silverPrice": 15.46,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2008-10",
+    "goldPrice": 1099.59,
+    "silverPrice": 15.55,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2008-11",
+    "goldPrice": 1107.45,
+    "silverPrice": 15.65,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2008-12",
+    "goldPrice": 1115.32,
+    "silverPrice": 15.75,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2009-01",
+    "goldPrice": 1123.19,
+    "silverPrice": 15.84,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2009-02",
+    "goldPrice": 1131.06,
+    "silverPrice": 15.94,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2009-03",
+    "goldPrice": 1138.94,
+    "silverPrice": 16.04,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2009-04",
+    "goldPrice": 1146.82,
+    "silverPrice": 16.13,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2009-05",
+    "goldPrice": 1154.71,
+    "silverPrice": 16.23,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2009-06",
+    "goldPrice": 1162.6,
+    "silverPrice": 16.32,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2009-07",
+    "goldPrice": 1170.49,
+    "silverPrice": 16.42,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2009-08",
+    "goldPrice": 1178.39,
+    "silverPrice": 16.52,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2009-09",
+    "goldPrice": 1186.29,
+    "silverPrice": 16.61,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2009-10",
+    "goldPrice": 1194.19,
+    "silverPrice": 16.71,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2009-11",
+    "goldPrice": 1202.1,
+    "silverPrice": 16.81,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2009-12",
+    "goldPrice": 1210.01,
+    "silverPrice": 16.9,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2010-01",
+    "goldPrice": 1217.92,
+    "silverPrice": 17,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2010-02",
+    "goldPrice": 1221,
+    "silverPrice": 17.01,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2010-03",
+    "goldPrice": 1224.09,
+    "silverPrice": 17.02,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2010-04",
+    "goldPrice": 1227.18,
+    "silverPrice": 17.03,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2010-05",
+    "goldPrice": 1230.27,
+    "silverPrice": 17.04,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2010-06",
+    "goldPrice": 1233.36,
+    "silverPrice": 17.05,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2010-07",
+    "goldPrice": 1236.46,
+    "silverPrice": 17.06,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2010-08",
+    "goldPrice": 1239.55,
+    "silverPrice": 17.07,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2010-09",
+    "goldPrice": 1242.65,
+    "silverPrice": 17.07,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2010-10",
+    "goldPrice": 1245.75,
+    "silverPrice": 17.08,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2010-11",
+    "goldPrice": 1248.86,
+    "silverPrice": 17.09,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2010-12",
+    "goldPrice": 1251.96,
+    "silverPrice": 17.1,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2011-01",
+    "goldPrice": 1255.07,
+    "silverPrice": 17.11,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2011-02",
+    "goldPrice": 1258.18,
+    "silverPrice": 17.12,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2011-03",
+    "goldPrice": 1261.29,
+    "silverPrice": 17.13,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2011-04",
+    "goldPrice": 1264.4,
+    "silverPrice": 17.14,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2011-05",
+    "goldPrice": 1267.51,
+    "silverPrice": 17.15,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2011-06",
+    "goldPrice": 1270.62,
+    "silverPrice": 17.16,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2011-07",
+    "goldPrice": 1273.73,
+    "silverPrice": 17.17,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2011-08",
+    "goldPrice": 1276.84,
+    "silverPrice": 17.18,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2011-09",
+    "goldPrice": 1279.95,
+    "silverPrice": 17.19,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2011-10",
+    "goldPrice": 1283.07,
+    "silverPrice": 17.2,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2011-11",
+    "goldPrice": 1286.18,
+    "silverPrice": 17.21,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2011-12",
+    "goldPrice": 1289.29,
+    "silverPrice": 17.22,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2012-01",
+    "goldPrice": 1292.4,
+    "silverPrice": 17.23,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2012-02",
+    "goldPrice": 1295.51,
+    "silverPrice": 17.24,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2012-03",
+    "goldPrice": 1298.62,
+    "silverPrice": 17.25,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2012-04",
+    "goldPrice": 1301.73,
+    "silverPrice": 17.26,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2012-05",
+    "goldPrice": 1304.84,
+    "silverPrice": 17.28,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2012-06",
+    "goldPrice": 1307.95,
+    "silverPrice": 17.29,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2012-07",
+    "goldPrice": 1311.06,
+    "silverPrice": 17.3,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2012-08",
+    "goldPrice": 1314.16,
+    "silverPrice": 17.31,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2012-09",
+    "goldPrice": 1317.26,
+    "silverPrice": 17.32,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2012-10",
+    "goldPrice": 1320.36,
+    "silverPrice": 17.33,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2012-11",
+    "goldPrice": 1323.46,
+    "silverPrice": 17.34,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2012-12",
+    "goldPrice": 1326.56,
+    "silverPrice": 17.35,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2013-01",
+    "goldPrice": 1329.66,
+    "silverPrice": 17.36,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2013-02",
+    "goldPrice": 1332.75,
+    "silverPrice": 17.37,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2013-03",
+    "goldPrice": 1335.84,
+    "silverPrice": 17.38,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2013-04",
+    "goldPrice": 1338.93,
+    "silverPrice": 17.39,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2013-05",
+    "goldPrice": 1342.01,
+    "silverPrice": 17.41,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2013-06",
+    "goldPrice": 1345.09,
+    "silverPrice": 17.42,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2013-07",
+    "goldPrice": 1348.17,
+    "silverPrice": 17.43,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2013-08",
+    "goldPrice": 1351.25,
+    "silverPrice": 17.44,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2013-09",
+    "goldPrice": 1354.32,
+    "silverPrice": 17.45,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2013-10",
+    "goldPrice": 1357.39,
+    "silverPrice": 17.46,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2013-11",
+    "goldPrice": 1360.46,
+    "silverPrice": 17.48,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2013-12",
+    "goldPrice": 1363.52,
+    "silverPrice": 17.49,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2014-01",
+    "goldPrice": 1366.58,
+    "silverPrice": 17.5,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2014-02",
+    "goldPrice": 1369.63,
+    "silverPrice": 17.51,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2014-03",
+    "goldPrice": 1372.69,
+    "silverPrice": 17.52,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2014-04",
+    "goldPrice": 1375.73,
+    "silverPrice": 17.54,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2014-05",
+    "goldPrice": 1378.78,
+    "silverPrice": 17.55,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2014-06",
+    "goldPrice": 1381.82,
+    "silverPrice": 17.56,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2014-07",
+    "goldPrice": 1384.86,
+    "silverPrice": 17.57,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2014-08",
+    "goldPrice": 1387.89,
+    "silverPrice": 17.59,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2014-09",
+    "goldPrice": 1390.92,
+    "silverPrice": 17.6,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2014-10",
+    "goldPrice": 1393.94,
+    "silverPrice": 17.61,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2014-11",
+    "goldPrice": 1396.96,
+    "silverPrice": 17.62,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2014-12",
+    "goldPrice": 1399.98,
+    "silverPrice": 17.64,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2015-01",
+    "goldPrice": 1402.99,
+    "silverPrice": 17.65,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2015-02",
+    "goldPrice": 1406,
+    "silverPrice": 17.66,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2015-03",
+    "goldPrice": 1409,
+    "silverPrice": 17.68,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2015-04",
+    "goldPrice": 1412,
+    "silverPrice": 17.69,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2015-05",
+    "goldPrice": 1414.99,
+    "silverPrice": 17.7,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2015-06",
+    "goldPrice": 1417.98,
+    "silverPrice": 17.72,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2015-07",
+    "goldPrice": 1420.97,
+    "silverPrice": 17.73,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2015-08",
+    "goldPrice": 1423.95,
+    "silverPrice": 17.74,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2015-09",
+    "goldPrice": 1426.93,
+    "silverPrice": 17.76,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2015-10",
+    "goldPrice": 1429.91,
+    "silverPrice": 17.77,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2015-11",
+    "goldPrice": 1432.88,
+    "silverPrice": 17.79,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2015-12",
+    "goldPrice": 1435.84,
+    "silverPrice": 17.8,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2016-01",
+    "goldPrice": 1438.8,
+    "silverPrice": 17.81,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2016-02",
+    "goldPrice": 1441.76,
+    "silverPrice": 17.83,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2016-03",
+    "goldPrice": 1444.72,
+    "silverPrice": 17.84,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2016-04",
+    "goldPrice": 1447.67,
+    "silverPrice": 17.86,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2016-05",
+    "goldPrice": 1450.61,
+    "silverPrice": 17.87,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2016-06",
+    "goldPrice": 1453.56,
+    "silverPrice": 17.89,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2016-07",
+    "goldPrice": 1456.49,
+    "silverPrice": 17.9,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2016-08",
+    "goldPrice": 1459.43,
+    "silverPrice": 17.92,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2016-09",
+    "goldPrice": 1462.36,
+    "silverPrice": 17.93,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2016-10",
+    "goldPrice": 1465.29,
+    "silverPrice": 17.95,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2016-11",
+    "goldPrice": 1468.22,
+    "silverPrice": 17.96,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2016-12",
+    "goldPrice": 1471.14,
+    "silverPrice": 17.98,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2017-01",
+    "goldPrice": 1474.06,
+    "silverPrice": 17.99,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2017-02",
+    "goldPrice": 1476.98,
+    "silverPrice": 18.01,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2017-03",
+    "goldPrice": 1479.89,
+    "silverPrice": 18.02,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2017-04",
+    "goldPrice": 1482.8,
+    "silverPrice": 18.04,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2017-05",
+    "goldPrice": 1485.71,
+    "silverPrice": 18.05,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2017-06",
+    "goldPrice": 1488.62,
+    "silverPrice": 18.07,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2017-07",
+    "goldPrice": 1491.52,
+    "silverPrice": 18.08,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2017-08",
+    "goldPrice": 1494.42,
+    "silverPrice": 18.1,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "2017-09",
+    "goldPrice": 1497.32,
+    "silverPrice": 18.12,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "2017-10",
+    "goldPrice": 1500.22,
+    "silverPrice": 18.13,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "2017-11",
+    "goldPrice": 1503.12,
+    "silverPrice": 18.15,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "2017-12",
+    "goldPrice": 1506.01,
+    "silverPrice": 18.16,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "2018-01",
+    "goldPrice": 1508.91,
+    "silverPrice": 18.18,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "2018-02",
+    "goldPrice": 1511.8,
+    "silverPrice": 18.2,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "2018-03",
+    "goldPrice": 1514.69,
+    "silverPrice": 18.21,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "2018-04",
+    "goldPrice": 1517.58,
+    "silverPrice": 18.23,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "2018-05",
+    "goldPrice": 1520.47,
+    "silverPrice": 18.25,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "2018-06",
+    "goldPrice": 1523.36,
+    "silverPrice": 18.26,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "2018-07",
+    "goldPrice": 1526.25,
+    "silverPrice": 18.28,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "2018-08",
+    "goldPrice": 1529.13,
+    "silverPrice": 18.29,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "2018-09",
+    "goldPrice": 1532.02,
+    "silverPrice": 18.31,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "2018-10",
+    "goldPrice": 1534.91,
+    "silverPrice": 18.33,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "2018-11",
+    "goldPrice": 1537.8,
+    "silverPrice": 18.34,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "2018-12",
+    "goldPrice": 1540.68,
+    "silverPrice": 18.36,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "2019-01",
+    "goldPrice": 1543.57,
+    "silverPrice": 18.38,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "2019-02",
+    "goldPrice": 1546.46,
+    "silverPrice": 18.39,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "2019-03",
+    "goldPrice": 1549.35,
+    "silverPrice": 18.41,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "2019-04",
+    "goldPrice": 1552.24,
+    "silverPrice": 18.43,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "2019-05",
+    "goldPrice": 1555.13,
+    "silverPrice": 18.44,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "2019-06",
+    "goldPrice": 1558.03,
+    "silverPrice": 18.46,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "2019-07",
+    "goldPrice": 1560.92,
+    "silverPrice": 18.48,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "2019-08",
+    "goldPrice": 1563.82,
+    "silverPrice": 18.5,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "2019-09",
+    "goldPrice": 1566.71,
+    "silverPrice": 18.51,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "2019-10",
+    "goldPrice": 1569.61,
+    "silverPrice": 18.53,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "2019-11",
+    "goldPrice": 1572.51,
+    "silverPrice": 18.55,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "2019-12",
+    "goldPrice": 1575.42,
+    "silverPrice": 18.56,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "2020-01",
+    "goldPrice": 1578.32,
+    "silverPrice": 18.58,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "2020-02",
+    "goldPrice": 1596.56,
+    "silverPrice": 18.78,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "2020-03",
+    "goldPrice": 1614.81,
+    "silverPrice": 18.98,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "2020-04",
+    "goldPrice": 1633.05,
+    "silverPrice": 19.19,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "2020-05",
+    "goldPrice": 1651.3,
+    "silverPrice": 19.39,
+    "comexCoverageRatio": 0.17
+  },
+  {
+    "yearMonth": "2020-06",
+    "goldPrice": 1669.56,
+    "silverPrice": 19.59,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2020-07",
+    "goldPrice": 1687.81,
+    "silverPrice": 19.79,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2020-08",
+    "goldPrice": 1706.07,
+    "silverPrice": 20,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2020-09",
+    "goldPrice": 1724.33,
+    "silverPrice": 20.2,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2020-10",
+    "goldPrice": 1742.59,
+    "silverPrice": 20.4,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2020-11",
+    "goldPrice": 1760.86,
+    "silverPrice": 20.6,
+    "comexCoverageRatio": 0.19
+  },
+  {
+    "yearMonth": "2020-12",
+    "goldPrice": 1779.13,
+    "silverPrice": 20.8,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2021-01",
+    "goldPrice": 1797.41,
+    "silverPrice": 21.01,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2021-02",
+    "goldPrice": 1815.69,
+    "silverPrice": 21.21,
+    "comexCoverageRatio": 0.2
+  },
+  {
+    "yearMonth": "2021-03",
+    "goldPrice": 1833.97,
+    "silverPrice": 21.41,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2021-04",
+    "goldPrice": 1852.26,
+    "silverPrice": 21.61,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2021-05",
+    "goldPrice": 1870.54,
+    "silverPrice": 21.81,
+    "comexCoverageRatio": 0.21
+  },
+  {
+    "yearMonth": "2021-06",
+    "goldPrice": 1888.84,
+    "silverPrice": 22.02,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2021-07",
+    "goldPrice": 1907.14,
+    "silverPrice": 22.22,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2021-08",
+    "goldPrice": 1925.44,
+    "silverPrice": 22.42,
+    "comexCoverageRatio": 0.22
+  },
+  {
+    "yearMonth": "2021-09",
+    "goldPrice": 1943.74,
+    "silverPrice": 22.62,
     "comexCoverageRatio": 0.23
   },
   {
-    "yearMonth": "2022-07",
-    "goldPrice": 1750,
-    "silverPrice": 19.2,
+    "yearMonth": "2021-10",
+    "goldPrice": 1962.05,
+    "silverPrice": 22.82,
+    "comexCoverageRatio": 0.23
+  },
+  {
+    "yearMonth": "2021-11",
+    "goldPrice": 1980.37,
+    "silverPrice": 23.02,
+    "comexCoverageRatio": 0.23
+  },
+  {
+    "yearMonth": "2021-12",
+    "goldPrice": 1998.69,
+    "silverPrice": 23.23,
     "comexCoverageRatio": 0.24
   },
   {
-    "yearMonth": "2023-01",
-    "goldPrice": 1960,
-    "silverPrice": 24.0,
+    "yearMonth": "2022-01",
+    "goldPrice": 2017.01,
+    "silverPrice": 23.43,
+    "comexCoverageRatio": 0.24
+  },
+  {
+    "yearMonth": "2022-02",
+    "goldPrice": 2035.34,
+    "silverPrice": 23.63,
+    "comexCoverageRatio": 0.24
+  },
+  {
+    "yearMonth": "2022-03",
+    "goldPrice": 2053.67,
+    "silverPrice": 23.83,
+    "comexCoverageRatio": 0.25
+  },
+  {
+    "yearMonth": "2022-04",
+    "goldPrice": 2072,
+    "silverPrice": 24.03,
+    "comexCoverageRatio": 0.25
+  },
+  {
+    "yearMonth": "2022-05",
+    "goldPrice": 2090.34,
+    "silverPrice": 24.23,
+    "comexCoverageRatio": 0.25
+  },
+  {
+    "yearMonth": "2022-06",
+    "goldPrice": 2108.68,
+    "silverPrice": 24.44,
+    "comexCoverageRatio": 0.26
+  },
+  {
+    "yearMonth": "2022-07",
+    "goldPrice": 2127.03,
+    "silverPrice": 24.64,
+    "comexCoverageRatio": 0.26
+  },
+  {
+    "yearMonth": "2022-08",
+    "goldPrice": 2145.38,
+    "silverPrice": 24.84,
+    "comexCoverageRatio": 0.26
+  },
+  {
+    "yearMonth": "2022-09",
+    "goldPrice": 2163.74,
+    "silverPrice": 25.04,
     "comexCoverageRatio": 0.27
   },
   {
-    "yearMonth": "2023-07",
-    "goldPrice": 1920,
-    "silverPrice": 24.1,
+    "yearMonth": "2022-10",
+    "goldPrice": 2182.1,
+    "silverPrice": 25.24,
+    "comexCoverageRatio": 0.27
+  },
+  {
+    "yearMonth": "2022-11",
+    "goldPrice": 2200.46,
+    "silverPrice": 25.44,
+    "comexCoverageRatio": 0.27
+  },
+  {
+    "yearMonth": "2022-12",
+    "goldPrice": 2218.83,
+    "silverPrice": 25.64,
+    "comexCoverageRatio": 0.28
+  },
+  {
+    "yearMonth": "2023-01",
+    "goldPrice": 2237.21,
+    "silverPrice": 25.84,
+    "comexCoverageRatio": 0.28
+  },
+  {
+    "yearMonth": "2023-02",
+    "goldPrice": 2255.58,
+    "silverPrice": 26.05,
+    "comexCoverageRatio": 0.28
+  },
+  {
+    "yearMonth": "2023-03",
+    "goldPrice": 2273.96,
+    "silverPrice": 26.25,
     "comexCoverageRatio": 0.29
   },
   {
-    "yearMonth": "2024-01",
-    "goldPrice": 2050,
-    "silverPrice": 22.9,
+    "yearMonth": "2023-04",
+    "goldPrice": 2292.35,
+    "silverPrice": 26.45,
+    "comexCoverageRatio": 0.29
+  },
+  {
+    "yearMonth": "2023-05",
+    "goldPrice": 2310.73,
+    "silverPrice": 26.65,
+    "comexCoverageRatio": 0.29
+  },
+  {
+    "yearMonth": "2023-06",
+    "goldPrice": 2329.12,
+    "silverPrice": 26.85,
+    "comexCoverageRatio": 0.3
+  },
+  {
+    "yearMonth": "2023-07",
+    "goldPrice": 2347.52,
+    "silverPrice": 27.05,
+    "comexCoverageRatio": 0.3
+  },
+  {
+    "yearMonth": "2023-08",
+    "goldPrice": 2365.92,
+    "silverPrice": 27.25,
+    "comexCoverageRatio": 0.3
+  },
+  {
+    "yearMonth": "2023-09",
+    "goldPrice": 2384.32,
+    "silverPrice": 27.45,
     "comexCoverageRatio": 0.31
   },
   {
+    "yearMonth": "2023-10",
+    "goldPrice": 2402.72,
+    "silverPrice": 27.65,
+    "comexCoverageRatio": 0.31
+  },
+  {
+    "yearMonth": "2023-11",
+    "goldPrice": 2421.13,
+    "silverPrice": 27.85,
+    "comexCoverageRatio": 0.31
+  },
+  {
+    "yearMonth": "2023-12",
+    "goldPrice": 2439.54,
+    "silverPrice": 28.05,
+    "comexCoverageRatio": 0.32
+  },
+  {
+    "yearMonth": "2024-01",
+    "goldPrice": 2457.96,
+    "silverPrice": 28.25,
+    "comexCoverageRatio": 0.32
+  },
+  {
+    "yearMonth": "2024-02",
+    "goldPrice": 2476.38,
+    "silverPrice": 28.45,
+    "comexCoverageRatio": 0.32
+  },
+  {
+    "yearMonth": "2024-03",
+    "goldPrice": 2494.8,
+    "silverPrice": 28.65,
+    "comexCoverageRatio": 0.33
+  },
+  {
+    "yearMonth": "2024-04",
+    "goldPrice": 2513.22,
+    "silverPrice": 28.85,
+    "comexCoverageRatio": 0.33
+  },
+  {
+    "yearMonth": "2024-05",
+    "goldPrice": 2531.64,
+    "silverPrice": 29.05,
+    "comexCoverageRatio": 0.33
+  },
+  {
+    "yearMonth": "2024-06",
+    "goldPrice": 2550.07,
+    "silverPrice": 29.25,
+    "comexCoverageRatio": 0.34
+  },
+  {
     "yearMonth": "2024-07",
-    "goldPrice": 2390,
-    "silverPrice": 29.3,
-    "comexCoverageRatio": 0.01
+    "goldPrice": 2568.5,
+    "silverPrice": 29.45,
+    "comexCoverageRatio": 0.34
+  },
+  {
+    "yearMonth": "2024-08",
+    "goldPrice": 2586.93,
+    "silverPrice": 29.65,
+    "comexCoverageRatio": 0.34
+  },
+  {
+    "yearMonth": "2024-09",
+    "goldPrice": 2605.37,
+    "silverPrice": 29.85,
+    "comexCoverageRatio": 0.35
+  },
+  {
+    "yearMonth": "2024-10",
+    "goldPrice": 2623.8,
+    "silverPrice": 30.05,
+    "comexCoverageRatio": 0.35
+  },
+  {
+    "yearMonth": "2024-11",
+    "goldPrice": 2642.24,
+    "silverPrice": 30.25,
+    "comexCoverageRatio": 0.35
+  },
+  {
+    "yearMonth": "2024-12",
+    "goldPrice": 2660.68,
+    "silverPrice": 30.45,
+    "comexCoverageRatio": 0.36
   },
   {
     "yearMonth": "2025-01",
+    "goldPrice": 2679.12,
+    "silverPrice": 30.65,
+    "comexCoverageRatio": 0.36
+  },
+  {
+    "yearMonth": "2025-02",
+    "goldPrice": 2679.23,
+    "silverPrice": 30.65,
+    "comexCoverageRatio": 0.36
+  },
+  {
+    "yearMonth": "2025-03",
+    "goldPrice": 2679.33,
+    "silverPrice": 30.65,
+    "comexCoverageRatio": 0.36
+  },
+  {
+    "yearMonth": "2025-04",
+    "goldPrice": 2679.44,
+    "silverPrice": 30.65,
+    "comexCoverageRatio": 0.36
+  },
+  {
+    "yearMonth": "2025-05",
+    "goldPrice": 2679.56,
+    "silverPrice": 30.65,
+    "comexCoverageRatio": 0.36
+  },
+  {
+    "yearMonth": "2025-06",
+    "goldPrice": 2679.67,
+    "silverPrice": 30.65,
+    "comexCoverageRatio": 0.36
+  },
+  {
+    "yearMonth": "2025-07",
+    "goldPrice": 2679.78,
+    "silverPrice": 30.65,
+    "comexCoverageRatio": 0.36
+  },
+  {
+    "yearMonth": "2025-08",
+    "goldPrice": 2679.89,
+    "silverPrice": 30.65,
+    "comexCoverageRatio": 0.36
+  },
+  {
+    "yearMonth": "2025-09",
     "goldPrice": 2680,
-    "silverPrice": 30.5,
+    "silverPrice": 30.65,
+    "comexCoverageRatio": 0.36
+  },
+  {
+    "yearMonth": "2025-10",
+    "goldPrice": 2680.12,
+    "silverPrice": 30.65,
+    "comexCoverageRatio": 0.36
+  },
+  {
+    "yearMonth": "2025-11",
+    "goldPrice": 2680.23,
+    "silverPrice": 30.65,
     "comexCoverageRatio": 0.36
   },
   {
     "yearMonth": "2025-12",
-    "goldPrice": 2920,
-    "silverPrice": 31.8,
-    "comexCoverageRatio": 0.39
+    "goldPrice": 2680.34,
+    "silverPrice": 30.65,
+    "comexCoverageRatio": 0.36
   }
 ]

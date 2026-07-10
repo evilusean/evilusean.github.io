@@ -2,6 +2,7 @@ const state = {
   snapshots: [],
   selectedSnapshot: null,
   denomination: 20,
+  goldOunces: 1,
   isAnimating: false,
   animationTimer: null,
   animationIndex: 0,
@@ -13,12 +14,15 @@ window.addEventListener('DOMContentLoaded', init);
 
 function init() {
   elements.snapshotSelect = document.getElementById('snapshotSelect');
+  elements.goldAmount = document.getElementById('goldAmount');
   elements.visualizer = document.getElementById('visualizer');
   elements.stats = document.getElementById('stats');
   elements.contractVisual = document.getElementById('contractVisual');
+  elements.historyChart = document.getElementById('historyChart');
   elements.animateButton = document.getElementById('animateButton');
 
   elements.snapshotSelect.addEventListener('change', handleSnapshotChange);
+  elements.goldAmount.addEventListener('input', handleGoldAmountChange);
   document.querySelectorAll('.toggle').forEach((button) => {
     button.addEventListener('click', () => {
       state.denomination = Number(button.dataset.denomination);
@@ -65,6 +69,13 @@ function handleSnapshotChange() {
   renderDashboard();
 }
 
+function handleGoldAmountChange() {
+  const parsed = Number(elements.goldAmount.value);
+  state.goldOunces = Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
+  elements.goldAmount.value = state.goldOunces.toString();
+  renderDashboard();
+}
+
 function toggleAnimation() {
   if (state.isAnimating) {
     clearInterval(state.animationTimer);
@@ -99,6 +110,7 @@ function renderDashboard() {
   renderStats(metrics);
   renderComparison(metrics);
   renderContract(metrics);
+  renderHistoryChart(metrics);
 
   elements.animateButton.textContent = state.isAnimating ? 'Pause History' : 'Animate History';
 }
@@ -107,24 +119,30 @@ function calculateMetrics(snapshot) {
   const goldPrice = Number(snapshot.goldPrice);
   const silverPrice = Number(snapshot.silverPrice);
   const coverageRatio = Number(snapshot.comexCoverageRatio);
+  const goldOunces = state.goldOunces;
 
-  const billsNeeded = 1_000_000 / state.denomination;
+  const goldValueUsd = goldOunces * goldPrice;
+  const billsNeeded = goldValueUsd / state.denomination;
+  const goldWeightGrams = goldOunces * 31.1034768;
+  const goldWeightKg = goldWeightGrams / 1000;
   const paperWeightKg = billsNeeded / 1000;
-  const goldOz = 1_000_000 / goldPrice;
-  const goldWeightKg = (goldOz * 31.1034768) / 1000;
   const weightBurden = paperWeightKg / goldWeightKg;
   const goldToSilverRatio = goldPrice / silverPrice;
   const paperPerPhysical = coverageRatio > 0 ? 1 / coverageRatio : 0;
-  const stackHeight = Math.max(90, Math.min(270, 90 + (goldPrice / 2500) * 150));
+  const goldScale = clamp(90, 320, 80 + goldOunces * 18);
+  const billScale = clamp(90, 320, 72 + billsNeeded * 0.65);
 
   return {
     snapshot,
-    paperWeightKg,
+    goldValueUsd,
+    billsNeeded,
     goldWeightKg,
+    paperWeightKg,
     weightBurden,
     goldToSilverRatio,
     paperPerPhysical,
-    stackHeight,
+    goldScale,
+    billScale,
     denomination: state.denomination,
   };
 }
@@ -133,8 +151,8 @@ function renderStats(metrics) {
   const cards = [
     {
       label: 'Weight burden',
-      value: `${metrics.paperWeightKg.toFixed(1)} kg vs ${metrics.goldWeightKg.toFixed(1)} kg`,
-      detail: `${state.denomination === 20 ? '$20' : '$100'} bills are ${metrics.weightBurden.toFixed(1)}x heavier than the same dollar value of gold.`,
+      value: `${metrics.paperWeightKg.toFixed(2)} kg vs ${metrics.goldWeightKg.toFixed(2)} kg`,
+      detail: `${state.denomination === 20 ? '$20' : '$100'} bills weigh ${metrics.weightBurden.toFixed(1)}x more than the same dollar value of gold.`,
     },
     {
       label: 'Gold / silver ratio',
@@ -170,7 +188,7 @@ function renderComparison(metrics) {
   svg.innerHTML = '';
 
   const width = 900;
-  const height = 420;
+  const height = 460;
   const centerLine = 450;
 
   const layer = createSvgElement('svg', { viewBox: `0 0 ${width} ${height}`, width, height });
@@ -196,13 +214,13 @@ function renderComparison(metrics) {
   title.textContent = `${formatLabel(metrics.snapshot.yearMonth)} · $${Number(metrics.snapshot.goldPrice).toLocaleString()} / oz gold`;
   layer.appendChild(title);
 
-  const goldX = 80;
-  const goldY = 110;
-  const goldW = 220;
-  const goldH = 220;
+  const goldX = 90;
+  const goldY = 120;
+  const goldW = 180;
+  const goldH = metrics.goldScale;
   const goldRect = createSvgElement('rect', {
     x: goldX,
-    y: goldY,
+    y: goldY + (320 - goldH),
     width: goldW,
     height: goldH,
     rx: 18,
@@ -218,22 +236,22 @@ function renderComparison(metrics) {
 
   const goldLabel = createSvgElement('text', {
     x: goldX + goldW / 2,
-    y: goldY + goldH + 40,
+    y: 420,
     fill: '#f7c948',
-    'font-size': 18,
+    'font-size': 16,
     'font-weight': 600,
     'text-anchor': 'middle',
   });
-  goldLabel.textContent = 'Physical gold bar';
+  goldLabel.textContent = `${state.goldOunces} oz gold = ${metrics.goldWeightKg.toFixed(2)} kg`;
   layer.appendChild(goldLabel);
 
-  const billX = 560;
+  const billX = 590;
   const billY = 120;
-  const billW = 220;
-  const billH = metrics.stackHeight;
+  const billW = 180;
+  const billH = metrics.billScale;
   const billStack = createSvgElement('rect', {
     x: billX,
-    y: billY,
+    y: 440 - billH,
     width: billW,
     height: billH,
     rx: 16,
@@ -243,10 +261,10 @@ function renderComparison(metrics) {
   });
   layer.appendChild(billStack);
 
-  const billRows = 12;
+  const billRows = 10;
   for (let i = 0; i < billRows; i += 1) {
     const rowHeight = (billH - 12) / billRows;
-    const rowY = billY + 6 + i * rowHeight;
+    const rowY = 440 - billH + 6 + i * rowHeight;
     const row = createSvgElement('rect', {
       x: billX + 10,
       y: rowY,
@@ -260,23 +278,23 @@ function renderComparison(metrics) {
 
   const billLabel = createSvgElement('text', {
     x: billX + billW / 2,
-    y: billY + billH + 40,
+    y: 420,
     fill: '#e2e8f0',
-    'font-size': 18,
+    'font-size': 16,
     'font-weight': 600,
     'text-anchor': 'middle',
   });
-  billLabel.textContent = `${state.denomination === 20 ? '$20' : '$100'} bill stack`; 
+  billLabel.textContent = `${Math.round(metrics.billsNeeded).toLocaleString()} ${state.denomination === 20 ? '$20' : '$100'} bills`;
   layer.appendChild(billLabel);
 
   const note = createSvgElement('text', {
     x: centerLine,
-    y: 390,
+    y: 440,
     fill: '#94a3b8',
     'font-size': 14,
     'text-anchor': 'middle',
   });
-  note.textContent = 'The bill stack height rises as gold commands more dollars relative to the paper base.';
+  note.textContent = 'The paper stack grows as the same gold ounce buys more fiat than it once did.';
   layer.appendChild(note);
 
   svg.appendChild(layer);
@@ -304,10 +322,54 @@ function renderContract(metrics) {
   `;
 }
 
+function renderHistoryChart(metrics) {
+  const width = 860;
+  const height = 220;
+  const padding = 36;
+  const series = state.snapshots.map((snapshot) => calculateBillEquivalent(snapshot, state.denomination));
+  const maxValue = Math.max(...series);
+  const minValue = Math.min(...series);
+  const span = maxValue - minValue || 1;
+  const points = series
+    .map((value, index) => {
+      const x = padding + (index / Math.max(1, series.length - 1)) * (width - padding * 2);
+      const y = height - padding - ((value - minValue) / span) * (height - padding * 2);
+      return `${x},${y}`;
+    })
+    .join(' ');
+
+  const selectedIndex = state.snapshots.findIndex((snapshot) => snapshot.yearMonth === metrics.snapshot.yearMonth);
+  const selectedX = padding + (selectedIndex / Math.max(1, series.length - 1)) * (width - padding * 2);
+  const selectedY = height - padding - ((series[selectedIndex] - minValue) / span) * (height - padding * 2);
+
+  elements.historyChart.innerHTML = `
+    <h2>Historical bill-equivalent trend</h2>
+    <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Historical bill-equivalent trend chart">
+      <rect x="0" y="0" width="${width}" height="${height}" rx="18" fill="#08131e"></rect>
+      <line x1="${padding}" y1="${height - padding}" x2="${width - padding}" y2="${height - padding}" stroke="#334155" stroke-width="1"></line>
+      <line x1="${padding}" y1="${padding}" x2="${padding}" y2="${height - padding}" stroke="#334155" stroke-width="1"></line>
+      <polyline fill="none" stroke="#f59e0b" stroke-width="3" points="${points}"></polyline>
+      <circle cx="${selectedX}" cy="${selectedY}" r="6" fill="#f7c948"></circle>
+      <text x="${padding}" y="20" fill="#f7c948" font-size="13">${state.denomination === 20 ? '$20 bill equivalent' : '$100 bill equivalent'}</text>
+      <text x="${width - padding}" y="${height - 10}" fill="#94a3b8" font-size="12" text-anchor="end">1900 → 2025</text>
+    </svg>
+  `;
+}
+
+function calculateBillEquivalent(snapshot, denomination) {
+  const goldPrice = Number(snapshot.goldPrice);
+  const goldValueUsd = 1 * goldPrice;
+  return goldValueUsd / denomination;
+}
+
 function createSvgElement(tag, attrs) {
   const node = document.createElementNS('http://www.w3.org/2000/svg', tag);
   Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
   return node;
+}
+
+function clamp(min, max, value) {
+  return Math.min(max, Math.max(min, value));
 }
 
 function formatLabel(yearMonth) {

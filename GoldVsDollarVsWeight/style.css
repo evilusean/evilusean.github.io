@@ -21,7 +21,7 @@ body {
 }
 
 .dashboard {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 24px;
 }
@@ -61,8 +61,8 @@ h1 {
 .lead {
   margin-top: 10px;
   color: var(--muted);
-  max-width: 680px;
-  line-height: 1.55;
+  max-width: 760px;
+  line-height: 1.6;
 }
 
 .badge {
@@ -78,7 +78,7 @@ h1 {
 .controls {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-end;
   gap: 16px;
   padding: 18px 22px;
   margin-bottom: 18px;
@@ -98,17 +98,37 @@ h1 {
 }
 
 select,
-button {
+button,
+input {
   font: inherit;
 }
 
+input,
 select {
   border: 1px solid var(--border);
   background: var(--panel-2);
   color: var(--text);
   padding: 10px 12px;
   border-radius: 10px;
-  min-width: 190px;
+}
+
+input {
+  width: 110px;
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.unit {
+  color: var(--muted);
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 0.8rem;
 }
 
 .segmented {
@@ -182,19 +202,25 @@ select {
 .comparison-shell {
   display: grid;
   gap: 18px;
-  grid-template-columns: 1.4fr 0.9fr;
+  grid-template-columns: 1.35fr 0.9fr;
 }
 
 .svg-card,
-.contract-card {
+.contract-card,
+.history-chart-card {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(245, 217, 138, 0.16);
   border-radius: 16px;
   padding: 16px;
 }
 
+.history-chart-card {
+  margin-top: 18px;
+}
+
 .svg-card h2,
-.contract-card h2 {
+.contract-card h2,
+.history-chart-card h2 {
   margin-bottom: 12px;
   font-size: 1rem;
   text-transform: uppercase;
@@ -202,7 +228,8 @@ select {
   color: var(--accent);
 }
 
-#visualizer {
+#visualizer,
+#historyChart svg {
   width: 100%;
   height: auto;
   display: block;

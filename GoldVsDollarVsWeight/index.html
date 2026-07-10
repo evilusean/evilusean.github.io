@@ -13,7 +13,7 @@
           <p class="eyebrow">Truth Dashboard</p>
           <h1>Gold, silver, and the weight of fiat</h1>
           <p class="lead">
-            Compare the physical burden of gold with the paper stack implied by fiat debt and derivatives.
+            Enter an amount of gold and compare it to the paper stack needed to match its value. The default uses $20 bills because a $20 gold piece once represented roughly one ounce of gold.
           </p>
         </div>
         <div class="badge">Static · SVG · Vanilla JS</div>
@@ -23,6 +23,15 @@
         <label class="control">
           <span>Historical snapshot</span>
           <select id="snapshotSelect"></select>
+        </label>
+
+        <label class="control">
+          <span>Gold amount</span>
+          <div class="input-row">
+            <input id="goldAmount" type="number" min="0.01" step="0.01" value="1" />
+            <span class="unit">oz</span>
+          </div>
+          <small class="hint">One troy ounce of gold weighs about 31.1 grams.</small>
         </label>
 
         <div class="control-group">
@@ -42,13 +51,14 @@
         <div class="comparison-shell">
           <div class="svg-card">
             <h2>Physical vs paper burden</h2>
-            <svg id="visualizer" viewBox="0 0 900 420" aria-label="Comparison between gold and paper bills"></svg>
+            <svg id="visualizer" viewBox="0 0 900 460" aria-label="Comparison between gold and paper bills"></svg>
           </div>
           <div class="contract-card">
             <h2>Paper vs physical contract ratio</h2>
             <div id="contractVisual" class="contract-visual"></div>
           </div>
         </div>
+        <div id="historyChart" class="history-chart-card"></div>
       </section>
     </main>
 
