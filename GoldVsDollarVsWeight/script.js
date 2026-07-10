@@ -19,10 +19,15 @@ function init() {
   elements.manualGoldPrice = document.getElementById('manualGoldPrice');
   elements.manualSilverPrice = document.getElementById('manualSilverPrice');
   elements.manualCalcAmount = document.getElementById('manualCalcAmount');
+  elements.priceStartYear = document.getElementById('priceStartYear');
+  elements.priceStartMonth = document.getElementById('priceStartMonth');
+  elements.priceEndYear = document.getElementById('priceEndYear');
+  elements.priceEndMonth = document.getElementById('priceEndMonth');
   elements.visualizer = document.getElementById('visualizer');
   elements.stats = document.getElementById('stats');
   elements.contractVisual = document.getElementById('contractVisual');
   elements.historyChart = document.getElementById('historyChart');
+  elements.priceChart = document.getElementById('priceChart');
   elements.calculatorResults = document.getElementById('calculatorResults');
   elements.animateButton = document.getElementById('animateButton');
 
@@ -32,6 +37,10 @@ function init() {
   elements.manualGoldPrice.addEventListener('input', handleCalculatorInputChange);
   elements.manualSilverPrice.addEventListener('input', handleCalculatorInputChange);
   elements.manualCalcAmount.addEventListener('input', handleCalculatorInputChange);
+  elements.priceStartYear.addEventListener('change', handlePriceRangeChange);
+  elements.priceStartMonth.addEventListener('change', handlePriceRangeChange);
+  elements.priceEndYear.addEventListener('change', handlePriceRangeChange);
+  elements.priceEndMonth.addEventListener('change', handlePriceRangeChange);
   document.querySelectorAll('.toggle').forEach((button) => {
     button.addEventListener('click', () => {
       state.denomination = Number(button.dataset.denomination);
@@ -58,6 +67,7 @@ async function fetchData() {
 
     state.snapshots = snapshots;
     populateDateControls();
+    populatePriceChartControls();
     state.selectedSnapshot = state.snapshots[state.snapshots.length - 1];
     syncDateControlsFromSnapshot(state.selectedSnapshot);
     populateCalculatorInputs();
@@ -75,12 +85,12 @@ function populateDateControls() {
     .join('');
 
   const selectedYear = elements.yearSelect.value || years[years.length - 1];
-  populateMonthSelect(selectedYear);
+  populateMonthSelect(selectedYear, elements.monthSelect);
 }
 
-function populateMonthSelect(year) {
+function populateMonthSelect(year, targetSelect) {
   const matchingSnapshots = state.snapshots.filter((snapshot) => snapshot.yearMonth.startsWith(`${year}-`));
-  elements.monthSelect.innerHTML = matchingSnapshots
+  targetSelect.innerHTML = matchingSnapshots
     .map((snapshot) => {
       const [, month] = snapshot.yearMonth.split('-');
       return `<option value="${month}">${new Date(Number(year), Number(month) - 1).toLocaleDateString('en', { month: 'long' })}</option>`;
@@ -94,8 +104,43 @@ function syncDateControlsFromSnapshot(snapshot) {
     populateDateControls();
   }
   elements.yearSelect.value = year;
-  populateMonthSelect(year);
+  populateMonthSelect(year, elements.monthSelect);
   elements.monthSelect.value = month;
+}
+
+function populatePriceChartControls() {
+  const years = [...new Set(state.snapshots.map((snapshot) => snapshot.yearMonth.split('-')[0]))];
+  elements.priceStartYear.innerHTML = years.map((year) => `<option value="${year}">${year}</option>`).join('');
+  elements.priceEndYear.innerHTML = years.map((year) => `<option value="${year}">${year}</option>`).join('');
+
+  const startYear = years[0];
+  const endYear = years[years.length - 1];
+  elements.priceStartYear.value = startYear;
+  elements.priceEndYear.value = endYear;
+  populateMonthSelect(startYear, elements.priceStartMonth);
+  populateMonthSelect(endYear, elements.priceEndMonth);
+  elements.priceStartMonth.value = state.snapshots[0].yearMonth.split('-')[1];
+  elements.priceEndMonth.value = state.snapshots[state.snapshots.length - 1].yearMonth.split('-')[1];
+}
+
+function handlePriceRangeChange(event) {
+  const startYear = elements.priceStartYear.value;
+  const endYear = elements.priceEndYear.value;
+
+  if (event && event.target === elements.priceStartYear) {
+    populateMonthSelect(startYear, elements.priceStartMonth);
+    if (!elements.priceStartMonth.querySelector(`option[value="${elements.priceStartMonth.value}"]`)) {
+      elements.priceStartMonth.value = elements.priceStartMonth.querySelector('option')?.value;
+    }
+  }
+  if (event && event.target === elements.priceEndYear) {
+    populateMonthSelect(endYear, elements.priceEndMonth);
+    if (!elements.priceEndMonth.querySelector(`option[value="${elements.priceEndMonth.value}"]`)) {
+      elements.priceEndMonth.value = elements.priceEndMonth.querySelector('option')?.value;
+    }
+  }
+
+  renderPriceChart();
 }
 
 function handleDateChange() {
@@ -202,6 +247,7 @@ function renderDashboard() {
   renderComparison(metrics);
   renderContract(metrics);
   renderHistoryChart(metrics);
+  renderPriceChart();
 
   elements.animateButton.textContent = state.isAnimating ? 'Pause History' : 'Animate History';
 }
@@ -450,6 +496,63 @@ function renderHistoryChart(metrics) {
       <circle cx="${selectedX}" cy="${selectedY}" r="3" fill="#fff1f2"></circle>
       <text x="${padding}" y="20" fill="#f7c948" font-size="13">${state.denomination === 20 ? '$20 bill equivalent' : '$100 bill equivalent'}</text>
       <text x="${width - padding}" y="${height - 10}" fill="#94a3b8" font-size="12" text-anchor="end">1900 → ${lastYear}</text>
+    </svg>
+  `;
+}
+
+function renderPriceChart() {
+  const startYear = elements.priceStartYear.value;
+  const startMonth = elements.priceStartMonth.value;
+  const endYear = elements.priceEndYear.value;
+  const endMonth = elements.priceEndMonth.value;
+  const startSnapshotIndex = Math.max(0, state.snapshots.findIndex((snapshot) => snapshot.yearMonth === `${startYear}-${startMonth}`));
+  const endSnapshotIndex = Math.max(0, state.snapshots.findIndex((snapshot) => snapshot.yearMonth === `${endYear}-${endMonth}`));
+  const fromIndex = Math.min(startSnapshotIndex, endSnapshotIndex);
+  const toIndex = Math.max(startSnapshotIndex, endSnapshotIndex, state.snapshots.length - 1);
+  const rangeSnapshots = state.snapshots.slice(fromIndex, toIndex + 1);
+
+  const width = 860;
+  const height = 260;
+  const padding = 44;
+  const goldSeries = rangeSnapshots.map((snapshot) => Number(snapshot.goldPrice));
+  const silverSeries = rangeSnapshots.map((snapshot) => Number(snapshot.silverPrice));
+  const goldMax = Math.max(...goldSeries);
+  const goldMin = Math.min(...goldSeries);
+  const silverMax = Math.max(...silverSeries);
+  const silverMin = Math.min(...silverSeries);
+  const goldSpan = goldMax - goldMin || 1;
+  const silverSpan = silverMax - silverMin || 1;
+
+  const pointsGold = goldSeries
+    .map((value, index) => {
+      const x = padding + (index / Math.max(1, rangeSnapshots.length - 1)) * (width - padding * 2);
+      const y = height - padding - ((value - goldMin) / goldSpan) * (height - padding * 2);
+      return `${x},${y}`;
+    })
+    .join(' ');
+  const pointsSilver = silverSeries
+    .map((value, index) => {
+      const x = padding + (index / Math.max(1, rangeSnapshots.length - 1)) * (width - padding * 2);
+      const y = height - padding - ((value - silverMin) / silverSpan) * (height - padding * 2);
+      return `${x},${y}`;
+    })
+    .join(' ');
+
+  const title = `${formatLabel(rangeSnapshots[0].yearMonth)} → ${formatLabel(rangeSnapshots[rangeSnapshots.length - 1].yearMonth)}`;
+
+  elements.priceChart.innerHTML = `
+    <h2>Gold & silver price chart</h2>
+    <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Gold and silver price chart">
+      <rect x="0" y="0" width="${width}" height="${height}" rx="18" fill="#08131e"></rect>
+      <line x1="${padding}" y1="${padding}" x2="${padding}" y2="${height - padding}" stroke="#334155" stroke-width="1"></line>
+      <line x1="${padding}" y1="${height - padding}" x2="${width - padding}" y2="${height - padding}" stroke="#334155" stroke-width="1"></line>
+      <polyline fill="none" stroke="#f59e0b" stroke-width="3" points="${pointsGold}"></polyline>
+      <polyline fill="none" stroke="#38bdf8" stroke-width="3" points="${pointsSilver}"></polyline>
+      <text x="${padding}" y="24" fill="#f7c948" font-size="13">${title}</text>
+      <text x="${width - padding}" y="24" fill="#94a3b8" font-size="12" text-anchor="end">Gold = yellow, Silver = blue</text>
+      <text x="${padding}" y="${height - 24}" fill="#f7c948" font-size="11">Gold range ${goldMin.toFixed(2)}–${goldMax.toFixed(2)} /oz</text>
+      <text x="${padding}" y="${height - 12}" fill="#38bdf8" font-size="11">Silver range ${silverMin.toFixed(2)}–${silverMax.toFixed(2)} /oz</text>
+      <text x="${width - padding}" y="${height - 18}" fill="#94a3b8" font-size="12" text-anchor="end">${rangeSnapshots.length} monthly points</text>
     </svg>
   `;
 }
