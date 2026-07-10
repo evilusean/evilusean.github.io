@@ -1,16 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Euclid's Elements</title>
+    <title>Euclid's Elements — Screensaver</title>
 </head>
 <body>
-    <div id="app">
+    <header id="header">
         <h1 id="title">Euclid's Elements</h1>
-        <div id="visualizer"></div>
-        <p id="content"></p>
-        <button id="randomize">Randomize Step</button>
-    </div>
+        <div class="header-right">
+            <span id="book-label" class="book-label"></span>
+            <details id="how-to-use" class="how-to-use">
+                <summary>How to Use</summary>
+                <div class="how-to-content">
+                    <p>This screensaver cycles through propositions and definitions from Euclid's <em>Elements</em>, animating each geometric construction step by step.</p>
+                    <ul>
+                        <li><strong>Play / Pause</strong> — toggle automatic advancement.</li>
+                        <li><strong>Previous / Next</strong> — step through entries manually.</li>
+                        <li><strong>Randomize</strong> — jump to a random step.</li>
+                        <li><strong>Book filters</strong> — check or uncheck books to include in rotation.</li>
+                    </ul>
+                    <p>Move the mouse to reveal controls. They fade away during passive viewing.</p>
+                </div>
+            </details>
+        </div>
+    </header>
+
+    <main id="stage">
+        <svg id="canvas" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+            <defs>
+                <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                    <polygon points="0 0, 8 3, 0 6" fill="currentColor"/>
+                </marker>
+            </defs>
+            <g id="drawing-layer"></g>
+        </svg>
+    </main>
+
+    <footer id="footer">
+        <p id="content" class="content-text"></p>
+        <p id="step-indicator" class="step-indicator"></p>
+    </footer>
+
+    <nav id="controls" class="controls">
+        <button id="prev" class="ctrl-btn" title="Previous" aria-label="Previous step">&#9664;</button>
+        <button id="play-pause" class="ctrl-btn" title="Play / Pause" aria-label="Play or pause">&#10074;&#10074;</button>
+        <button id="next" class="ctrl-btn" title="Next" aria-label="Next step">&#9654;</button>
+        <button id="randomize" class="ctrl-btn" title="Randomize" aria-label="Random step">&#8635;</button>
+    </nav>
+
+    <aside id="book-panel" class="book-panel">
+        <button id="book-toggle" class="book-toggle" aria-expanded="false" aria-controls="book-filters">
+            Books <span id="book-count" class="book-count">13/13</span>
+        </button>
+        <div id="book-filters" class="book-filters" hidden>
+            <div class="book-filters-header">
+                <span>Include in rotation</span>
+                <button id="select-all" class="link-btn">All</button>
+                <button id="select-none" class="link-btn">None</button>
+            </div>
+            <div id="book-checkboxes" class="book-checkboxes"></div>
+        </div>
+    </aside>
+
     <script src="script.js"></script>
 </body>
 </html>
