@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style.css">
+    <title>Gold vs. Paper Value Density</title>
+</head>
+<body>
+    <div id="controls">
+        <input type="number" id="goldPrice" placeholder="Price per oz">
+        <select id="yearPreset">
+            <option value="20">1920 ($20/oz)</option>
+            <option value="35">1934 ($35/oz)</option>
+            <option value="4656">2026 ($4,656/oz)</option>
+        </select>
+        <button id="visualize">Render Comparison</button>
+    </div>
+    <svg id="visualizer" viewBox="0 0 800 400"></svg>
+    <div id="stats"></div>
+    <script src="script.js"></script>
+</body>
+</html>:
