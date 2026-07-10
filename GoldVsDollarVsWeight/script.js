@@ -27,7 +27,9 @@ function init() {
   elements.stats = document.getElementById('stats');
   elements.contractVisual = document.getElementById('contractVisual');
   elements.historyChart = document.getElementById('historyChart');
+  elements.historyChartTooltip = document.getElementById('historyChartTooltip');
   elements.priceChart = document.getElementById('priceChart');
+  elements.priceChartTooltip = document.getElementById('priceChartTooltip');
   elements.calculatorResults = document.getElementById('calculatorResults');
   elements.animateButton = document.getElementById('animateButton');
 
@@ -494,6 +496,7 @@ function renderHistoryChart(metrics) {
 
   const lastYear = state.snapshots[state.snapshots.length - 1].yearMonth.split('-')[0];
   elements.historyChart.innerHTML = `
+    <div id="historyChartTooltip" class="chart-tooltip" hidden></div>
     <h2>Historical bill-equivalent trend</h2>
     <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Historical bill-equivalent trend chart">
       <rect x="0" y="0" width="${width}" height="${height}" rx="18" fill="#08131e"></rect>
@@ -506,6 +509,18 @@ function renderHistoryChart(metrics) {
       <text x="${width - padding}" y="${height - 10}" fill="#94a3b8" font-size="12" text-anchor="end">1900 → ${lastYear}</text>
     </svg>
   `;
+
+  elements.historyChartTooltip = elements.historyChart.querySelector('#historyChartTooltip');
+  const historySvg = elements.historyChart.querySelector('svg');
+  if (historySvg && elements.historyChartTooltip) {
+    const historyPoints = state.snapshots.map((snapshot, index) => {
+      const value = calculateBillEquivalent(snapshot, state.denomination);
+      const x = padding + (index / Math.max(1, series.length - 1)) * (width - padding * 2);
+      const y = height - padding - ((value - minValue) / span) * (height - padding * 2);
+      return { x, y, label: formatLabel(snapshot.yearMonth), value };
+    });
+    attachChartHover(historySvg, elements.historyChartTooltip, historyPoints, (point) => `<strong>${point.label}</strong><br/>${state.denomination === 20 ? '$20 bill equivalent' : '$100 bill equivalent'}: ${formatCurrency(point.value)}`);
+  }
 }
 
 function renderPriceChart() {
@@ -549,6 +564,7 @@ function renderPriceChart() {
   const title = `${formatLabel(rangeSnapshots[0].yearMonth)} → ${formatLabel(rangeSnapshots[rangeSnapshots.length - 1].yearMonth)}`;
 
   elements.priceChart.innerHTML = `
+    <div id="priceChartTooltip" class="chart-tooltip" hidden></div>
     <h2>Gold & silver price chart</h2>
     <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Gold and silver price chart">
       <rect x="0" y="0" width="${width}" height="${height}" rx="18" fill="#08131e"></rect>
@@ -563,12 +579,74 @@ function renderPriceChart() {
       <text x="${width - padding}" y="${height - 18}" fill="#94a3b8" font-size="12" text-anchor="end">${rangeSnapshots.length} monthly points</text>
     </svg>
   `;
+
+  elements.priceChartTooltip = elements.priceChart.querySelector('#priceChartTooltip');
+  const priceSvg = elements.priceChart.querySelector('svg');
+  if (priceSvg && elements.priceChartTooltip) {
+    const pricePoints = rangeSnapshots.map((snapshot, index) => {
+      const goldValue = Number(snapshot.goldPrice);
+      const silverValue = Number(snapshot.silverPrice);
+      const x = padding + (index / Math.max(1, rangeSnapshots.length - 1)) * (width - padding * 2);
+      const y = height - padding - ((goldValue - goldMin) / goldSpan) * (height - padding * 2);
+      return { x, y, label: formatLabel(snapshot.yearMonth), gold: goldValue, silver: silverValue };
+    });
+    attachChartHover(priceSvg, elements.priceChartTooltip, pricePoints, (point) => `<strong>${point.label}</strong><br/>Gold: ${formatCurrency(point.gold)} / oz<br/>Silver: ${formatCurrency(point.silver)} / oz`);
+  }
 }
 
 function calculateBillEquivalent(snapshot, denomination) {
   const goldPrice = Number(snapshot.goldPrice);
   const goldValueUsd = 1 * goldPrice;
   return goldValueUsd / denomination;
+}
+
+function attachChartHover(svg, tooltipElement, points, buildTooltipHtml) {
+  if (!svg || !tooltipElement) {
+    return;
+  }
+
+  points.forEach((point) => {
+    const circle = createSvgElement('circle', {
+      cx: point.x,
+      cy: point.y,
+      r: 5,
+      class: 'chart-point',
+      fill: '#f59e0b',
+      stroke: '#fff8e1',
+      'stroke-width': 1.5,
+    });
+
+    circle.addEventListener('mouseenter', (event) => showChartTooltip(event, tooltipElement, buildTooltipHtml(point)));
+    circle.addEventListener('mousemove', (event) => showChartTooltip(event, tooltipElement, buildTooltipHtml(point)));
+    circle.addEventListener('mouseleave', () => hideChartTooltip(tooltipElement));
+
+    svg.appendChild(circle);
+  });
+}
+
+function showChartTooltip(event, tooltipElement, html) {
+  tooltipElement.innerHTML = html;
+  tooltipElement.hidden = false;
+
+  const chartRect = tooltipElement.parentElement.getBoundingClientRect();
+  const x = event.clientX - chartRect.left;
+  const y = event.clientY - chartRect.top;
+  const tooltipWidth = 220;
+  const tooltipHeight = 70;
+  const left = Math.min(Math.max(16, x + 14), chartRect.width - tooltipWidth - 16);
+  const top = Math.min(Math.max(16, y - 12), chartRect.height - tooltipHeight - 16);
+
+  tooltipElement.style.left = `${left}px`;
+  tooltipElement.style.top = `${top}px`;
+}
+
+function hideChartTooltip(tooltipElement) {
+  tooltipElement.hidden = true;
+  tooltipElement.innerHTML = '';
+}
+
+function formatCurrency(value) {
+  return `$${Number(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function createSvgElement(tag, attrs) {
