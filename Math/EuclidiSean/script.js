@@ -818,7 +818,7 @@ function toggleRandomMode() {
 
 function togglePlay() {
     isPlaying = !isPlaying;
-    playPauseBtn.innerHTML = isPlaying ? "&#10074;&#10074;" : "&#9654;";
+    playPauseBtn.querySelector(".ctrl-icon").innerHTML = isPlaying ? "&#10074;&#10074;" : "&#9654;";
     if (isPlaying) {
         const entry = pool[entryIndex];
         if (entry && stepIndex < entry.visualSteps.length) {
@@ -913,7 +913,7 @@ function buildBrowseList() {
             btn.addEventListener("click", () => {
                 showUI();
                 isPlaying = true;
-                playPauseBtn.innerHTML = "&#10074;&#10074;";
+                playPauseBtn.querySelector(".ctrl-icon").innerHTML = "&#10074;&#10074;";
                 showEntryByRef({ ...entry, bookTitle: book.title });
                 if (window.innerWidth <= 720) closePanel("browse");
             });
@@ -991,12 +991,34 @@ function init() {
 
     document.addEventListener("mousemove", showUI);
     document.addEventListener("keydown", e => {
+        if (e.target.matches("input, textarea, select")) return;
+
         showUI();
-        if (e.key === " ") { e.preventDefault(); togglePlay(); }
-        if (e.key === "ArrowRight") { isRandomMode = false; randomizeBtn.classList.remove("active"); randomizeBtn.setAttribute("aria-pressed", "false"); nextEntry(); }
-        if (e.key === "ArrowLeft") { isRandomMode = false; randomizeBtn.classList.remove("active"); randomizeBtn.setAttribute("aria-pressed", "false"); prevEntry(); }
-        if (e.key === "r" || e.key === "R") toggleRandomMode();
-        if (e.key === "Escape") { closePanel("browse"); closePanel("book"); }
+
+        if (e.key === " ") {
+            e.preventDefault();
+            togglePlay();
+        } else if (e.key === "ArrowRight") {
+            e.preventDefault();
+            isRandomMode = false;
+            randomizeBtn.classList.remove("active");
+            randomizeBtn.setAttribute("aria-pressed", "false");
+            nextEntry();
+        } else if (e.key === "ArrowLeft") {
+            e.preventDefault();
+            isRandomMode = false;
+            randomizeBtn.classList.remove("active");
+            randomizeBtn.setAttribute("aria-pressed", "false");
+            prevEntry();
+        } else if (e.key === "r" || e.key === "R") {
+            toggleRandomMode();
+        } else if (e.key === "b" || e.key === "B") {
+            togglePanel("browse");
+        } else if (e.key === "Escape") {
+            closePanel("browse");
+            closePanel("book");
+            $("how-to-use").open = false;
+        }
     });
 
     showUI();

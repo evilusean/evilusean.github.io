@@ -22,9 +22,11 @@
                 <div class="how-to-content">
                     <p>This screensaver cycles through propositions and definitions from Euclid's <em>Elements</em>, animating each geometric construction step by step.</p>
                     <ul>
-                        <li><strong>Play / Pause</strong> — toggle automatic advancement.</li>
-                        <li><strong>Previous / Next</strong> — step through entries manually.</li>
-                        <li><strong>Randomize</strong> — toggle random mode (highlighted when active).</li>
+                        <li><strong>Space</strong> — play / pause</li>
+                        <li><strong>← / →</strong> — previous / next entry</li>
+                        <li><strong>R</strong> — toggle random mode</li>
+                        <li><strong>B</strong> — open browse panel</li>
+                        <li><strong>Esc</strong> — close panels</li>
                         <li><strong>Browse</strong> — read through any book and click an entry to view its construction.</li>
                         <li><strong>Books</strong> — check or uncheck books to include in rotation.</li>
                     </ul>
@@ -66,16 +68,27 @@
     </main>
 
     <footer id="footer">
+        <nav id="controls" class="controls">
+            <button id="prev" class="ctrl-btn" title="Previous (←)" aria-label="Previous step">
+                <span class="ctrl-icon">&#9664;</span>
+                <kbd class="ctrl-key">←</kbd>
+            </button>
+            <button id="play-pause" class="ctrl-btn" title="Play / Pause (Space)" aria-label="Play or pause">
+                <span class="ctrl-icon">&#10074;&#10074;</span>
+                <kbd class="ctrl-key">Space</kbd>
+            </button>
+            <button id="next" class="ctrl-btn" title="Next (→)" aria-label="Next step">
+                <span class="ctrl-icon">&#9654;</span>
+                <kbd class="ctrl-key">→</kbd>
+            </button>
+            <button id="randomize" class="ctrl-btn" title="Toggle random mode (R)" aria-label="Toggle random mode" aria-pressed="false">
+                <span class="ctrl-icon">&#8635;</span>
+                <kbd class="ctrl-key">R</kbd>
+            </button>
+        </nav>
         <p id="content" class="content-text"></p>
         <p id="step-indicator" class="step-indicator"></p>
     </footer>
-
-    <nav id="controls" class="controls">
-        <button id="prev" class="ctrl-btn" title="Previous" aria-label="Previous step">&#9664;</button>
-        <button id="play-pause" class="ctrl-btn" title="Play / Pause" aria-label="Play or pause">&#10074;&#10074;</button>
-        <button id="next" class="ctrl-btn" title="Next" aria-label="Next step">&#9654;</button>
-        <button id="randomize" class="ctrl-btn" title="Toggle random mode" aria-label="Toggle random mode" aria-pressed="false">&#8635;</button>
-    </nav>
 
     <script src="script.js"></script>
 </body>
