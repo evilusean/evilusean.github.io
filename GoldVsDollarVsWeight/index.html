@@ -1,21 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <link rel="stylesheet" href="style.css">
-    <title>Gold vs. Paper Value Density</title>
-</head>
-<body>
-    <div id="controls">
-        <input type="number" id="goldPrice" placeholder="Price per oz">
-        <select id="yearPreset">
-            <option value="20">1920 ($20/oz)</option>
-            <option value="35">1934 ($35/oz)</option>
-            <option value="4656">2026 ($4,656/oz)</option>
-        </select>
-        <button id="visualize">Render Comparison</button>
-    </div>
-    <svg id="visualizer" viewBox="0 0 800 400"></svg>
-    <div id="stats"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Gold vs Dollar vs Weight</title>
+  </head>
+  <body>
+    <main class="dashboard">
+      <header class="hero card">
+        <div>
+          <p class="eyebrow">Truth Dashboard</p>
+          <h1>Gold, silver, and the weight of fiat</h1>
+          <p class="lead">
+            Compare the physical burden of gold with the paper stack implied by fiat debt and derivatives.
+          </p>
+        </div>
+        <div class="badge">Static · SVG · Vanilla JS</div>
+      </header>
+
+      <section class="controls card">
+        <label class="control">
+          <span>Historical snapshot</span>
+          <select id="snapshotSelect"></select>
+        </label>
+
+        <div class="control-group">
+          <span class="control-label">Bill denomination</span>
+          <div class="segmented" role="group" aria-label="Bill denomination">
+            <button type="button" class="toggle active" data-denomination="20">$20 bills</button>
+            <button type="button" class="toggle" data-denomination="100">$100 bills</button>
+          </div>
+        </div>
+
+        <button id="animateButton" class="primary">Animate History</button>
+      </section>
+
+      <section class="stats card" id="stats"></section>
+
+      <section class="visuals card">
+        <div class="comparison-shell">
+          <div class="svg-card">
+            <h2>Physical vs paper burden</h2>
+            <svg id="visualizer" viewBox="0 0 900 420" aria-label="Comparison between gold and paper bills"></svg>
+          </div>
+          <div class="contract-card">
+            <h2>Paper vs physical contract ratio</h2>
+            <div id="contractVisual" class="contract-visual"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
     <script src="script.js"></script>
-</body>
-</html>:
+  </body>
+</html>

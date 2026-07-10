@@ -1,0 +1,74 @@
+[
+  {
+    "yearMonth": "2020-01",
+    "goldPrice": 1580,
+    "silverPrice": 18.6,
+    "comexCoverageRatio": 0.16
+  },
+  {
+    "yearMonth": "2020-07",
+    "goldPrice": 1950,
+    "silverPrice": 19.3,
+    "comexCoverageRatio": 0.14
+  },
+  {
+    "yearMonth": "2021-01",
+    "goldPrice": 1850,
+    "silverPrice": 27.0,
+    "comexCoverageRatio": 0.18
+  },
+  {
+    "yearMonth": "2021-07",
+    "goldPrice": 1800,
+    "silverPrice": 25.3,
+    "comexCoverageRatio": 0.20
+  },
+  {
+    "yearMonth": "2022-01",
+    "goldPrice": 1830,
+    "silverPrice": 23.8,
+    "comexCoverageRatio": 0.23
+  },
+  {
+    "yearMonth": "2022-07",
+    "goldPrice": 1750,
+    "silverPrice": 19.2,
+    "comexCoverageRatio": 0.24
+  },
+  {
+    "yearMonth": "2023-01",
+    "goldPrice": 1960,
+    "silverPrice": 24.0,
+    "comexCoverageRatio": 0.27
+  },
+  {
+    "yearMonth": "2023-07",
+    "goldPrice": 1920,
+    "silverPrice": 24.1,
+    "comexCoverageRatio": 0.29
+  },
+  {
+    "yearMonth": "2024-01",
+    "goldPrice": 2050,
+    "silverPrice": 22.9,
+    "comexCoverageRatio": 0.31
+  },
+  {
+    "yearMonth": "2024-07",
+    "goldPrice": 2390,
+    "silverPrice": 29.3,
+    "comexCoverageRatio": 0.01
+  },
+  {
+    "yearMonth": "2025-01",
+    "goldPrice": 2680,
+    "silverPrice": 30.5,
+    "comexCoverageRatio": 0.36
+  },
+  {
+    "yearMonth": "2025-12",
+    "goldPrice": 2920,
+    "silverPrice": 31.8,
+    "comexCoverageRatio": 0.39
+  }
+]
