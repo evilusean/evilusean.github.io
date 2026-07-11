@@ -1,25 +1,62 @@
-/* style.css */
-body {
-    font-family: sans-serif;
-    min-height: 100vh;
+/* style.css — Projectile Physics Sandbox supplemental styles */
+
+/* ── Canvas: 16:9 aspect ratio, min 320px ─────────────────────────────── */
+#sim-canvas {
+  aspect-ratio: 16 / 9;
+  min-width: 320px;
+  width: 100%;
+  display: block;
+  background-color: #030712; /* gray-950 */
+  border-radius: 0.375rem;
 }
 
-#simCanvas {
-    border: 1px solid #4a5568;
-    background-image: radial-gradient(#2d3748 1px, transparent 1px);
-    background-size: 20px 20px; /* Adds a grid effect */
+/* ── Trajectory chart container height ────────────────────────────────── */
+#trajectory-chart-container {
+  position: relative;
+  min-height: 200px;
 }
 
-.input-field {
-    @apply w-full mb-4 p-2 rounded bg-gray-700 border border-gray-600 focus:outline-none focus:border-blue-500;
+/* ── Equation variable highlight ──────────────────────────────────────── */
+.highlight-var {
+  background-color: #fef08a !important; /* yellow-200 */
+  border-radius: 0.25rem;
+  transition: background-color 300ms ease;
+  color: #1f2937; /* dark text for contrast on yellow */
 }
 
-.card {
-    @apply bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-700;
+/* Remove the highlight (cleared state) */
+.eq-block {
+  background-color: transparent;
+  transition: background-color 300ms ease;
+  padding: 0.25rem 0.375rem;
+  border-radius: 0.25rem;
 }
 
-#equation {
-    font-family: "Courier New", Courier, monospace;
-    color: #63b3ed;
-    border-left: 4px solid #3182ce;
+/* ── Control panel: independent scroll ────────────────────────────────── */
+#control-panel {
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+/* ── Range slider thumb accent ────────────────────────────────────────── */
+input[type="range"] {
+  accent-color: #3b82f6; /* blue-500 */
+}
+
+/* ── KaTeX overrides for dark theme ───────────────────────────────────── */
+.katex {
+  color: #e5e7eb; /* gray-200 */
+  font-size: 1.05em;
+}
+
+.katex-display {
+  margin: 0.25em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* ── Responsive: equation panel scrollable on small screens ───────────── */
+#equation-panel {
+  overflow-y: auto;
+  max-height: 100vh;
 }

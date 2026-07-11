@@ -1,24 +1,145 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Ballistics Sim</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projectile Physics Sandbox</title>
+
+  <!-- TailwindCSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- KaTeX CSS -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+    crossorigin="anonymous"
+  />
+
+  <!-- Companion stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    /* 16:9 aspect ratio for simulation canvas, min 320px wide */
+    #sim-canvas {
+      aspect-ratio: 16 / 9;
+      min-width: 320px;
+      width: 100%;
+      display: block;
+    }
+  </style>
 </head>
-<body class="bg-gray-900 text-white p-8">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="bg-gray-800 p-4 rounded">
-            <h2 class="text-xl mb-4">Inputs</h2>
-            <input type="number" id="force" placeholder="Force (N)" class="w-full mb-2 p-2 text-black">
-            <input type="number" id="angle" placeholder="Angle (deg)" class="w-full mb-2 p-2 text-black">
-            <button id="calc" class="bg-blue-600 w-full p-2">Launch</button>
-        </div>
-        <div class="md:col-span-2">
-            <canvas id="simCanvas" class="bg-black w-full h-96 border"></canvas>
-            <div id="equation" class="mt-4 p-4 bg-gray-700 italic">Equation will render here</div>
-        </div>
-    </div>
-    <script src="app.js"></script>
+<body class="bg-gray-900 text-white min-h-screen">
+
+  <!-- CDN failure banner (hidden by default, shown if any CDN fails) -->
+  <div
+    id="cdn-error-banner"
+    class="hidden bg-red-700 text-white text-sm font-semibold px-4 py-3 text-center"
+    role="alert"
+    aria-live="assertive"
+  ></div>
+
+  <!-- Page heading -->
+  <header class="px-4 pt-4">
+    <h1 class="text-blue-400 text-2xl font-bold">Projectile Physics Sandbox</h1>
+  </header>
+
+  <!-- Main three-column grid (collapses to single column below 1024px) -->
+  <main class="grid grid-cols-1 lg:grid-cols-3 gap-4 p-4">
+
+    <!-- Left column: Control Panel -->
+    <section
+      id="control-panel"
+      class="bg-gray-800 rounded-lg p-4 overflow-y-auto max-h-screen"
+      aria-label="Control Panel"
+    >
+      <h2 class="text-blue-400 text-lg font-semibold mb-4">Controls</h2>
+      <!-- Slider controls injected by ui.js -->
+    </section>
+
+    <!-- Center column: Equation Dashboard -->
+    <section
+      id="equation-panel"
+      class="bg-gray-800 rounded-lg p-4 overflow-y-auto max-h-screen"
+      aria-label="Equation Dashboard"
+    >
+      <h2 class="text-blue-400 text-lg font-semibold mb-4">Equations</h2>
+      <!-- KaTeX-rendered equations injected by ui.js -->
+    </section>
+
+    <!-- Right column: Visualization Panel -->
+    <section
+      id="viz-panel"
+      class="bg-gray-800 rounded-lg p-4 flex flex-col gap-4"
+      aria-label="Visualization Panel"
+    >
+      <h2 class="text-blue-400 text-lg font-semibold">Simulation</h2>
+
+      <!-- Canvas animation (16:9, min 320px wide) -->
+      <canvas
+        id="sim-canvas"
+        class="rounded bg-gray-950 w-full"
+        aria-label="Projectile motion animation canvas"
+      ></canvas>
+
+      <!-- Chart.js trajectory plot container -->
+      <div id="trajectory-chart-container" class="bg-gray-950 rounded p-2">
+        <canvas id="trajectory-chart" aria-label="Trajectory chart"></canvas>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Chart.js CDN -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
+    crossorigin="anonymous"
+  ></script>
+
+  <!-- Chart.js Annotation Plugin (for peak/landing labels) -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"
+    crossorigin="anonymous"
+  ></script>
+
+  <!-- KaTeX JS (deferred so it doesn't block render) -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+    crossorigin="anonymous"
+  ></script>
+
+  <!-- fast-check CDN (for property-based tests) -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/fast-check@3.15.0/lib/bundle/fast-check.js"
+    crossorigin="anonymous"
+  ></script>
+
+  <!-- CDN failure detection — runs synchronously after CDN scripts load -->
+  <script>
+    (function () {
+      var missing = [];
+      if (typeof Chart === 'undefined')   missing.push('Chart.js');
+      if (typeof katex === 'undefined')   missing.push('KaTeX');
+      // TailwindCSS Play CDN attaches a `tailwind` object to window
+      if (typeof tailwind === 'undefined') missing.push('TailwindCSS');
+      if (missing.length > 0) {
+        var banner = document.getElementById('cdn-error-banner');
+        if (banner) {
+          banner.textContent =
+            '\u26A0 Failed to load: ' +
+            missing.join(', ') +
+            '. Please check your internet connection.';
+          banner.classList.remove('hidden');
+        }
+      }
+      // Register Chart.js annotation plugin if loaded
+      if (typeof Chart !== 'undefined' && typeof ChartAnnotation !== 'undefined') {
+        Chart.register(ChartAnnotation);
+      }
+    })();
+  </script>
+
+  <!-- Application entry point (single ES module entry) -->
+  <script type="module" src="ui.js"></script>
+
 </body>
 </html>
