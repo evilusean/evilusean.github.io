@@ -1,7 +1,7 @@
 /**
  * renderer.js — Canvas Animation & Chart.js Trajectory Plot
  * Pure rendering module with no physics calculations.
- * Exports: computeScaleInfo, drawFrame, updatePlot
+ * Exports: computeScaleInfo, drawFrame, drawFullParabola, updatePlot, createChart
  */
 
 /**
@@ -148,6 +148,136 @@ export function drawFrame(ctx, point, trail, scaleInfo, category, showLanding, r
     );
     ctx.restore();
   }
+}
+
+/**
+ * Draw the complete parabola path after animation completes.
+ * Shows the full trajectory arc, peak marker, landing marker, and stats overlay.
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {Array} trajectory
+ * @param {{ scaleX, scaleY, offsetX, offsetY, maxX, maxY }} scaleInfo
+ * @param {string|null} category
+ * @param {{ peakHeight, range, flightTime, impactSpeed }} stats
+ */
+export function drawFullParabola(ctx, trajectory, scaleInfo, category, stats) {
+  if (!trajectory || trajectory.length === 0) return;
+
+  const { scaleX, scaleY, offsetX, offsetY, maxX } = scaleInfo;
+  const W = ctx.canvas.width;
+  const H = ctx.canvas.height;
+  const cx = (px) => offsetX + px * scaleX;
+  const cy = (py) => offsetY - py * scaleY;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Ground line
+  ctx.save();
+  ctx.strokeStyle = '#6b7280';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(0, cy(0));
+  ctx.lineTo(W, cy(0));
+  ctx.stroke();
+  ctx.restore();
+
+  // X-axis markers
+  ctx.save();
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = `${Math.max(10, W * 0.018)}px sans-serif`;
+  ctx.textAlign = 'center';
+  for (let i = 0; i <= 4; i++) {
+    const physX = (maxX * i) / 4;
+    const px = cx(physX);
+    const py = cy(0);
+    ctx.beginPath();
+    ctx.moveTo(px, py - 4);
+    ctx.lineTo(px, py + 4);
+    ctx.strokeStyle = '#6b7280';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.fillText(`${physX.toFixed(0)}m`, px, py + 16);
+  }
+  ctx.restore();
+
+  // Full parabola path — glowing gradient stroke
+  ctx.save();
+  const grad = ctx.createLinearGradient(cx(0), 0, cx(trajectory[trajectory.length-1].x), 0);
+  grad.addColorStop(0,   'rgba(96,165,250,0.9)');   // blue-400
+  grad.addColorStop(0.5, 'rgba(167,139,250,0.95)'); // violet-400
+  grad.addColorStop(1,   'rgba(251,146,60,0.9)');   // orange-400
+  ctx.strokeStyle = grad;
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = 'rgba(139,92,246,0.6)';
+  ctx.shadowBlur = 8;
+  ctx.beginPath();
+  ctx.moveTo(cx(trajectory[0].x), cy(trajectory[0].y));
+  for (const s of trajectory) ctx.lineTo(cx(s.x), cy(s.y));
+  ctx.stroke();
+  ctx.restore();
+
+  // Peak point marker
+  const peak = trajectory.reduce((m, s) => (s.y > m.y ? s : m), trajectory[0]);
+  const peakPx = cx(peak.x);
+  const peakPy = cy(peak.y);
+  ctx.save();
+  ctx.fillStyle = '#fde68a';
+  ctx.strokeStyle = '#fbbf24';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(peakPx, peakPy, 5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = '#fde68a';
+  ctx.font = `bold ${Math.max(10, W * 0.02)}px sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText(`Peak: ${peak.y.toFixed(1)}m`, peakPx, peakPy - 10);
+  ctx.restore();
+
+  // Landing point marker
+  const landing = trajectory[trajectory.length - 1];
+  const landPx = cx(landing.x);
+  const landPy = cy(0);
+  ctx.save();
+  ctx.fillStyle = '#86efac';
+  ctx.strokeStyle = '#4ade80';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(landPx, landPy, 5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
+
+  // Projectile at landing position
+  const r = Math.max(5, W * 0.012);
+  ctx.save();
+  ctx.fillStyle = '#f97316';
+  ctx.globalAlpha = 0.85;
+  if (category === 'firearms') {
+    ctx.beginPath(); ctx.ellipse(landPx, landPy, r*0.7, r*2.1, 0, 0, Math.PI*2); ctx.fill();
+  } else if (category === 'ordnance') {
+    ctx.beginPath(); ctx.moveTo(landPx, landPy - r*1.2);
+    ctx.lineTo(landPx + r, landPy + r*0.8); ctx.lineTo(landPx - r, landPy + r*0.8);
+    ctx.closePath(); ctx.fill();
+  } else {
+    ctx.beginPath(); ctx.arc(landPx, landPy, r, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+
+  // Stats overlay at bottom
+  ctx.save();
+  ctx.fillStyle = 'rgba(0,0,0,0.65)';
+  const oh = H * 0.15;
+  ctx.fillRect(0, H - oh, W, oh);
+  ctx.fillStyle = '#fbbf24';
+  ctx.font = `bold ${Math.max(11, W * 0.025)}px sans-serif`;
+  ctx.textAlign = 'center';
+  const fmt1 = n => Number.isFinite(n) ? n.toFixed(1) : '?';
+  const fmt2 = n => Number.isFinite(n) ? n.toFixed(2) : '?';
+  ctx.fillText(
+    `Range: ${fmt1(stats.range)} m  •  Peak: ${fmt1(stats.peakHeight)} m  •  Time: ${fmt2(stats.flightTime)} s  •  Impact: ${fmt1(stats.impactSpeed)} m/s`,
+    W / 2, H - oh / 2 + 6
+  );
+  ctx.restore();
 }
 
 /**

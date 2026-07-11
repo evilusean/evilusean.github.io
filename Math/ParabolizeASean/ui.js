@@ -4,25 +4,66 @@
  */
 
 import { computeTrajectory } from './engine.js';
-import { computeScaleInfo, drawFrame, updatePlot, createChart } from './renderer.js';
+import { computeScaleInfo, drawFrame, drawFullParabola, updatePlot, createChart } from './renderer.js';
 
 // ---------------------------------------------------------------------------
-// Preset table
+// Preset table — each preset carries realistic angle, speed, gravity and
+// projectile geometry so the simulation is immediately meaningful.
+//
+// angle  — typical launch angle for that object in real use
+// speed  — realistic muzzle/throw/launch speed (m/s)
+// gravity — 9.81 everywhere unless a different-gravity body is interesting
 // ---------------------------------------------------------------------------
 const PRESETS = {
-  // Sports
-  'golf-ball':   { mass: 0.0459,  diameter: 0.0427, cd: 0.47, category: 'sports' },
-  'basketball':  { mass: 0.6200,  diameter: 0.2400, cd: 0.47, category: 'sports' },
-  'baseball':    { mass: 0.1450,  diameter: 0.0737, cd: 0.35, category: 'sports' },
-  'ping-pong':   { mass: 0.0027,  diameter: 0.0400, cd: 0.40, category: 'sports' },
-  // Firearms
-  '22-lr':       { mass: 0.0024,  diameter: 0.0056, cd: 0.17, category: 'firearms' },
-  '556-nato':    { mass: 0.0040,  diameter: 0.0057, cd: 0.30, category: 'firearms' },
-  '45-acp':      { mass: 0.0148,  diameter: 0.0115, cd: 0.20, category: 'firearms' },
-  // Ordnance
-  '60mm-mortar': { mass: 1.3300,  diameter: 0.0600, cd: 0.30, category: 'ordnance' },
-  'cannonball':  { mass: 5.4400,  diameter: 0.1100, cd: 0.47, category: 'ordnance' },
-  'atm':         { mass: 10.500,  diameter: 0.0800, cd: 0.20, category: 'ordnance' },
+  // ── Sports ────────────────────────────────────────────────────────────────
+  // Golf driver: ~44 m/s club-head translates to ~70 m/s ball speed, ~12° launch
+  'golf-ball':    { mass: 0.0459,  diameter: 0.0427, cd: 0.47,  category: 'sports',   angle: 12,  speed: 70,    gravity: 9.81 },
+  // Basketball free-throw arc: ~7 m/s at ~55°
+  'basketball':   { mass: 0.6200,  diameter: 0.2400, cd: 0.47,  category: 'sports',   angle: 55,  speed: 7,     gravity: 9.81 },
+  // Baseball pitch (~42 m/s) then field throw at ~35°
+  'baseball':     { mass: 0.1450,  diameter: 0.0737, cd: 0.35,  category: 'sports',   angle: 35,  speed: 42,    gravity: 9.81 },
+  // Ping-pong serve: ~12 m/s flat, ~5°
+  'ping-pong':    { mass: 0.0027,  diameter: 0.0400, cd: 0.40,  category: 'sports',   angle: 5,   speed: 12,    gravity: 9.81 },
+  // Soccer goal-kick: ~30 m/s at ~30°
+  'soccer-ball':  { mass: 0.4300,  diameter: 0.2200, cd: 0.25,  category: 'sports',   angle: 30,  speed: 30,    gravity: 9.81 },
+  // Tennis serve: ~55 m/s nearly flat ~8°
+  'tennis-ball':  { mass: 0.0580,  diameter: 0.0670, cd: 0.55,  category: 'sports',   angle: 8,   speed: 55,    gravity: 9.81 },
+  // Shot put world-record level: ~14 m/s at ~42°
+  'shot-put':     { mass: 7.2600,  diameter: 0.1300, cd: 0.47,  category: 'sports',   angle: 42,  speed: 14,    gravity: 9.81 },
+  // Bowling ball thrown down lane: ~10 m/s at ~2° (nearly flat)
+  'bowling-ball': { mass: 6.8000,  diameter: 0.2160, cd: 0.47,  category: 'sports',   angle: 2,   speed: 10,    gravity: 9.81 },
+  // Badminton smash: ~80 m/s steeply downward modelled as 70° from horizontal
+  'shuttlecock':  { mass: 0.0050,  diameter: 0.0540, cd: 0.60,  category: 'sports',   angle: 20,  speed: 80,    gravity: 9.81 },
+  // Archery: competition arrow at 60 m, ~60 m/s, 5° elevation
+  'arrow':        { mass: 0.0220,  diameter: 0.0080, cd: 0.01,  category: 'sports',   angle: 5,   speed: 60,    gravity: 9.81 },
+  // Javelin throw: world-class ~30 m/s at ~35°
+  'javelin':      { mass: 0.8000,  diameter: 0.0300, cd: 0.04,  category: 'sports',   angle: 35,  speed: 30,    gravity: 9.81 },
+
+  // ── Firearms (all low angle — nobody shoots at 45°) ───────────────────────
+  // .22 LR: ~370 m/s muzzle, flat target shooting ~1°
+  '22-lr':        { mass: 0.0024,  diameter: 0.0056, cd: 0.17,  category: 'firearms', angle: 1,   speed: 370,   gravity: 9.81 },
+  // 9mm Parabellum: ~370 m/s, typical pistol shot ~1°
+  '9mm':          { mass: 0.0080,  diameter: 0.0091, cd: 0.19,  category: 'firearms', angle: 1,   speed: 370,   gravity: 9.81 },
+  // 5.56 NATO (M4/AR-15): ~945 m/s, direct-fire 1°
+  '556-nato':     { mass: 0.0040,  diameter: 0.0057, cd: 0.30,  category: 'firearms', angle: 1,   speed: 945,   gravity: 9.81 },
+  // .308 Winchester / 7.62 NATO: ~860 m/s, sniper long-range ~3° elevation
+  '308-win':      { mass: 0.0116,  diameter: 0.0079, cd: 0.22,  category: 'firearms', angle: 3,   speed: 860,   gravity: 9.81 },
+  // .45 ACP: ~260 m/s, subsonic pistol ~1°
+  '45-acp':       { mass: 0.0148,  diameter: 0.0115, cd: 0.20,  category: 'firearms', angle: 1,   speed: 260,   gravity: 9.81 },
+
+  // ── Ordnance ─────────────────────────────────────────────────────────────
+  // 60 mm mortar: ~160 m/s muzzle, typical high-angle fire ~75°
+  '60mm-mortar':  { mass: 1.3300,  diameter: 0.0600, cd: 0.30,  category: 'ordnance', angle: 75,  speed: 160,   gravity: 9.81 },
+  // RPG-7: ~115 m/s, fired nearly flat at a target ~5°
+  'rpg':          { mass: 2.5000,  diameter: 0.0850, cd: 0.35,  category: 'ordnance', angle: 5,   speed: 115,   gravity: 9.81 },
+  // Hand grenade: human throw ~15 m/s at ~45°
+  'grenade':      { mass: 0.4000,  diameter: 0.0600, cd: 0.47,  category: 'ordnance', angle: 45,  speed: 15,    gravity: 9.81 },
+  // Cannonball (18th-c. field gun): ~440 m/s at ~10° direct fire
+  'cannonball':   { mass: 5.4400,  diameter: 0.1100, cd: 0.47,  category: 'ordnance', angle: 10,  speed: 440,   gravity: 9.81 },
+  // Anti-tank missile (e.g. Javelin): ~190 m/s, flat ~3°
+  'atm':          { mass: 10.500,  diameter: 0.0800, cd: 0.20,  category: 'ordnance', angle: 3,   speed: 190,   gravity: 9.81 },
+  // ICBM (very rough): ~7000 m/s burnout, ~45° launch arc (reentry phase)
+  'icbm':         { mass: 1000.0,  diameter: 1.8000, cd: 0.15,  category: 'ordnance', angle: 45,  speed: 7000,  gravity: 9.81 },
 };
 
 // ---------------------------------------------------------------------------
@@ -30,38 +71,21 @@ const PRESETS = {
 // ---------------------------------------------------------------------------
 function initState() {
   return {
-    angle:    45,
-    speed:    50,
-    mass:     0.0459,
-    diameter: 0.0427,
-    cd:       0.47,
-    rho:      1.225,
-    gravity:  9.81,
-    mode:     'realistic',
-    preset:   'golf-ball',
-    category: 'sports',
+    angle: 12, speed: 70, mass: 0.0459, diameter: 0.0427,
+    cd: 0.47, rho: 1.225, gravity: 9.81,
+    mode: 'realistic', preset: 'golf-ball', category: 'sports',
   };
 }
 
 let state = initState();
 const _listeners = [];
 
-export function getState() {
-  return Object.freeze({ ...state });
-}
-
+export function getState() { return Object.freeze({ ...state }); }
 export function onStateChange(listener) {
   _listeners.push(listener);
-  return () => {
-    const i = _listeners.indexOf(listener);
-    if (i !== -1) _listeners.splice(i, 1);
-  };
+  return () => { const i = _listeners.indexOf(listener); if (i !== -1) _listeners.splice(i, 1); };
 }
-
-function notifyListeners() {
-  const snap = getState();
-  for (const fn of _listeners) fn(snap);
-}
+function notifyListeners() { const s = getState(); for (const fn of _listeners) fn(s); }
 
 // ---------------------------------------------------------------------------
 // Animation state
@@ -74,8 +98,7 @@ let currentSimTime = 0;
 let trail = [];
 let scaleInfo = null;
 let compareMode = false;
-let vacuumTrajectory = [];
-let realisticTrajectory = [];
+let animationComplete = false;
 
 // ---------------------------------------------------------------------------
 // Chart instance
@@ -88,25 +111,15 @@ let chart = null;
 let rafPending = false;
 
 function scheduleUpdate() {
-  if (!rafPending) {
-    rafPending = true;
-    requestAnimationFrame(runUpdateCycle);
-  }
+  if (!rafPending) { rafPending = true; requestAnimationFrame(runUpdateCycle); }
 }
 
 function runUpdateCycle() {
   rafPending = false;
+  compareMode = false;
   trajectory = computeTrajectory(buildParams(state));
-
-  // Store for compare mode
-  if (state.mode === 'vacuum') {
-    vacuumTrajectory = trajectory;
-  } else {
-    realisticTrajectory = trajectory;
-  }
-
   const stats = statsFrom(trajectory);
-  updatePlot(chart, trajectory, state.mode, compareMode);
+  updatePlot(chart, trajectory, state.mode, false);
   renderEquations(state, stats);
   restartAnimation(trajectory);
   serializeState(state);
@@ -114,23 +127,20 @@ function runUpdateCycle() {
 }
 
 function buildParams(s) {
-  return {
-    angle:    s.angle,
-    speed:    s.speed,
-    mass:     s.mass,
-    diameter: s.diameter,
-    cd:       s.cd,
-    rho:      s.rho,
-    gravity:  s.gravity,
-    dt:       0.001,
-  };
+  return { angle: s.angle, speed: s.speed, mass: s.mass, diameter: s.diameter,
+           cd: s.cd, rho: s.rho, gravity: s.gravity, dt: 0.001 };
 }
 
 function statsFrom(traj) {
-  if (!traj || traj.length === 0) return { peakHeight: 0, range: 0, peakTime: 0 };
+  if (!traj || traj.length === 0)
+    return { peakHeight: 0, range: 0, flightTime: 0, peakTime: 0, impactSpeed: 0, impactVx: 0, impactVy: 0 };
   const peak = traj.reduce((m, s) => (s.y > m.y ? s : m), traj[0]);
   const landing = traj[traj.length - 1];
-  return { peakHeight: peak.y, range: landing.x, peakTime: peak.t };
+  return {
+    peakHeight: peak.y, range: landing.x, flightTime: landing.t,
+    peakTime: peak.t, impactSpeed: landing.speed,
+    impactVx: landing.vx, impactVy: landing.vy,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -138,17 +148,12 @@ function statsFrom(traj) {
 // ---------------------------------------------------------------------------
 function restartAnimation(traj) {
   if (animHandle) cancelAnimationFrame(animHandle);
-  animHandle = null;
-  frameIndex = 0;
-  trail = [];
-  lastWallTime = null;
-  currentSimTime = 0;
+  animHandle = null; frameIndex = 0; trail = [];
+  lastWallTime = null; currentSimTime = 0; animationComplete = false;
 
   const canvas = document.getElementById('sim-canvas');
   if (!canvas) return;
-
-  // Sync canvas resolution to display size
-  canvas.width = canvas.offsetWidth;
+  canvas.width  = canvas.offsetWidth;
   canvas.height = canvas.offsetWidth * (9 / 16);
 
   if (!traj || traj.length === 0) {
@@ -156,7 +161,6 @@ function restartAnimation(traj) {
     if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
     return;
   }
-
   scaleInfo = computeScaleInfo(traj, canvas.width, canvas.height);
   animHandle = requestAnimationFrame(animFrame);
 }
@@ -168,17 +172,12 @@ function animFrame(wallTimestamp) {
   if (!ctx) { console.error('Canvas 2D context unavailable'); return; }
 
   if (lastWallTime === null) lastWallTime = wallTimestamp;
-  const elapsed = (wallTimestamp - lastWallTime) / 1000; // seconds
+  const elapsed = (wallTimestamp - lastWallTime) / 1000;
   lastWallTime = wallTimestamp;
   currentSimTime += elapsed;
 
-  // Advance frame index to match wall time
-  while (
-    frameIndex < trajectory.length - 1 &&
-    trajectory[frameIndex + 1].t <= currentSimTime
-  ) {
+  while (frameIndex < trajectory.length - 1 && trajectory[frameIndex + 1].t <= currentSimTime)
     frameIndex++;
-  }
 
   trail.push(trajectory[frameIndex]);
   if (trail.length > 200) trail.shift();
@@ -186,34 +185,33 @@ function animFrame(wallTimestamp) {
   const isLast = frameIndex >= trajectory.length - 1;
   const totalRange = trajectory.length > 0 ? trajectory[trajectory.length - 1].x : 0;
 
-  drawFrame(
-    ctx,
-    trajectory[frameIndex],
-    trail,
-    scaleInfo,
-    state.category,
-    isLast,
-    totalRange
-  );
-
-  if (!isLast) {
+  if (isLast && !animationComplete) {
+    animationComplete = true;
+    // Draw full parabola on completion
+    const stats = statsFrom(trajectory);
+    drawFullParabola(ctx, trajectory, scaleInfo, state.category, stats);
+  } else if (!isLast) {
+    drawFrame(ctx, trajectory[frameIndex], trail, scaleInfo, state.category, false, totalRange);
     animHandle = requestAnimationFrame(animFrame);
   }
 }
 
 // ---------------------------------------------------------------------------
-// Control Panel HTML construction
+// Slider config
 // ---------------------------------------------------------------------------
 const SLIDERS = [
-  { id: 'angle',    label: 'Launch Angle',  min: 0,     max: 90,   step: 1,     unit: '°',      key: 'angle' },
-  { id: 'speed',    label: 'Initial Speed', min: 1,     max: 2000, step: 1,     unit: ' m/s',   key: 'speed' },
-  { id: 'mass',     label: 'Mass',          min: 0.001, max: 50,   step: 0.001, unit: ' kg',    key: 'mass' },
-  { id: 'diameter', label: 'Diameter',      min: 0.005, max: 0.5,  step: 0.001, unit: ' m',     key: 'diameter' },
-  { id: 'cd',       label: 'Drag Coeff Cₐ', min: 0.05,  max: 1.0,  step: 0.01,  unit: '',       key: 'cd' },
-  { id: 'rho',      label: 'Air Density ρ', min: 0.0,   max: 1.5,  step: 0.01,  unit: ' kg/m³', key: 'rho' },
-  { id: 'gravity',  label: 'Gravity g',     min: 0.1,   max: 25.0, step: 0.1,   unit: ' m/s²',  key: 'gravity' },
+  { id: 'angle',    label: 'Launch Angle',   min: 0,     max: 90,   step: 1,     unit: '°',       key: 'angle' },
+  { id: 'speed',    label: 'Initial Speed',  min: 1,     max: 7500, step: 1,     unit: ' m/s',    key: 'speed' },
+  { id: 'mass',     label: 'Mass',           min: 0.001, max: 1000, step: 0.001, unit: ' kg',     key: 'mass' },
+  { id: 'diameter', label: 'Diameter',       min: 0.001, max: 2.0,  step: 0.001, unit: ' m',      key: 'diameter' },
+  { id: 'cd',       label: 'Drag Coeff Cd',  min: 0.001, max: 1.0,  step: 0.001, unit: '',        key: 'cd' },
+  { id: 'rho',      label: 'Air Density ρ',  min: 0.0,   max: 1.5,  step: 0.01,  unit: ' kg/m³',  key: 'rho' },
+  { id: 'gravity',  label: 'Gravity g',      min: 0.1,   max: 25.0, step: 0.1,   unit: ' m/s²',   key: 'gravity' },
 ];
 
+// ---------------------------------------------------------------------------
+// Control Panel builder
+// ---------------------------------------------------------------------------
 function buildControlPanel() {
   const panel = document.getElementById('control-panel');
   if (!panel) return;
@@ -221,109 +219,121 @@ function buildControlPanel() {
   panel.innerHTML = `
     <h2 class="text-blue-400 text-lg font-semibold mb-4">Controls</h2>
 
-    <!-- Preset Selector -->
-    <div class="mb-5">
-      <label class="block text-sm text-gray-400 mb-1">Preset</label>
+    <div class="mb-4">
+      <label class="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Preset</label>
       <select id="preset-select"
         class="w-full bg-gray-700 text-white border border-gray-600 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-blue-500">
         <option value="">— Select Preset —</option>
-        <optgroup label="Sports">
+        <optgroup label="⚽ Sports">
           <option value="golf-ball">Golf Ball</option>
           <option value="basketball">Basketball</option>
           <option value="baseball">Baseball</option>
+          <option value="soccer-ball">Soccer Ball</option>
+          <option value="tennis-ball">Tennis Ball</option>
           <option value="ping-pong">Ping Pong</option>
+          <option value="shuttlecock">Shuttlecock</option>
+          <option value="shot-put">Shot Put</option>
+          <option value="bowling-ball">Bowling Ball</option>
+          <option value="arrow">Arrow</option>
+          <option value="javelin">Javelin</option>
         </optgroup>
-        <optgroup label="Firearms">
+        <optgroup label="🔫 Firearms">
           <option value="22-lr">.22 LR</option>
+          <option value="9mm">9mm</option>
           <option value="556-nato">5.56 NATO</option>
+          <option value="308-win">.308 Win</option>
           <option value="45-acp">.45 ACP</option>
         </optgroup>
-        <optgroup label="Ordnance">
+        <optgroup label="💣 Ordnance">
           <option value="60mm-mortar">60mm Mortar</option>
+          <option value="rpg">RPG-7</option>
+          <option value="grenade">Hand Grenade</option>
           <option value="cannonball">Cannonball</option>
           <option value="atm">Anti-Tank Missile</option>
+          <option value="icbm">ICBM (1000 kg)</option>
         </optgroup>
       </select>
     </div>
 
-    <!-- Mode Toggle -->
-    <div class="mb-5">
-      <label class="block text-sm text-gray-400 mb-1">Simulation Mode</label>
+    <div class="mb-4">
+      <label class="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Simulation Mode</label>
       <div class="flex gap-2">
-        <button id="btn-realistic"
-          class="mode-btn flex-1 py-1.5 rounded text-sm font-semibold transition-colors"
-          data-mode="realistic">Realistic</button>
-        <button id="btn-vacuum"
-          class="mode-btn flex-1 py-1.5 rounded text-sm font-semibold transition-colors"
-          data-mode="vacuum">Vacuum</button>
+        <button id="btn-realistic" class="mode-btn flex-1 py-1.5 rounded text-sm font-semibold transition-colors" data-mode="realistic">Realistic</button>
+        <button id="btn-vacuum"    class="mode-btn flex-1 py-1.5 rounded text-sm font-semibold transition-colors" data-mode="vacuum">Vacuum</button>
       </div>
     </div>
 
-    <!-- Compare Button -->
     <div class="mb-5">
-      <button id="btn-compare"
-        class="w-full py-1.5 rounded text-sm font-semibold bg-purple-700 hover:bg-purple-600 transition-colors text-white">
+      <button id="btn-compare" class="w-full py-1.5 rounded text-sm font-semibold bg-purple-700 hover:bg-purple-600 transition-colors text-white">
         Compare Vacuum &amp; Realistic
       </button>
     </div>
 
-    <!-- Sliders -->
-    <div id="slider-container" class="space-y-4"></div>
-  `;
+    <label class="block text-xs text-gray-400 mb-2 uppercase tracking-wider">Parameters</label>
+    <div id="slider-container" class="space-y-3"></div>`;
 
-  // Inject slider rows
+  _buildSliders();
+  updateModeButtons();
+
+  document.getElementById('slider-container').addEventListener('input',  handleSliderInput);
+  document.getElementById('slider-container').addEventListener('change', handleNumberInput);
+  document.getElementById('preset-select').addEventListener('change', handlePresetSelect);
+  document.querySelectorAll('.mode-btn').forEach(btn => btn.addEventListener('click', () => handleModeToggle(btn.dataset.mode)));
+  document.getElementById('btn-compare').addEventListener('click', handleCompare);
+}
+
+function _buildSliders() {
   const container = document.getElementById('slider-container');
+  if (!container) return;
+  container.innerHTML = '';
   for (const s of SLIDERS) {
     const val = state[s.key];
     const row = document.createElement('div');
     row.innerHTML = `
       <div class="flex justify-between items-center mb-0.5">
-        <label for="${s.id}-slider" class="text-sm text-gray-300">${s.label}</label>
-        <span id="${s.id}-display" class="text-sm font-mono text-blue-300">${formatVal(val, s.step)}${s.unit}</span>
+        <label for="${s.id}-slider" class="text-xs text-gray-300">${s.label}</label>
       </div>
-      <input type="range" id="${s.id}-slider"
-        min="${s.min}" max="${s.max}" step="${s.step}" value="${val}"
-        data-key="${s.key}" data-unit="${s.unit}" data-step="${s.step}"
-        class="w-full accent-blue-500 h-2 rounded cursor-pointer" />
-    `;
+      <div class="flex items-center gap-2">
+        <input type="range" id="${s.id}-slider"
+          min="${s.min}" max="${s.max}" step="${s.step}" value="${val}"
+          data-key="${s.key}" data-unit="${s.unit}" data-step="${s.step}" data-min="${s.min}" data-max="${s.max}"
+          class="flex-1 accent-blue-500 h-2 rounded cursor-pointer min-w-0" />
+        <input type="number" id="${s.id}-num"
+          min="${s.min}" max="${s.max}" step="${s.step}" value="${formatVal(val, s.step)}"
+          data-key="${s.key}" data-unit="${s.unit}" data-step="${s.step}" data-min="${s.min}" data-max="${s.max}"
+          class="w-20 bg-gray-700 text-blue-300 border border-gray-600 rounded px-1.5 py-0.5 text-xs font-mono text-right
+                 focus:outline-none focus:border-blue-500 focus:bg-gray-600" />
+        <span class="text-xs text-gray-500 w-10 shrink-0">${s.unit.trim() || '—'}</span>
+      </div>`;
     container.appendChild(row);
   }
-
-  // Update mode button visual state
-  updateModeButtons();
-
-  // Event: sliders
-  document.getElementById('slider-container').addEventListener('input', handleSliderInput);
-
-  // Event: preset
-  document.getElementById('preset-select').addEventListener('change', handlePresetSelect);
-
-  // Event: mode buttons
-  document.querySelectorAll('.mode-btn').forEach((btn) => {
-    btn.addEventListener('click', () => handleModeToggle(btn.dataset.mode));
-  });
-
-  // Event: compare
-  document.getElementById('btn-compare').addEventListener('click', handleCompare);
 }
 
 function formatVal(val, step) {
-  // Show appropriate decimal places based on step size
-  const decimals = step < 0.01 ? 3 : step < 0.1 ? 2 : step < 1 ? 1 : 0;
+  const decimals = step < 0.001 ? 4 : step < 0.01 ? 3 : step < 0.1 ? 2 : step < 1 ? 1 : 0;
   return Number(val).toFixed(decimals);
 }
 
 function updateModeButtons() {
-  const realistic = document.getElementById('btn-realistic');
-  const vacuum = document.getElementById('btn-vacuum');
-  if (!realistic || !vacuum) return;
+  const r = document.getElementById('btn-realistic');
+  const v = document.getElementById('btn-vacuum');
+  if (!r || !v) return;
   if (state.mode === 'realistic') {
-    realistic.className = 'mode-btn flex-1 py-1.5 rounded text-sm font-semibold bg-orange-600 text-white';
-    vacuum.className    = 'mode-btn flex-1 py-1.5 rounded text-sm font-semibold bg-gray-600 text-gray-300';
+    r.className = 'mode-btn flex-1 py-1.5 rounded text-sm font-semibold bg-orange-600 text-white';
+    v.className = 'mode-btn flex-1 py-1.5 rounded text-sm font-semibold bg-gray-600 text-gray-300';
   } else {
-    vacuum.className    = 'mode-btn flex-1 py-1.5 rounded text-sm font-semibold bg-blue-600 text-white';
-    realistic.className = 'mode-btn flex-1 py-1.5 rounded text-sm font-semibold bg-gray-600 text-gray-300';
+    v.className = 'mode-btn flex-1 py-1.5 rounded text-sm font-semibold bg-blue-600 text-white';
+    r.className = 'mode-btn flex-1 py-1.5 rounded text-sm font-semibold bg-gray-600 text-gray-300';
   }
+}
+
+function _syncInputPair(key, val) {
+  const cfg = SLIDERS.find(s => s.key === key);
+  if (!cfg) return;
+  const slider = document.getElementById(`${cfg.id}-slider`);
+  const num    = document.getElementById(`${cfg.id}-num`);
+  if (slider) slider.value = val;
+  if (num)    num.value    = formatVal(val, cfg.step);
 }
 
 // ---------------------------------------------------------------------------
@@ -331,45 +341,56 @@ function updateModeButtons() {
 // ---------------------------------------------------------------------------
 function handleSliderInput(event) {
   const input = event.target;
-  if (input.tagName !== 'INPUT' || input.type !== 'range') return;
-
-  const key = input.dataset.key;
-  const unit = input.dataset.unit;
+  if (input.type !== 'range') return;
+  const key  = input.dataset.key;
   const step = parseFloat(input.dataset.step);
-  const val = parseFloat(input.value);
-
+  const val  = parseFloat(input.value);
   state[key] = val;
-
-  const display = document.getElementById(`${key}-display`);
-  if (display) display.textContent = `${formatVal(val, step)}${unit}`;
-
-  // Highlight matching equation variables
+  const num = document.getElementById(`${key}-num`);
+  if (num) num.value = formatVal(val, step);
   highlightVars([key]);
+  scheduleUpdate();
+}
 
+function handleNumberInput(event) {
+  const input = event.target;
+  if (input.type !== 'number') return;
+  const key  = input.dataset.key;
+  const min  = parseFloat(input.dataset.min);
+  const max  = parseFloat(input.dataset.max);
+  const step = parseFloat(input.dataset.step);
+  let val = parseFloat(input.value);
+  if (isNaN(val)) return;
+  val = Math.min(max, Math.max(min, val));
+  input.value = formatVal(val, step);
+  state[key]  = val;
+  const slider = document.getElementById(`${key}-slider`);
+  if (slider) slider.value = val;
+  highlightVars([key]);
   scheduleUpdate();
 }
 
 function handlePresetSelect(event) {
   const key = event.target.value;
   if (!key || !PRESETS[key]) return;
+  const p = PRESETS[key];
 
-  const preset = PRESETS[key];
-  state.mass     = preset.mass;
-  state.diameter = preset.diameter;
-  state.cd       = preset.cd;
+  // Apply all preset fields to state
+  state.mass     = p.mass;
+  state.diameter = p.diameter;
+  state.cd       = p.cd;
+  state.angle    = p.angle;
+  state.speed    = p.speed;
+  state.gravity  = p.gravity;
   state.preset   = key;
-  state.category = preset.category;
+  state.category = p.category;
 
-  // Sync sliders and displays
-  for (const fieldKey of ['mass', 'diameter', 'cd']) {
-    const slider = document.getElementById(`${fieldKey}-slider`);
-    const display = document.getElementById(`${fieldKey}-display`);
-    const cfg = SLIDERS.find((s) => s.key === fieldKey);
-    if (slider) slider.value = state[fieldKey];
-    if (display && cfg) display.textContent = `${formatVal(state[fieldKey], cfg.step)}${cfg.unit}`;
+  // Sync all five affected sliders+number inputs
+  for (const k of ['mass', 'diameter', 'cd', 'angle', 'speed', 'gravity']) {
+    _syncInputPair(k, state[k]);
   }
 
-  highlightVars(['mass', 'diameter', 'cd']);
+  highlightVars(['mass', 'diameter', 'cd', 'angle', 'speed']);
   scheduleUpdate();
 }
 
@@ -377,189 +398,164 @@ function handleModeToggle(mode) {
   state.mode = mode;
   state.rho  = mode === 'vacuum' ? 0.0 : 1.225;
   compareMode = false;
-
-  const rhoSlider  = document.getElementById('rho-slider');
-  const rhoDisplay = document.getElementById('rho-display');
-  if (rhoSlider)  rhoSlider.value = state.rho;
-  if (rhoDisplay) rhoDisplay.textContent = `${state.rho.toFixed(3)} kg/m³`;
-
+  _syncInputPair('rho', state.rho);
   updateModeButtons();
   scheduleUpdate();
 }
 
 function handleCompare() {
-  // Compute both trajectories and show them simultaneously
-  const vacParams  = { ...buildParams(state), rho: 0.0 };
-  const realParams = { ...buildParams(state), rho: 1.225 };
-
-  vacuumTrajectory    = computeTrajectory(vacParams);
-  realisticTrajectory = computeTrajectory(realParams);
-
+  const vacTraj  = computeTrajectory({ ...buildParams(state), rho: 0.0 });
+  const realTraj = computeTrajectory({ ...buildParams(state), rho: 1.225 });
   if (!chart) return;
 
-  const vacuumColor   = 'rgba(59,130,246,1)';
-  const realisticColor = 'rgba(249,115,22,1)';
-
-  const toPoints = (traj) => traj.map((s) => ({ x: s.x, y: s.y }));
-  const maxX = Math.max(
-    ...vacuumTrajectory.map((s) => s.x),
-    ...realisticTrajectory.map((s) => s.x)
-  ) * 1.05;
-  const maxY = Math.max(
-    ...vacuumTrajectory.map((s) => s.y),
-    ...realisticTrajectory.map((s) => s.y)
-  ) * 1.1;
+  const toPoints = t => t.map(s => ({ x: s.x, y: s.y }));
+  const maxX = Math.max(...vacTraj.map(s => s.x), ...realTraj.map(s => s.x)) * 1.05;
+  const maxY = Math.max(...vacTraj.map(s => s.y), ...realTraj.map(s => s.y)) * 1.1;
 
   chart.data.datasets = [
-    {
-      label: 'Vacuum',
-      data: toPoints(vacuumTrajectory),
-      borderColor: vacuumColor,
-      backgroundColor: 'rgba(59,130,246,0.12)',
-      borderWidth: 2,
-      pointRadius: 0,
-      tension: 0.1,
-      fill: true,
-    },
-    {
-      label: 'Realistic',
-      data: toPoints(realisticTrajectory),
-      borderColor: realisticColor,
-      backgroundColor: 'rgba(249,115,22,0.12)',
-      borderWidth: 2,
-      pointRadius: 0,
-      tension: 0.1,
-      fill: true,
-    },
+    { label: 'Vacuum',   data: toPoints(vacTraj),  borderColor: 'rgba(59,130,246,1)',  backgroundColor: 'rgba(59,130,246,0.12)',  borderWidth: 2, pointRadius: 0, tension: 0.1, fill: true },
+    { label: 'Realistic', data: toPoints(realTraj), borderColor: 'rgba(249,115,22,1)', backgroundColor: 'rgba(249,115,22,0.12)', borderWidth: 2, pointRadius: 0, tension: 0.1, fill: true },
   ];
   chart.options.scales.x.max = maxX;
   chart.options.scales.y.max = maxY;
   chart.update('none');
-
   compareMode = true;
-  // Animate the current mode trajectory
-  trajectory = state.mode === 'vacuum' ? vacuumTrajectory : realisticTrajectory;
+  trajectory = state.mode === 'vacuum' ? vacTraj : realTraj;
   restartAnimation(trajectory);
+}
+
+// ---------------------------------------------------------------------------
+// Stats panel
+// ---------------------------------------------------------------------------
+function renderStats(stats) {
+  const panel = document.getElementById('stats-panel');
+  if (!panel) return;
+
+  const fmt2 = n => Number.isFinite(n) ? n.toFixed(2) : '—';
+  const fmt1 = n => Number.isFinite(n) ? n.toFixed(1) : '—';
+
+  panel.innerHTML = `
+    <h3 class="text-blue-400 text-sm font-semibold mb-2 uppercase tracking-wider">Flight Stats</h3>
+    <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
+      <span class="text-gray-400">Peak Height</span>
+      <span class="text-green-300 font-mono text-right">${fmt2(stats.peakHeight)} m</span>
+
+      <span class="text-gray-400">Range</span>
+      <span class="text-blue-300 font-mono text-right">${fmt2(stats.range)} m</span>
+
+      <span class="text-gray-400">Flight Time</span>
+      <span class="text-yellow-300 font-mono text-right">${fmt2(stats.flightTime)} s</span>
+
+      <span class="text-gray-400">Time to Peak</span>
+      <span class="text-yellow-200 font-mono text-right">${fmt2(stats.peakTime)} s</span>
+
+      <span class="text-gray-400">Impact Speed</span>
+      <span class="text-red-300 font-mono text-right">${fmt1(stats.impactSpeed)} m/s</span>
+
+      <span class="text-gray-400">Impact Vx</span>
+      <span class="text-orange-300 font-mono text-right">${fmt1(stats.impactVx)} m/s</span>
+
+      <span class="text-gray-400">Impact Vy</span>
+      <span class="text-orange-300 font-mono text-right">${fmt1(stats.impactVy)} m/s</span>
+
+      <span class="text-gray-400">Mode</span>
+      <span class="${state.mode === 'realistic' ? 'text-orange-400' : 'text-blue-400'} font-semibold text-right capitalize">${state.mode}</span>
+    </div>`;
 }
 
 // ---------------------------------------------------------------------------
 // Equation Dashboard (KaTeX)
 // ---------------------------------------------------------------------------
 const VAR_SLIDER_MAP = {
-  angle:    ['theta'],
-  speed:    ['v_0'],
-  mass:     ['m'],
-  diameter: ['d', 'A'],
-  cd:       ['C_d'],
-  rho:      ['rho'],
-  gravity:  ['g'],
+  angle:    ['theta'], speed:    ['v_0'], mass:     ['m'],
+  diameter: ['d','A'], cd:       ['C_d'], rho:      ['rho'], gravity: ['g'],
 };
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function katexBlock(latex) {
+  try {
+    return katex.renderToString(latex, { throwOnError: true, displayMode: true });
+  } catch (e) {
+    return `<span class="text-yellow-400 text-sm">⚠ Equation error: ${escHtml(latex)}</span>`;
+  }
+}
 
 function renderEquations(s, stats) {
   const panel = document.getElementById('equation-panel');
   if (!panel) return;
 
-  const sig = (n) => {
+  const sig = n => {
     if (n === 0) return '0';
     const d = Math.max(0, 2 - Math.floor(Math.log10(Math.abs(n))));
     return Number(n.toPrecision(3)).toFixed(d);
   };
 
-  const theta_deg = s.angle;
-  const theta_rad = (s.angle * Math.PI / 180).toFixed(4);
-  const v0        = sig(s.speed);
-  const g         = sig(s.gravity);
+  const v0 = sig(s.speed);
+  const g  = sig(s.gravity);
+  const th = s.angle;
 
-  // Build equation HTML safely using KaTeX
-  function katexBlock(latex, label) {
-    try {
-      return katex.renderToString(latex, { throwOnError: true, displayMode: true });
-    } catch (e) {
-      return `<span class="text-yellow-400 text-sm">⚠ Equation error: ${escHtml(latex)}</span>`;
-    }
-  }
-
-  function escHtml(s) {
-    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  }
-
-  const xEqLatex   = String.raw`x(t) = v_0 \cos(\theta)\cdot t`;
-  const xNumLatex  = String.raw`x(t) = ${v0}\cos(${theta_deg}°)\cdot t`;
-  const yEqLatex   = String.raw`y(t) = v_0 \sin(\theta)\cdot t - \tfrac{1}{2}g\,t^2`;
-  const yNumLatex  = String.raw`y(t) = ${v0}\sin(${theta_deg}°)\cdot t - \tfrac{1}{2}(${g})t^2`;
-  const vEqLatex   = String.raw`v(t) = \sqrt{v_x^2 + v_y^2}`;
-  const fdEqLatex  = String.raw`F_d = \tfrac{1}{2}\rho\, v^2\, C_d\, A`;
-  const fdNumLatex = String.raw`F_d = \tfrac{1}{2}(${sig(s.rho)})\,v^2\,(${sig(s.cd)})\,\pi\!\left(\tfrac{${sig(s.diameter)}}{2}\right)^2`;
+  const xEq  = String.raw`x(t) = v_0 \cos(\theta)\cdot t`;
+  const xNum = String.raw`x(t) = ${v0}\cos(${th}^{\circ})\cdot t`;
+  const yEq  = String.raw`y(t) = v_0 \sin(\theta)\cdot t - \tfrac{1}{2}g\,t^2`;
+  const yNum = String.raw`y(t) = ${v0}\sin(${th}^{\circ})\cdot t - \tfrac{1}{2}(${g})t^2`;
+  const vEq  = String.raw`v(t) = \sqrt{v_x^2 + v_y^2}`;
+  const fdEq = String.raw`F_d = \tfrac{1}{2}\rho\, v^2\, C_d\, A`;
+  const fdNum= String.raw`F_d = \tfrac{1}{2}(${sig(s.rho)})\,v^2\,(${sig(s.cd)})\,\pi\!\left(\tfrac{${sig(s.diameter)}}{2}\right)^{\!2}`;
 
   const dragBlock = s.mode === 'realistic' ? `
     <div class="eq-block mb-3" data-vars="rho,C_d,d,A">
-      <div class="text-xs text-gray-400 mb-1">Drag Force</div>
-      ${katexBlock(fdEqLatex)}
-      <div class="text-xs text-gray-500 mt-1">${katexBlock(fdNumLatex)}</div>
+      <div class="text-xs text-gray-400 mb-0.5">Drag Force</div>
+      ${katexBlock(fdEq)}
+      <div class="opacity-70 mt-0.5">${katexBlock(fdNum)}</div>
     </div>` : '';
 
   panel.innerHTML = `
-    <h2 class="text-blue-400 text-lg font-semibold mb-4">Equations</h2>
+    <h2 class="text-blue-400 text-lg font-semibold mb-3">Equations</h2>
 
     <div class="eq-block mb-4" data-vars="v_0,theta">
-      <div class="text-xs text-gray-400 mb-1">Horizontal Position</div>
-      ${katexBlock(xEqLatex)}
-      <div class="text-xs text-gray-500 mt-1">${katexBlock(xNumLatex)}</div>
+      <div class="text-xs text-gray-400 mb-0.5">Horizontal Position</div>
+      ${katexBlock(xEq)}
+      <div class="opacity-70 mt-0.5">${katexBlock(xNum)}</div>
     </div>
 
     <div class="eq-block mb-4" data-vars="v_0,theta,g">
-      <div class="text-xs text-gray-400 mb-1">Vertical Position</div>
-      ${katexBlock(yEqLatex)}
-      <div class="text-xs text-gray-500 mt-1">${katexBlock(yNumLatex)}</div>
+      <div class="text-xs text-gray-400 mb-0.5">Vertical Position</div>
+      ${katexBlock(yEq)}
+      <div class="opacity-70 mt-0.5">${katexBlock(yNum)}</div>
     </div>
 
     <div class="eq-block mb-4" data-vars="v_0">
-      <div class="text-xs text-gray-400 mb-1">Speed</div>
-      ${katexBlock(vEqLatex)}
+      <div class="text-xs text-gray-400 mb-0.5">Speed</div>
+      ${katexBlock(vEq)}
     </div>
 
     ${dragBlock}
 
-    <hr class="border-gray-700 my-4" />
+    <hr class="border-gray-700 my-3" />
+    <div id="stats-panel"></div>`;
 
-    <div class="text-sm space-y-1">
-      <div class="flex justify-between">
-        <span class="text-gray-400">Peak Height</span>
-        <span class="text-blue-300 font-mono">${stats.peakHeight.toFixed(2)} m</span>
-      </div>
-      <div class="flex justify-between">
-        <span class="text-gray-400">Range</span>
-        <span class="text-blue-300 font-mono">${stats.range.toFixed(2)} m</span>
-      </div>
-      <div class="flex justify-between">
-        <span class="text-gray-400">Mode</span>
-        <span class="${s.mode === 'realistic' ? 'text-orange-400' : 'text-blue-400'} font-semibold capitalize">${s.mode}</span>
-      </div>
-    </div>
-  `;
+  renderStats(stats);
 }
 
 // ---------------------------------------------------------------------------
-// Variable highlight animation
+// Variable highlight
 // ---------------------------------------------------------------------------
 let _highlightTimers = {};
 
 function highlightVars(changedKeys) {
-  const varNames = changedKeys.flatMap((k) => VAR_SLIDER_MAP[k] || []);
-  if (varNames.length === 0) return;
-
+  const varNames = changedKeys.flatMap(k => VAR_SLIDER_MAP[k] || []);
+  if (!varNames.length) return;
   const panel = document.getElementById('equation-panel');
   if (!panel) return;
-
-  // Find eq-blocks whose data-vars include any changed variable
-  panel.querySelectorAll('.eq-block').forEach((block) => {
+  panel.querySelectorAll('.eq-block').forEach(block => {
     const vars = (block.dataset.vars || '').split(',');
-    if (varNames.some((v) => vars.includes(v))) {
+    if (varNames.some(v => vars.includes(v))) {
       block.classList.add('highlight-var');
       clearTimeout(_highlightTimers[block.dataset.vars]);
-      _highlightTimers[block.dataset.vars] = setTimeout(() => {
-        block.classList.remove('highlight-var');
-      }, 1300);
+      _highlightTimers[block.dataset.vars] = setTimeout(() => block.classList.remove('highlight-var'), 1300);
     }
   });
 }
@@ -568,88 +564,45 @@ function highlightVars(changedKeys) {
 // URL State Serialization
 // ---------------------------------------------------------------------------
 function serializeState(s) {
-  const params = new URLSearchParams({
-    angle:   s.angle,
-    speed:   s.speed,
-    mass:    s.mass,
-    diam:    s.diameter,
-    cd:      s.cd,
-    rho:     s.rho,
-    gravity: s.gravity,
-    mode:    s.mode,
-  });
-  try {
-    history.replaceState(null, '', '?' + params.toString());
-  } catch (_) {
-    // Silent fail in restricted environments
-  }
+  const p = new URLSearchParams({ angle: s.angle, speed: s.speed, mass: s.mass,
+    diam: s.diameter, cd: s.cd, rho: s.rho, gravity: s.gravity, mode: s.mode });
+  try { history.replaceState(null, '', '?' + p.toString()); } catch (_) {}
 }
 
 const URL_RANGES = {
-  angle:   [0, 90],
-  speed:   [1, 2000],
-  mass:    [0.001, 50],
-  diam:    [0.005, 0.5],
-  cd:      [0.05, 1.0],
-  rho:     [0.0, 1.5],
-  gravity: [0.1, 25.0],
+  angle:[0,90], speed:[1,7500], mass:[0.001,1000], diam:[0.001,2.0],
+  cd:[0.001,1.0], rho:[0.0,1.5], gravity:[0.1,25.0],
 };
 
 function parseQueryString(qs) {
   const params = new URLSearchParams(qs);
   const partial = {};
-
   for (const [key, rawVal] of params.entries()) {
     if (key === 'mode') {
-      if (rawVal === 'vacuum' || rawVal === 'realistic') {
-        partial.mode = rawVal;
-      } else {
-        console.warn(`[URL] Rejected mode="${rawVal}": must be 'vacuum' or 'realistic'`);
-      }
+      if (rawVal === 'vacuum' || rawVal === 'realistic') partial.mode = rawVal;
+      else console.warn(`[URL] Rejected mode="${rawVal}"`);
       continue;
     }
-
     const range = URL_RANGES[key];
-    if (!range) {
-      console.warn(`[URL] Rejected unknown key="${key}"`);
-      continue;
-    }
-
+    if (!range) { console.warn(`[URL] Unknown key="${key}"`); continue; }
     const num = parseFloat(rawVal);
-    if (isNaN(num)) {
-      console.warn(`[URL] Rejected key="${key}" value="${rawVal}": not a number`);
-      continue;
-    }
-    if (num < range[0] || num > range[1]) {
-      console.warn(`[URL] Rejected key="${key}" value=${num}: out of range [${range[0]}, ${range[1]}]`);
-      continue;
+    if (isNaN(num) || num < range[0] || num > range[1]) {
+      console.warn(`[URL] Rejected key="${key}" val=${rawVal}`); continue;
     }
     partial[key] = num;
   }
-
   return partial;
 }
 
 function applyURLState(partial) {
-  const keyMap = { angle: 'angle', speed: 'speed', mass: 'mass', diam: 'diameter',
-                   cd: 'cd', rho: 'rho', gravity: 'gravity', mode: 'mode' };
-  for (const [urlKey, val] of Object.entries(partial)) {
-    const stateKey = keyMap[urlKey] || urlKey;
-    state[stateKey] = val;
-  }
-  if (partial.mode) {
-    state.mode = partial.mode;
-    state.rho  = partial.mode === 'vacuum' ? 0.0 : (partial.rho ?? 1.225);
-  }
+  const map = { angle:'angle', speed:'speed', mass:'mass', diam:'diameter',
+                cd:'cd', rho:'rho', gravity:'gravity', mode:'mode' };
+  for (const [k, v] of Object.entries(partial)) { const sk = map[k]||k; state[sk] = v; }
+  if (partial.mode) { state.mode = partial.mode; state.rho = partial.mode === 'vacuum' ? 0.0 : (partial.rho ?? 1.225); }
 }
 
-function syncSlidersFromState() {
-  for (const s of SLIDERS) {
-    const slider  = document.getElementById(`${s.id}-slider`);
-    const display = document.getElementById(`${s.id}-display`);
-    if (slider)  slider.value = state[s.key];
-    if (display) display.textContent = `${formatVal(state[s.key], s.step)}${s.unit}`;
-  }
+function syncAllInputsFromState() {
+  for (const s of SLIDERS) _syncInputPair(s.key, state[s.key]);
   updateModeButtons();
 }
 
@@ -657,40 +610,25 @@ function syncSlidersFromState() {
 // Bootstrap
 // ---------------------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
-  // Build control panel
   buildControlPanel();
 
-  // Initialize Chart.js
   const chartCanvas = document.getElementById('trajectory-chart');
-  if (chartCanvas && typeof Chart !== 'undefined') {
-    chart = createChart(chartCanvas);
-  }
+  if (chartCanvas && typeof Chart !== 'undefined') chart = createChart(chartCanvas);
 
-  // Parse URL state if present
   const qs = window.location.search;
-  if (qs && qs.length > 1) {
-    const partial = parseQueryString(qs.slice(1));
-    applyURLState(partial);
-    syncSlidersFromState();
-  }
+  if (qs && qs.length > 1) { applyURLState(parseQueryString(qs.slice(1))); syncAllInputsFromState(); }
 
-  // Initial computation
   trajectory = computeTrajectory(buildParams(state));
   const stats = statsFrom(trajectory);
-
   if (chart) updatePlot(chart, trajectory, state.mode, false);
   renderEquations(state, stats);
   restartAnimation(trajectory);
   serializeState(state);
 
-  // Sync preset select to default
-  const presetSelect = document.getElementById('preset-select');
-  if (presetSelect && state.preset) presetSelect.value = state.preset;
+  const ps = document.getElementById('preset-select');
+  if (ps && state.preset) ps.value = state.preset;
 });
 
-// Handle canvas resize
 window.addEventListener('resize', () => {
-  if (trajectory && trajectory.length > 0) {
-    restartAnimation(trajectory);
-  }
+  if (trajectory && trajectory.length > 0) restartAnimation(trajectory);
 });
