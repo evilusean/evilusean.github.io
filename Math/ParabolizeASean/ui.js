@@ -10,60 +10,82 @@ import { computeScaleInfo, drawFrame, drawFullParabola, updatePlot, createChart 
 // Preset table — each preset carries realistic angle, speed, gravity and
 // projectile geometry so the simulation is immediately meaningful.
 //
-// angle  — typical launch angle for that object in real use
-// speed  — realistic muzzle/throw/launch speed (m/s)
-// gravity — 9.81 everywhere unless a different-gravity body is interesting
+// angle   — typical launch angle for that object in real use
+// speed   — realistic muzzle/throw/launch speed (m/s)
+// gravity — 9.81 m/s² (Earth) unless otherwise noted
+//
+// Approximate real-world ranges for reference (vacuum, ~45°):
+//   R ≈ v² / g   →   100 m/s ≈ 1 km,  300 m/s ≈ 9 km,  800 m/s ≈ 65 km
 // ---------------------------------------------------------------------------
 const PRESETS = {
   // ── Sports ────────────────────────────────────────────────────────────────
-  // Golf driver: ~44 m/s club-head translates to ~70 m/s ball speed, ~12° launch
-  'golf-ball':    { mass: 0.0459,  diameter: 0.0427, cd: 0.47,  category: 'sports',   angle: 12,  speed: 70,    gravity: 9.81 },
-  // Basketball free-throw arc: ~7 m/s at ~55°
-  'basketball':   { mass: 0.6200,  diameter: 0.2400, cd: 0.47,  category: 'sports',   angle: 55,  speed: 7,     gravity: 9.81 },
-  // Baseball pitch (~42 m/s) then field throw at ~35°
-  'baseball':     { mass: 0.1450,  diameter: 0.0737, cd: 0.35,  category: 'sports',   angle: 35,  speed: 42,    gravity: 9.81 },
-  // Ping-pong serve: ~12 m/s flat, ~5°
-  'ping-pong':    { mass: 0.0027,  diameter: 0.0400, cd: 0.40,  category: 'sports',   angle: 5,   speed: 12,    gravity: 9.81 },
-  // Soccer goal-kick: ~30 m/s at ~30°
-  'soccer-ball':  { mass: 0.4300,  diameter: 0.2200, cd: 0.25,  category: 'sports',   angle: 30,  speed: 30,    gravity: 9.81 },
-  // Tennis serve: ~55 m/s nearly flat ~8°
-  'tennis-ball':  { mass: 0.0580,  diameter: 0.0670, cd: 0.55,  category: 'sports',   angle: 8,   speed: 55,    gravity: 9.81 },
-  // Shot put world-record level: ~14 m/s at ~42°
-  'shot-put':     { mass: 7.2600,  diameter: 0.1300, cd: 0.47,  category: 'sports',   angle: 42,  speed: 14,    gravity: 9.81 },
-  // Bowling ball thrown down lane: ~10 m/s at ~2° (nearly flat)
-  'bowling-ball': { mass: 6.8000,  diameter: 0.2160, cd: 0.47,  category: 'sports',   angle: 2,   speed: 10,    gravity: 9.81 },
-  // Badminton smash: ~80 m/s steeply downward modelled as 70° from horizontal
-  'shuttlecock':  { mass: 0.0050,  diameter: 0.0540, cd: 0.60,  category: 'sports',   angle: 20,  speed: 80,    gravity: 9.81 },
-  // Archery: competition arrow at 60 m, ~60 m/s, 5° elevation
-  'arrow':        { mass: 0.0220,  diameter: 0.0080, cd: 0.01,  category: 'sports',   angle: 5,   speed: 60,    gravity: 9.81 },
-  // Javelin throw: world-class ~30 m/s at ~35°
-  'javelin':      { mass: 0.8000,  diameter: 0.0300, cd: 0.04,  category: 'sports',   angle: 35,  speed: 30,    gravity: 9.81 },
+  'golf-ball':    { mass: 0.0459,  diameter: 0.0427, cd: 0.47,  category: 'sports',    angle: 12,  speed: 70,     gravity: 9.81 },  // ~200 m range
+  'basketball':   { mass: 0.6200,  diameter: 0.2400, cd: 0.47,  category: 'sports',    angle: 55,  speed: 7,      gravity: 9.81 },  // free-throw arc
+  'baseball':     { mass: 0.1450,  diameter: 0.0737, cd: 0.35,  category: 'sports',    angle: 35,  speed: 42,     gravity: 9.81 },  // outfield throw
+  'soccer-ball':  { mass: 0.4300,  diameter: 0.2200, cd: 0.25,  category: 'sports',    angle: 30,  speed: 30,     gravity: 9.81 },  // goal-kick ~60 m
+  'tennis-ball':  { mass: 0.0580,  diameter: 0.0670, cd: 0.55,  category: 'sports',    angle: 8,   speed: 55,     gravity: 9.81 },  // serve ~200 km/h
+  'ping-pong':    { mass: 0.0027,  diameter: 0.0400, cd: 0.40,  category: 'sports',    angle: 5,   speed: 12,     gravity: 9.81 },
+  'shot-put':     { mass: 7.2600,  diameter: 0.1300, cd: 0.47,  category: 'sports',    angle: 42,  speed: 14,     gravity: 9.81 },  // world-class ~23 m
+  'shuttlecock':  { mass: 0.0050,  diameter: 0.0540, cd: 0.60,  category: 'sports',    angle: 20,  speed: 80,     gravity: 9.81 },  // smash
+  'arrow':        { mass: 0.0220,  diameter: 0.0080, cd: 0.01,  category: 'sports',    angle: 5,   speed: 60,     gravity: 9.81 },  // 60 m target
+  'javelin':      { mass: 0.8000,  diameter: 0.0300, cd: 0.04,  category: 'sports',    angle: 35,  speed: 30,     gravity: 9.81 },  // world-class ~90 m
+  'bowling-ball': { mass: 6.8000,  diameter: 0.2160, cd: 0.47,  category: 'sports',    angle: 2,   speed: 10,     gravity: 9.81 },
 
-  // ── Firearms (all low angle — nobody shoots at 45°) ───────────────────────
-  // .22 LR: ~370 m/s muzzle, flat target shooting ~1°
-  '22-lr':        { mass: 0.0024,  diameter: 0.0056, cd: 0.17,  category: 'firearms', angle: 1,   speed: 370,   gravity: 9.81 },
-  // 9mm Parabellum: ~370 m/s, typical pistol shot ~1°
-  '9mm':          { mass: 0.0080,  diameter: 0.0091, cd: 0.19,  category: 'firearms', angle: 1,   speed: 370,   gravity: 9.81 },
-  // 5.56 NATO (M4/AR-15): ~945 m/s, direct-fire 1°
-  '556-nato':     { mass: 0.0040,  diameter: 0.0057, cd: 0.30,  category: 'firearms', angle: 1,   speed: 945,   gravity: 9.81 },
-  // .308 Winchester / 7.62 NATO: ~860 m/s, sniper long-range ~3° elevation
-  '308-win':      { mass: 0.0116,  diameter: 0.0079, cd: 0.22,  category: 'firearms', angle: 3,   speed: 860,   gravity: 9.81 },
-  // .45 ACP: ~260 m/s, subsonic pistol ~1°
-  '45-acp':       { mass: 0.0148,  diameter: 0.0115, cd: 0.20,  category: 'firearms', angle: 1,   speed: 260,   gravity: 9.81 },
+  // ── Firearms ──────────────────────────────────────────────────────────────
+  '22-lr':        { mass: 0.0024,  diameter: 0.0056, cd: 0.17,  category: 'firearms',  angle: 1,   speed: 370,    gravity: 9.81 },  // ~140 m effective
+  '9mm':          { mass: 0.0080,  diameter: 0.0091, cd: 0.19,  category: 'firearms',  angle: 1,   speed: 370,    gravity: 9.81 },  // pistol, ~50 m effective
+  '45-acp':       { mass: 0.0148,  diameter: 0.0115, cd: 0.20,  category: 'firearms',  angle: 1,   speed: 260,    gravity: 9.81 },  // subsonic pistol
+  '556-nato':     { mass: 0.0040,  diameter: 0.0057, cd: 0.30,  category: 'firearms',  angle: 1,   speed: 945,    gravity: 9.81 },  // M4/AR-15, ~500 m effective
+  '308-win':      { mass: 0.0116,  diameter: 0.0079, cd: 0.22,  category: 'firearms',  angle: 3,   speed: 860,    gravity: 9.81 },  // sniper, ~800 m effective
+  '338-lapua':    { mass: 0.0163,  diameter: 0.0086, cd: 0.20,  category: 'firearms',  angle: 4,   speed: 915,    gravity: 9.81 },  // sniper, ~1500 m effective
+  '50-bmg':       { mass: 0.0460,  diameter: 0.0127, cd: 0.21,  category: 'firearms',  angle: 5,   speed: 928,    gravity: 9.81 },  // heavy sniper, ~2000 m
 
-  // ── Ordnance ─────────────────────────────────────────────────────────────
-  // 60 mm mortar: ~160 m/s muzzle, typical high-angle fire ~75°
-  '60mm-mortar':  { mass: 1.3300,  diameter: 0.0600, cd: 0.30,  category: 'ordnance', angle: 75,  speed: 160,   gravity: 9.81 },
-  // RPG-7: ~115 m/s, fired nearly flat at a target ~5°
-  'rpg':          { mass: 2.5000,  diameter: 0.0850, cd: 0.35,  category: 'ordnance', angle: 5,   speed: 115,   gravity: 9.81 },
-  // Hand grenade: human throw ~15 m/s at ~45°
-  'grenade':      { mass: 0.4000,  diameter: 0.0600, cd: 0.47,  category: 'ordnance', angle: 45,  speed: 15,    gravity: 9.81 },
-  // Cannonball (18th-c. field gun): ~440 m/s at ~10° direct fire
-  'cannonball':   { mass: 5.4400,  diameter: 0.1100, cd: 0.47,  category: 'ordnance', angle: 10,  speed: 440,   gravity: 9.81 },
-  // Anti-tank missile (e.g. Javelin): ~190 m/s, flat ~3°
-  'atm':          { mass: 10.500,  diameter: 0.0800, cd: 0.20,  category: 'ordnance', angle: 3,   speed: 190,   gravity: 9.81 },
-  // ICBM (very rough): ~7000 m/s burnout, ~45° launch arc (reentry phase)
-  'icbm':         { mass: 1000.0,  diameter: 1.8000, cd: 0.15,  category: 'ordnance', angle: 45,  speed: 7000,  gravity: 9.81 },
+  // ── Mortars (short-range high-angle) ──────────────────────────────────────
+  '60mm-mortar':  { mass: 1.3300,  diameter: 0.0600, cd: 0.30,  category: 'ordnance',  angle: 75,  speed: 160,    gravity: 9.81 },  // ~3.5 km max
+  '81mm-mortar':  { mass: 4.1500,  diameter: 0.0810, cd: 0.30,  category: 'ordnance',  angle: 75,  speed: 250,    gravity: 9.81 },  // ~5.6 km max
+  '120mm-mortar': { mass: 13.000,  diameter: 0.1200, cd: 0.28,  category: 'ordnance',  angle: 75,  speed: 320,    gravity: 9.81 },  // ~7 km max
+
+  // ── Artillery (the long-range stuff) ──────────────────────────────────────
+  // M198 howitzer (US, 155mm): max range ~22 km standard shell, ~30 km RAP
+  'm198-155mm':   { mass: 43.000,  diameter: 0.1550, cd: 0.25,  category: 'ordnance',  angle: 45,  speed: 684,    gravity: 9.81 },  // ~22 km standard
+  // 2S19 Msta-S (Russian, 155mm equiv): max range ~24 km standard, ~28 km RAP
+  '2s19-msta':    { mass: 43.000,  diameter: 0.1520, cd: 0.25,  category: 'ordnance',  angle: 45,  speed: 720,    gravity: 9.81 },  // ~25 km
+  // 2S7 Pion (Russian, 203mm): ~37 km range — one of the world's longest-range guns
+  '2s7-pion':     { mass: 110.00,  diameter: 0.2030, cd: 0.24,  category: 'ordnance',  angle: 50,  speed: 960,    gravity: 9.81 },  // ~37 km
+  // BM-21 Grad MLRS (Russian, 122mm rocket): ~40 km
+  'bm21-grad':    { mass: 66.000,  diameter: 0.1220, cd: 0.20,  category: 'ordnance',  angle: 50,  speed: 690,    gravity: 9.81 },  // ~40 km
+  // BM-30 Smerch MLRS (Russian, 300mm): ~90 km — 20 km not even close, this does 90!
+  'bm30-smerch':  { mass: 800.00,  diameter: 0.3000, cd: 0.18,  category: 'ordnance',  angle: 50,  speed: 1200,   gravity: 9.81 },  // ~90 km
+  // Paris Gun (WWI, Germany): longest-range gun in history at ~130 km
+  'paris-gun':    { mass: 94.000,  diameter: 0.2100, cd: 0.22,  category: 'ordnance',  angle: 55,  speed: 1600,   gravity: 9.81 },  // ~130 km
+  // M110 howitzer (US, 203mm): ~29 km
+  'm110-203mm':   { mass: 92.000,  diameter: 0.2030, cd: 0.25,  category: 'ordnance',  angle: 45,  speed: 684,    gravity: 9.81 },  // ~17 km
+
+  // ── Tactical Missiles ──────────────────────────────────────────────────────
+  // Hand grenade (baseline short-range)
+  'grenade':      { mass: 0.4000,  diameter: 0.0600, cd: 0.47,  category: 'ordnance',  angle: 45,  speed: 15,     gravity: 9.81 },  // ~20 m throw
+  // RPG-7 rocket
+  'rpg':          { mass: 2.5000,  diameter: 0.0850, cd: 0.35,  category: 'ordnance',  angle: 5,   speed: 115,    gravity: 9.81 },  // ~300 m effective
+  // Javelin ATGM: fire-and-forget, top-attack ~2 km
+  'javelin-atgm': { mass: 11.800,  diameter: 0.1270, cd: 0.18,  category: 'ordnance',  angle: 30,  speed: 190,    gravity: 9.81 },  // ~2 km
+  // Stinger MANPADS: air-defense missile, ~4 km range
+  'stinger':      { mass: 10.100,  diameter: 0.0700, cd: 0.15,  category: 'ordnance',  angle: 45,  speed: 750,    gravity: 9.81 },  // ~4.8 km
+  // Patriot PAC-3 interceptor: very high speed, ~70 km altitude
+  'patriot':      { mass: 316.00,  diameter: 0.2500, cd: 0.12,  category: 'ordnance',  angle: 70,  speed: 1700,   gravity: 9.81 },  // ~70 km range
+  // Tomahawk cruise missile (modelled as ballistic for simplicity)
+  'tomahawk':     { mass: 1200.0,  diameter: 0.5200, cd: 0.10,  category: 'ordnance',  angle: 45,  speed: 250,    gravity: 9.81 },  // 1600 km range (powered)
+  // Iskander-M (Russia, ballistic): ~480 km range
+  'iskander':     { mass: 480.00,  diameter: 0.9200, cd: 0.10,  category: 'ordnance',  angle: 45,  speed: 2100,   gravity: 9.81 },  // ~480 km
+  // Cannonball (historical, 18th-c.): ~1 km
+  'cannonball':   { mass: 5.4400,  diameter: 0.1100, cd: 0.47,  category: 'ordnance',  angle: 10,  speed: 440,    gravity: 9.81 },
+
+  // ── Strategic / Space ─────────────────────────────────────────────────────
+  // Minuteman III ICBM: ~13,000 km range
+  'minuteman':    { mass: 350.00,  diameter: 1.6700, cd: 0.12,  category: 'ordnance',  angle: 45,  speed: 7200,   gravity: 9.81 },
+  // Sarmat (RS-28, Russia): ~18,000 km range — heaviest ICBM ever built
+  'sarmat':       { mass: 1000.0,  diameter: 3.0000, cd: 0.10,  category: 'ordnance',  angle: 45,  speed: 7600,   gravity: 9.81 },
+  // Saturn V first stage (for fun — max height comparison)
+  'saturn-v':     { mass: 130000., diameter: 10.060, cd: 0.50,  category: 'ordnance',  angle: 80,  speed: 2300,   gravity: 9.81 },
 };
 
 // ---------------------------------------------------------------------------
@@ -127,8 +149,9 @@ function runUpdateCycle() {
 }
 
 function buildParams(s) {
+  // No dt — let engine.js auto-scale based on trajectory duration
   return { angle: s.angle, speed: s.speed, mass: s.mass, diameter: s.diameter,
-           cd: s.cd, rho: s.rho, gravity: s.gravity, dt: 0.001 };
+           cd: s.cd, rho: s.rho, gravity: s.gravity };
 }
 
 function statsFrom(traj) {
@@ -146,6 +169,18 @@ function statsFrom(traj) {
 // ---------------------------------------------------------------------------
 // Canvas animation
 // ---------------------------------------------------------------------------
+function getCanvasSize(canvas) {
+  // getBoundingClientRect is reliable even before a first paint
+  const rect = canvas.getBoundingClientRect();
+  const w = rect.width  > 10 ? Math.round(rect.width)  : canvas.parentElement?.clientWidth || 640;
+  const h = rect.height > 10 ? Math.round(rect.height) : Math.round(w * 9 / 16);
+  return { w, h };
+}
+
+// Animation time scale: target ~3 s of wall time for any trajectory.
+// Stored in restartAnimation, used by animFrame.
+let animTimeScale = 1.0;  // simSeconds per wallSecond
+
 function restartAnimation(traj) {
   if (animHandle) cancelAnimationFrame(animHandle);
   animHandle = null; frameIndex = 0; trail = [];
@@ -153,15 +188,27 @@ function restartAnimation(traj) {
 
   const canvas = document.getElementById('sim-canvas');
   if (!canvas) return;
-  canvas.width  = canvas.offsetWidth;
-  canvas.height = canvas.offsetWidth * (9 / 16);
+
+  // Sync canvas pixel buffer to its CSS display size
+  const { w, h } = getCanvasSize(canvas);
+  canvas.width  = w;
+  canvas.height = h;
 
   if (!traj || traj.length === 0) {
     const ctx = canvas.getContext('2d');
-    if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (ctx) ctx.clearRect(0, 0, w, h);
     return;
   }
-  scaleInfo = computeScaleInfo(traj, canvas.width, canvas.height);
+
+  // Scale animation so total flight time displays in ~3 wall-clock seconds
+  const totalSimTime = traj[traj.length - 1].t;
+  const TARGET_WALL_SECS = 3.0;
+  animTimeScale = totalSimTime / TARGET_WALL_SECS;
+  // Clamp: never slower than 0.1× real-time, never faster than real-time
+  // (fast projectiles show at real-time, slow ones are slightly sped up)
+  animTimeScale = Math.max(0.1, Math.min(animTimeScale, totalSimTime));
+
+  scaleInfo = computeScaleInfo(traj, w, h);
   animHandle = requestAnimationFrame(animFrame);
 }
 
@@ -172,9 +219,11 @@ function animFrame(wallTimestamp) {
   if (!ctx) { console.error('Canvas 2D context unavailable'); return; }
 
   if (lastWallTime === null) lastWallTime = wallTimestamp;
-  const elapsed = (wallTimestamp - lastWallTime) / 1000;
+  const wallElapsed = (wallTimestamp - lastWallTime) / 1000;
   lastWallTime = wallTimestamp;
-  currentSimTime += elapsed;
+
+  // Advance sim time scaled so the animation always takes ~3 s
+  currentSimTime += wallElapsed * animTimeScale;
 
   while (frameIndex < trajectory.length - 1 && trajectory[frameIndex + 1].t <= currentSimTime)
     frameIndex++;
@@ -187,11 +236,10 @@ function animFrame(wallTimestamp) {
 
   if (isLast && !animationComplete) {
     animationComplete = true;
-    // Draw full parabola on completion
     const stats = statsFrom(trajectory);
     drawFullParabola(ctx, trajectory, scaleInfo, state.category, stats);
   } else if (!isLast) {
-    drawFrame(ctx, trajectory[frameIndex], trail, scaleInfo, state.category, false, totalRange);
+    drawFrame(ctx, trajectory[frameIndex], trail, scaleInfo, state.category, false, totalRange, animTimeScale);
     animHandle = requestAnimationFrame(animFrame);
   }
 }
@@ -201,9 +249,9 @@ function animFrame(wallTimestamp) {
 // ---------------------------------------------------------------------------
 const SLIDERS = [
   { id: 'angle',    label: 'Launch Angle',   min: 0,     max: 90,   step: 1,     unit: '°',       key: 'angle' },
-  { id: 'speed',    label: 'Initial Speed',  min: 1,     max: 7500, step: 1,     unit: ' m/s',    key: 'speed' },
-  { id: 'mass',     label: 'Mass',           min: 0.001, max: 1000, step: 0.001, unit: ' kg',     key: 'mass' },
-  { id: 'diameter', label: 'Diameter',       min: 0.001, max: 2.0,  step: 0.001, unit: ' m',      key: 'diameter' },
+  { id: 'speed',    label: 'Initial Speed',  min: 1,     max: 8000, step: 1,     unit: ' m/s',    key: 'speed' },
+  { id: 'mass',     label: 'Mass',           min: 0.001, max: 200000, step: 0.001, unit: ' kg',     key: 'mass' },
+  { id: 'diameter', label: 'Diameter',       min: 0.001, max: 12.0,  step: 0.001, unit: ' m',      key: 'diameter' },
   { id: 'cd',       label: 'Drag Coeff Cd',  min: 0.001, max: 1.0,  step: 0.001, unit: '',        key: 'cd' },
   { id: 'rho',      label: 'Air Density ρ',  min: 0.0,   max: 1.5,  step: 0.01,  unit: ' kg/m³',  key: 'rho' },
   { id: 'gravity',  label: 'Gravity g',      min: 0.1,   max: 25.0, step: 0.1,   unit: ' m/s²',   key: 'gravity' },
@@ -225,32 +273,55 @@ function buildControlPanel() {
         class="w-full bg-gray-700 text-white border border-gray-600 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-blue-500">
         <option value="">— Select Preset —</option>
         <optgroup label="⚽ Sports">
-          <option value="golf-ball">Golf Ball</option>
-          <option value="basketball">Basketball</option>
-          <option value="baseball">Baseball</option>
-          <option value="soccer-ball">Soccer Ball</option>
-          <option value="tennis-ball">Tennis Ball</option>
-          <option value="ping-pong">Ping Pong</option>
-          <option value="shuttlecock">Shuttlecock</option>
-          <option value="shot-put">Shot Put</option>
+          <option value="golf-ball">Golf Ball (~200 m)</option>
+          <option value="baseball">Baseball throw (~130 m)</option>
+          <option value="soccer-ball">Soccer Goal-kick (~60 m)</option>
+          <option value="tennis-ball">Tennis Serve (~200 km/h)</option>
+          <option value="basketball">Basketball Free-throw</option>
+          <option value="ping-pong">Ping Pong Serve</option>
+          <option value="shot-put">Shot Put (~23 m)</option>
+          <option value="shuttlecock">Badminton Smash</option>
+          <option value="arrow">Archery Arrow (~60 m)</option>
+          <option value="javelin">Javelin (~90 m)</option>
           <option value="bowling-ball">Bowling Ball</option>
-          <option value="arrow">Arrow</option>
-          <option value="javelin">Javelin</option>
         </optgroup>
         <optgroup label="🔫 Firearms">
-          <option value="22-lr">.22 LR</option>
-          <option value="9mm">9mm</option>
-          <option value="556-nato">5.56 NATO</option>
-          <option value="308-win">.308 Win</option>
-          <option value="45-acp">.45 ACP</option>
+          <option value="22-lr">.22 LR (~140 m eff.)</option>
+          <option value="9mm">9mm Parabellum (~50 m eff.)</option>
+          <option value="45-acp">.45 ACP (subsonic)</option>
+          <option value="556-nato">5.56 NATO M4 (~500 m eff.)</option>
+          <option value="308-win">.308 Win / 7.62 NATO (~800 m eff.)</option>
+          <option value="338-lapua">.338 Lapua Magnum (~1500 m eff.)</option>
+          <option value="50-bmg">.50 BMG (~2000 m eff.)</option>
         </optgroup>
-        <optgroup label="💣 Ordnance">
-          <option value="60mm-mortar">60mm Mortar</option>
-          <option value="rpg">RPG-7</option>
-          <option value="grenade">Hand Grenade</option>
-          <option value="cannonball">Cannonball</option>
-          <option value="atm">Anti-Tank Missile</option>
-          <option value="icbm">ICBM (1000 kg)</option>
+        <optgroup label="💥 Mortars (1–7 km)">
+          <option value="60mm-mortar">60mm Mortar (~3.5 km)</option>
+          <option value="81mm-mortar">81mm Mortar (~5.6 km)</option>
+          <option value="120mm-mortar">120mm Mortar (~7 km)</option>
+        </optgroup>
+        <optgroup label="🔴 Artillery (7–130 km)">
+          <option value="m110-203mm">M110 Howitzer 203mm (~17 km)</option>
+          <option value="m198-155mm">M198 Howitzer 155mm (~22 km)</option>
+          <option value="2s19-msta">2S19 Msta-S 152mm (~25 km)</option>
+          <option value="2s7-pion">2S7 Pion 203mm (~37 km)</option>
+          <option value="bm21-grad">BM-21 Grad MLRS (~40 km)</option>
+          <option value="bm30-smerch">BM-30 Smerch MLRS (~90 km)</option>
+          <option value="paris-gun">Paris Gun WWI (~130 km)</option>
+        </optgroup>
+        <optgroup label="🚀 Tactical Missiles">
+          <option value="grenade">Hand Grenade (~20 m)</option>
+          <option value="rpg">RPG-7 (~300 m eff.)</option>
+          <option value="cannonball">Cannonball 18th-c. (~1 km)</option>
+          <option value="javelin-atgm">Javelin ATGM (~2 km)</option>
+          <option value="stinger">Stinger MANPADS (~4.8 km)</option>
+          <option value="patriot">Patriot PAC-3 (~70 km)</option>
+          <option value="iskander">Iskander-M (~480 km)</option>
+          <option value="tomahawk">Tomahawk (ballistic approx.)</option>
+        </optgroup>
+        <optgroup label="☢️ Strategic / Space">
+          <option value="minuteman">Minuteman III ICBM (~13,000 km)</option>
+          <option value="sarmat">RS-28 Sarmat (~18,000 km)</option>
+          <option value="saturn-v">Saturn V (first stage)</option>
         </optgroup>
       </select>
     </div>
@@ -570,7 +641,7 @@ function serializeState(s) {
 }
 
 const URL_RANGES = {
-  angle:[0,90], speed:[1,7500], mass:[0.001,1000], diam:[0.001,2.0],
+  angle:[0,90], speed:[1,8000], mass:[0.001,200000], diam:[0.001,12.0],
   cd:[0.001,1.0], rho:[0.0,1.5], gravity:[0.1,25.0],
 };
 

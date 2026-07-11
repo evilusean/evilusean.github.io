@@ -56,9 +56,6 @@ export function eulerStep(state, params) {
  * @returns {Array<{ t:number, x:number, y:number, vx:number, vy:number, speed:number }>}
  */
 export function computeTrajectory(params) {
-  const dt = params.dt ?? 0.001;
-  const fullParams = { ...params, dt };
-
   // Guard: invalid initial speed
   if (params.speed <= 0) return [];
 
@@ -66,12 +63,23 @@ export function computeTrajectory(params) {
   const vx0 = params.speed * Math.cos(theta);
   const vy0 = params.speed * Math.sin(theta);
 
-  // Guard: no upward velocity at ground level
-  if (vy0 <= 0 && 0 <= 0) return [];
+  // Guard: no upward velocity at ground level (angle 0 exactly)
+  if (vy0 <= 0) return [];
+
+  // Auto-scale dt to the problem: for fast projectiles use a larger step.
+  // Rule: aim for ~100 000 steps over the expected vacuum flight time.
+  //   T_vac = 2 * vy0 / gravity
+  const gravity = params.gravity > 0 ? params.gravity : 9.81;
+  const T_vac = (2 * vy0) / gravity;
+  // Target ~50 000 steps, clamped between 0.0001 s and 0.1 s
+  const dt_auto = Math.min(0.1, Math.max(0.0001, T_vac / 50000));
+  const dt = params.dt ?? dt_auto;
+
+  const fullParams = { ...params, dt };
 
   let state = { t: 0, x: 0, y: 0, vx: vx0, vy: vy0, speed: params.speed };
   const trajectory = [state];
-  const MAX_STATES = 1_000_000;
+  const MAX_STATES = 200_000;  // keep memory and compute bounded
 
   while (trajectory.length < MAX_STATES) {
     const prev = trajectory[trajectory.length - 1];
@@ -81,11 +89,11 @@ export function computeTrajectory(params) {
       // Linear interpolation to land exactly at y = 0
       const f = prev.y / (prev.y - next.y);
       const terminal = {
-        t: prev.t + f * (next.t - prev.t),
-        x: prev.x + f * (next.x - prev.x),
-        y: 0,
-        vx: prev.vx + f * (next.vx - prev.vx),
-        vy: prev.vy + f * (next.vy - prev.vy),
+        t:     prev.t  + f * (next.t  - prev.t),
+        x:     prev.x  + f * (next.x  - prev.x),
+        y:     0,
+        vx:    prev.vx + f * (next.vx - prev.vx),
+        vy:    prev.vy + f * (next.vy - prev.vy),
         speed: 0,
       };
       terminal.speed = Math.sqrt(terminal.vx ** 2 + terminal.vy ** 2);

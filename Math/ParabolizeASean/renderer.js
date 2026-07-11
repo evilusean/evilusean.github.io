@@ -44,8 +44,9 @@ export function computeScaleInfo(trajectory, canvasW, canvasH) {
  * @param {string|null} category                 'sports'|'firearms'|'ordnance'|null
  * @param {boolean} showLanding                  Whether to render landing overlay
  * @param {number} range                         Total range in metres (for overlay)
+ * @param {number} [timeScale]                   Sim-seconds per wall-second (for label)
  */
-export function drawFrame(ctx, point, trail, scaleInfo, category, showLanding, range) {
+export function drawFrame(ctx, point, trail, scaleInfo, category, showLanding, range, timeScale) {
   const { scaleX, scaleY, offsetX, offsetY, maxX } = scaleInfo;
   const W = ctx.canvas.width;
   const H = ctx.canvas.height;
@@ -131,6 +132,23 @@ export function drawFrame(ctx, point, trail, scaleInfo, category, showLanding, r
     ctx.fill();
   }
   ctx.restore();
+
+  // Time-scale badge (top-left)
+  if (timeScale !== undefined) {
+    const label = timeScale >= 0.99
+      ? `${timeScale.toFixed(0)}× speed`
+      : `${timeScale.toFixed(2)}× speed`;
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    const fs = Math.max(10, W * 0.022);
+    ctx.font = `${fs}px sans-serif`;
+    const tw = ctx.measureText(label).width;
+    ctx.fillRect(6, 6, tw + 10, fs + 8);
+    ctx.fillStyle = '#a5f3fc'; // cyan-200
+    ctx.textAlign = 'left';
+    ctx.fillText(label, 11, fs + 8);
+    ctx.restore();
+  }
 
   // Landing overlay
   if (showLanding) {
