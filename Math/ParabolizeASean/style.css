@@ -1,0 +1,25 @@
+/* style.css */
+body {
+    font-family: sans-serif;
+    min-height: 100vh;
+}
+
+#simCanvas {
+    border: 1px solid #4a5568;
+    background-image: radial-gradient(#2d3748 1px, transparent 1px);
+    background-size: 20px 20px; /* Adds a grid effect */
+}
+
+.input-field {
+    @apply w-full mb-4 p-2 rounded bg-gray-700 border border-gray-600 focus:outline-none focus:border-blue-500;
+}
+
+.card {
+    @apply bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-700;
+}
+
+#equation {
+    font-family: "Courier New", Courier, monospace;
+    color: #63b3ed;
+    border-left: 4px solid #3182ce;
+}
