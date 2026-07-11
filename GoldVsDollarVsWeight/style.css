@@ -93,6 +93,15 @@ h1 {
   line-height: 1.6;
 }
 
+.lead-contrast {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--accent);
+  border-radius: 10px;
+  background: rgba(245, 158, 11, 0.08);
+  color: var(--text);
+}
+
 .badge {
   border: 1px solid rgba(247, 201, 72, 0.3);
   background: rgba(247, 201, 72, 0.12);
@@ -104,9 +113,9 @@ h1 {
 }
 
 .controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
+  display: grid;
+  grid-template-columns: minmax(140px, 170px) minmax(140px, 170px) minmax(220px, 260px) minmax(220px, 260px) minmax(150px, 200px);
+  align-items: end;
   gap: 16px;
   padding: 18px 22px;
   margin-bottom: 18px;
@@ -141,13 +150,28 @@ select {
 }
 
 input {
-  width: 110px;
+  width: 100%;
+}
+
+.gold-input .input-row input {
+  width: 100%;
 }
 
 .input-row {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.gold-input .input-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.input-row + .input-row {
+  margin-top: 8px;
 }
 
 .unit {
@@ -159,9 +183,17 @@ input {
   font-size: 0.8rem;
 }
 
+.denomination-card {
+  padding: 10px 12px;
+  border: 1px solid rgba(245, 217, 138, 0.16);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
 .segmented {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .toggle,
@@ -183,7 +215,9 @@ input {
 }
 
 .primary {
-  margin-left: auto;
+  justify-self: center;
+  align-self: end;
+  padding: 12px 24px;
 }
 
 .stats {

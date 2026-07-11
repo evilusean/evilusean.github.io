@@ -3,6 +3,7 @@ const state = {
   selectedSnapshot: null,
   denomination: 20,
   goldOunces: 1,
+  goldGrams: 31.1034768,
   isAnimating: false,
   animationTimer: null,
   animationIndex: 0,
@@ -16,6 +17,7 @@ function init() {
   elements.yearSelect = document.getElementById('yearSelect');
   elements.monthSelect = document.getElementById('monthSelect');
   elements.goldAmount = document.getElementById('goldAmount');
+  elements.goldAmountGrams = document.getElementById('goldAmountGrams');
   elements.manualGoldPrice = document.getElementById('manualGoldPrice');
   elements.manualSilverPrice = document.getElementById('manualSilverPrice');
   elements.manualCalcAmount = document.getElementById('manualCalcAmount');
@@ -36,6 +38,7 @@ function init() {
   elements.yearSelect.addEventListener('change', handleDateChange);
   elements.monthSelect.addEventListener('change', handleDateChange);
   elements.goldAmount.addEventListener('input', handleGoldAmountChange);
+  elements.goldAmountGrams.addEventListener('input', handleGoldAmountChange);
   elements.manualGoldPrice.addEventListener('input', handleCalculatorInputChange);
   elements.manualSilverPrice.addEventListener('input', handleCalculatorInputChange);
   elements.manualCalcAmount.addEventListener('input', handleCalculatorInputChange);
@@ -196,11 +199,32 @@ function updateCalculatorResults() {
   `;
 }
 
-function handleGoldAmountChange() {
-  const parsed = Number(elements.goldAmount.value);
-  state.goldOunces = Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
-  elements.goldAmount.value = state.goldOunces.toString();
+function handleGoldAmountChange(event) {
+  const source = event?.target;
+  const ouncesValue = Number(elements.goldAmount.value);
+  const gramsValue = Number(elements.goldAmountGrams.value);
+
+  if (source === elements.goldAmountGrams) {
+    if (Number.isFinite(gramsValue) && gramsValue > 0) {
+      state.goldGrams = gramsValue;
+      state.goldOunces = gramsValue / 31.1034768;
+    }
+  } else if (Number.isFinite(ouncesValue) && ouncesValue > 0) {
+    state.goldOunces = ouncesValue;
+    state.goldGrams = ouncesValue * 31.1034768;
+  }
+
+  elements.goldAmount.value = formatAmount(state.goldOunces, 6);
+  elements.goldAmountGrams.value = formatAmount(state.goldGrams, 3);
   renderDashboard();
+}
+
+function formatAmount(value, digits) {
+  if (!Number.isFinite(value)) {
+    return '';
+  }
+
+  return Number(value.toFixed(digits)).toString();
 }
 
 function toggleAnimation() {

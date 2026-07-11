@@ -14,7 +14,10 @@
           <p class="eyebrow">Truth Dashboard</p>
           <h1>Gold, silver, and the weight of fiat</h1>
           <p class="lead">
-            Enter an amount of gold and compare it to the paper stack needed to match its value. Historically, we used paper because it was less cumbersome to move around than physical gold. <a class="contract-link" href="https://en.wikipedia.org/wiki/Cantillon_effect" target="_blank" rel="noreferrer">&quot;They&quot;</a> also were able to lend out more money than they had in gold reserves, a practice known as <a class="contract-link" href="https://en.wikipedia.org/wiki/Fractional-reserve_banking" target="_blank" rel="noreferrer">fractional reserve lending</a> (the current reserve requirement ratio is 0). Today, the weight and size of the bills needed to carry the same value often exceeds the weight and size of the gold itself. And when you look at the logic behind money, it is easy to see why they got rid of the penny: it cost more to make than it was worth in value. <a class="contract-link" href="https://www.youtube.com/watch?v=iFDe5kUUyT0" target="_blank" rel="noreferrer" title="Principal is always less than principal plus interest, so there is never enough money in the system to pay back all debts.">P &lt; P + I</a>
+            Enter an amount of gold and compare it to the paper stack needed to match its value. Historically, we used paper because it was less cumbersome to move around than physical gold. <a class="contract-link" href="https://en.wikipedia.org/wiki/Cantillon_effect" target="_blank" rel="noreferrer">"'They'"</a> also were able to lend out more money than they had in gold reserves, a practice known as <a class="contract-link" href="https://en.wikipedia.org/wiki/Fractional-reserve_banking" target="_blank" rel="noreferrer">fractional reserve lending</a> (the current reserve requirement ratio is 0). Today, the weight and size of the bills needed to carry the same value often exceeds the weight and size of the gold itself. And when you look at the logic behind money, it is easy to see why they got rid of the penny: it cost more to make than it was worth in value. <a class="contract-link" href="https://www.youtube.com/watch?v=iFDe5kUUyT0" target="_blank" rel="noreferrer" title="Principal is always less than principal plus interest, so there is never enough money in the system to pay back all debts.">P &lt; P + I</a>
+          </p>
+          <p class="lead lead-contrast">
+            In 1962, a minimum-wage worker could earn about $1 an hour, and a quarter from that era was 90% silver. If you were working minimum wage in 1962, you would get five of those quarters every hour. Five 1962 quarters would equal roughly one ounce of silver. So the simple rule was: <strong>one hour of menial labor</strong> was worth roughly <strong>one ounce of silver</strong>. In today’s money, that would be the equivalent of paying someone <strong>$60 an hour</strong>. '"They"' really want me to bust my ass for 14$ an hour/40$k a year when '"they"' are printing trillions for my enslavement and unfunded liabilities, with quadrillions in derivatives. That’s the kind of logic behind <a class="contract-link" href="https://en.wikipedia.org/wiki/Gresham%27s_law" target="_blank" rel="noreferrer">Gresham’s law</a> and the <a class="contract-link" href="https://en.wikipedia.org/wiki/Nixon_shock" target="_blank" rel="noreferrer">August 15, 1971 Nixon Gold Shock</a>: when bad money drives out good money, the people at the bottom get squeezed while the paper system keeps expanding. Ground between the millstones of taxation and inflation(stealth tax). Wait until you realize that '"they"' are creating the money from nothing, backed by nothing, and making you pay taxes and interest on it.
           </p>
         </div>
         <div class="hero-extra">
@@ -45,16 +48,19 @@
           <select id="monthSelect"></select>
         </label>
 
-        <label class="control">
+        <label class="control gold-input">
           <span>Gold amount</span>
           <div class="input-row">
-            <input id="goldAmount" type="number" min="0.01" step="0.01" value="1" />
+            <input id="goldAmount" type="number" min="0.000001" step="0.000001" value="1" />
             <span class="unit">oz</span>
           </div>
-          <small class="hint">One troy ounce of gold weighs about 31.1 grams — roughly 28 grams in everyday shorthand.</small>
+          <div class="input-row">
+            <input id="goldAmountGrams" type="number" min="0.001" step="0.001" value="31.103" />
+            <span class="unit">g</span>
+          </div>
         </label>
 
-        <div class="control-group">
+        <div class="control-group denomination-card">
           <span class="control-label">Bill denomination</span>
           <div class="segmented" role="group" aria-label="Bill denomination">
             <button type="button" class="toggle active" data-denomination="20">$20 bills</button>
