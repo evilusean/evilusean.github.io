@@ -265,7 +265,17 @@ function buildControlPanel() {
   if (!panel) return;
 
   panel.innerHTML = `
-    <h2 class="text-blue-400 text-lg font-semibold mb-4">Controls</h2>
+    <!-- Mobile: close button -->
+    <div class="flex items-center justify-between mb-4 lg:hidden">
+      <h2 class="text-blue-400 text-lg font-semibold">Controls</h2>
+      <button id="btn-close-panel" aria-label="Close controls"
+        class="p-1.5 rounded bg-gray-700 hover:bg-gray-600 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+             d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <h2 class="hidden lg:block text-blue-400 text-lg font-semibold mb-4">Controls</h2>
 
     <div class="mb-4">
       <label class="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Preset</label>
@@ -351,6 +361,18 @@ function buildControlPanel() {
   document.getElementById('preset-select').addEventListener('change', handlePresetSelect);
   document.querySelectorAll('.mode-btn').forEach(btn => btn.addEventListener('click', () => handleModeToggle(btn.dataset.mode)));
   document.getElementById('btn-compare').addEventListener('click', handleCompare);
+
+  // Mobile drawer close button
+  const closeBtn = document.getElementById('btn-close-panel');
+  if (closeBtn) closeBtn.addEventListener('click', _closeMobilePanel);
+}
+
+function _closeMobilePanel() {
+  const p = document.getElementById('control-panel');
+  const b = document.getElementById('menu-backdrop');
+  if (p) p.classList.remove('open');
+  if (b) b.classList.add('hidden');
+  document.body.style.overflow = '';
 }
 
 function _buildSliders() {
@@ -462,6 +484,10 @@ function handlePresetSelect(event) {
   }
 
   highlightVars(['mass', 'diameter', 'cd', 'angle', 'speed']);
+
+  // Close drawer on mobile so user sees the simulation immediately
+  if (window.innerWidth < 1024) _closeMobilePanel();
+
   scheduleUpdate();
 }
 

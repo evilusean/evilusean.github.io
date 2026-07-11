@@ -12,136 +12,176 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- KaTeX CSS -->
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
-    crossorigin="anonymous"
-  />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous" />
 
   <!-- Companion stylesheet -->
   <link rel="stylesheet" href="style.css" />
-
-  <style>
-    /* 16:9 aspect ratio for simulation canvas, min 320px wide */
-    #sim-canvas {
-      aspect-ratio: 16 / 9;
-      min-width: 320px;
-      width: 100%;
-      display: block;
-    }
-  </style>
 </head>
 <body class="bg-gray-900 text-white min-h-screen">
 
-  <!-- CDN failure banner (hidden by default, shown if any CDN fails) -->
-  <div
-    id="cdn-error-banner"
+  <!-- CDN failure banner -->
+  <div id="cdn-error-banner"
     class="hidden bg-red-700 text-white text-sm font-semibold px-4 py-3 text-center"
-    role="alert"
-    aria-live="assertive"
-  ></div>
+    role="alert" aria-live="assertive"></div>
 
-  <!-- Page heading -->
-  <header class="px-4 pt-4">
-    <h1 class="text-blue-400 text-2xl font-bold">ParabolizeASean - Projectile Physics Sandbox</h1>
+  <!-- ── Top bar ─────────────────────────────────────────────────────────── -->
+  <header class="sticky top-0 z-30 bg-gray-900 border-b border-gray-700 px-4 py-2
+                 flex items-center justify-between gap-2">
+
+    <div class="flex items-center gap-3 min-w-0">
+      <!-- Mobile: hamburger toggle for control panel -->
+      <button id="btn-menu" aria-label="Toggle controls"
+        class="lg:hidden flex-shrink-0 p-1.5 rounded bg-gray-700 hover:bg-gray-600 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+             d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <h1 class="text-blue-400 font-bold text-base sm:text-lg lg:text-xl truncate">
+        🪁 Projectile Physics Sandbox
+      </h1>
+    </div>
+
+    <!-- Share / copy-link button -->
+    <button id="btn-copy-link"
+      class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded
+             bg-blue-700 hover:bg-blue-600 active:bg-blue-800
+             text-white text-xs font-semibold transition-colors select-none"
+      title="Copy shareable link with current settings">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+           viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+           d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101
+              m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+      <span id="copy-link-label">Copy Link</span>
+    </button>
   </header>
 
-  <!-- Main three-column grid (collapses to single column below 1024px) -->
-  <main class="grid grid-cols-1 lg:grid-cols-3 gap-4 p-4">
+  <!-- ── Main layout ─────────────────────────────────────────────────────── -->
+  <div class="flex flex-col lg:flex-row gap-0 lg:gap-4 lg:p-4 lg:items-start">
 
-    <!-- Left column: Control Panel -->
-    <section
-      id="control-panel"
-      class="bg-gray-800 rounded-lg p-4 overflow-y-auto max-h-screen"
-      aria-label="Control Panel"
-    >
-      <h2 class="text-blue-400 text-lg font-semibold mb-4">Controls</h2>
-      <!-- Slider controls injected by ui.js -->
-    </section>
+    <!-- Left: Control Panel — drawer on mobile, sidebar on desktop -->
+    <aside id="control-panel"
+      class="control-panel-mobile lg:control-panel-desktop
+             bg-gray-800 lg:rounded-lg lg:sticky lg:top-20
+             w-full lg:w-72 xl:w-80 flex-shrink-0
+             overflow-y-auto"
+      aria-label="Control Panel">
+      <!-- injected by ui.js -->
+    </aside>
 
-    <!-- Center column: Visualization Panel -->
-    <section
-      id="viz-panel"
-      class="bg-gray-800 rounded-lg p-4 flex flex-col gap-4"
-      aria-label="Visualization Panel"
-    >
-      <h2 class="text-blue-400 text-lg font-semibold">Simulation</h2>
-
-      <!-- Canvas animation (16:9, min 320px wide) -->
-      <canvas
-        id="sim-canvas"
-        class="rounded bg-gray-950 w-full"
-        aria-label="Projectile motion animation canvas"
-      ></canvas>
-
-      <!-- Chart.js trajectory plot container -->
+    <!-- Center: Visualization -->
+    <section id="viz-panel"
+      class="flex-1 min-w-0 bg-gray-800 lg:rounded-lg p-3 sm:p-4 flex flex-col gap-3"
+      aria-label="Visualization Panel">
+      <h2 class="text-blue-400 text-base font-semibold">Simulation</h2>
+      <canvas id="sim-canvas" class="rounded bg-gray-950 w-full"
+        aria-label="Projectile motion animation canvas"></canvas>
       <div id="trajectory-chart-container" class="bg-gray-950 rounded p-2">
         <canvas id="trajectory-chart" aria-label="Trajectory chart"></canvas>
       </div>
     </section>
 
-    <!-- Right column: Equation Dashboard -->
-    <section
-      id="equation-panel"
-      class="bg-gray-800 rounded-lg p-4 overflow-y-auto max-h-screen"
-      aria-label="Equation Dashboard"
-    >
-      <h2 class="text-blue-400 text-lg font-semibold mb-4">Equations</h2>
-      <!-- KaTeX-rendered equations injected by ui.js -->
+    <!-- Right: Equations + Stats + Help -->
+    <section id="equation-panel"
+      class="w-full lg:w-72 xl:w-80 flex-shrink-0 bg-gray-800 lg:rounded-lg
+             p-3 sm:p-4 overflow-y-auto lg:sticky lg:top-20"
+      aria-label="Equation Dashboard">
+      <!-- injected by ui.js -->
     </section>
 
-  </main>
+  </div>
+
+  <!-- Mobile overlay backdrop -->
+  <div id="menu-backdrop"
+    class="hidden fixed inset-0 z-20 bg-black/50 lg:hidden"
+    aria-hidden="true"></div>
 
   <!-- Chart.js CDN -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
-    crossorigin="anonymous"
-  ></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+  <!-- Chart.js Annotation Plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js" crossorigin="anonymous"></script>
+  <!-- KaTeX JS -->
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+  <!-- fast-check -->
+  <script src="https://cdn.jsdelivr.net/npm/fast-check@3.15.0/lib/bundle/fast-check.js" crossorigin="anonymous"></script>
 
-  <!-- Chart.js Annotation Plugin (for peak/landing labels) -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"
-    crossorigin="anonymous"
-  ></script>
-
-  <!-- KaTeX JS (deferred so it doesn't block render) -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
-    crossorigin="anonymous"
-  ></script>
-
-  <!-- fast-check CDN (for property-based tests) -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/fast-check@3.15.0/lib/bundle/fast-check.js"
-    crossorigin="anonymous"
-  ></script>
-
-  <!-- CDN failure detection — runs synchronously after CDN scripts load -->
+  <!-- CDN failure detection + plugin registration -->
   <script>
     (function () {
       var missing = [];
-      if (typeof Chart === 'undefined')   missing.push('Chart.js');
-      if (typeof katex === 'undefined')   missing.push('KaTeX');
-      // TailwindCSS Play CDN attaches a `tailwind` object to window
+      if (typeof Chart === 'undefined')    missing.push('Chart.js');
+      if (typeof katex === 'undefined')    missing.push('KaTeX');
       if (typeof tailwind === 'undefined') missing.push('TailwindCSS');
       if (missing.length > 0) {
-        var banner = document.getElementById('cdn-error-banner');
-        if (banner) {
-          banner.textContent =
-            '\u26A0 Failed to load: ' +
-            missing.join(', ') +
-            '. Please check your internet connection.';
-          banner.classList.remove('hidden');
-        }
+        var b = document.getElementById('cdn-error-banner');
+        if (b) { b.textContent = '\u26A0 Failed to load: ' + missing.join(', ') + '. Check your connection.'; b.classList.remove('hidden'); }
       }
-      // Register Chart.js annotation plugin if loaded
-      if (typeof Chart !== 'undefined' && typeof ChartAnnotation !== 'undefined') {
+      if (typeof Chart !== 'undefined' && typeof ChartAnnotation !== 'undefined')
         Chart.register(ChartAnnotation);
-      }
     })();
   </script>
 
-  <!-- Application entry point (single ES module entry) -->
+  <!-- Mobile drawer + copy-link logic -->
+  <script>
+    (function () {
+      function openMenu() {
+        var p = document.getElementById('control-panel');
+        var b = document.getElementById('menu-backdrop');
+        if (p) p.classList.add('open');
+        if (b) b.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeMenu() {
+        var p = document.getElementById('control-panel');
+        var b = document.getElementById('menu-backdrop');
+        if (p) p.classList.remove('open');
+        if (b) b.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+      document.addEventListener('DOMContentLoaded', function () {
+        var btn = document.getElementById('btn-menu');
+        var backdrop = document.getElementById('menu-backdrop');
+        if (btn) btn.addEventListener('click', function () {
+          var p = document.getElementById('control-panel');
+          if (p && p.classList.contains('open')) closeMenu(); else openMenu();
+        });
+        if (backdrop) backdrop.addEventListener('click', closeMenu);
+
+        // Copy link button
+        var copyBtn = document.getElementById('btn-copy-link');
+        var copyLabel = document.getElementById('copy-link-label');
+        if (copyBtn) {
+          copyBtn.addEventListener('click', function () {
+            var url = window.location.href;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(url).then(function () {
+                showCopied();
+              }).catch(function () { fallbackCopy(url); });
+            } else { fallbackCopy(url); }
+          });
+        }
+        function fallbackCopy(text) {
+          var ta = document.createElement('textarea');
+          ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+          document.body.appendChild(ta); ta.focus(); ta.select();
+          try { document.execCommand('copy'); showCopied(); } catch(e) {}
+          document.body.removeChild(ta);
+        }
+        function showCopied() {
+          if (!copyLabel) return;
+          copyLabel.textContent = '✓ Copied!';
+          copyBtn.classList.replace('bg-blue-700', 'bg-green-700');
+          copyBtn.classList.replace('hover:bg-blue-600', 'hover:bg-green-600');
+          setTimeout(function () {
+            copyLabel.textContent = 'Copy Link';
+            copyBtn.classList.replace('bg-green-700', 'bg-blue-700');
+            copyBtn.classList.replace('hover:bg-green-600', 'hover:bg-blue-600');
+          }, 2000);
+        }
+      });
+    })();
+  </script>
+
+  <!-- Application entry point -->
   <script type="module" src="ui.js"></script>
 
 </body>
