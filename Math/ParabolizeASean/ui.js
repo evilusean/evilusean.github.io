@@ -606,9 +606,233 @@ function renderEquations(s, stats) {
     ${dragBlock}
 
     <hr class="border-gray-700 my-3" />
-    <div id="stats-panel"></div>`;
+    <div id="stats-panel"></div>
+    <div id="help-panel"></div>`;
 
   renderStats(stats);
+  renderHelp();
+}
+
+// ---------------------------------------------------------------------------
+// Help panel — How to Use + Equations & Glossary
+// ---------------------------------------------------------------------------
+function renderHelp() {
+  const panel = document.getElementById('help-panel');
+  if (!panel) return;
+
+  panel.innerHTML = `
+<hr class="border-gray-700 my-3" />
+
+<!-- ── How to Use ──────────────────────────────────────────────────────── -->
+<details class="mb-3 group">
+  <summary class="cursor-pointer select-none flex items-center justify-between
+                  text-sm font-semibold text-blue-400 hover:text-blue-300 py-1">
+    <span>📖 How to Use</span>
+    <span class="text-gray-500 group-open:rotate-90 transition-transform">▶</span>
+  </summary>
+  <div class="mt-2 space-y-3 text-xs text-gray-300 leading-relaxed pl-1">
+
+    <div>
+      <p class="text-white font-semibold mb-1">1 · Pick a preset or set parameters manually</p>
+      <p>Use the <span class="text-blue-300">preset dropdown</span> to instantly load a real-world
+      projectile — angle, speed, mass, diameter and drag coefficient all update automatically.
+      Alternatively, drag any <span class="text-blue-300">slider</span> or type directly into the
+      number box beside it.</p>
+    </div>
+
+    <div>
+      <p class="text-white font-semibold mb-1">2 · Watch the simulation update live</p>
+      <p>Every parameter change immediately recomputes the full trajectory. The
+      <span class="text-blue-300">canvas</span> (center top) animates the projectile moving along
+      that path. The <span class="text-blue-300">Chart.js plot</span> (center bottom) shows the
+      complete parabola at once so you can read off exact values.</p>
+    </div>
+
+    <div>
+      <p class="text-white font-semibold mb-1">3 · Compare Vacuum vs Realistic</p>
+      <p>Toggle <span class="text-orange-400">Realistic</span> (air resistance on) or
+      <span class="text-blue-400">Vacuum</span> (no air). Hit
+      <span class="text-purple-400">Compare</span> to overlay both trajectories on the chart —
+      great for seeing how much drag shortens the range of a golf ball vs a bullet.</p>
+    </div>
+
+    <div>
+      <p class="text-white font-semibold mb-1">4 · Read the flight stats</p>
+      <p>After each computation the stats panel updates with peak height, range, flight time,
+      time to peak, impact speed, and the horizontal/vertical velocity components at landing.</p>
+    </div>
+
+    <div>
+      <p class="text-white font-semibold mb-1">5 · Share a configuration</p>
+      <p>The URL bar updates automatically with all current parameters. Copy and paste the URL
+      to share an exact scenario with someone else — it will restore everything on load.</p>
+    </div>
+
+    <div class="bg-gray-700 rounded p-2 text-gray-400">
+      <p class="text-white font-semibold mb-1">💡 Tips</p>
+      <ul class="list-disc list-inside space-y-1">
+        <li>Set <span class="text-blue-300">gravity</span> to 1.62 for the Moon or 3.72 for Mars.</li>
+        <li>Set <span class="text-blue-300">air density ρ</span> to 0 manually to enter Vacuum mode
+            without the toggle (same as Vacuum mode).</li>
+        <li>Artillery shells use high angles (~45–75°) to maximise range; direct-fire weapons
+            use very low angles (&lt;5°) for accuracy.</li>
+        <li>The animation speed label (top-left of canvas) shows the playback ratio —
+            a bullet might play at 40× speed so you can actually see it.</li>
+      </ul>
+    </div>
+
+  </div>
+</details>
+
+<!-- ── Equations & Glossary ────────────────────────────────────────────── -->
+<details class="mb-3 group">
+  <summary class="cursor-pointer select-none flex items-center justify-between
+                  text-sm font-semibold text-blue-400 hover:text-blue-300 py-1">
+    <span>📐 Equations &amp; Glossary</span>
+    <span class="text-gray-500 group-open:rotate-90 transition-transform">▶</span>
+  </summary>
+  <div class="mt-2 space-y-4 text-xs text-gray-300 leading-relaxed pl-1">
+
+    <!-- Core kinematics -->
+    <div>
+      <p class="text-white font-semibold text-sm mb-2">Core Kinematics (Vacuum)</p>
+      <p class="mb-1">These equations describe motion without air resistance and are exact
+      analytical solutions.</p>
+
+      <div class="bg-gray-900 rounded p-2 mb-2">
+        <p class="text-yellow-300 font-mono mb-0.5">x(t) = v₀ · cos(θ) · t</p>
+        <p>Horizontal position at time <em>t</em>. It increases linearly because there is no
+        horizontal force in vacuum — the ball covers equal horizontal distance every second.</p>
+      </div>
+
+      <div class="bg-gray-900 rounded p-2 mb-2">
+        <p class="text-yellow-300 font-mono mb-0.5">y(t) = v₀ · sin(θ) · t − ½ · g · t²</p>
+        <p>Vertical position at time <em>t</em>. The first term is upward motion from the launch,
+        the second term is gravity pulling it back down — creating the parabolic shape.</p>
+      </div>
+
+      <div class="bg-gray-900 rounded p-2 mb-2">
+        <p class="text-yellow-300 font-mono mb-0.5">v(t) = √(vₓ² + vᵧ²)</p>
+        <p>Total speed at any moment — the length of the velocity vector combining horizontal and
+        vertical components (Pythagorean theorem).</p>
+      </div>
+
+      <div class="bg-gray-900 rounded p-2 mb-2">
+        <p class="text-yellow-300 font-mono mb-0.5">R = v₀² · sin(2θ) / g</p>
+        <p>Analytical vacuum range formula. Maximum range occurs at θ = 45° because sin(90°) = 1.
+        Doubling launch speed quadruples range — that's why ICBMs need km/s, not m/s.</p>
+      </div>
+    </div>
+
+    <!-- Drag force -->
+    <div>
+      <p class="text-white font-semibold text-sm mb-2">Drag Force (Realistic Mode)</p>
+
+      <div class="bg-gray-900 rounded p-2 mb-2">
+        <p class="text-yellow-300 font-mono mb-0.5">F_d = ½ · ρ · v² · C_d · A</p>
+        <p>Aerodynamic drag — the force the air pushes back against the moving object.
+        It grows with the <em>square</em> of speed, which is why a bullet loses range far more
+        dramatically than a golf ball when you add air.</p>
+      </div>
+
+      <div class="bg-gray-900 rounded p-2 mb-2">
+        <p class="text-yellow-300 font-mono mb-0.5">A = π · (d/2)²</p>
+        <p>Cross-sectional area — the "face" the projectile presents to the air. A wider object
+        (large diameter) creates more drag even at the same speed.</p>
+      </div>
+
+      <div class="bg-gray-900 rounded p-2 mb-2">
+        <p class="text-yellow-300 font-mono mb-0.5">a_drag = −(F_d / m) · (v̂)</p>
+        <p>Drag deceleration — F=ma rearranged. The direction is opposite to velocity (v̂ is the
+        unit vector). A heavier object (large m) decelerates less for the same drag force, which
+        is why a cannonball carries farther than a ping-pong ball at the same speed.</p>
+      </div>
+    </div>
+
+    <!-- Euler integration -->
+    <div>
+      <p class="text-white font-semibold text-sm mb-2">Euler Integration (How the sim works)</p>
+      <div class="bg-gray-900 rounded p-2">
+        <p class="text-yellow-300 font-mono mb-0.5">v_new = v + a · Δt</p>
+        <p class="text-yellow-300 font-mono mb-1">x_new = x + v · Δt</p>
+        <p>At each tiny time step Δt the simulation updates velocity using current acceleration,
+        then updates position using current velocity. Repeating thousands of times traces the
+        full path — including drag effects that have no closed-form equation.</p>
+      </div>
+    </div>
+
+    <!-- Glossary -->
+    <div>
+      <p class="text-white font-semibold text-sm mb-2">Glossary — every term explained</p>
+      <div class="space-y-2">
+
+        ${glossaryRow('Launch Angle (θ)', '0–90°',
+          'The angle above horizontal at which the object is launched. 45° gives maximum range in vacuum. Artillery uses 45–75° for long range; rifles use &lt;5° for flat, accurate shots.')}
+
+        ${glossaryRow('Initial Speed (v₀)', 'm/s',
+          'How fast the projectile leaves the launch point. Doubling speed quadruples range (because R ∝ v²). A golf ball leaves at ~70 m/s; a rifle bullet at ~900 m/s.')}
+
+        ${glossaryRow('Mass (m)', 'kg',
+          'How heavy the object is. Heavier objects decelerate less from drag (F=ma — same drag force, bigger mass = smaller acceleration). Compare: ping-pong ball 2.7 g vs cannonball 5.4 kg.')}
+
+        ${glossaryRow('Diameter (d)', 'm',
+          'The width of the projectile. Used to calculate cross-sectional area A = π(d/2)². A wider object presents more face to the air and experiences more drag.')}
+
+        ${glossaryRow('Drag Coefficient (C_d)', 'dimensionless',
+          'A shape factor describing how aerodynamically streamlined an object is. A smooth sphere: ~0.47. A streamlined bullet: ~0.17–0.30. A flat plate face-on: ~1.0. Lower = less drag.')}
+
+        ${glossaryRow('Air Density (ρ)', 'kg/m³',
+          'How thick the air is. Sea-level standard atmosphere = 1.225 kg/m³. Set to 0 for vacuum. High altitude or hot weather = lower density = less drag = longer range.')}
+
+        ${glossaryRow('Gravity (g)', 'm/s²',
+          'Downward acceleration due to gravity. Earth = 9.81, Moon = 1.62, Mars = 3.72, Jupiter = 24.8. Lower gravity means longer flight time and much greater range.')}
+
+        ${glossaryRow('Peak Height', 'm',
+          'The maximum altitude reached during flight — the top of the parabola. Occurs at t = v₀·sin(θ)/g (vacuum) and is always at the midpoint of horizontal distance in vacuum.')}
+
+        ${glossaryRow('Range', 'm',
+          'Total horizontal distance from launch point to landing (where y returns to 0). The key output of the simulation — this is what changes most dramatically with drag.')}
+
+        ${glossaryRow('Flight Time', 's',
+          'Total time from launch to landing. In vacuum: T = 2·v₀·sin(θ)/g. Longer angle = more vertical speed = more time in the air.')}
+
+        ${glossaryRow('Time to Peak', 's',
+          'How long until the highest point is reached — exactly half the flight time in vacuum. In realistic mode it is slightly less than half because drag slows the ascent more than the descent.')}
+
+        ${glossaryRow('Impact Speed', 'm/s',
+          'Total speed at the moment of landing (√(Vx²+Vy²)). In vacuum this equals launch speed (energy conservation). With drag it is always less — the air has stolen kinetic energy.')}
+
+        ${glossaryRow('Impact Vx', 'm/s',
+          'Horizontal velocity component at landing. In vacuum this never changes from v₀·cos(θ). With drag it decreases continuously — a bullet can lose 30–50% of horizontal speed over long range.')}
+
+        ${glossaryRow('Impact Vy', 'm/s',
+          'Vertical velocity component at landing (negative = downward). In vacuum |Vy| at landing equals the initial |Vy|. With drag it is smaller because the object falls from lower peak height.')}
+
+        ${glossaryRow('Vacuum Mode', '—',
+          'Sets air density to exactly 0. No drag force is computed. The trajectory is a perfect mathematical parabola described by the kinematic equations above. Used as a comparison baseline.')}
+
+        ${glossaryRow('Realistic Mode', '—',
+          'Sets air density to 1.225 kg/m³ (sea-level standard). Drag force is computed at every step, shortening range and altering the parabola shape. This is how the object would actually fly.')}
+
+        ${glossaryRow('Euler Integration', '—',
+          'The numerical method used to simulate the trajectory. The simulation steps forward in tiny time increments (Δt), updating velocity and position at each step using the current forces. Not perfectly accurate but very fast and accurate enough for this application.')}
+
+      </div>
+    </div>
+
+  </div>
+</details>`;
+}
+
+function glossaryRow(term, unit, desc) {
+  return `
+    <div class="bg-gray-800 rounded p-2">
+      <div class="flex items-baseline gap-2 mb-0.5">
+        <span class="text-blue-300 font-semibold">${term}</span>
+        <span class="text-gray-500 text-xs">${unit}</span>
+      </div>
+      <p class="text-gray-400">${desc}</p>
+    </div>`;
 }
 
 // ---------------------------------------------------------------------------

@@ -64,3 +64,18 @@ input[type="number"] { -moz-appearance: textfield; }
   overflow-x: auto;
   overflow-y: hidden;
 }
+
+/* ── Collapsible help sections ────────────────────────────────────────── */
+details > summary { list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+
+details[open] summary .transition-transform { transform: rotate(90deg); }
+
+details > div {
+  animation: fadeIn 150ms ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
