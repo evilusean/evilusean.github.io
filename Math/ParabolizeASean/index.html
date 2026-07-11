@@ -1,0 +1,24 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ballistics Sim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white p-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="bg-gray-800 p-4 rounded">
+            <h2 class="text-xl mb-4">Inputs</h2>
+            <input type="number" id="force" placeholder="Force (N)" class="w-full mb-2 p-2 text-black">
+            <input type="number" id="angle" placeholder="Angle (deg)" class="w-full mb-2 p-2 text-black">
+            <button id="calc" class="bg-blue-600 w-full p-2">Launch</button>
+        </div>
+        <div class="md:col-span-2">
+            <canvas id="simCanvas" class="bg-black w-full h-96 border"></canvas>
+            <div id="equation" class="mt-4 p-4 bg-gray-700 italic">Equation will render here</div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
