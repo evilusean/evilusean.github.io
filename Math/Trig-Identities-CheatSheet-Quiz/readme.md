@@ -128,3 +128,7 @@ Colors are consistent with the Unit Circle app for a unified learning experience
 ## 📄 License
 
 Open source - feel free to use and modify for educational purposes.
+
+## ToDo : Future Sean Problems :
+- Fix text size (super small, takes up 1/3 of the screen, way more real estate)
+- Double angle cosine looks weird (colours are messed up)
