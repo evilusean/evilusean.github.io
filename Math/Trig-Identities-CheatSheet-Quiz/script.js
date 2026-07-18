@@ -107,6 +107,12 @@ let quizList = [];
 let quizInterval = null;
 let isPaused = false;
 let isFullscreen = false;
+let currentQuizMode = 'screensaver';
+let quizRevealShown = false;
+let longPressTimer = null;
+let longPressTriggered = false;
+let isCheatsheetQuizActive = false;
+let revealedQuizItems = new Set();
 
 // Initialize
 function init() {
@@ -232,23 +238,20 @@ function toMathJax(formula) {
     math = math.replace(/(\d+)\s*\/\s*(\d+)/g, '\\frac{$1}{$2}');
     
     // Replace trig functions with colored versions (using colors from unit circle app)
-    math = math.replace(/\\sin/g, '\\color{#e06666}{\\sin}');
-    math = math.replace(/sin(?![\w])/g, '\\color{#e06666}{\\sin}');
-    
-    math = math.replace(/\\cos/g, '\\color{#5b9bd5}{\\cos}');
-    math = math.replace(/cos(?![\w])/g, '\\color{#5b9bd5}{\\cos}');
-    
-    math = math.replace(/\\tan/g, '\\color{#b388ff}{\\tan}');
-    math = math.replace(/tan(?![\w])/g, '\\color{#b388ff}{\\tan}');
-    
-    math = math.replace(/\\csc/g, '\\color{#ea9999}{\\csc}');
-    math = math.replace(/csc(?![\w])/g, '\\color{#ea9999}{\\csc}');
-    
-    math = math.replace(/\\sec/g, '\\color{#6fa8dc}{\\sec}');
-    math = math.replace(/sec(?![\w])/g, '\\color{#6fa8dc}{\\sec}');
-    
-    math = math.replace(/\\cot/g, '\\color{#c9a3ff}{\\cot}');
-    math = math.replace(/cot(?![\w])/g, '\\color{#c9a3ff}{\\cot}');
+    const trigColorMap = {
+        sin: '#e06666',
+        cos: '#5b9bd5',
+        tan: '#b388ff',
+        csc: '#ea9999',
+        sec: '#6fa8dc',
+        cot: '#c9a3ff'
+    };
+
+    math = math.replace(/\\?(sin|cos|tan|csc|sec|cot)(?![A-Za-z])/g, (match, name) => {
+        const color = trigColorMap[name];
+        if (!color) return match;
+        return match.startsWith('\\') ? `\\color{${color}}{${match}}` : `\\color{${color}}{\\${name}}`;
+    });
     
     // Handle square roots
     math = math.replace(/√\[([^\]]+)\]/g, '\\sqrt{$1}');
@@ -274,17 +277,23 @@ function renderCheatsheet() {
     container.innerHTML = trigIdentities.map((identity, index) => {
         const parsed = parseIdentity(identity);
         const isSelected = selectedIdentities.has(identity.name);
+        const escapedName = identity.name.replace(/'/g, "\\'");
+        const isRevealed = revealedQuizItems.has(identity.name);
+        const quizModeContent = isCheatsheetQuizActive && !isRevealed
+            ? '<span class="quiz-reveal-prompt">Click to reveal formula</span>'
+            : toMathJax(identity.formula);
         
         return `
-        <div class="identity-item">
-            <div class="identity-header" onclick="toggleDetails(${index})">
+        <div class="identity-item ${isCheatsheetQuizActive ? 'quiz-mode' : ''}">
+            <div class="identity-header" onclick="toggleIdentityCard(${index}, '${escapedName}')">
                 <input type="checkbox" 
                     id="check-${index}" 
                     ${isSelected ? 'checked' : ''}
-                    onclick="event.stopPropagation(); toggleSelection(${index}, '${identity.name.replace(/'/g, "\\'")}')">
+                    onclick="event.stopPropagation(); toggleSelection(${index}, '${escapedName}')">
                 <span class="identity-name">${identity.name}</span>
             </div>
-            <div class="identity-formula" title="${identity.formula}" data-formula="${identity.formula.replace(/"/g, '&quot;')}">${toMathJax(identity.formula)}</div>
+            <div class="identity-formula ${isCheatsheetQuizActive && !isRevealed ? 'quiz-hidden' : ''}" title="${identity.formula}" data-formula="${identity.formula.replace(/"/g, '&quot;')}">${quizModeContent}</div>
+            ${!isCheatsheetQuizActive ? `
             <div class="identity-details ${isSelected ? 'visible' : ''}" id="details-${index}">
                 <div class="identity-section">
                     <h4>📖 Description</h4>
@@ -298,24 +307,50 @@ function renderCheatsheet() {
                     <h4>💡 Example</h4>
                     <p>${colorCodeText(parsed.example)}</p>
                 </div>
-            </div>
+            </div>` : ''}
         </div>
     `;
     }).join('');
     
-    // Add copy functionality to formulas
     document.querySelectorAll('.identity-formula').forEach(el => {
         el.style.cursor = 'pointer';
         el.addEventListener('click', (e) => {
             e.stopPropagation();
             const formula = el.getAttribute('data-formula');
-            navigator.clipboard.writeText(formula).then(() => {
-                showNotification('📋 Formula copied!', 'copied');
-            });
+            if (isCheatsheetQuizActive) {
+                const identityName = el.closest('.identity-item')?.querySelector('.identity-name')?.textContent;
+                if (identityName) {
+                    toggleQuizIdentityReveal(identityName);
+                }
+            } else {
+                navigator.clipboard.writeText(formula).then(() => {
+                    showNotification('📋 Formula copied!', 'copied');
+                });
+            }
         });
     });
     
     refreshMathJax();
+}
+
+function toggleIdentityCard(index, name) {
+    if (isCheatsheetQuizActive) {
+        toggleQuizIdentityReveal(name);
+    } else {
+        toggleDetails(index);
+    }
+}
+
+function toggleQuizIdentityReveal(name) {
+    if (!isCheatsheetQuizActive) return;
+
+    if (revealedQuizItems.has(name)) {
+        revealedQuizItems.delete(name);
+    } else {
+        revealedQuizItems.add(name);
+    }
+
+    renderCheatsheet();
 }
 
 function toggleDetails(index) {
@@ -412,7 +447,8 @@ function loadFromURL() {
 
 function setupEventListeners() {
     document.getElementById('cheatsheet-btn').onclick = () => switchView('cheatsheet');
-    document.getElementById('quiz-btn').onclick = () => switchView('quiz');
+    document.getElementById('screensaver-btn').onclick = () => switchView('screensaver');
+    document.getElementById('quiz-btn').onclick = toggleCheatsheetQuizMode;
     document.getElementById('help-btn').onclick = () => switchView('help');
     document.getElementById('view-saved-btn-header').onclick = showSavedModal;
     
@@ -454,7 +490,14 @@ function setupEventListeners() {
         if (document.getElementById('quiz-view').classList.contains('active')) {
             if (e.key === 'ArrowLeft') { e.preventDefault(); prevCard(); }
             if (e.key === 'ArrowRight') { e.preventDefault(); nextCard(); }
-            if (e.key === ' ') { e.preventDefault(); togglePause(); }
+            if (e.key === ' ') {
+                e.preventDefault();
+                if (currentQuizMode === 'quiz') {
+                    saveForReviewFunc();
+                } else {
+                    togglePause();
+                }
+            }
             if (e.key === 'Enter') { e.preventDefault(); saveForReviewFunc(); }
             if (e.key === 'Escape') { 
                 e.preventDefault(); 
@@ -481,11 +524,50 @@ function setupEventListeners() {
         touchEndX = e.changedTouches[0].screenX;
         handleSwipe();
     });
+
+    quizCard.addEventListener('click', (e) => {
+        if (currentQuizMode === 'quiz' && !e.target.closest('.card-formula')) {
+            toggleQuizReveal();
+        }
+    });
+
+    quizCard.addEventListener('pointerdown', (e) => {
+        if (currentQuizMode !== 'quiz') return;
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        longPressTriggered = false;
+        longPressTimer = setTimeout(() => {
+            longPressTriggered = true;
+            saveForReviewFunc();
+        }, 450);
+    });
+
+    quizCard.addEventListener('pointerup', clearLongPressTimer);
+    quizCard.addEventListener('pointerleave', clearLongPressTimer);
+    quizCard.addEventListener('pointercancel', clearLongPressTimer);
     
     function handleSwipe() {
         if (touchEndX < touchStartX - 50) nextCard();
         if (touchEndX > touchStartX + 50) prevCard();
     }
+
+    function clearLongPressTimer() {
+        if (longPressTimer) {
+            clearTimeout(longPressTimer);
+            longPressTimer = null;
+        }
+    }
+}
+
+function toggleCheatsheetQuizMode() {
+    if (!document.getElementById('cheatsheet-view').classList.contains('active')) {
+        switchView('cheatsheet');
+    }
+
+    isCheatsheetQuizActive = !isCheatsheetQuizActive;
+    revealedQuizItems.clear();
+    document.getElementById('quiz-btn').classList.toggle('active', isCheatsheetQuizActive);
+    document.getElementById('cheatsheet-btn').classList.toggle('active', !isCheatsheetQuizActive);
+    renderCheatsheet();
 }
 
 function switchView(view) {
@@ -504,20 +586,31 @@ function switchView(view) {
         document.getElementById('cheatsheet-btn').classList.add('active');
         secondaryNav.classList.remove('hidden');
         stopQuiz();
+        document.getElementById('quiz-btn').classList.toggle('active', isCheatsheetQuizActive);
+    } else if (view === 'screensaver') {
+        document.getElementById('quiz-view').classList.add('active');
+        document.getElementById('screensaver-btn').classList.add('active');
+        document.getElementById('quiz-btn').classList.remove('active');
+        secondaryNav.classList.add('hidden');
+        startQuiz('screensaver');
     } else if (view === 'quiz') {
         document.getElementById('quiz-view').classList.add('active');
         document.getElementById('quiz-btn').classList.add('active');
         secondaryNav.classList.add('hidden');
-        startQuiz();
+        startQuiz('quiz');
     } else if (view === 'help') {
         document.getElementById('help-view').classList.add('active');
         document.getElementById('help-btn').classList.add('active');
+        document.getElementById('quiz-btn').classList.remove('active');
         secondaryNav.classList.remove('hidden');
         stopQuiz();
     }
 }
 
-function startQuiz() {
+function startQuiz(mode = 'screensaver') {
+    currentQuizMode = mode;
+    quizRevealShown = false;
+
     quizList = trigIdentities.filter(id => selectedIdentities.has(id.name));
     if (quizList.length === 0) {
         alert('Please select at least one identity in cheatsheet mode');
@@ -555,6 +648,8 @@ function showCard() {
     stopQuiz();
     
     const identity = quizList[currentQuizIndex];
+    if (!identity) return;
+
     const parsed = parseIdentity(identity);
     
     const nameEl = document.querySelector('.card-name');
@@ -562,6 +657,8 @@ function showCard() {
     const descEl = document.querySelector('.card-description');
     const usageEl = document.querySelector('.card-usage');
     const exampleEl = document.querySelector('.card-example');
+    const pauseBtn = document.getElementById('pause-btn');
+    const quizCard = document.getElementById('quiz-card');
     
     // Reset all visibility
     nameEl.classList.remove('visible');
@@ -569,12 +666,32 @@ function showCard() {
     descEl.classList.remove('visible');
     usageEl.classList.remove('visible');
     exampleEl.classList.remove('visible');
+    formulaEl.classList.remove('quiz-prompt');
     
     nameEl.textContent = identity.name;
-    formulaEl.innerHTML = toMathJax(identity.formula);
     formulaEl.setAttribute('data-formula', identity.formula);
     formulaEl.title = 'Click to copy: ' + identity.formula;
     formulaEl.style.cursor = 'pointer';
+    quizCard.style.cursor = currentQuizMode === 'quiz' ? 'pointer' : 'default';
+    
+    if (currentQuizMode === 'quiz' && !quizRevealShown) {
+        formulaEl.innerHTML = '<span class="quiz-prompt">Tap to reveal the formula</span>';
+        formulaEl.classList.add('quiz-prompt');
+        formulaEl.onclick = (e) => {
+            e.stopPropagation();
+            toggleQuizReveal();
+        };
+        descEl.innerHTML = '';
+        usageEl.innerHTML = '';
+        exampleEl.innerHTML = '';
+        pauseBtn.textContent = 'Hide';
+        nameEl.classList.add('visible');
+        formulaEl.classList.add('visible');
+        refreshMathJax();
+        return;
+    }
+
+    formulaEl.innerHTML = toMathJax(identity.formula);
     
     // Add click to copy for quiz card
     formulaEl.onclick = () => {
@@ -603,12 +720,23 @@ function showCard() {
         }
     }, 100);
     
-    if (!isPaused) {
+    pauseBtn.textContent = isPaused ? 'Resume' : 'Pause';
+    if (!isPaused && currentQuizMode === 'screensaver') {
         // Auto-advance to next phase after 5 seconds
         quizInterval = setTimeout(() => {
             advancePhase();
         }, 5000);
     }
+}
+
+function toggleQuizReveal() {
+    if (currentQuizMode !== 'quiz') return;
+    if (longPressTriggered) {
+        longPressTriggered = false;
+        return;
+    }
+    quizRevealShown = !quizRevealShown;
+    showCard();
 }
 
 function advancePhase() {
@@ -634,6 +762,10 @@ function advancePhase() {
 }
 
 function nextCard() {
+    if (currentQuizMode === 'quiz') {
+        quizRevealShown = false;
+    }
+
     const showDetails = document.getElementById('show-usage').checked;
     const maxPhase = showDetails ? 4 : 1;
     
@@ -649,6 +781,10 @@ function nextCard() {
 }
 
 function prevCard() {
+    if (currentQuizMode === 'quiz') {
+        quizRevealShown = false;
+    }
+
     if (currentPhase > 0) {
         // Move to previous phase
         currentPhase--;
@@ -662,6 +798,12 @@ function prevCard() {
 }
 
 function togglePause() {
+    if (currentQuizMode === 'quiz') {
+        quizRevealShown = false;
+        showCard();
+        return;
+    }
+
     isPaused = !isPaused;
     document.getElementById('pause-btn').textContent = isPaused ? 'Resume' : 'Pause';
     if (!isPaused) {

@@ -238,6 +238,17 @@ nav button.saved-btn:hover {
     letter-spacing: 0.5px;
 }
 
+.identity-formula.quiz-hidden {
+    color: var(--text-secondary);
+    font-style: italic;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.identity-item.quiz-mode {
+    cursor: pointer;
+}
+
 .identity-details {
     display: none;
     margin-top: 0.5rem;
@@ -325,6 +336,10 @@ nav button.saved-btn:hover {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    width: min(95vw, 1100px);
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2.5rem 3rem;
 }
 
 #fullscreen-hint {
@@ -426,6 +441,15 @@ body.fullscreen-mode .legend {
     transition: all 0.8s;
     letter-spacing: 1px;
     text-shadow: 0 0 10px rgba(88, 166, 255, 0.3);
+}
+
+.card-formula.quiz-prompt {
+    font-size: clamp(1.2rem, 2.2vw, 1.65rem);
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--text-secondary);
+    text-shadow: none;
+    opacity: 1;
 }
 
 .card-description,
@@ -587,6 +611,23 @@ body.fullscreen-mode .legend {
 
 .notification.copied {
     border-color: var(--tan-purple);
+}
+
+.quiz-view.fullscreen .card-name {
+    font-size: clamp(2rem, 3.2vw, 3rem);
+    margin-bottom: 1.5rem;
+}
+
+.quiz-view.fullscreen .card-formula {
+    font-size: clamp(2rem, 3.8vw, 3.2rem);
+    margin-bottom: 1.5rem;
+}
+
+.quiz-view.fullscreen .card-description,
+.quiz-view.fullscreen .card-usage,
+.quiz-view.fullscreen .card-example {
+    font-size: clamp(1rem, 1.7vw, 1.25rem);
+    max-width: 760px;
 }
 
 @media (max-width: 768px) {
