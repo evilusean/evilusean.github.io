@@ -292,7 +292,12 @@ function renderCheatsheet() {
                     onclick="event.stopPropagation(); toggleSelection(${index}, '${escapedName}')">
                 <span class="identity-name">${identity.name}</span>
             </div>
-            <div class="identity-formula ${isCheatsheetQuizActive && !isRevealed ? 'quiz-hidden' : ''}" title="${identity.formula}" data-formula="${identity.formula.replace(/"/g, '&quot;')}">${quizModeContent}</div>
+            <div class="identity-quiz-body">
+                <div class="identity-formula ${isCheatsheetQuizActive && !isRevealed ? 'quiz-hidden' : ''}" title="${identity.formula}" data-formula="${identity.formula.replace(/"/g, '&quot;')}">${quizModeContent}</div>
+                ${isCheatsheetQuizActive && isRevealed ? `
+                <button class="identity-save-btn" onclick="event.stopPropagation(); saveIdentityForReview('${escapedName}')">${savedForReview.some(item => item.name === identity.name) ? '✓ Saved' : '💾 Save for Review'}</button>
+                ` : ''}
+            </div>
             ${!isCheatsheetQuizActive ? `
             <div class="identity-details ${isSelected ? 'visible' : ''}" id="details-${index}">
                 <div class="identity-section">
@@ -468,6 +473,10 @@ function setupEventListeners() {
     document.getElementById('next-btn').onclick = nextCard;
     document.getElementById('pause-btn').onclick = togglePause;
     document.getElementById('save-btn').onclick = saveForReviewFunc;
+    document.getElementById('quiz-save-card-btn').onclick = () => {
+        saveForReviewFunc();
+        refreshQuizSaveButton();
+    };
     document.getElementById('fullscreen-btn').onclick = toggleFullscreen;
     
     document.getElementById('speed-slider').oninput = updateSpeed;
@@ -558,6 +567,33 @@ function setupEventListeners() {
     }
 }
 
+function updateQuizActionButtons() {
+    const saveBtn = document.getElementById('save-btn');
+    const cardSaveBtn = document.getElementById('quiz-save-card-btn');
+    if (!saveBtn) return;
+
+    const quizViewActive = document.getElementById('quiz-view').classList.contains('active');
+    const shouldShowSave = quizViewActive && currentQuizMode === 'quiz';
+
+    saveBtn.style.display = shouldShowSave ? 'inline-flex' : 'none';
+    saveBtn.title = shouldShowSave ? 'Save this identity for later review' : '';
+
+    if (cardSaveBtn) {
+        cardSaveBtn.style.display = shouldShowSave && quizRevealShown ? 'inline-flex' : 'none';
+    }
+}
+
+function refreshQuizSaveButton() {
+    const cardSaveBtn = document.getElementById('quiz-save-card-btn');
+    if (!cardSaveBtn) return;
+
+    const identity = quizList[currentQuizIndex];
+    const alreadySaved = !!identity && savedForReview.some(item => item.name === identity.name);
+    cardSaveBtn.disabled = alreadySaved;
+    cardSaveBtn.textContent = alreadySaved ? '✓ Saved for Review' : '💾 Save this formula';
+    cardSaveBtn.style.display = currentQuizMode === 'quiz' && quizRevealShown ? 'inline-flex' : 'none';
+}
+
 function toggleCheatsheetQuizMode() {
     if (!document.getElementById('cheatsheet-view').classList.contains('active')) {
         switchView('cheatsheet');
@@ -587,6 +623,7 @@ function switchView(view) {
         secondaryNav.classList.remove('hidden');
         stopQuiz();
         document.getElementById('quiz-btn').classList.toggle('active', isCheatsheetQuizActive);
+        updateQuizActionButtons();
     } else if (view === 'screensaver') {
         document.getElementById('quiz-view').classList.add('active');
         document.getElementById('screensaver-btn').classList.add('active');
@@ -604,12 +641,14 @@ function switchView(view) {
         document.getElementById('quiz-btn').classList.remove('active');
         secondaryNav.classList.remove('hidden');
         stopQuiz();
+        updateQuizActionButtons();
     }
 }
 
 function startQuiz(mode = 'screensaver') {
     currentQuizMode = mode;
     quizRevealShown = false;
+    updateQuizActionButtons();
 
     quizList = trigIdentities.filter(id => selectedIdentities.has(id.name));
     if (quizList.length === 0) {
@@ -660,6 +699,10 @@ function showCard() {
     const pauseBtn = document.getElementById('pause-btn');
     const quizCard = document.getElementById('quiz-card');
     
+    updateQuizActionButtons();
+
+    refreshQuizSaveButton();
+
     // Reset all visibility
     nameEl.classList.remove('visible');
     formulaEl.classList.remove('visible');
@@ -688,6 +731,7 @@ function showCard() {
         nameEl.classList.add('visible');
         formulaEl.classList.add('visible');
         refreshMathJax();
+        refreshQuizSaveButton();
         return;
     }
 
@@ -705,6 +749,7 @@ function showCard() {
     exampleEl.innerHTML = colorCodeText(parsed.example);
     
     refreshMathJax();
+    refreshQuizSaveButton();
     
     const showDetails = document.getElementById('show-usage').checked;
     const maxPhase = showDetails ? 4 : 1; // 0-4 with details, 0-1 without
@@ -816,8 +861,29 @@ function togglePause() {
     }
 }
 
+function saveIdentityForReview(name) {
+    const identity = trigIdentities.find(item => item.name === name);
+    if (!identity) return;
+
+    const existingIndex = savedForReview.findIndex(item => item.name === identity.name);
+    if (existingIndex === -1) {
+        savedForReview.push({
+            name: identity.name,
+            formula: identity.formula
+        });
+        localStorage.setItem('savedTrig', JSON.stringify(savedForReview));
+        updateSavedCount();
+        renderCheatsheet();
+        showNotification('💾 Saved for review!', 'saved');
+    } else {
+        showNotification('Already saved!', 'success');
+    }
+}
+
 function saveForReviewFunc() {
     const identity = quizList[currentQuizIndex];
+    if (!identity) return;
+
     const existingIndex = savedForReview.findIndex(item => item.name === identity.name);
     
     if (existingIndex === -1) {
@@ -827,6 +893,7 @@ function saveForReviewFunc() {
         });
         localStorage.setItem('savedTrig', JSON.stringify(savedForReview));
         updateSavedCount();
+        refreshQuizSaveButton();
         
         showNotification('💾 Saved for review!', 'saved');
     } else {
