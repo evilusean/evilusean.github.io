@@ -1,16 +1,16 @@
 :root {
     --bg-deep: #0d1117;
     --bg-card: #161b22;
-    --cos-blue: #5b9bd5;
+    --cos-blue: #74c0ff;
     --sin-red: #e06666;
-    --tan-purple: #b388ff;
+    --tan-purple: #c792ff;
     --csc-pink: #ea9999;
-    --sec-light-blue: #6fa8dc;
-    --cot-light-purple: #c9a3ff;
+    --sec-light-blue: #8fc9ff;
+    --cot-light-purple: #d4adff;
     --accent: #ff3131;
     --text-primary: #ffffff;
     --text-secondary: #8b949e;
-    --highlight-bg: rgba(91, 155, 213, 0.15);
+    --highlight-bg: rgba(116, 192, 255, 0.16);
 }
 
 body {
