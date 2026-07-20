@@ -239,12 +239,12 @@ function toMathJax(formula) {
     
     // Replace trig functions with colored versions (using colors from unit circle app)
     const trigColorMap = {
-        sin: '#e06666',
-        cos: '#5b9bd5',
-        tan: '#b388ff',
-        csc: '#ea9999',
-        sec: '#6fa8dc',
-        cot: '#c9a3ff'
+        sin: 'red',
+        cos: 'blue',
+        tan: 'purple',
+        csc: 'magenta',
+        sec: 'teal',
+        cot: 'violet'
     };
 
     math = math.replace(/\\?(sin|cos|tan|csc|sec|cot)(?![A-Za-z])/g, (match, name) => {
