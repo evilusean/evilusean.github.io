@@ -994,6 +994,8 @@ function clearSaved() {
         savedForReview = [];
         localStorage.setItem('savedTrig', JSON.stringify(savedForReview));
         updateSavedCount();
+        renderCheatsheet();
+        refreshQuizSaveButton();
         closeSavedModal();
         showNotification('🗑️ All items cleared', 'success');
     }
