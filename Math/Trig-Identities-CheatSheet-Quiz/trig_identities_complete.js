@@ -33,6 +33,12 @@ const trigIdentities = [
     description: 'WHY: Cotangent is the reciprocal of tangent, so cot = 1/tan = 1/(sin/cos) = cos/sin.',
     usage: 'WHEN TO USE: (1) Finding cot when you know sin and cos. (2) Simplifying expressions. (3) Integration problems.\n\nEXAMPLE: If sinθ=3/5 and cosθ=4/5, then cotθ = (4/5)/(3/5) = 4/3\n\nWHY IT WORKS: Combination of reciprocal and quotient definitions.'
   },
+  {
+    name: 'Polar ↔ Rectangular Coordinates',
+    formula: 'x = r cos θ, y = r sin θ; r = \\sqrt{x^2 + y^2}, θ = \\arctan(y/x)',
+    description: 'WHY: Polar coordinates describe a point by its distance from the origin and angle, while rectangular coordinates describe the same point by its x- and y-values. These formulas convert between the two systems.',
+    usage: 'WHEN TO USE: (1) Converting from polar (r, θ) to rectangular (x, y). (2) Converting back from rectangular (x, y) to polar (r, θ). (3) Physics, engineering, and vector problems.\n\nEXAMPLE: Convert (r, θ) = (5, 30°) to rectangular: x = 5 cos30° = 5√3/2, y = 5 sin30° = 5/2. Convert (x, y) = (3, 4) to polar: r = √(3² + 4²) = 5 and θ = arctan(4/3) ≈ 53.13°.\n\nWHY IT WORKS: The cosine and sine of the angle give the horizontal and vertical components of the radius, and the hypotenuse gives the total distance from the origin.'
+  },
   // PYTHAGOREAN IDENTITIES
   {
     name: 'Pythagorean Identity',

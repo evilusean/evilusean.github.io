@@ -9,7 +9,8 @@ const engineeringEssentials = [
     'Sum of Cosine',
     'Law of Sines',
     'Law of Cosines (side a)',
-    'Quotient: Tangent'
+    'Quotient: Tangent',
+    'Polar ↔ Rectangular Coordinates'
 ];
 
 // Preset configurations - Updated with exact Unicode characters from identity names
@@ -94,7 +95,8 @@ const presets = {
         'Heron\'s Formula',
         'Cofunction: sin/cos',
         'Cofunction: cos/sin',
-        'Quotient: Tangent'
+        'Quotient: Tangent',
+        'Polar ↔ Rectangular Coordinates'
     ]
 };
 
