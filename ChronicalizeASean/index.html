@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Timeline App</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Tailwind CSS for rapid prototyping -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- PapaParse for CSV import/export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+    <header class="bg-slate-800 border-b border-slate-700 p-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold">Timeline App</h1>
+        <div id="auth-container">
+            <button id="login-btn" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded text-sm font-medium">Sign in with Google</button>
+        </div>
+    </header>
+    <main class="flex-1 p-6 max-w-7xl mx-auto w-full">
+        <div id="timeline-container" class="relative border-l-2 border-slate-700 ml-4 pl-6 py-4 space-y-8">
+            <!-- Timeline nodes injected via app.js -->
+        </div>
+    </main>
+    <script src="app.js"></script>
+</body>
+</html>
