@@ -1,0 +1,12 @@
+/* Custom styles and overrides */
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+.timeline-node {
+    transition: transform 0.2s ease;
+}
+
+.timeline-node:hover {
+    transform: scale(1.02);
+}
