@@ -448,6 +448,60 @@ html, body {
   outline-offset: -4px;
 }
 
+/* ── Emoji Picker ── */
+.emoji-field { position: relative; }
+.emoji-preview-btn {
+  font-size: 24px;
+  background: var(--bg-700);
+  border: 1px solid var(--bg-600);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  line-height: 1.2;
+}
+.emoji-preview-btn:hover { border-color: var(--accent); }
+.emoji-picker-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 2000;
+  background: var(--bg-800);
+  border: 1px solid var(--bg-700);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  width: 280px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 8px;
+}
+.emoji-category-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-400);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 6px 4px 2px;
+}
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 1px;
+  margin-bottom: 4px;
+}
+.emoji-btn {
+  font-size: 18px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 3px;
+  text-align: center;
+  line-height: 1.2;
+  transition: background 0.1s;
+}
+.emoji-btn:hover { background: var(--bg-600); }
+
 /* ── Utility ── */
 .hidden { display: none !important; }
 .hidden-input { display: none; }

@@ -20,7 +20,7 @@
 const CONFIG = {
   CLIENT_ID: '423584880836-r8jfae1q0e84j94elnriakohr5b9to9m.apps.googleusercontent.com',
   SPREADSHEET_ID: localStorage.getItem('timeline_sheet_id') || '', 
-  SHEET_NAME: 'Timeline',
+  SHEET_NAME: localStorage.getItem('timeline_sheet_name') || 'Timeline',
   SCOPES: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file',
   TIMELINE_PADDING: 80, 
   AXIS_Y: 160,          
@@ -54,6 +54,9 @@ const STATE = {
   filterTag: '',
   activePopoverId: null,
   dragActive: false,
+  sheets: [],         // array of sheet tab names from the spreadsheet
+  dateFrom: localStorage.getItem('timeline_date_from') || '',  // YYYY-MM-DD or ''
+  dateTo:   localStorage.getItem('timeline_date_to')   || '',  // YYYY-MM-DD or ''
 };
 
 /* Category → color map (grows dynamically) */
@@ -70,6 +73,20 @@ function categoryColor(cat) {
   }
   return CATEGORY_COLORS[cat];
 }
+
+/* Emoji picker data */
+const EMOJI_PICKER_DATA = [
+  { label: 'Symbols & Flags', emojis: ['📌','📍','🏴','🚩','🏳️','⚑','🎌','🏁','⭐','🌟','💫','✨','❤️','🔥','💥','⚡','🌈','☀️','🌙','❄️'] },
+  { label: 'People & Body',   emojis: ['👤','👥','🧑','👩','👨','👶','🧓','✊','✋','👋','🤝','🙏','💪','🫀','🧠','👁️','👂','🦷','🦴','🫁'] },
+  { label: 'Nature',          emojis: ['🌍','🌎','🌏','🌊','🏔️','🌋','🏝️','🌲','🌳','🌴','🌵','🌿','🍃','🌺','🌸','🌼','🌻','🌹','🍀','🌾'] },
+  { label: 'Animals',         emojis: ['🐅','🦁','🐺','🦊','🐻','🐼','🦋','🦅','🐬','🐳','🐘','🦒','🐊','🦕','🐢','🐍','🦗','🐝','🦠','🐾'] },
+  { label: 'Food & Drink',    emojis: ['🍎','🍊','🍋','🍇','🍓','🍔','🍕','🌮','🍣','🍜','🥗','🍺','☕','🍷','🥂','🍾','🌽','🥕','🍞','🧁'] },
+  { label: 'Travel & Places', emojis: ['✈️','🚀','🚁','⛵','🚂','🚗','🏛️','🏰','⛪','🕌','🗼','🗽','🏟️','🌉','🗺️','🧭','🏕️','🏙️','🌃','🌄'] },
+  { label: 'Objects',         emojis: ['📖','📚','📜','📰','🗞️','📝','✏️','🖊️','🔬','🔭','💡','🔦','🕯️','📡','💾','📀','📷','🎙️','📞','📻'] },
+  { label: 'Tools & Tech',    emojis: ['⚔️','🛡️','🔧','🔩','⚙️','🔗','💣','🧲','🔑','🗝️','🔒','🔓','🪤','🧰','🪛','🔨','⛏️','🪚','🧪','🧫'] },
+  { label: 'Money & Economy', emojis: ['💰','💵','💴','💶','💷','💸','💳','📈','📉','📊','🏦','🏧','💹','🪙','💎','🏆','🥇','🥈','🥉','🎖️'] },
+  { label: 'Misc & Numbers',  emojis: ['1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟','#️⃣','*️⃣','⚠️','🚫','❌','✅','❓','❗','♻️','🆘'] },
+];
 
 /* ============================================================
    2. GOOGLE AUTH
@@ -121,6 +138,7 @@ function fetchUserProfile() {
       STATE.userProfile = profile;
       renderAuthUI(true);
       showToast('Signed in as ' + profile.name, 'success');
+      if (CONFIG.SPREADSHEET_ID) fetchSheetList();
     })
     .catch(() => { renderAuthUI(true); });
 }
@@ -248,6 +266,69 @@ function mergeRecords(existing, incoming) {
   existing.forEach(r => { map[r.id] = r; });
   incoming.forEach(r => { if (r.id) map[r.id] = r; });
   return Object.values(map);
+}
+
+async function fetchSheetList() {
+  if (!CONFIG.SPREADSHEET_ID || !STATE.accessToken) return;
+  try {
+    const url = `${SHEETS_BASE}/${CONFIG.SPREADSHEET_ID}?fields=sheets.properties`;
+    const data = await sheetsRequest(url);
+    if (!data || !data.sheets) return;
+    STATE.sheets = data.sheets.map(s => s.properties.title);
+    // Render the switcher dropdown
+    const sel = document.getElementById('timeline-select');
+    if (sel) {
+      sel.innerHTML = STATE.sheets.map(name =>
+        `<option value="${esc(name)}" ${name === CONFIG.SHEET_NAME ? 'selected' : ''}>${esc(name)}</option>`
+      ).join('');
+    }
+    renderOpenSheetBtn();
+  } catch (e) {
+    // Silently ignore — sheet list is non-critical
+  }
+}
+
+async function createNewTimeline(name) {
+  if (!name || !name.trim()) { showToast('Timeline name cannot be empty', 'warning'); return; }
+  name = name.trim();
+  if (!CONFIG.SPREADSHEET_ID) { showToast('SPREADSHEET_ID not configured', 'warning'); return; }
+  showSpinner();
+  try {
+    // 1. Add new sheet tab
+    await sheetsRequest(`${SHEETS_BASE}/${CONFIG.SPREADSHEET_ID}:batchUpdate`, {
+      method: 'POST',
+      body: JSON.stringify({
+        requests: [{ addSheet: { properties: { title: name } } }],
+      }),
+    });
+    // 2. Write header row
+    await sheetsRequest(
+      `${SHEETS_BASE}/${CONFIG.SPREADSHEET_ID}/values/${encodeURIComponent(name + '!A1')}?valueInputOption=RAW`,
+      { method: 'PUT', body: JSON.stringify({ values: [FIELDS] }) }
+    );
+    hideSpinner();
+    showToast(`Timeline "${name}" created`, 'success');
+    await fetchSheetList();
+    await switchTimeline(name);
+  } catch (e) {
+    hideSpinner();
+    showToast('Create timeline error: ' + e.message, 'error');
+  }
+}
+
+async function switchTimeline(name) {
+  CONFIG.SHEET_NAME = name;
+  localStorage.setItem('timeline_sheet_name', name);
+  STATE.records = [];
+  STATE.filtered = [];
+  renderTimeline();
+  renderOpenSheetBtn();
+  // Update select value in case called programmatically
+  const sel = document.getElementById('timeline-select');
+  if (sel) sel.value = name;
+  if (CONFIG.SPREADSHEET_ID && STATE.accessToken) {
+    await syncFromSheet();
+  }
 }
 
 /* ============================================================
@@ -399,13 +480,25 @@ function renderTimeline() {
 
   // Compute date range
   const dates = records.flatMap(r => [parseDate(r.date_start), r.date_end ? parseDate(r.date_end) : null].filter(Boolean));
-  const minDate = new Date(Math.min(...dates.map(d => d.getTime())));
-  const maxDate = new Date(Math.max(...dates.map(d => d.getTime())));
+  let minDate = new Date(Math.min(...dates.map(d => d.getTime())));
+  let maxDate = new Date(Math.max(...dates.map(d => d.getTime())));
 
   // Ensure at least 1 day span
   if (minDate.getTime() === maxDate.getTime()) {
     maxDate.setUTCDate(maxDate.getUTCDate() + 1);
   }
+
+  // Apply date range overrides
+  if (STATE.dateFrom && DATE_RE.test(STATE.dateFrom)) {
+    const override = parseDate(STATE.dateFrom);
+    if (override) minDate = override;
+  }
+  if (STATE.dateTo && DATE_RE.test(STATE.dateTo)) {
+    const override = parseDate(STATE.dateTo);
+    if (override) maxDate = override;
+  }
+  // Ensure minDate < maxDate
+  if (minDate >= maxDate) maxDate = new Date(minDate.getTime() + 86400000);
 
   const pad = CONFIG.TIMELINE_PADDING;
   const totalMs = maxDate - minDate;
@@ -831,6 +924,7 @@ function openCreateModal() {
   document.getElementById('field-id').value = '';
   document.getElementById('modal-title').textContent = 'Add Event';
   document.getElementById('modal-delete-btn').classList.add('hidden');
+  setEmojiPreview('📌');
   document.getElementById('crud-modal').classList.remove('hidden');
   document.getElementById('field-event_name').focus();
 }
@@ -843,12 +937,12 @@ function openEditModal(id) {
   document.getElementById('field-date_start').value  = r.date_start   || '';
   document.getElementById('field-date_end').value    = r.date_end     || '';
   document.getElementById('field-category').value    = r.category     || '';
-  document.getElementById('field-emoji').value        = r.emoji       || '';
   document.getElementById('field-importance').value  = r.importance   || 5;
   document.getElementById('field-tags').value         = r.tags        || '';
   document.getElementById('field-description').value = r.description  || '';
   document.getElementById('field-sources').value      = r.sources     || '';
   document.getElementById('field-image_url').value   = r.image_url   || '';
+  setEmojiPreview(r.emoji || '📌');
 
   document.getElementById('modal-title').textContent = 'Edit Event';
   document.getElementById('modal-delete-btn').classList.remove('hidden');
@@ -911,6 +1005,44 @@ function confirmDelete(id) {
   document.getElementById('confirm-cancel-btn').onclick = () => {
     document.getElementById('confirm-backdrop').classList.add('hidden');
   };
+}
+
+function initEmojiPicker() {
+  const panel = document.getElementById('emoji-picker-panel');
+  panel.innerHTML = EMOJI_PICKER_DATA.map(cat => `
+    <div class="emoji-category-label">${cat.label}</div>
+    <div class="emoji-grid">${cat.emojis.map(e =>
+      `<button type="button" class="emoji-btn" data-emoji="${e}">${e}</button>`
+    ).join('')}</div>
+  `).join('');
+  panel.addEventListener('click', e => {
+    const btn = e.target.closest('.emoji-btn');
+    if (!btn) return;
+    const emoji = btn.dataset.emoji;
+    document.getElementById('field-emoji').value = emoji;
+    document.getElementById('emoji-preview-btn').textContent = emoji;
+    panel.classList.add('hidden');
+  });
+}
+
+function toggleEmojiPicker() {
+  document.getElementById('emoji-picker-panel').classList.toggle('hidden');
+}
+
+function setEmojiPreview(emoji) {
+  document.getElementById('emoji-preview-btn').textContent = emoji || '📌';
+  document.getElementById('field-emoji').value = emoji || '📌';
+}
+
+function renderOpenSheetBtn() {
+  const btn = document.getElementById('open-sheet-btn');
+  if (CONFIG.SPREADSHEET_ID) {
+    btn.href = `https://docs.google.com/spreadsheets/d/${CONFIG.SPREADSHEET_ID}/edit`;
+    btn.textContent = `📊 ${CONFIG.SHEET_NAME}`;
+    btn.classList.remove('hidden');
+  } else {
+    btn.classList.add('hidden');
+  }
 }
 
 /* ============================================================
@@ -1131,12 +1263,36 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('login-btn').addEventListener('click', () => requestToken(true));
   document.getElementById('signout-btn').addEventListener('click', signOut);
 
-  // Sheet actions
-  document.getElementById('open-sheet-btn').addEventListener('click', () => {
-    if (CONFIG.SPREADSHEET_ID) window.open(`https://docs.google.com/spreadsheets/d/${CONFIG.SPREADSHEET_ID}`, '_blank');
-  });
+  // Sheet actions (sync/push still need auth)
   document.getElementById('sync-btn').addEventListener('click', syncFromSheet);
   document.getElementById('push-btn').addEventListener('click', pushToSheet);
+
+  // Timeline switcher
+  document.getElementById('timeline-select').addEventListener('change', e => {
+    switchTimeline(e.target.value);
+  });
+  document.getElementById('new-timeline-btn').addEventListener('click', () => {
+    document.getElementById('new-timeline-name').value = '';
+    document.getElementById('new-timeline-backdrop').classList.remove('hidden');
+    document.getElementById('new-timeline-name').focus();
+  });
+  document.getElementById('new-timeline-cancel-btn').addEventListener('click', () => {
+    document.getElementById('new-timeline-backdrop').classList.add('hidden');
+  });
+  document.getElementById('new-timeline-cancel-btn-footer').addEventListener('click', () => {
+    document.getElementById('new-timeline-backdrop').classList.add('hidden');
+  });
+  document.getElementById('new-timeline-save-btn').addEventListener('click', () => {
+    const name = document.getElementById('new-timeline-name').value.trim();
+    document.getElementById('new-timeline-backdrop').classList.add('hidden');
+    createNewTimeline(name);
+  });
+  document.getElementById('new-timeline-backdrop').addEventListener('click', e => {
+    if (e.target === e.currentTarget) document.getElementById('new-timeline-backdrop').classList.add('hidden');
+  });
+
+  // Open sheet link (always visible when SPREADSHEET_ID set)
+  renderOpenSheetBtn();
 
   // Export / Import
   document.getElementById('export-btn').addEventListener('click', exportCSV);
@@ -1179,7 +1335,45 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Escape') {
       closeCrudModal();
       document.getElementById('confirm-backdrop').classList.add('hidden');
+      document.getElementById('new-timeline-backdrop').classList.add('hidden');
+      document.getElementById('emoji-picker-panel').classList.add('hidden');
       hidePopover();
+    }
+  });
+
+  // Date range controls
+  const dateFromEl = document.getElementById('date-from-input');
+  const dateToEl   = document.getElementById('date-to-input');
+  dateFromEl.value = STATE.dateFrom;
+  dateToEl.value   = STATE.dateTo;
+  dateFromEl.addEventListener('change', e => {
+    STATE.dateFrom = e.target.value;
+    localStorage.setItem('timeline_date_from', STATE.dateFrom);
+    renderTimeline();
+  });
+  dateToEl.addEventListener('change', e => {
+    STATE.dateTo = e.target.value;
+    localStorage.setItem('timeline_date_to', STATE.dateTo);
+    renderTimeline();
+  });
+  document.getElementById('date-range-reset-btn').addEventListener('click', () => {
+    STATE.dateFrom = ''; STATE.dateTo = '';
+    dateFromEl.value = ''; dateToEl.value = '';
+    localStorage.removeItem('timeline_date_from');
+    localStorage.removeItem('timeline_date_to');
+    renderTimeline();
+  });
+
+  // Emoji picker
+  initEmojiPicker();
+  document.getElementById('emoji-preview-btn').addEventListener('click', e => {
+    e.stopPropagation();
+    toggleEmojiPicker();
+  });
+  document.addEventListener('click', e => {
+    const panel = document.getElementById('emoji-picker-panel');
+    if (!panel.classList.contains('hidden') && !panel.contains(e.target) && e.target.id !== 'emoji-preview-btn') {
+      panel.classList.add('hidden');
     }
   });
 

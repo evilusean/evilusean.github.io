@@ -44,8 +44,10 @@
         <span id="user-name" class="user-name"></span>
         <button id="signout-btn" class="btn btn-ghost btn-sm">Sign out</button>
       </div>
+      <a id="open-sheet-btn" href="#" target="_blank" rel="noopener" class="btn btn-ghost btn-sm hidden" title="Open in Google Sheets">📊 Open Sheet</a>
       <div id="sheet-actions" class="sheet-actions hidden">
-        <button id="open-sheet-btn" class="btn btn-ghost btn-sm" title="Open Google Sheet">📊 Sheet</button>
+        <select id="timeline-select" class="filter-select" style="min-width:130px" title="Switch timeline"></select>
+        <button id="new-timeline-btn" class="btn btn-ghost btn-sm" title="Create new timeline">＋ Timeline</button>
         <button id="sync-btn" class="btn btn-ghost btn-sm" title="Sync from Sheet">⬇️ Sync</button>
         <button id="push-btn" class="btn btn-ghost btn-sm" title="Push to Sheet">⬆️ Push</button>
       </div>
@@ -63,6 +65,11 @@
       <button id="zoom-reset-btn" class="btn btn-ghost btn-sm" title="Reset Zoom">⊙</button>
       <button id="zoom-out-btn" class="btn btn-ghost btn-sm" title="Zoom Out">－</button>
       <button id="connections-btn" class="btn btn-ghost btn-sm" title="Toggle connections">🔗 Connections</button>
+      <span style="color:var(--text-400);font-size:12px;padding:0 4px">From</span>
+      <input id="date-from-input" type="date" class="filter-input" style="min-width:0;width:130px;padding:3px 6px" title="Timeline start date" />
+      <span style="color:var(--text-400);font-size:12px;padding:0 4px">To</span>
+      <input id="date-to-input" type="date" class="filter-input" style="min-width:0;width:130px;padding:3px 6px" title="Timeline end date" />
+      <button id="date-range-reset-btn" class="btn btn-ghost btn-sm" title="Reset date range">↺</button>
     </div>
 
     <!-- TIMELINE CANVAS -->
@@ -136,8 +143,14 @@
             <input id="field-category" type="text" placeholder="e.g. Politics" />
           </div>
           <div class="form-group">
-            <label for="field-emoji">Emoji</label>
-            <input id="field-emoji" type="text" placeholder="e.g. 🌍" maxlength="4" />
+            <label>Emoji</label>
+            <div class="emoji-field">
+              <button type="button" id="emoji-preview-btn" class="emoji-preview-btn" title="Pick emoji">📌</button>
+              <input id="field-emoji" type="hidden" value="📌" />
+              <div id="emoji-picker-panel" class="emoji-picker-panel hidden">
+                <!-- populated by JS -->
+              </div>
+            </div>
           </div>
           <div class="form-group">
             <label for="field-importance">Importance (1-10)</label>
@@ -198,6 +211,26 @@
       <div class="popover-actions">
         <button id="popover-edit-btn" class="btn btn-ghost btn-sm">✏️ Edit</button>
         <button id="popover-delete-btn" class="btn btn-danger btn-sm">🗑️ Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEW TIMELINE MODAL -->
+  <div id="new-timeline-backdrop" class="modal-backdrop hidden">
+    <div class="modal modal-sm" role="dialog" aria-modal="true" aria-labelledby="new-timeline-modal-title">
+      <div class="modal-header">
+        <h2 id="new-timeline-modal-title">New Timeline</h2>
+        <button id="new-timeline-cancel-btn" class="btn btn-ghost btn-sm">✕</button>
+      </div>
+      <div style="padding:16px 20px;">
+        <div class="form-group">
+          <label for="new-timeline-name">Timeline name</label>
+          <input id="new-timeline-name" type="text" placeholder="e.g. Ancient History" style="background:var(--bg-700);border:1px solid var(--bg-600);color:var(--text-100);padding:7px 10px;border-radius:var(--radius-sm);font-size:13px;outline:none;width:100%;font-family:inherit;" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="new-timeline-cancel-btn-footer" class="btn btn-ghost">Cancel</button>
+        <button id="new-timeline-save-btn" class="btn btn-primary">Save</button>
       </div>
     </div>
   </div>
