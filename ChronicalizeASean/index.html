@@ -1,29 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visual Timeline App</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Tailwind CSS for rapid prototyping -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- PapaParse for CSV import/export -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <!-- Google Identity Services -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChronicalizeASean</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- PapaParse for CSV import/export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
-    <header class="bg-slate-800 border-b border-slate-700 p-4 flex justify-between items-center">
-        <h1 class="text-xl font-bold">Timeline App</h1>
-        <div id="auth-container">
-            <button id="login-btn" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded text-sm font-medium">Sign in with Google</button>
+<body>
+
+  <!-- SETUP BANNER -->
+  <div id="setup-banner" class="setup-banner hidden">
+    <span>⚠️ Google Sheets not configured. Set <code>CLIENT_ID</code> and <code>SPREADSHEET_ID</code> in app.js to enable sync. Showing sample data.</span>
+    <button onclick="document.getElementById('setup-banner').classList.add('hidden')" class="btn btn-ghost btn-sm">Dismiss</button>
+  </div>
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="header-left">
+      <h1 class="app-title">⏳ ChronicalizeASean</h1>
+    </div>
+    <div class="header-center">
+      <div id="filter-bar" class="filter-bar">
+        <input id="search-input" type="text" placeholder="Search events…" class="filter-input" />
+        <select id="category-filter" class="filter-select">
+          <option value="">All Categories</option>
+        </select>
+        <select id="tag-filter" class="filter-select">
+          <option value="">All Tags</option>
+        </select>
+        <button id="clear-filters-btn" class="btn btn-ghost btn-sm">Clear</button>
+      </div>
+    </div>
+    <div class="header-right">
+      <div id="auth-container">
+        <button id="login-btn" class="btn btn-primary">Sign in with Google</button>
+      </div>
+      <div id="user-info" class="user-info hidden">
+        <img id="user-avatar" src="" alt="avatar" class="user-avatar" />
+        <span id="user-name" class="user-name"></span>
+        <button id="signout-btn" class="btn btn-ghost btn-sm">Sign out</button>
+      </div>
+      <div id="sheet-actions" class="sheet-actions hidden">
+        <button id="open-sheet-btn" class="btn btn-ghost btn-sm" title="Open Google Sheet">📊 Sheet</button>
+        <button id="sync-btn" class="btn btn-ghost btn-sm" title="Sync from Sheet">⬇️ Sync</button>
+        <button id="push-btn" class="btn btn-ghost btn-sm" title="Push to Sheet">⬆️ Push</button>
+      </div>
+      <button id="export-btn" class="btn btn-ghost btn-sm" title="Export CSV">💾 Export</button>
+      <label id="import-label" class="btn btn-ghost btn-sm" title="Import CSV">📂 Import<input id="import-input" type="file" accept=".csv" class="hidden-input" /></label>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="app-main" id="drop-zone">
+
+    <!-- ZOOM CONTROLS -->
+    <div class="zoom-controls">
+      <button id="zoom-in-btn" class="btn btn-ghost btn-sm" title="Zoom In">＋</button>
+      <button id="zoom-reset-btn" class="btn btn-ghost btn-sm" title="Reset Zoom">⊙</button>
+      <button id="zoom-out-btn" class="btn btn-ghost btn-sm" title="Zoom Out">－</button>
+      <button id="connections-btn" class="btn btn-ghost btn-sm" title="Toggle connections">🔗 Connections</button>
+    </div>
+
+    <!-- TIMELINE CANVAS -->
+    <div id="timeline-wrapper" class="timeline-wrapper">
+      <svg id="timeline-svg" class="timeline-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+
+    <!-- MINI-MAP -->
+    <div id="minimap-container" class="minimap-container">
+      <div id="minimap-viewport" class="minimap-viewport"></div>
+      <canvas id="minimap-canvas" class="minimap-canvas" width="200" height="40"></canvas>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div id="empty-state" class="empty-state hidden">
+      <div class="empty-icon">📅</div>
+      <h2>No events yet</h2>
+      <p>Add your first event or import a CSV to get started.</p>
+      <div class="empty-actions">
+        <button id="empty-add-btn" class="btn btn-primary">+ Add Event</button>
+        <label class="btn btn-ghost">📂 Import CSV<input type="file" accept=".csv" class="hidden-input" id="empty-import-input" /></label>
+      </div>
+    </div>
+
+    <!-- CONNECTION HEATMAP PANEL -->
+    <div id="heatmap-panel" class="heatmap-panel hidden">
+      <div class="heatmap-header">
+        <h3>Tag Connections</h3>
+        <button id="heatmap-close-btn" class="btn btn-ghost btn-sm">✕</button>
+      </div>
+      <div id="heatmap-content" class="heatmap-content"></div>
+    </div>
+
+  </main>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- LOADING SPINNER -->
+  <div id="spinner-overlay" class="spinner-overlay hidden">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- FAB -->
+  <button id="fab-btn" class="fab" title="Add Event">＋</button>
+
+  <!-- CRUD MODAL -->
+  <div id="crud-modal" class="modal-backdrop hidden">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-header">
+        <h2 id="modal-title">Add Event</h2>
+        <button id="modal-close-btn" class="btn btn-ghost btn-sm">✕</button>
+      </div>
+      <form id="crud-form" class="modal-form" novalidate>
+        <input type="hidden" id="field-id" />
+        <div class="form-grid">
+          <div class="form-group form-group-full">
+            <label for="field-event_name">Event Name <span class="required">*</span></label>
+            <input id="field-event_name" type="text" required placeholder="e.g. World War II" />
+          </div>
+          <div class="form-group">
+            <label for="field-date_start">Start Date <span class="required">*</span></label>
+            <input id="field-date_start" type="text" required placeholder="YYYY-MM-DD" pattern="\d{4}-\d{2}-\d{2}" />
+          </div>
+          <div class="form-group">
+            <label for="field-date_end">End Date</label>
+            <input id="field-date_end" type="text" placeholder="YYYY-MM-DD (optional)" pattern="\d{4}-\d{2}-\d{2}" />
+          </div>
+          <div class="form-group">
+            <label for="field-category">Category</label>
+            <input id="field-category" type="text" placeholder="e.g. Politics" />
+          </div>
+          <div class="form-group">
+            <label for="field-emoji">Emoji</label>
+            <input id="field-emoji" type="text" placeholder="e.g. 🌍" maxlength="4" />
+          </div>
+          <div class="form-group">
+            <label for="field-importance">Importance (1-10)</label>
+            <input id="field-importance" type="number" min="1" max="10" placeholder="5" />
+          </div>
+          <div class="form-group">
+            <label for="field-tags">Tags</label>
+            <input id="field-tags" type="text" placeholder="#war #politics" />
+          </div>
+          <div class="form-group form-group-full">
+            <label for="field-description">Description</label>
+            <textarea id="field-description" rows="3" placeholder="Describe the event…"></textarea>
+          </div>
+          <div class="form-group form-group-full">
+            <label for="field-sources">Sources / URL</label>
+            <input id="field-sources" type="url" placeholder="https://en.wikipedia.org/…" />
+          </div>
+          <div class="form-group form-group-full">
+            <label for="field-image_url">Image URL</label>
+            <input id="field-image_url" type="url" placeholder="https://upload.wikimedia.org/…" />
+          </div>
         </div>
-    </header>
-    <main class="flex-1 p-6 max-w-7xl mx-auto w-full">
-        <div id="timeline-container" class="relative border-l-2 border-slate-700 ml-4 pl-6 py-4 space-y-8">
-            <!-- Timeline nodes injected via app.js -->
+        <div class="modal-footer">
+          <button type="button" id="modal-delete-btn" class="btn btn-danger hidden">Delete</button>
+          <button type="button" id="modal-cancel-btn" class="btn btn-ghost">Cancel</button>
+          <button type="submit" id="modal-save-btn" class="btn btn-primary">Save</button>
         </div>
-    </main>
-    <script src="app.js"></script>
+      </form>
+    </div>
+  </div>
+
+  <!-- CONFIRM DIALOG -->
+  <div id="confirm-backdrop" class="modal-backdrop hidden">
+    <div class="modal modal-sm" role="dialog">
+      <div class="modal-header">
+        <h2 id="confirm-title">Confirm</h2>
+      </div>
+      <p id="confirm-message" class="modal-body-text"></p>
+      <div class="modal-footer">
+        <button id="confirm-cancel-btn" class="btn btn-ghost">Cancel</button>
+        <button id="confirm-ok-btn" class="btn btn-danger">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POPOVER CARD -->
+  <div id="popover" class="popover hidden" role="tooltip">
+    <div class="popover-image-wrap">
+      <img id="popover-image" src="" alt="" class="popover-image" />
+    </div>
+    <div class="popover-body">
+      <a id="popover-name" href="#" target="_blank" rel="noopener" class="popover-name"></a>
+      <div id="popover-dates" class="popover-dates"></div>
+      <div id="popover-category" class="popover-category"></div>
+      <div id="popover-importance" class="popover-importance"></div>
+      <p id="popover-desc" class="popover-desc"></p>
+      <div id="popover-tags" class="popover-tags"></div>
+      <div class="popover-actions">
+        <button id="popover-edit-btn" class="btn btn-ghost btn-sm">✏️ Edit</button>
+        <button id="popover-delete-btn" class="btn btn-danger btn-sm">🗑️ Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
