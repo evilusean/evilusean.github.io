@@ -18,13 +18,13 @@
    1. CONFIG & STATE
    ============================================================ */
 const CONFIG = {
-  CLIENT_ID: '',        // <-- fill in your Google OAuth Client ID
-  SPREADSHEET_ID: '',   // <-- fill in your Google Spreadsheet ID
+  CLIENT_ID: '423584880836-r8jfae1q0e84j94elnnriakohr5b9to9m.apps.googleusercontent.com',
+  SPREADSHEET_ID: localStorage.getItem('timeline_sheet_id') || '', 
   SHEET_NAME: 'Timeline',
   SCOPES: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file',
-  TIMELINE_PADDING: 80, // px on left/right of axis
-  AXIS_Y: 160,          // px from top of SVG to the axis line
-  SVG_HEIGHT: 340,      // total SVG height
+  TIMELINE_PADDING: 80, 
+  AXIS_Y: 160,          
+  SVG_HEIGHT: 340,      
   ZOOM_STEP: 0.25,
   ZOOM_MIN: 0.3,
   ZOOM_MAX: 6,
