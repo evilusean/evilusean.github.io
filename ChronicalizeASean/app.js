@@ -20,7 +20,7 @@
 const CONFIG = {
   CLIENT_ID: '423584880836-r8jfae1q0e84j94elnriakohr5b9to9m.apps.googleusercontent.com',
   SPREADSHEET_ID: localStorage.getItem('timeline_sheet_id') || '', 
-  SHEET_NAME: localStorage.getItem('timeline_sheet_name') || 'Timeline',
+  SHEET_NAME: 'Timeline',
   SCOPES: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file',
   TIMELINE_PADDING: 80, 
   AXIS_Y: 160,          
@@ -54,9 +54,13 @@ const STATE = {
   filterTag: '',
   activePopoverId: null,
   dragActive: false,
-  sheets: [],         // array of sheet tab names from the spreadsheet
-  dateFrom: localStorage.getItem('timeline_date_from') || '',  // YYYY-MM-DD or ''
-  dateTo:   localStorage.getItem('timeline_date_to')   || '',  // YYYY-MM-DD or ''
+  screensaver: false,    // is screensaver running
+  ssIndex: 0,            // current event index
+  ssPaused: false,       // paused?
+  ssTimer: null,         // interval/timeout handle
+  ssSpeed: 5000,         // ms per slide
+  ssProgressTimer: null, // rAF handle for progress bar
+  ssProgressStart: null, // timestamp progress started
 };
 
 /* Category → color map (grows dynamically) */
@@ -73,20 +77,6 @@ function categoryColor(cat) {
   }
   return CATEGORY_COLORS[cat];
 }
-
-/* Emoji picker data */
-const EMOJI_PICKER_DATA = [
-  { label: 'Symbols & Flags', emojis: ['📌','📍','🏴','🚩','🏳️','⚑','🎌','🏁','⭐','🌟','💫','✨','❤️','🔥','💥','⚡','🌈','☀️','🌙','❄️'] },
-  { label: 'People & Body',   emojis: ['👤','👥','🧑','👩','👨','👶','🧓','✊','✋','👋','🤝','🙏','💪','🫀','🧠','👁️','👂','🦷','🦴','🫁'] },
-  { label: 'Nature',          emojis: ['🌍','🌎','🌏','🌊','🏔️','🌋','🏝️','🌲','🌳','🌴','🌵','🌿','🍃','🌺','🌸','🌼','🌻','🌹','🍀','🌾'] },
-  { label: 'Animals',         emojis: ['🐅','🦁','🐺','🦊','🐻','🐼','🦋','🦅','🐬','🐳','🐘','🦒','🐊','🦕','🐢','🐍','🦗','🐝','🦠','🐾'] },
-  { label: 'Food & Drink',    emojis: ['🍎','🍊','🍋','🍇','🍓','🍔','🍕','🌮','🍣','🍜','🥗','🍺','☕','🍷','🥂','🍾','🌽','🥕','🍞','🧁'] },
-  { label: 'Travel & Places', emojis: ['✈️','🚀','🚁','⛵','🚂','🚗','🏛️','🏰','⛪','🕌','🗼','🗽','🏟️','🌉','🗺️','🧭','🏕️','🏙️','🌃','🌄'] },
-  { label: 'Objects',         emojis: ['📖','📚','📜','📰','🗞️','📝','✏️','🖊️','🔬','🔭','💡','🔦','🕯️','📡','💾','📀','📷','🎙️','📞','📻'] },
-  { label: 'Tools & Tech',    emojis: ['⚔️','🛡️','🔧','🔩','⚙️','🔗','💣','🧲','🔑','🗝️','🔒','🔓','🪤','🧰','🪛','🔨','⛏️','🪚','🧪','🧫'] },
-  { label: 'Money & Economy', emojis: ['💰','💵','💴','💶','💷','💸','💳','📈','📉','📊','🏦','🏧','💹','🪙','💎','🏆','🥇','🥈','🥉','🎖️'] },
-  { label: 'Misc & Numbers',  emojis: ['1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟','#️⃣','*️⃣','⚠️','🚫','❌','✅','❓','❗','♻️','🆘'] },
-];
 
 /* ============================================================
    2. GOOGLE AUTH
@@ -138,7 +128,6 @@ function fetchUserProfile() {
       STATE.userProfile = profile;
       renderAuthUI(true);
       showToast('Signed in as ' + profile.name, 'success');
-      if (CONFIG.SPREADSHEET_ID) fetchSheetList();
     })
     .catch(() => { renderAuthUI(true); });
 }
@@ -174,6 +163,16 @@ function renderAuthUI(loggedIn) {
     authCont.classList.remove('hidden');
     userInfo.classList.add('hidden');
     sheetActs.classList.add('hidden');
+  }
+}
+
+function updateSheetLinkVisibility() {
+  const btn = document.getElementById('open-sheet-btn');
+  if (!btn) return;
+  if (CONFIG.SPREADSHEET_ID) {
+    btn.classList.remove('hidden');
+  } else {
+    btn.classList.add('hidden');
   }
 }
 
@@ -266,69 +265,6 @@ function mergeRecords(existing, incoming) {
   existing.forEach(r => { map[r.id] = r; });
   incoming.forEach(r => { if (r.id) map[r.id] = r; });
   return Object.values(map);
-}
-
-async function fetchSheetList() {
-  if (!CONFIG.SPREADSHEET_ID || !STATE.accessToken) return;
-  try {
-    const url = `${SHEETS_BASE}/${CONFIG.SPREADSHEET_ID}?fields=sheets.properties`;
-    const data = await sheetsRequest(url);
-    if (!data || !data.sheets) return;
-    STATE.sheets = data.sheets.map(s => s.properties.title);
-    // Render the switcher dropdown
-    const sel = document.getElementById('timeline-select');
-    if (sel) {
-      sel.innerHTML = STATE.sheets.map(name =>
-        `<option value="${esc(name)}" ${name === CONFIG.SHEET_NAME ? 'selected' : ''}>${esc(name)}</option>`
-      ).join('');
-    }
-    renderOpenSheetBtn();
-  } catch (e) {
-    // Silently ignore — sheet list is non-critical
-  }
-}
-
-async function createNewTimeline(name) {
-  if (!name || !name.trim()) { showToast('Timeline name cannot be empty', 'warning'); return; }
-  name = name.trim();
-  if (!CONFIG.SPREADSHEET_ID) { showToast('SPREADSHEET_ID not configured', 'warning'); return; }
-  showSpinner();
-  try {
-    // 1. Add new sheet tab
-    await sheetsRequest(`${SHEETS_BASE}/${CONFIG.SPREADSHEET_ID}:batchUpdate`, {
-      method: 'POST',
-      body: JSON.stringify({
-        requests: [{ addSheet: { properties: { title: name } } }],
-      }),
-    });
-    // 2. Write header row
-    await sheetsRequest(
-      `${SHEETS_BASE}/${CONFIG.SPREADSHEET_ID}/values/${encodeURIComponent(name + '!A1')}?valueInputOption=RAW`,
-      { method: 'PUT', body: JSON.stringify({ values: [FIELDS] }) }
-    );
-    hideSpinner();
-    showToast(`Timeline "${name}" created`, 'success');
-    await fetchSheetList();
-    await switchTimeline(name);
-  } catch (e) {
-    hideSpinner();
-    showToast('Create timeline error: ' + e.message, 'error');
-  }
-}
-
-async function switchTimeline(name) {
-  CONFIG.SHEET_NAME = name;
-  localStorage.setItem('timeline_sheet_name', name);
-  STATE.records = [];
-  STATE.filtered = [];
-  renderTimeline();
-  renderOpenSheetBtn();
-  // Update select value in case called programmatically
-  const sel = document.getElementById('timeline-select');
-  if (sel) sel.value = name;
-  if (CONFIG.SPREADSHEET_ID && STATE.accessToken) {
-    await syncFromSheet();
-  }
 }
 
 /* ============================================================
@@ -480,25 +416,13 @@ function renderTimeline() {
 
   // Compute date range
   const dates = records.flatMap(r => [parseDate(r.date_start), r.date_end ? parseDate(r.date_end) : null].filter(Boolean));
-  let minDate = new Date(Math.min(...dates.map(d => d.getTime())));
-  let maxDate = new Date(Math.max(...dates.map(d => d.getTime())));
+  const minDate = new Date(Math.min(...dates.map(d => d.getTime())));
+  const maxDate = new Date(Math.max(...dates.map(d => d.getTime())));
 
   // Ensure at least 1 day span
   if (minDate.getTime() === maxDate.getTime()) {
     maxDate.setUTCDate(maxDate.getUTCDate() + 1);
   }
-
-  // Apply date range overrides
-  if (STATE.dateFrom && DATE_RE.test(STATE.dateFrom)) {
-    const override = parseDate(STATE.dateFrom);
-    if (override) minDate = override;
-  }
-  if (STATE.dateTo && DATE_RE.test(STATE.dateTo)) {
-    const override = parseDate(STATE.dateTo);
-    if (override) maxDate = override;
-  }
-  // Ensure minDate < maxDate
-  if (minDate >= maxDate) maxDate = new Date(minDate.getTime() + 86400000);
 
   const pad = CONFIG.TIMELINE_PADDING;
   const totalMs = maxDate - minDate;
@@ -924,7 +848,6 @@ function openCreateModal() {
   document.getElementById('field-id').value = '';
   document.getElementById('modal-title').textContent = 'Add Event';
   document.getElementById('modal-delete-btn').classList.add('hidden');
-  setEmojiPreview('📌');
   document.getElementById('crud-modal').classList.remove('hidden');
   document.getElementById('field-event_name').focus();
 }
@@ -937,12 +860,12 @@ function openEditModal(id) {
   document.getElementById('field-date_start').value  = r.date_start   || '';
   document.getElementById('field-date_end').value    = r.date_end     || '';
   document.getElementById('field-category').value    = r.category     || '';
+  document.getElementById('field-emoji').value        = r.emoji       || '';
   document.getElementById('field-importance').value  = r.importance   || 5;
   document.getElementById('field-tags').value         = r.tags        || '';
   document.getElementById('field-description').value = r.description  || '';
   document.getElementById('field-sources').value      = r.sources     || '';
   document.getElementById('field-image_url').value   = r.image_url   || '';
-  setEmojiPreview(r.emoji || '📌');
 
   document.getElementById('modal-title').textContent = 'Edit Event';
   document.getElementById('modal-delete-btn').classList.remove('hidden');
@@ -1005,44 +928,6 @@ function confirmDelete(id) {
   document.getElementById('confirm-cancel-btn').onclick = () => {
     document.getElementById('confirm-backdrop').classList.add('hidden');
   };
-}
-
-function initEmojiPicker() {
-  const panel = document.getElementById('emoji-picker-panel');
-  panel.innerHTML = EMOJI_PICKER_DATA.map(cat => `
-    <div class="emoji-category-label">${cat.label}</div>
-    <div class="emoji-grid">${cat.emojis.map(e =>
-      `<button type="button" class="emoji-btn" data-emoji="${e}">${e}</button>`
-    ).join('')}</div>
-  `).join('');
-  panel.addEventListener('click', e => {
-    const btn = e.target.closest('.emoji-btn');
-    if (!btn) return;
-    const emoji = btn.dataset.emoji;
-    document.getElementById('field-emoji').value = emoji;
-    document.getElementById('emoji-preview-btn').textContent = emoji;
-    panel.classList.add('hidden');
-  });
-}
-
-function toggleEmojiPicker() {
-  document.getElementById('emoji-picker-panel').classList.toggle('hidden');
-}
-
-function setEmojiPreview(emoji) {
-  document.getElementById('emoji-preview-btn').textContent = emoji || '📌';
-  document.getElementById('field-emoji').value = emoji || '📌';
-}
-
-function renderOpenSheetBtn() {
-  const btn = document.getElementById('open-sheet-btn');
-  if (CONFIG.SPREADSHEET_ID) {
-    btn.href = `https://docs.google.com/spreadsheets/d/${CONFIG.SPREADSHEET_ID}/edit`;
-    btn.textContent = `📊 ${CONFIG.SHEET_NAME}`;
-    btn.classList.remove('hidden');
-  } else {
-    btn.classList.add('hidden');
-  }
 }
 
 /* ============================================================
@@ -1243,7 +1128,253 @@ function setupConnections() {
 }
 
 /* ============================================================
-   11. INIT
+   11. SCREENSAVER
+   ============================================================ */
+
+function getSortedEventsForScreensaver() {
+  // Use filtered records, sorted by date_start ascending
+  return [...STATE.filtered].sort((a, b) => {
+    const da = parseDate(a.date_start);
+    const db = parseDate(b.date_start);
+    if (!da && !db) return 0;
+    if (!da) return 1;
+    if (!db) return -1;
+    return da - db;
+  });
+}
+
+function startScreensaver() {
+  const events = getSortedEventsForScreensaver();
+  if (!events.length) { showToast('No events to display', 'warning'); return; }
+
+  STATE.screensaver = true;
+  STATE.ssIndex = 0;
+  STATE.ssPaused = false;
+  STATE.ssSpeed = parseInt(document.getElementById('ss-speed').value) * 1000 || 5000;
+
+  document.getElementById('screensaver-overlay').classList.remove('hidden');
+  document.getElementById('screensaver-btn').textContent = '■ Stop';
+  hidePopover();
+
+  showSsSlide(events, 0);
+}
+
+function stopScreensaver() {
+  STATE.screensaver = false;
+  STATE.ssPaused = false;
+  clearTimeout(STATE.ssTimer);
+  cancelAnimationFrame(STATE.ssProgressTimer);
+  STATE.ssTimer = null;
+
+  document.getElementById('screensaver-overlay').classList.add('hidden');
+  document.getElementById('screensaver-btn').textContent = '▶ Slideshow';
+
+  // Remove any SVG highlights
+  document.querySelectorAll('.emoji-marker.ss-active').forEach(el => {
+    el.classList.remove('ss-active', 'ss-active-pulse');
+  });
+}
+
+function showSsSlide(events, idx) {
+  if (!STATE.screensaver) return;
+
+  // Clamp index with wrap
+  idx = ((idx % events.length) + events.length) % events.length;
+  STATE.ssIndex = idx;
+
+  const r = events[idx];
+
+  // Remove previous SVG highlight
+  document.querySelectorAll('.emoji-marker.ss-active').forEach(el => {
+    el.classList.remove('ss-active', 'ss-active-pulse');
+  });
+
+  // Highlight the emoji marker on the SVG
+  const marker = document.querySelector(`.emoji-marker[data-id="${r.id}"]`);
+  if (marker) {
+    marker.classList.add('ss-active', 'ss-active-pulse');
+    // Scroll the timeline wrapper so the marker is visible
+    const wrapper = document.getElementById('timeline-wrapper');
+    const svg = document.getElementById('timeline-svg');
+    const svgW = parseFloat(svg.getAttribute('width') || 0);
+    const transform = marker.getAttribute('transform') || '';
+    const match = transform.match(/translate\(([^,)]+)/);
+    if (match) {
+      const markerX = parseFloat(match[1]);
+      const wrapperW = wrapper.clientWidth;
+      const targetScroll = markerX - wrapperW / 2;
+      wrapper.scrollTo({ left: Math.max(0, targetScroll), behavior: 'smooth' });
+    }
+  }
+
+  // Populate the card
+  const imgWrap = document.getElementById('ss-image').parentElement;
+  const imgEl = document.getElementById('ss-image');
+  if (r.image_url) {
+    imgEl.src = r.image_url;
+    imgEl.removeAttribute('data-hidden');
+    imgWrap.removeAttribute('data-empty');
+    imgEl.onerror = () => {
+      imgEl.setAttribute('data-hidden', 'true');
+      imgWrap.setAttribute('data-empty', 'true');
+    };
+  } else {
+    imgEl.setAttribute('data-hidden', 'true');
+    imgWrap.setAttribute('data-empty', 'true');
+  }
+
+  document.getElementById('ss-emoji').textContent = r.emoji || '📌';
+  // Trigger highlight animation on emoji in card
+  const emojiEl = document.getElementById('ss-emoji');
+  emojiEl.classList.remove('highlighted');
+  void emojiEl.offsetWidth; // reflow to restart animation
+  emojiEl.classList.add('highlighted');
+
+  document.getElementById('ss-name').textContent = r.event_name;
+  document.getElementById('ss-dates').textContent = formatDateRange(r.date_start, r.date_end);
+
+  const catEl = document.getElementById('ss-category');
+  if (r.category) {
+    catEl.textContent = r.category;
+    catEl.style.background = categoryColor(r.category);
+    catEl.style.display = '';
+  } else {
+    catEl.textContent = '';
+    catEl.style.display = 'none';
+  }
+
+  document.getElementById('ss-desc').textContent = r.description || '';
+
+  const tagsEl = document.getElementById('ss-tags');
+  tagsEl.innerHTML = parseTags(r.tags).map(t => `<span class="tag-badge">${esc(t)}</span>`).join('');
+
+  const imp = Math.min(10, Math.max(1, Number(r.importance) || 5));
+  document.getElementById('ss-importance').innerHTML = Array.from({ length: 10 }, (_, i) =>
+    `<span class="importance-pip ${i < imp ? 'filled' : ''}"></span>`
+  ).join('');
+
+  document.getElementById('ss-index').textContent = `${idx + 1} / ${events.length}`;
+
+  // Re-animate the card
+  const card = document.querySelector('.ss-card');
+  card.style.animation = 'none';
+  void card.offsetWidth;
+  card.style.animation = '';
+
+  // Start progress bar and auto-advance
+  if (!STATE.ssPaused) {
+    scheduleSsAdvance(events);
+  }
+}
+
+function scheduleSsAdvance(events) {
+  clearTimeout(STATE.ssTimer);
+  cancelAnimationFrame(STATE.ssProgressTimer);
+
+  const fill = document.getElementById('ss-progress');
+  fill.style.transition = 'none';
+  fill.style.width = '0%';
+
+  const speed = STATE.ssSpeed;
+  const start = performance.now();
+  STATE.ssProgressStart = start;
+
+  function tick(now) {
+    if (!STATE.screensaver || STATE.ssPaused) return;
+    const elapsed = now - start;
+    const pct = Math.min(100, (elapsed / speed) * 100);
+    fill.style.transition = 'none';
+    fill.style.width = pct + '%';
+    if (pct < 100) {
+      STATE.ssProgressTimer = requestAnimationFrame(tick);
+    }
+  }
+  STATE.ssProgressTimer = requestAnimationFrame(tick);
+
+  STATE.ssTimer = setTimeout(() => {
+    showSsSlide(events, STATE.ssIndex + 1);
+  }, speed);
+}
+
+function ssPause() {
+  if (!STATE.screensaver) return;
+  STATE.ssPaused = true;
+  clearTimeout(STATE.ssTimer);
+  cancelAnimationFrame(STATE.ssProgressTimer);
+  document.getElementById('ss-pause-btn').textContent = '▶';
+  document.getElementById('ss-pause-btn').title = 'Play';
+}
+
+function ssResume() {
+  if (!STATE.screensaver) return;
+  STATE.ssPaused = false;
+  document.getElementById('ss-pause-btn').textContent = '⏸';
+  document.getElementById('ss-pause-btn').title = 'Pause';
+  const events = getSortedEventsForScreensaver();
+  scheduleSsAdvance(events);
+}
+
+function setupScreensaver() {
+  document.getElementById('screensaver-btn').addEventListener('click', () => {
+    if (STATE.screensaver) {
+      stopScreensaver();
+    } else {
+      startScreensaver();
+    }
+  });
+
+  document.getElementById('ss-close-btn').addEventListener('click', stopScreensaver);
+
+  document.getElementById('ss-pause-btn').addEventListener('click', () => {
+    if (STATE.ssPaused) ssResume(); else ssPause();
+  });
+
+  document.getElementById('ss-next-btn').addEventListener('click', () => {
+    clearTimeout(STATE.ssTimer);
+    cancelAnimationFrame(STATE.ssProgressTimer);
+    const events = getSortedEventsForScreensaver();
+    showSsSlide(events, STATE.ssIndex + 1);
+  });
+
+  document.getElementById('ss-prev-btn').addEventListener('click', () => {
+    clearTimeout(STATE.ssTimer);
+    cancelAnimationFrame(STATE.ssProgressTimer);
+    const events = getSortedEventsForScreensaver();
+    showSsSlide(events, STATE.ssIndex - 1);
+  });
+
+  document.getElementById('ss-speed').addEventListener('input', e => {
+    const s = parseInt(e.target.value);
+    STATE.ssSpeed = s * 1000;
+    document.getElementById('ss-speed-val').textContent = s + 's';
+    if (STATE.screensaver && !STATE.ssPaused) {
+      const events = getSortedEventsForScreensaver();
+      scheduleSsAdvance(events);
+    }
+  });
+
+  // Keyboard navigation while screensaver is active
+  document.addEventListener('keydown', e => {
+    if (!STATE.screensaver) return;
+    const events = getSortedEventsForScreensaver();
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      clearTimeout(STATE.ssTimer); cancelAnimationFrame(STATE.ssProgressTimer);
+      showSsSlide(events, STATE.ssIndex + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      clearTimeout(STATE.ssTimer); cancelAnimationFrame(STATE.ssProgressTimer);
+      showSsSlide(events, STATE.ssIndex - 1);
+    } else if (e.key === ' ') {
+      e.preventDefault();
+      if (STATE.ssPaused) ssResume(); else ssPause();
+    }
+    if (e.key === 'Escape' && STATE.screensaver) stopScreensaver();
+  });
+}
+
+/* ============================================================
+   12. INIT
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -1257,42 +1388,19 @@ document.addEventListener('DOMContentLoaded', () => {
     STATE.records = SAMPLE_EVENTS.map(r => ({ ...r }));
   }
   applyFilters();
+  updateSheetLinkVisibility();
 
   // Auth
   initGoogleAuth();
   document.getElementById('login-btn').addEventListener('click', () => requestToken(true));
   document.getElementById('signout-btn').addEventListener('click', signOut);
 
-  // Sheet actions (sync/push still need auth)
+  // Sheet actions
+  document.getElementById('open-sheet-btn').addEventListener('click', () => {
+    if (CONFIG.SPREADSHEET_ID) window.open(`https://docs.google.com/spreadsheets/d/${CONFIG.SPREADSHEET_ID}`, '_blank');
+  });
   document.getElementById('sync-btn').addEventListener('click', syncFromSheet);
   document.getElementById('push-btn').addEventListener('click', pushToSheet);
-
-  // Timeline switcher
-  document.getElementById('timeline-select').addEventListener('change', e => {
-    switchTimeline(e.target.value);
-  });
-  document.getElementById('new-timeline-btn').addEventListener('click', () => {
-    document.getElementById('new-timeline-name').value = '';
-    document.getElementById('new-timeline-backdrop').classList.remove('hidden');
-    document.getElementById('new-timeline-name').focus();
-  });
-  document.getElementById('new-timeline-cancel-btn').addEventListener('click', () => {
-    document.getElementById('new-timeline-backdrop').classList.add('hidden');
-  });
-  document.getElementById('new-timeline-cancel-btn-footer').addEventListener('click', () => {
-    document.getElementById('new-timeline-backdrop').classList.add('hidden');
-  });
-  document.getElementById('new-timeline-save-btn').addEventListener('click', () => {
-    const name = document.getElementById('new-timeline-name').value.trim();
-    document.getElementById('new-timeline-backdrop').classList.add('hidden');
-    createNewTimeline(name);
-  });
-  document.getElementById('new-timeline-backdrop').addEventListener('click', e => {
-    if (e.target === e.currentTarget) document.getElementById('new-timeline-backdrop').classList.add('hidden');
-  });
-
-  // Open sheet link (always visible when SPREADSHEET_ID set)
-  renderOpenSheetBtn();
 
   // Export / Import
   document.getElementById('export-btn').addEventListener('click', exportCSV);
@@ -1333,47 +1441,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // ESC key dismiss
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
+      if (STATE.screensaver) stopScreensaver();
       closeCrudModal();
       document.getElementById('confirm-backdrop').classList.add('hidden');
-      document.getElementById('new-timeline-backdrop').classList.add('hidden');
-      document.getElementById('emoji-picker-panel').classList.add('hidden');
       hidePopover();
-    }
-  });
-
-  // Date range controls
-  const dateFromEl = document.getElementById('date-from-input');
-  const dateToEl   = document.getElementById('date-to-input');
-  dateFromEl.value = STATE.dateFrom;
-  dateToEl.value   = STATE.dateTo;
-  dateFromEl.addEventListener('change', e => {
-    STATE.dateFrom = e.target.value;
-    localStorage.setItem('timeline_date_from', STATE.dateFrom);
-    renderTimeline();
-  });
-  dateToEl.addEventListener('change', e => {
-    STATE.dateTo = e.target.value;
-    localStorage.setItem('timeline_date_to', STATE.dateTo);
-    renderTimeline();
-  });
-  document.getElementById('date-range-reset-btn').addEventListener('click', () => {
-    STATE.dateFrom = ''; STATE.dateTo = '';
-    dateFromEl.value = ''; dateToEl.value = '';
-    localStorage.removeItem('timeline_date_from');
-    localStorage.removeItem('timeline_date_to');
-    renderTimeline();
-  });
-
-  // Emoji picker
-  initEmojiPicker();
-  document.getElementById('emoji-preview-btn').addEventListener('click', e => {
-    e.stopPropagation();
-    toggleEmojiPicker();
-  });
-  document.addEventListener('click', e => {
-    const panel = document.getElementById('emoji-picker-panel');
-    if (!panel.classList.contains('hidden') && !panel.contains(e.target) && e.target.id !== 'emoji-preview-btn') {
-      panel.classList.add('hidden');
     }
   });
 
@@ -1383,6 +1454,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupFilters();
   setupConnections();
   setupDragDrop();
+  setupScreensaver();
 
   // Handle window resize
   window.addEventListener('resize', () => { renderTimeline(); });

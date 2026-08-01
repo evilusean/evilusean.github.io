@@ -44,13 +44,11 @@
         <span id="user-name" class="user-name"></span>
         <button id="signout-btn" class="btn btn-ghost btn-sm">Sign out</button>
       </div>
-      <a id="open-sheet-btn" href="#" target="_blank" rel="noopener" class="btn btn-ghost btn-sm hidden" title="Open in Google Sheets">📊 Open Sheet</a>
       <div id="sheet-actions" class="sheet-actions hidden">
-        <select id="timeline-select" class="filter-select" style="min-width:130px" title="Switch timeline"></select>
-        <button id="new-timeline-btn" class="btn btn-ghost btn-sm" title="Create new timeline">＋ Timeline</button>
         <button id="sync-btn" class="btn btn-ghost btn-sm" title="Sync from Sheet">⬇️ Sync</button>
         <button id="push-btn" class="btn btn-ghost btn-sm" title="Push to Sheet">⬆️ Push</button>
       </div>
+      <button id="open-sheet-btn" class="btn btn-ghost btn-sm hidden" title="Open Google Sheet">📊 Open Sheet</button>
       <button id="export-btn" class="btn btn-ghost btn-sm" title="Export CSV">💾 Export</button>
       <label id="import-label" class="btn btn-ghost btn-sm" title="Import CSV">📂 Import<input id="import-input" type="file" accept=".csv" class="hidden-input" /></label>
     </div>
@@ -65,11 +63,7 @@
       <button id="zoom-reset-btn" class="btn btn-ghost btn-sm" title="Reset Zoom">⊙</button>
       <button id="zoom-out-btn" class="btn btn-ghost btn-sm" title="Zoom Out">－</button>
       <button id="connections-btn" class="btn btn-ghost btn-sm" title="Toggle connections">🔗 Connections</button>
-      <span style="color:var(--text-400);font-size:12px;padding:0 4px">From</span>
-      <input id="date-from-input" type="date" class="filter-input" style="min-width:0;width:130px;padding:3px 6px" title="Timeline start date" />
-      <span style="color:var(--text-400);font-size:12px;padding:0 4px">To</span>
-      <input id="date-to-input" type="date" class="filter-input" style="min-width:0;width:130px;padding:3px 6px" title="Timeline end date" />
-      <button id="date-range-reset-btn" class="btn btn-ghost btn-sm" title="Reset date range">↺</button>
+      <button id="screensaver-btn" class="btn btn-ghost btn-sm" title="Screensaver mode">▶ Slideshow</button>
     </div>
 
     <!-- TIMELINE CANVAS -->
@@ -143,14 +137,8 @@
             <input id="field-category" type="text" placeholder="e.g. Politics" />
           </div>
           <div class="form-group">
-            <label>Emoji</label>
-            <div class="emoji-field">
-              <button type="button" id="emoji-preview-btn" class="emoji-preview-btn" title="Pick emoji">📌</button>
-              <input id="field-emoji" type="hidden" value="📌" />
-              <div id="emoji-picker-panel" class="emoji-picker-panel hidden">
-                <!-- populated by JS -->
-              </div>
-            </div>
+            <label for="field-emoji">Emoji</label>
+            <input id="field-emoji" type="text" placeholder="e.g. 🌍" maxlength="4" />
           </div>
           <div class="form-group">
             <label for="field-importance">Importance (1-10)</label>
@@ -215,23 +203,44 @@
     </div>
   </div>
 
-  <!-- NEW TIMELINE MODAL -->
-  <div id="new-timeline-backdrop" class="modal-backdrop hidden">
-    <div class="modal modal-sm" role="dialog" aria-modal="true" aria-labelledby="new-timeline-modal-title">
-      <div class="modal-header">
-        <h2 id="new-timeline-modal-title">New Timeline</h2>
-        <button id="new-timeline-cancel-btn" class="btn btn-ghost btn-sm">✕</button>
+  <!-- SCREENSAVER OVERLAY -->
+  <div id="screensaver-overlay" class="screensaver-overlay hidden" role="dialog" aria-modal="true" aria-label="Screensaver">
+    <div class="ss-backdrop"></div>
+    <div class="ss-card">
+      <div class="ss-image-wrap">
+        <img id="ss-image" src="" alt="" class="ss-image" />
       </div>
-      <div style="padding:16px 20px;">
-        <div class="form-group">
-          <label for="new-timeline-name">Timeline name</label>
-          <input id="new-timeline-name" type="text" placeholder="e.g. Ancient History" style="background:var(--bg-700);border:1px solid var(--bg-600);color:var(--text-100);padding:7px 10px;border-radius:var(--radius-sm);font-size:13px;outline:none;width:100%;font-family:inherit;" />
+      <div class="ss-body">
+        <div class="ss-header">
+          <span id="ss-emoji" class="ss-emoji"></span>
+          <div class="ss-meta">
+            <h2 id="ss-name" class="ss-name"></h2>
+            <div id="ss-dates" class="ss-dates"></div>
+          </div>
+          <span id="ss-category" class="ss-category-badge"></span>
+        </div>
+        <p id="ss-desc" class="ss-desc"></p>
+        <div id="ss-tags" class="ss-tags"></div>
+        <div class="ss-importance-bar">
+          <span class="ss-imp-label">Importance</span>
+          <div id="ss-importance" class="ss-importance"></div>
+        </div>
+        <div class="ss-counter">
+          <span id="ss-index"></span>
+          <div class="ss-progress-bar"><div id="ss-progress" class="ss-progress-fill"></div></div>
         </div>
       </div>
-      <div class="modal-footer">
-        <button id="new-timeline-cancel-btn-footer" class="btn btn-ghost">Cancel</button>
-        <button id="new-timeline-save-btn" class="btn btn-primary">Save</button>
-      </div>
+    </div>
+    <div class="ss-controls">
+      <button id="ss-prev-btn" class="ss-ctrl-btn" title="Previous">‹</button>
+      <button id="ss-pause-btn" class="ss-ctrl-btn ss-ctrl-primary" title="Pause">⏸</button>
+      <button id="ss-next-btn" class="ss-ctrl-btn" title="Next">›</button>
+      <button id="ss-close-btn" class="ss-ctrl-btn" title="Exit screensaver">✕</button>
+    </div>
+    <div class="ss-speed-control">
+      <label for="ss-speed" class="ss-speed-label">Speed</label>
+      <input id="ss-speed" type="range" min="2" max="15" value="5" step="1" class="ss-speed-range" />
+      <span id="ss-speed-val" class="ss-speed-val">5s</span>
     </div>
   </div>
 
