@@ -54,13 +54,6 @@ const STATE = {
   filterTag: '',
   activePopoverId: null,
   dragActive: false,
-  screensaver: false,    // is screensaver running
-  ssIndex: 0,            // current event index
-  ssPaused: false,       // paused?
-  ssTimer: null,         // interval/timeout handle
-  ssSpeed: 5000,         // ms per slide
-  ssProgressTimer: null, // rAF handle for progress bar
-  ssProgressStart: null, // timestamp progress started
 };
 
 /* Category → color map (grows dynamically) */
@@ -163,16 +156,6 @@ function renderAuthUI(loggedIn) {
     authCont.classList.remove('hidden');
     userInfo.classList.add('hidden');
     sheetActs.classList.add('hidden');
-  }
-}
-
-function updateSheetLinkVisibility() {
-  const btn = document.getElementById('open-sheet-btn');
-  if (!btn) return;
-  if (CONFIG.SPREADSHEET_ID) {
-    btn.classList.remove('hidden');
-  } else {
-    btn.classList.add('hidden');
   }
 }
 
@@ -1128,253 +1111,7 @@ function setupConnections() {
 }
 
 /* ============================================================
-   11. SCREENSAVER
-   ============================================================ */
-
-function getSortedEventsForScreensaver() {
-  // Use filtered records, sorted by date_start ascending
-  return [...STATE.filtered].sort((a, b) => {
-    const da = parseDate(a.date_start);
-    const db = parseDate(b.date_start);
-    if (!da && !db) return 0;
-    if (!da) return 1;
-    if (!db) return -1;
-    return da - db;
-  });
-}
-
-function startScreensaver() {
-  const events = getSortedEventsForScreensaver();
-  if (!events.length) { showToast('No events to display', 'warning'); return; }
-
-  STATE.screensaver = true;
-  STATE.ssIndex = 0;
-  STATE.ssPaused = false;
-  STATE.ssSpeed = parseInt(document.getElementById('ss-speed').value) * 1000 || 5000;
-
-  document.getElementById('screensaver-overlay').classList.remove('hidden');
-  document.getElementById('screensaver-btn').textContent = '■ Stop';
-  hidePopover();
-
-  showSsSlide(events, 0);
-}
-
-function stopScreensaver() {
-  STATE.screensaver = false;
-  STATE.ssPaused = false;
-  clearTimeout(STATE.ssTimer);
-  cancelAnimationFrame(STATE.ssProgressTimer);
-  STATE.ssTimer = null;
-
-  document.getElementById('screensaver-overlay').classList.add('hidden');
-  document.getElementById('screensaver-btn').textContent = '▶ Slideshow';
-
-  // Remove any SVG highlights
-  document.querySelectorAll('.emoji-marker.ss-active').forEach(el => {
-    el.classList.remove('ss-active', 'ss-active-pulse');
-  });
-}
-
-function showSsSlide(events, idx) {
-  if (!STATE.screensaver) return;
-
-  // Clamp index with wrap
-  idx = ((idx % events.length) + events.length) % events.length;
-  STATE.ssIndex = idx;
-
-  const r = events[idx];
-
-  // Remove previous SVG highlight
-  document.querySelectorAll('.emoji-marker.ss-active').forEach(el => {
-    el.classList.remove('ss-active', 'ss-active-pulse');
-  });
-
-  // Highlight the emoji marker on the SVG
-  const marker = document.querySelector(`.emoji-marker[data-id="${r.id}"]`);
-  if (marker) {
-    marker.classList.add('ss-active', 'ss-active-pulse');
-    // Scroll the timeline wrapper so the marker is visible
-    const wrapper = document.getElementById('timeline-wrapper');
-    const svg = document.getElementById('timeline-svg');
-    const svgW = parseFloat(svg.getAttribute('width') || 0);
-    const transform = marker.getAttribute('transform') || '';
-    const match = transform.match(/translate\(([^,)]+)/);
-    if (match) {
-      const markerX = parseFloat(match[1]);
-      const wrapperW = wrapper.clientWidth;
-      const targetScroll = markerX - wrapperW / 2;
-      wrapper.scrollTo({ left: Math.max(0, targetScroll), behavior: 'smooth' });
-    }
-  }
-
-  // Populate the card
-  const imgWrap = document.getElementById('ss-image').parentElement;
-  const imgEl = document.getElementById('ss-image');
-  if (r.image_url) {
-    imgEl.src = r.image_url;
-    imgEl.removeAttribute('data-hidden');
-    imgWrap.removeAttribute('data-empty');
-    imgEl.onerror = () => {
-      imgEl.setAttribute('data-hidden', 'true');
-      imgWrap.setAttribute('data-empty', 'true');
-    };
-  } else {
-    imgEl.setAttribute('data-hidden', 'true');
-    imgWrap.setAttribute('data-empty', 'true');
-  }
-
-  document.getElementById('ss-emoji').textContent = r.emoji || '📌';
-  // Trigger highlight animation on emoji in card
-  const emojiEl = document.getElementById('ss-emoji');
-  emojiEl.classList.remove('highlighted');
-  void emojiEl.offsetWidth; // reflow to restart animation
-  emojiEl.classList.add('highlighted');
-
-  document.getElementById('ss-name').textContent = r.event_name;
-  document.getElementById('ss-dates').textContent = formatDateRange(r.date_start, r.date_end);
-
-  const catEl = document.getElementById('ss-category');
-  if (r.category) {
-    catEl.textContent = r.category;
-    catEl.style.background = categoryColor(r.category);
-    catEl.style.display = '';
-  } else {
-    catEl.textContent = '';
-    catEl.style.display = 'none';
-  }
-
-  document.getElementById('ss-desc').textContent = r.description || '';
-
-  const tagsEl = document.getElementById('ss-tags');
-  tagsEl.innerHTML = parseTags(r.tags).map(t => `<span class="tag-badge">${esc(t)}</span>`).join('');
-
-  const imp = Math.min(10, Math.max(1, Number(r.importance) || 5));
-  document.getElementById('ss-importance').innerHTML = Array.from({ length: 10 }, (_, i) =>
-    `<span class="importance-pip ${i < imp ? 'filled' : ''}"></span>`
-  ).join('');
-
-  document.getElementById('ss-index').textContent = `${idx + 1} / ${events.length}`;
-
-  // Re-animate the card
-  const card = document.querySelector('.ss-card');
-  card.style.animation = 'none';
-  void card.offsetWidth;
-  card.style.animation = '';
-
-  // Start progress bar and auto-advance
-  if (!STATE.ssPaused) {
-    scheduleSsAdvance(events);
-  }
-}
-
-function scheduleSsAdvance(events) {
-  clearTimeout(STATE.ssTimer);
-  cancelAnimationFrame(STATE.ssProgressTimer);
-
-  const fill = document.getElementById('ss-progress');
-  fill.style.transition = 'none';
-  fill.style.width = '0%';
-
-  const speed = STATE.ssSpeed;
-  const start = performance.now();
-  STATE.ssProgressStart = start;
-
-  function tick(now) {
-    if (!STATE.screensaver || STATE.ssPaused) return;
-    const elapsed = now - start;
-    const pct = Math.min(100, (elapsed / speed) * 100);
-    fill.style.transition = 'none';
-    fill.style.width = pct + '%';
-    if (pct < 100) {
-      STATE.ssProgressTimer = requestAnimationFrame(tick);
-    }
-  }
-  STATE.ssProgressTimer = requestAnimationFrame(tick);
-
-  STATE.ssTimer = setTimeout(() => {
-    showSsSlide(events, STATE.ssIndex + 1);
-  }, speed);
-}
-
-function ssPause() {
-  if (!STATE.screensaver) return;
-  STATE.ssPaused = true;
-  clearTimeout(STATE.ssTimer);
-  cancelAnimationFrame(STATE.ssProgressTimer);
-  document.getElementById('ss-pause-btn').textContent = '▶';
-  document.getElementById('ss-pause-btn').title = 'Play';
-}
-
-function ssResume() {
-  if (!STATE.screensaver) return;
-  STATE.ssPaused = false;
-  document.getElementById('ss-pause-btn').textContent = '⏸';
-  document.getElementById('ss-pause-btn').title = 'Pause';
-  const events = getSortedEventsForScreensaver();
-  scheduleSsAdvance(events);
-}
-
-function setupScreensaver() {
-  document.getElementById('screensaver-btn').addEventListener('click', () => {
-    if (STATE.screensaver) {
-      stopScreensaver();
-    } else {
-      startScreensaver();
-    }
-  });
-
-  document.getElementById('ss-close-btn').addEventListener('click', stopScreensaver);
-
-  document.getElementById('ss-pause-btn').addEventListener('click', () => {
-    if (STATE.ssPaused) ssResume(); else ssPause();
-  });
-
-  document.getElementById('ss-next-btn').addEventListener('click', () => {
-    clearTimeout(STATE.ssTimer);
-    cancelAnimationFrame(STATE.ssProgressTimer);
-    const events = getSortedEventsForScreensaver();
-    showSsSlide(events, STATE.ssIndex + 1);
-  });
-
-  document.getElementById('ss-prev-btn').addEventListener('click', () => {
-    clearTimeout(STATE.ssTimer);
-    cancelAnimationFrame(STATE.ssProgressTimer);
-    const events = getSortedEventsForScreensaver();
-    showSsSlide(events, STATE.ssIndex - 1);
-  });
-
-  document.getElementById('ss-speed').addEventListener('input', e => {
-    const s = parseInt(e.target.value);
-    STATE.ssSpeed = s * 1000;
-    document.getElementById('ss-speed-val').textContent = s + 's';
-    if (STATE.screensaver && !STATE.ssPaused) {
-      const events = getSortedEventsForScreensaver();
-      scheduleSsAdvance(events);
-    }
-  });
-
-  // Keyboard navigation while screensaver is active
-  document.addEventListener('keydown', e => {
-    if (!STATE.screensaver) return;
-    const events = getSortedEventsForScreensaver();
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-      e.preventDefault();
-      clearTimeout(STATE.ssTimer); cancelAnimationFrame(STATE.ssProgressTimer);
-      showSsSlide(events, STATE.ssIndex + 1);
-    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-      e.preventDefault();
-      clearTimeout(STATE.ssTimer); cancelAnimationFrame(STATE.ssProgressTimer);
-      showSsSlide(events, STATE.ssIndex - 1);
-    } else if (e.key === ' ') {
-      e.preventDefault();
-      if (STATE.ssPaused) ssResume(); else ssPause();
-    }
-    if (e.key === 'Escape' && STATE.screensaver) stopScreensaver();
-  });
-}
-
-/* ============================================================
-   12. INIT
+   11. INIT
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -1388,7 +1125,6 @@ document.addEventListener('DOMContentLoaded', () => {
     STATE.records = SAMPLE_EVENTS.map(r => ({ ...r }));
   }
   applyFilters();
-  updateSheetLinkVisibility();
 
   // Auth
   initGoogleAuth();
@@ -1441,7 +1177,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // ESC key dismiss
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
-      if (STATE.screensaver) stopScreensaver();
       closeCrudModal();
       document.getElementById('confirm-backdrop').classList.add('hidden');
       hidePopover();
@@ -1454,7 +1189,6 @@ document.addEventListener('DOMContentLoaded', () => {
   setupFilters();
   setupConnections();
   setupDragDrop();
-  setupScreensaver();
 
   // Handle window resize
   window.addEventListener('resize', () => { renderTimeline(); });
