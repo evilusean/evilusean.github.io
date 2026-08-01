@@ -43,8 +43,8 @@
         <button id="signout-btn" class="btn btn-ghost btn-sm">Sign out</button>
       </div>
       <div id="sheet-actions" class="sheet-actions hidden">
-        <select id="timeline-select" class="filter-select" style="min-width:120px" title="Switch timeline"></select>
-        <button id="new-timeline-btn" class="btn btn-ghost btn-sm" title="Create new timeline">＋ New</button>
+        <select id="timeline-select" class="filter-select" style="min-width:110px" title="Switch timeline"></select>
+        <button id="new-timeline-btn" class="btn btn-ghost btn-sm" title="Create new timeline tab">＋ New</button>
         <button id="sync-btn" class="btn btn-ghost btn-sm" title="Sync from Sheet">⬇️ Sync</button>
         <button id="push-btn" class="btn btn-ghost btn-sm" title="Push to Sheet">⬆️ Push</button>
       </div>
@@ -57,29 +57,56 @@
   <!-- MAIN CONTENT -->
   <main class="app-main" id="drop-zone">
 
-    <!-- ZOOM CONTROLS -->
+    <!-- ZOOM / CONTROLS BAR -->
     <div class="zoom-controls">
       <button id="zoom-in-btn" class="btn btn-ghost btn-sm" title="Zoom In">＋</button>
       <button id="zoom-reset-btn" class="btn btn-ghost btn-sm" title="Reset Zoom">⊙</button>
       <button id="zoom-out-btn" class="btn btn-ghost btn-sm" title="Zoom Out">－</button>
       <button id="connections-btn" class="btn btn-ghost btn-sm" title="Toggle connections">🔗 Connections</button>
-      <span class="zoom-date-sep">│</span>
-      <span class="zoom-label">From</span>
-      <input id="date-from-input" type="date" class="filter-input zoom-date-input" title="Timeline start date" />
-      <span class="zoom-label">To</span>
-      <input id="date-to-input" type="date" class="filter-input zoom-date-input" title="Timeline end date" />
+      <button id="screensaver-btn" class="btn btn-ghost btn-sm" title="Slideshow / Screensaver">▶ Slideshow</button>
+      <span style="color:var(--bg-600);padding:0 2px">│</span>
+      <span style="font-size:11px;color:var(--text-400);white-space:nowrap">From</span>
+      <input id="date-from-input" type="date" class="filter-input" style="min-width:0;width:130px;padding:3px 6px;font-size:12px" title="Timeline start date" />
+      <span style="font-size:11px;color:var(--text-400);white-space:nowrap">To</span>
+      <input id="date-to-input" type="date" class="filter-input" style="min-width:0;width:130px;padding:3px 6px;font-size:12px" title="Timeline end date" />
       <button id="date-range-reset-btn" class="btn btn-ghost btn-sm" title="Reset date range">↺</button>
     </div>
 
     <!-- TIMELINE CANVAS -->
     <div id="timeline-wrapper" class="timeline-wrapper">
       <svg id="timeline-svg" class="timeline-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+      <!-- Screensaver tooltip anchored inside timeline wrapper -->
+      <div id="ss-tooltip" class="ss-tooltip hidden">
+        <span id="ss-tooltip-emoji" class="ss-tooltip-emoji"></span>
+        <div class="ss-tooltip-body">
+          <div id="ss-tooltip-name" class="ss-tooltip-name"></div>
+          <div id="ss-tooltip-dates" class="ss-tooltip-dates"></div>
+        </div>
+      </div>
     </div>
 
     <!-- MINI-MAP -->
     <div id="minimap-container" class="minimap-container">
       <div id="minimap-viewport" class="minimap-viewport"></div>
       <canvas id="minimap-canvas" class="minimap-canvas" width="200" height="40"></canvas>
+    </div>
+
+    <!-- EVENT DETAIL PANEL (shown when an event is clicked or screensaver is active) -->
+    <div id="event-detail" class="event-detail hidden">
+      <div class="event-detail-inner">
+        <span id="ed-emoji" class="ed-emoji"></span>
+        <div class="ed-content">
+          <div id="ed-name" class="ed-name"></div>
+          <div id="ed-dates" class="ed-dates"></div>
+          <div id="ed-desc" class="ed-desc"></div>
+          <div id="ed-tags" class="ed-tags"></div>
+        </div>
+        <button id="ed-close-btn" class="btn btn-ghost btn-sm ed-close" title="Close">✕</button>
+      </div>
+      <!-- Screensaver progress bar lives inside detail panel -->
+      <div id="ss-progress-bar" class="ss-progress-bar hidden">
+        <div id="ss-progress-fill" class="ss-progress-fill"></div>
+      </div>
     </div>
 
     <!-- EMPTY STATE -->
@@ -100,6 +127,18 @@
         <button id="heatmap-close-btn" class="btn btn-ghost btn-sm">✕</button>
       </div>
       <div id="heatmap-content" class="heatmap-content"></div>
+    </div>
+
+    <!-- SCREENSAVER CONTROLS (shown when active) -->
+    <div id="ss-controls" class="ss-controls hidden">
+      <button id="ss-prev-btn" class="ss-ctrl-btn" title="Previous (←)">‹</button>
+      <button id="ss-pause-btn" class="ss-ctrl-btn ss-ctrl-primary" title="Pause/Play (Space)">⏸</button>
+      <button id="ss-next-btn" class="ss-ctrl-btn" title="Next (→)">›</button>
+      <button id="ss-stop-btn" class="ss-ctrl-btn" title="Stop screensaver (Esc)">■</button>
+      <label style="font-size:11px;color:var(--text-400);margin-left:6px">Speed</label>
+      <input id="ss-speed" type="range" min="2" max="15" value="5" style="width:70px;accent-color:var(--accent);cursor:pointer" />
+      <span id="ss-speed-val" style="font-size:11px;color:var(--text-200);min-width:22px">5s</span>
+      <span id="ss-counter" style="font-size:11px;color:var(--text-400);margin-left:4px"></span>
     </div>
 
   </main>
@@ -144,9 +183,12 @@
           <div class="form-group">
             <label>Emoji</label>
             <div class="emoji-field">
-              <button type="button" id="emoji-preview-btn" class="emoji-preview-btn" title="Pick an emoji">📌</button>
-              <input id="field-emoji" type="text" class="emoji-text-input" placeholder="or type one…" maxlength="8" title="Type your own emoji" />
-              <div id="emoji-picker-panel" class="emoji-picker-panel hidden"></div>
+              <button type="button" id="emoji-preview-btn" class="emoji-preview-btn" title="Open emoji picker">📌</button>
+              <input id="field-emoji" type="text" class="emoji-text-input" placeholder="or type…" maxlength="8" autocomplete="off" />
+              <div id="emoji-picker-panel" class="emoji-picker-panel hidden">
+                <input id="emoji-search-input" type="text" class="emoji-search" placeholder="🔍 Search emojis…" autocomplete="off" />
+                <div id="emoji-picker-grid" class="emoji-picker-grid"></div>
+              </div>
             </div>
           </div>
           <div class="form-group">

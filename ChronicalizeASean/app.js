@@ -54,6 +54,19 @@ const STATE = {
   filterTag: '',
   activePopoverId: null,
   dragActive: false,
+  sheets: [],
+  dateFrom: localStorage.getItem('timeline_date_from') || '',
+  dateTo:   localStorage.getItem('timeline_date_to')   || '',
+  screensaver: false,
+  ssIndex: 0,
+  ssPaused: false,
+  ssTimer: null,
+  ssSpeed: 5000,
+  ssProgressRaf: null,
+  ssProgressStart: null,
+  lastClickedId: null,
+  ssPhase: 0,
+  ssPhaseTimer: null,
 };
 
 /* Category → color map (grows dynamically) */
