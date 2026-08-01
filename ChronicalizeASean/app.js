@@ -18,7 +18,7 @@
    1. CONFIG & STATE
    ============================================================ */
 const CONFIG = {
-  CLIENT_ID: '423584880836-r8jfae1q0e84j94elnnriakohr5b9to9m.apps.googleusercontent.com',
+  CLIENT_ID: '423584880836-r8jfae1q0e84j94elnriakohr5b9to9m.apps.googleusercontent.com',
   SPREADSHEET_ID: localStorage.getItem('timeline_sheet_id') || '', 
   SHEET_NAME: 'Timeline',
   SCOPES: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file',
