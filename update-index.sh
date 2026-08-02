@@ -225,3 +225,9 @@ if [ -d "CodePen" ] && [ -f "CodePen/update-codepen-index.sh" ]; then
     echo "🎨 Updating CodePen index..."
     (cd CodePen && ./update-codepen-index.sh)
 fi
+
+# Update EncryptSean index if it exists
+if [ -d "EncryptSean" ] && [ -f "EncryptSean/update-encryptsean-index.sh" ]; then
+    echo "🔐 Updating EncryptSean index..."
+    (cd EncryptSean && ./update-encryptsean-index.sh)
+fi
