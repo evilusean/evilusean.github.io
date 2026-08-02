@@ -3,12 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="description" content="A simple static ROT13 translator for GitHub Pages.">
+    <title>ROT13 Translator</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <main class="app">
+        <header class="hero">
+            <div class="header-row">
+                <div>
+                    <p class="eyebrow">ROT13 Translator</p>
+                    <h1>Encode and decode text with one click.</h1>
+                    <p class="subtitle">This simple static web app lets you convert normal text into ROT13 and translate it back again.</p>
+                </div>
+                <details class="info-dropdown">
+                    <summary>How to use</summary>
+                    <div class="dropdown-content">
+                        <p>Type your message into one box, then click the matching button to convert it. Use the left side for normal text and the right side for ROT13 text.</p>
+                    </div>
+                </details>
+            </div>
+        </header>
 
-    <h1>Hello, World!</h1>
+        <section class="translator" aria-label="ROT13 translator">
+            <div class="panel">
+                <label for="inputText">Normal text</label>
+                <textarea id="inputText" placeholder="Enter plain text here..."></textarea>
+                <button id="toRot13Btn" type="button">Translate to ROT13</button>
+            </div>
+
+            <div class="panel">
+                <label for="rot13Text">ROT13 text</label>
+                <textarea id="rot13Text" placeholder="Enter ROT13 text here..."></textarea>
+                <button id="fromRot13Btn" type="button">Translate from ROT13</button>
+            </div>
+        </section>
+    </main>
 
     <script src="script.js"></script>
 </body>
