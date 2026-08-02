@@ -19,6 +19,9 @@ cat > index.html << 'EOF'
     <header class="header">
         <div class="glow-text" data-text="EncryptSean Projects">EncryptSean Projects</div>
         <p>Collection of encryption and cipher experiments</p>
+        <div class="nav-back">
+            <a href="../index.html" class="btn-back"><i class="bx bx-arrow-back"></i> Back to Portfolio</a>
+        </div>
     </header>
 
     <main>

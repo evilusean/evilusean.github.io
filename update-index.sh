@@ -29,7 +29,7 @@ cat > index.html << 'EOF'
 EOF
 
 # Define multi-app directories
-multi_app_dirs=("3ThreeJS" "Math" "Languages" "CodePen")
+multi_app_dirs=("3ThreeJS" "Math" "Languages" "CodePen" "EncryptSean")
 
 # Function to check if directory is multi-app
 is_multi_app_dir() {
