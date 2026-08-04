@@ -132,3 +132,4 @@ Open source - feel free to use and modify for educational purposes.
 ## ToDo : Future Sean Problems :
 - Double angle cosine looks weird (colours are messed up)
 - Add formulas for converting between polar coordinates (x = r * cos and y = r * sin) - and converting back to rectangle/cartesian coords (using tan to find theta, and using hypoteneuse to get radius)
+- Fix Polar -> Rectangular Coordinates - Each section should be it's own color, right now, it's improperly coloured, and also fix 'double angle cos' it has 3 identities seperated by '=' signs, but the colours jump randomly, need to fix
