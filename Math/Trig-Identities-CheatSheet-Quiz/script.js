@@ -208,6 +208,19 @@ function toMathJax(formula) {
     // Simple fractions (number/number or letter/letter)
     math = math.replace(/(\d+)\s*\/\s*(\d+)/g, '\\frac{$1}{$2}');
 
+    const shouldSkipFormulaColoring = /cos\(2θ\)|x = r cos θ|y = r sin θ|\\arctan\(y\/x\)|arctan\(y\/x\)/i.test(formula);
+
+    if (shouldSkipFormulaColoring) {
+        let specialMath = math;
+        specialMath = specialMath.replace(/x\s*=\s*r\s*cos\s*θ/gi, 'x = r \color{dodgerblue}{\cos\theta}');
+        specialMath = specialMath.replace(/y\s*=\s*r\s*sin\s*θ/gi, 'y = r \color{red}{\sin\theta}');
+        specialMath = specialMath.replace(/\bcos\b/gi, '\\cos');
+        specialMath = specialMath.replace(/\bsin\b/gi, '\\sin');
+        specialMath = specialMath.replace(/√\[([^\]]+)\]/g, '\\sqrt{$1}');
+        specialMath = specialMath.replace(/√(\d+)/g, '\\sqrt{$1}');
+        return `$${specialMath}$`;
+    }
+
     const trigColorMap = {
         sin: 'red',
         cos: 'dodgerblue',
@@ -225,21 +238,30 @@ function toMathJax(formula) {
 
     const segmentColors = ['dodgerblue', 'red', 'mediumorchid', 'deepskyblue', 'darkorchid'];
 
-    const colorizeTrigTokens = (input) => input.replace(/\\?(sin|cos|tan|csc|sec|cot|arcsin|arccos|arctan|arccsc|arcsec|arccot)(?![A-Za-z])/gi, (match, name) => {
-        const color = trigColorMap[name.toLowerCase()];
-        if (!color) return match;
-        const command = match.startsWith('\\') ? match : `\\${name.toLowerCase()}`;
-        return `\\color{${color}}{${command}}`;
-    });
+    const normalizeInverseTrig = (input) => {
+        return input
+            .replace(/\b(arcsin|arccos|arctan|arccsc|arcsec|arccot)\b/gi, (match) => `\\${match}`)
+            .replace(/\b(sin|cos|tan|csc|sec|cot)\s*\^?\s*-\s*1\b/gi, (match, name) => `\\${name}^{-1}`);
+    };
 
-    if (/[;,]/.test(math)) {
-        const pieces = math.split(/([;,])/g).filter(Boolean);
+    const colorizeTrigTokens = (input) => {
+        const normalized = normalizeInverseTrig(input);
+        return normalized.replace(/(^|[^A-Za-z])(sin|cos|tan|csc|sec|cot|arcsin|arccos|arctan|arccsc|arcsec|arccot)(?![A-Za-z])/gi, (match, prefix, name) => {
+            const color = trigColorMap[name.toLowerCase()];
+            if (!color) return match;
+            const command = `\\${name.toLowerCase()}`;
+            return `${prefix}\\color{${color}}{${command}}`;
+        });
+    };
+
+    if (/[=;,]/.test(math)) {
+        const pieces = math.split(/([=;,])/g).filter(Boolean);
         let coloredMath = '';
         let sectionIndex = 0;
 
         pieces.forEach((piece) => {
-            if (piece === ',' || piece === ';') {
-                coloredMath += piece === ',' ? ', ' : '; ';
+            if (piece === '=' || piece === ',' || piece === ';') {
+                coloredMath += piece === '=' ? ' = ' : piece === ',' ? ', ' : '; ';
                 return;
             }
 
