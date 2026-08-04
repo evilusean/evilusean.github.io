@@ -152,53 +152,23 @@ function parseIdentity(identity) {
 // Color code formulas and text
 function colorCodeText(text) {
     if (!text) return text;
-    
-    // Color code trig functions - more comprehensive patterns
-    text = text.replace(/\bsin\s*θ/gi, '<span class="sin">sin θ</span>');
-    text = text.replace(/\bcos\s*θ/gi, '<span class="cos">cos θ</span>');
-    text = text.replace(/\btan\s*θ/gi, '<span class="tan">tan θ</span>');
-    text = text.replace(/\bcsc\s*θ/gi, '<span class="csc">csc θ</span>');
-    text = text.replace(/\bsec\s*θ/gi, '<span class="sec">sec θ</span>');
-    text = text.replace(/\bcot\s*θ/gi, '<span class="cot">cot θ</span>');
-    
-    // Color code with various notations
-    text = text.replace(/\bsin\(([^)]+)\)/gi, '<span class="sin">sin($1)</span>');
-    text = text.replace(/\bcos\(([^)]+)\)/gi, '<span class="cos">cos($1)</span>');
-    text = text.replace(/\btan\(([^)]+)\)/gi, '<span class="tan">tan($1)</span>');
-    text = text.replace(/\bcsc\(([^)]+)\)/gi, '<span class="csc">csc($1)</span>');
-    text = text.replace(/\bsec\(([^)]+)\)/gi, '<span class="sec">sec($1)</span>');
-    text = text.replace(/\bcot\(([^)]+)\)/gi, '<span class="cot">cot($1)</span>');
-    
-    // Standalone trig functions
-    text = text.replace(/\bsin\b(?![θ(])/gi, '<span class="sin">sin</span>');
-    text = text.replace(/\bcos\b(?![θ(])/gi, '<span class="cos">cos</span>');
-    text = text.replace(/\btan\b(?![θ(])/gi, '<span class="tan">tan</span>');
-    text = text.replace(/\bcsc\b(?![θ(])/gi, '<span class="csc">csc</span>');
-    text = text.replace(/\bsec\b(?![θ(])/gi, '<span class="sec">sec</span>');
-    text = text.replace(/\bcot\b(?![θ(])/gi, '<span class="cot">cot</span>');
-    
-    // Color code with superscripts
-    text = text.replace(/\bsin²\s*θ/gi, '<span class="sin">sin² θ</span>');
-    text = text.replace(/\bcos²\s*θ/gi, '<span class="cos">cos² θ</span>');
-    text = text.replace(/\btan²\s*θ/gi, '<span class="tan">tan² θ</span>');
-    text = text.replace(/\bsin²/gi, '<span class="sin">sin²</span>');
-    text = text.replace(/\bcos²/gi, '<span class="cos">cos²</span>');
-    text = text.replace(/\btan²/gi, '<span class="tan">tan²</span>');
-    
-    // Color code with x variable
-    text = text.replace(/\bsinx\b/gi, '<span class="sin">sinx</span>');
-    text = text.replace(/\bcosx\b/gi, '<span class="cos">cosx</span>');
-    text = text.replace(/\btanx\b/gi, '<span class="tan">tanx</span>');
-    text = text.replace(/\bcscx\b/gi, '<span class="csc">cscx</span>');
-    text = text.replace(/\bsecx\b/gi, '<span class="sec">secx</span>');
-    text = text.replace(/\bcotx\b/gi, '<span class="cot">cotx</span>');
-    
-    // Bold key terms
+
+    const trigClassMap = {
+        sin: 'sin',
+        cos: 'cos',
+        tan: 'tan',
+        csc: 'csc',
+        sec: 'sec',
+        cot: 'cot'
+    };
+
+    text = text.replace(/\b(sin|cos|tan|csc|sec|cot)\b/gi, (match, name) => {
+        const className = trigClassMap[name.toLowerCase()];
+        return className ? `<span class="${className}">${match}</span>` : match;
+    });
+
     text = text.replace(/\b(WHY|WHEN TO USE|EXAMPLE|NOTE|IMPORTANT|Area|Slope)\b/g, '<strong>$1</strong>');
-    
-    // Bold formulas in text (anything with θ or = or mathematical notation)
-    text = text.replace(/([\w\s]*[=≠<>±√∫∑][^\.,;]+)/g, '<strong>$1</strong>');
-    
+
     return text;
 }
 
@@ -231,29 +201,57 @@ function toMathJax(formula) {
     math = math.replace(/²/g, '^2');
     
     // Handle fractions - be more careful with parentheses
-    // Match patterns like (a+b)/c or a/(b+c) or simple a/b
     math = math.replace(/\(([^)]+)\)\s*\/\s*(\d+)/g, '\\frac{$1}{$2}');
     math = math.replace(/(\d+)\s*\/\s*\(([^)]+)\)/g, '\\frac{$1}{$2}');
     math = math.replace(/\(([^)]+)\)\s*\/\s*\(([^)]+)\)/g, '\\frac{$1}{$2}');
     
     // Simple fractions (number/number or letter/letter)
     math = math.replace(/(\d+)\s*\/\s*(\d+)/g, '\\frac{$1}{$2}');
-    
-    // Replace trig functions with colored versions (using colors from unit circle app)
+
     const trigColorMap = {
         sin: 'red',
         cos: 'dodgerblue',
         tan: 'mediumorchid',
         csc: 'magenta',
         sec: 'deepskyblue',
-        cot: 'darkorchid'
+        cot: 'darkorchid',
+        arcsin: 'red',
+        arccos: 'dodgerblue',
+        arctan: 'mediumorchid',
+        arccsc: 'magenta',
+        arcsec: 'deepskyblue',
+        arccot: 'darkorchid'
     };
 
-    math = math.replace(/\\?(sin|cos|tan|csc|sec|cot)(?![A-Za-z])/g, (match, name) => {
-        const color = trigColorMap[name];
+    const segmentColors = ['dodgerblue', 'red', 'mediumorchid', 'deepskyblue', 'darkorchid'];
+
+    const colorizeTrigTokens = (input) => input.replace(/\\?(sin|cos|tan|csc|sec|cot|arcsin|arccos|arctan|arccsc|arcsec|arccot)(?![A-Za-z])/gi, (match, name) => {
+        const color = trigColorMap[name.toLowerCase()];
         if (!color) return match;
-        return match.startsWith('\\') ? `\\color{${color}}{${match}}` : `\\color{${color}}{\\${name}}`;
+        const command = match.startsWith('\\') ? match : `\\${name.toLowerCase()}`;
+        return `\\color{${color}}{${command}}`;
     });
+
+    if (/[;,]/.test(math)) {
+        const pieces = math.split(/([;,])/g).filter(Boolean);
+        let coloredMath = '';
+        let sectionIndex = 0;
+
+        pieces.forEach((piece) => {
+            if (piece === ',' || piece === ';') {
+                coloredMath += piece === ',' ? ', ' : '; ';
+                return;
+            }
+
+            const segmentColor = segmentColors[sectionIndex % segmentColors.length];
+            coloredMath += `\\color{${segmentColor}}{${colorizeTrigTokens(piece.trim())}}`;
+            sectionIndex += 1;
+        });
+
+        math = coloredMath;
+    } else {
+        math = colorizeTrigTokens(math);
+    }
     
     // Handle square roots
     math = math.replace(/√\[([^\]]+)\]/g, '\\sqrt{$1}');
