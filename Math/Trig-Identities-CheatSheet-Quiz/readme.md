@@ -130,5 +130,5 @@ Colors are consistent with the Unit Circle app for a unified learning experience
 Open source - feel free to use and modify for educational purposes.
 
 ## ToDo : Future Sean Problems :
-
+Add cofunction identities for both degrees and radians, currently there is only just radians - also missing cofunction identities for both sec, cosecant, and tangent (they all follow the same rules, and do I really want to add 'more' identities? - It's just the opposite 90 (or \frac{\pi}{2}) minus theta Where Sin=Cos, Sec=Csc, Tan=CoTan) - just noticed that 90 and \pi over 2 are the same, skill issue. 
 
