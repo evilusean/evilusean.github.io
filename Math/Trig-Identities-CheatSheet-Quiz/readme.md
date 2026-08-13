@@ -131,7 +131,7 @@ Open source - feel free to use and modify for educational purposes.
 
 ## ToDo : Future Sean Problems :
 - Add cofunction identities for both degrees and radians, currently there is only just radians - also missing cofunction identities for both sec, cosecant, and tangent (they all follow the same rules, and do I really want to add 'more' identities? - It's just the opposite 90 (or \frac{\pi}{2}) minus theta Where Sin=Cos, Sec=Csc, Tan=CoTan) - just noticed that 90 and \pi over 2 are the same, skill issue. 
-- For the screensaver / quiz mode - make sure to add for the product to sum which one you want (theres 2 types - cos and sin versions for each)
+- For the screensaver / quiz mode - make sure to add for the product to sum which one you want (theres 2 types - cos and sin versions for each 'SinACoSB'x2 and 'CosACosB' x1 'CosASinB' x1) = The SinACosB has 2 different ways to write it out, the sin way, and the cos way, this sounds like I'm rambling, basically, I need a way to differentiate between which one I should be using for 'SinACosB' during quiz and screensaver mode
 - Also, you can derive the power reduction formulas from the double angle formulas
 - Maybe add the 30-60-90 triangle and the 45-45-90 triangle to show how to get the trig ratios from that easily, instead of either drawing a unit circle or thinking about it and taking time to figure out which angle is what ratio
 
