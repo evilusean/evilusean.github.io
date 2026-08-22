@@ -260,5 +260,29 @@ const trigIdentities = [
     formula: 'Area = √[s(s-a)(s-b)(s-c)] where s = (a+b+c)/2',
     description: 'WHY: Finds area using only the three side lengths. s is the semi-perimeter (half the perimeter). No angles needed!',
     usage: 'WHEN TO USE: Finding area when you know all 3 sides (SSS) but no angles.\n\nEXAMPLE: Triangle with a=3, b=4, c=5. s=(3+4+5)/2=6. Area = √[6(6−3)(6−4)(6−5)] = √[6·3·2·1] = √36 = 6\n\nWHY IT WORKS: Derived from the law of cosines and area formula, eliminating the need to find angles.'
+  },
+  {
+    name: 'Arc Length (Radians)',
+    formula: 's = \\theta r',
+    description: 'WHY: In radian measure, one radian is defined as the angle that subtends an arc whose length equals the radius. So the arc length is simply radius times angle.',
+    usage: 'WHEN TO USE: (1) Circular motion and rotational motion. (2) Physics problems with angular displacement. (3) Any problem in radians where you know radius and angle.\n\nEXAMPLE: If r = 6 cm and \\theta = 2.5 rad, then s = 2.5·6 = 15 cm.\n\nWHY IT WORKS: By definition of the radian, s = r\\theta for angle measured in radians.'
+  },
+  {
+    name: 'Arc Length (Degrees)',
+    formula: 's = \\left(\\frac{\\theta}{360}\\right) 2\\pi r',
+    description: 'WHY: A degree measure is a fraction of a full circle, so the arc length is the same fraction of the full circumference 2πr.',
+    usage: 'WHEN TO USE: (1) Converting angle in degrees to a length along a circle. (2) Geometry and engineering applications. (3) Circular arcs or wheel rotations.\n\nEXAMPLE: If r = 10 m and \\theta = 90°, then s = \\left(\\frac{90}{360}\\right) 2\\pi (10) = \\left(\\frac{1}{4}\\right) 20\\pi = 5\\pi m.\n\nWHY IT WORKS: Arc length is proportional to the fraction of the circle represented by \\theta.'
+  },
+  {
+    name: 'Sector Area (Radians)',
+    formula: 'A = \\frac{1}{2}\\theta r^2',
+    description: 'WHY: A sector is a fraction of a circle, and in radians the relationship is especially simple because the whole circle has area \\pi r^2 and angle 2\\pi.',
+    usage: 'WHEN TO USE: (1) Finding area of a wedge of a circle. (2) Physics and engineering problems with rotating sectors. (3) Calculus and polar coordinates.\n\nEXAMPLE: If r = 4 cm and \\theta = 3 rad, then A = \\frac{1}{2}(3)(4^2) = 24 cm^2.\n\nWHY IT WORKS: A sector with angle \\theta radians has area \\frac{\\theta}{2\\pi} of the full circle, so A = \\left(\\frac{\\theta}{2\\pi}\\right)\\pi r^2 = \\frac{1}{2}\\theta r^2.'
+  },
+  {
+    name: 'Sector Area (Degrees)',
+    formula: 'A = \\left(\\frac{\\theta^\\circ}{360}\\right)\\pi r^2',
+    description: 'WHY: A degree-based sector area is the same fraction of the whole circle as the angle is of 360°.',
+    usage: 'WHEN TO USE: (1) Geometry problems with angle measures in degrees. (2) Design, architecture, and circular sections. (3) Finding pie-slice area.\n\nEXAMPLE: If r = 5 m and \\theta = 60°, then A = \\left(\\frac{60}{360}\\right)\\pi (5^2) = \\left(\\frac{1}{6}\\right) 25\\pi = \\frac{25\\pi}{6} m^2.\n\nWHY IT WORKS: Sector area is proportional to the central angle compared with a full 360° circle.'
   }
 ];
