@@ -134,6 +134,5 @@ Open source - feel free to use and modify for educational purposes.
 - Also, you can derive the power reduction formulas from the double angle formulas
 - Maybe add the 30-60-90 triangle and the 45-45-90 triangle to show how to get the trig ratios from that easily, instead of either drawing a unit circle or thinking about it and taking time to figure out which angle is what ratio
 - 'arctan' mathjax isn't working correctly for polar to rectangular coordinates
-- add formulas for sectors and arclength (for sector length in both radians(s=\theta r) and degrees(s=(\frac{\theta}{360}2 \pi r) and area (in both degrees (A = (\frac{\theta \degree}{360} \pi r^2)) and radians (A = \frac{1}{2} \theta r^2))))
 - add formulas for converting between degrees and radians (pi / 180)
 
