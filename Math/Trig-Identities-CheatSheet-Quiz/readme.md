@@ -135,4 +135,7 @@ Open source - feel free to use and modify for educational purposes.
 - Maybe add the 30-60-90 triangle and the 45-45-90 triangle to show how to get the trig ratios from that easily, instead of either drawing a unit circle or thinking about it and taking time to figure out which angle is what ratio
 - 'arctan' mathjax isn't working correctly for polar to rectangular coordinates
 - add formulas for converting between degrees and radians (pi / 180)
+- add formula for angular speed (\omega = \frac{\theta}{t}) and (v = r \omega) and apparently, there is another one (\omega = \frac{v}{r})
+
+
 
