@@ -36,6 +36,7 @@ html, body {
   line-height: 1.5;
   overflow-x: hidden;
 }
+body { display: flex; flex-direction: column; }
 
 /* ── Setup Banner ── */
 .setup-banner {
@@ -64,7 +65,7 @@ html, body {
   gap: 12px;
   flex-wrap: wrap;
 }
-.header-left { flex-shrink: 0; }
+.header-left { flex-shrink: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .header-center { flex: 1; min-width: 0; }
 .header-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
@@ -128,7 +129,7 @@ html, body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  height: calc(100vh - 57px);
+  min-height: 0;
 }
 
 /* ── Zoom Controls ── */
@@ -139,22 +140,30 @@ html, body {
   z-index: 50;
   display: flex;
   gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  max-width: calc(100% - 24px);
   background: var(--bg-800);
   border: 1px solid var(--bg-700);
   border-radius: var(--radius);
   padding: 4px 8px;
 }
+.ctrl-sep { color: var(--bg-600); padding: 0 2px; }
+.ctrl-label { font-size: 11px; color: var(--text-400); white-space: nowrap; }
+.date-range-input { min-width: 0; width: 118px; padding: 3px 6px; font-size: 12px; font-variant-numeric: tabular-nums; }
 
 /* ── Timeline Wrapper ── */
 .timeline-wrapper {
   flex: 1;
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: auto;
   cursor: grab;
   user-select: none;
   background: var(--bg-900);
-  padding-bottom: 60px;
+  padding-bottom: 168px;
 }
+.emoji-marker.is-active text { filter: drop-shadow(0 0 8px rgba(250,204,21,0.95)); }
+.emoji-marker.is-ss text { filter: drop-shadow(0 0 10px rgba(59,130,246,1)); }
 .timeline-wrapper:active { cursor: grabbing; }
 
 .timeline-svg {
@@ -177,7 +186,7 @@ html, body {
   position: absolute;
   bottom: 8px;
   right: 12px;
-  z-index: 50;
+  z-index: 60;
   background: var(--bg-800);
   border: 1px solid var(--bg-700);
   border-radius: var(--radius);
@@ -393,6 +402,99 @@ html, body {
 .form-group select:focus,
 .form-group textarea:focus { border-color: var(--accent); }
 .form-group input.invalid { border-color: var(--danger); }
+.field-hint { font-size: 11px; color: var(--text-600); }
+
+/* ── Emoji picker ── */
+.emoji-field { position: relative; display: flex; gap: 6px; align-items: center; }
+.emoji-preview-btn {
+  width: 42px; height: 38px; flex-shrink: 0;
+  font-size: 22px; line-height: 1;
+  background: var(--bg-700); border: 1px solid var(--bg-600);
+  border-radius: var(--radius-sm); cursor: pointer;
+}
+.emoji-preview-btn:hover { border-color: var(--accent); }
+.emoji-text-input { flex: 1; min-width: 0; }
+.emoji-picker-panel {
+  position: absolute; top: calc(100% + 6px); left: 0; z-index: 30;
+  width: 280px; max-width: min(280px, 70vw);
+  background: var(--bg-800); border: 1px solid var(--bg-600);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 8px; display: flex; flex-direction: column; gap: 8px;
+}
+.emoji-search {
+  width: 100%; background: var(--bg-700); border: 1px solid var(--bg-600);
+  color: var(--text-100); padding: 6px 8px; border-radius: var(--radius-sm);
+  font-size: 12px; outline: none;
+}
+.emoji-picker-grid {
+  display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px;
+  max-height: 196px; overflow-y: auto;
+}
+.emoji-pick {
+  background: transparent; border: none; border-radius: 4px;
+  font-size: 20px; line-height: 1.4; cursor: pointer; padding: 2px;
+}
+.emoji-pick:hover { background: var(--bg-700); }
+
+/* ── Event detail ── */
+.event-detail {
+  position: absolute;
+  left: 12px;
+  right: 224px;
+  bottom: 56px;
+  z-index: 55;
+  background: var(--bg-800);
+  border: 1px solid var(--bg-700);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  min-height: 72px;
+}
+.event-detail-inner {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 10px 12px;
+}
+.ed-emoji { font-size: 32px; line-height: 1; flex-shrink: 0; }
+.ed-content { flex: 1; min-width: 0; }
+.ed-name { font-weight: 700; font-size: 15px; }
+.ed-name a { color: var(--text-100); text-decoration: none; }
+.ed-name a:hover { color: var(--accent); }
+.ed-dates { font-size: 12px; color: var(--text-400); font-variant-numeric: tabular-nums; }
+.ed-desc { font-size: 12px; color: var(--text-200); margin-top: 4px; max-height: 4.5em; overflow: auto; }
+.ed-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.ss-progress-bar { height: 3px; background: var(--bg-700); }
+.ss-progress-fill { height: 100%; width: 0; background: var(--accent); }
+
+/* ── Screensaver controls ── */
+.ss-controls {
+  position: absolute;
+  left: 50%;
+  bottom: 168px;
+  transform: translateX(-50%);
+  z-index: 70;
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg-800);
+  border: 1px solid var(--bg-700);
+  border-radius: 99px;
+  padding: 6px 14px;
+  box-shadow: var(--shadow);
+}
+.ss-ctrl-btn {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 1px solid var(--bg-600); background: var(--bg-700);
+  color: var(--text-100); cursor: pointer; font-size: 14px;
+}
+.ss-ctrl-primary { background: var(--accent); border-color: var(--accent); }
+#ss-speed { width: 70px; accent-color: var(--accent); cursor: pointer; }
+#ss-speed-val, #ss-counter { font-size: 11px; color: var(--text-400); min-width: 22px; }
+
+/* ── Help ── */
+.modal-help { max-width: 640px; }
+.help-body { padding: 16px 20px; overflow-y: auto; max-height: 60vh; display: flex; flex-direction: column; gap: 10px; }
+.help-body h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-400); }
+.help-body p, .help-body li { color: var(--text-200); font-size: 13px; }
+.help-body ol { padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.help-body code { background: var(--bg-700); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+.help-lead { color: var(--text-200); margin-bottom: 12px; }
 
 /* ── Popover ── */
 .popover {
@@ -458,4 +560,6 @@ html, body {
   .header-center, .header-right { width: 100%; }
   .filter-bar { width: 100%; }
   .form-grid { grid-template-columns: 1fr; }
+  .event-detail { left: 8px; right: 8px; bottom: 56px; }
+  .ss-controls { bottom: 150px; max-width: calc(100% - 16px); flex-wrap: wrap; justify-content: center; }
 }

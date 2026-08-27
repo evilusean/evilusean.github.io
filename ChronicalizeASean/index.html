@@ -12,14 +12,16 @@
 
   <!-- SETUP BANNER -->
   <div id="setup-banner" class="setup-banner hidden">
-    <span>⚠️ Google Sheets not configured. Set <code>CLIENT_ID</code> and <code>SPREADSHEET_ID</code> in app.js to enable sync. Showing sample data.</span>
-    <button onclick="document.getElementById('setup-banner').classList.add('hidden')" class="btn btn-ghost btn-sm">Dismiss</button>
+    <span>Google Sheets is optional. Sign in, then click <strong>Connect Sheet</strong> to create or paste a spreadsheet ID. Built-in timelines work offline.</span>
+    <button type="button" id="setup-banner-dismiss" class="btn btn-ghost btn-sm">Dismiss</button>
   </div>
 
   <!-- HEADER -->
   <header class="app-header">
     <div class="header-left">
       <h1 class="app-title">⏳ ChronicalizeASean</h1>
+      <select id="timeline-select" class="filter-select" title="Switch timeline"></select>
+      <button id="new-timeline-btn" class="btn btn-ghost btn-sm" title="Create a new timeline">＋ New</button>
     </div>
     <div class="header-center">
       <div id="filter-bar" class="filter-bar">
@@ -30,27 +32,29 @@
         <select id="tag-filter" class="filter-select">
           <option value="">All Tags</option>
         </select>
-        <button id="clear-filters-btn" class="btn btn-ghost btn-sm">Clear</button>
+        <button type="button" id="clear-filters-btn" class="btn btn-ghost btn-sm">Clear</button>
       </div>
     </div>
     <div class="header-right">
       <div id="auth-container">
-        <button id="login-btn" class="btn btn-primary">Sign in with Google</button>
+        <button type="button" id="login-btn" class="btn btn-primary">Sign in with Google</button>
       </div>
       <div id="user-info" class="user-info hidden">
         <img id="user-avatar" src="" alt="avatar" class="user-avatar" />
         <span id="user-name" class="user-name"></span>
-        <button id="signout-btn" class="btn btn-ghost btn-sm">Sign out</button>
+        <button type="button" id="signout-btn" class="btn btn-ghost btn-sm">Sign out</button>
       </div>
-      <div id="sheet-actions" class="sheet-actions hidden">
-        <select id="timeline-select" class="filter-select" style="min-width:110px" title="Switch timeline"></select>
-        <button id="new-timeline-btn" class="btn btn-ghost btn-sm" title="Create new timeline tab">＋ New</button>
-        <button id="sync-btn" class="btn btn-ghost btn-sm" title="Sync from Sheet">⬇️ Sync</button>
-        <button id="push-btn" class="btn btn-ghost btn-sm" title="Push to Sheet">⬆️ Push</button>
+      <div id="sheet-actions" class="sheet-actions">
+        <button type="button" id="connect-sheet-btn" class="btn btn-ghost btn-sm" title="Create or paste a Google Sheet ID">🔗 Connect Sheet</button>
+        <a id="open-sheet-btn" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm" title="Open the Events spreadsheet in Google Sheets">📊 Events Sheet</a>
+      <a id="open-people-sheet-btn" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm" title="Open the People spreadsheet (separate file)">👤 People Sheet</a>
+        <button type="button" id="sync-btn" class="btn btn-ghost btn-sm hidden" title="Sync from Sheet">⬇️ Sync</button>
+        <button type="button" id="push-btn" class="btn btn-ghost btn-sm hidden" title="Push to Sheet">⬆️ Push</button>
       </div>
-      <a id="open-sheet-btn" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm hidden" title="Open in Google Sheets">📊 Open Sheet</a>
-      <button id="export-btn" class="btn btn-ghost btn-sm" title="Export CSV">💾 Export</button>
+      <button type="button" id="export-btn" class="btn btn-ghost btn-sm" title="Export CSV">💾 Export</button>
       <label id="import-label" class="btn btn-ghost btn-sm" title="Import CSV">📂 Import<input id="import-input" type="file" accept=".csv" class="hidden-input" /></label>
+      <button type="button" id="schema-btn" class="btn btn-ghost btn-sm" title="Column schema and sheet preview">▦ Schema</button>
+      <button type="button" id="help-btn" class="btn btn-ghost btn-sm" title="How to use">❓ How to</button>
     </div>
   </header>
 
@@ -59,29 +63,66 @@
 
     <!-- ZOOM / CONTROLS BAR -->
     <div class="zoom-controls">
-      <button id="zoom-in-btn" class="btn btn-ghost btn-sm" title="Zoom In">＋</button>
-      <button id="zoom-reset-btn" class="btn btn-ghost btn-sm" title="Reset Zoom">⊙</button>
-      <button id="zoom-out-btn" class="btn btn-ghost btn-sm" title="Zoom Out">－</button>
-      <button id="connections-btn" class="btn btn-ghost btn-sm" title="Toggle connections">🔗 Connections</button>
-      <button id="screensaver-btn" class="btn btn-ghost btn-sm" title="Slideshow / Screensaver">▶ Slideshow</button>
-      <span style="color:var(--bg-600);padding:0 2px">│</span>
-      <span style="font-size:11px;color:var(--text-400);white-space:nowrap">From</span>
-      <input id="date-from-input" type="date" class="filter-input" style="min-width:0;width:130px;padding:3px 6px;font-size:12px" title="Timeline start date" />
-      <span style="font-size:11px;color:var(--text-400);white-space:nowrap">To</span>
-      <input id="date-to-input" type="date" class="filter-input" style="min-width:0;width:130px;padding:3px 6px;font-size:12px" title="Timeline end date" />
-      <button id="date-range-reset-btn" class="btn btn-ghost btn-sm" title="Reset date range">↺</button>
+      <button type="button" id="zoom-in-btn" class="btn btn-ghost btn-sm" title="Zoom In">＋</button>
+      <button type="button" id="zoom-reset-btn" class="btn btn-ghost btn-sm" title="Reset Zoom">⊙</button>
+      <button type="button" id="zoom-out-btn" class="btn btn-ghost btn-sm" title="Zoom Out">－</button>
+      <span class="ctrl-sep">│</span>
+      <span class="ctrl-label">Layout</span>
+      <select id="layout-mode-select" class="filter-select" title="Wrap long time into stacked rows">
+        <option value="wrap">Wrap rows</option>
+        <option value="strip">Single strip</option>
+      </select>
+      <span class="ctrl-label">Rows</span>
+      <select id="wrap-rows-select" class="filter-select" title="How many stacked time rows">
+        <option value="auto">Auto</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="8">8</option>
+      </select>
+      <button type="button" id="connections-btn" class="btn btn-ghost btn-sm" title="Toggle connections">🔗 Connections</button>
+      <button type="button" id="screensaver-btn" class="btn btn-ghost btn-sm" title="Slideshow / Screensaver">▶ Slideshow</button>
+      <span class="ctrl-sep">│</span>
+      <span class="ctrl-label">Slice</span>
+      <select id="slice-grain-select" class="filter-select" title="Jump to a decade or century">
+        <option value="all">All time</option>
+        <option value="decade">Decade (1950s…)</option>
+        <option value="century">Century</option>
+      </select>
+      <button type="button" id="slice-prev-btn" class="btn btn-ghost btn-sm" title="Previous slice">‹</button>
+      <button type="button" id="slice-next-btn" class="btn btn-ghost btn-sm" title="Next slice">›</button>
+      <span class="ctrl-sep">│</span>
+      <span class="ctrl-label">From</span>
+      <input id="date-from-input" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD" class="filter-input date-range-input" title="Timeline start (YYYY-MM-DD)" />
+      <span class="ctrl-label">To</span>
+      <input id="date-to-input" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD" class="filter-input date-range-input" title="Timeline end (YYYY-MM-DD)" />
+      <button type="button" id="date-range-reset-btn" class="btn btn-ghost btn-sm" title="Reset date range">↺</button>
     </div>
+    <div id="slice-chip-bar" class="slice-chip-bar" hidden></div>
 
     <!-- TIMELINE CANVAS -->
     <div id="timeline-wrapper" class="timeline-wrapper">
       <svg id="timeline-svg" class="timeline-svg" xmlns="http://www.w3.org/2000/svg"></svg>
-      <!-- Screensaver tooltip anchored inside timeline wrapper -->
-      <div id="ss-tooltip" class="ss-tooltip hidden">
-        <span id="ss-tooltip-emoji" class="ss-tooltip-emoji"></span>
-        <div class="ss-tooltip-body">
-          <div id="ss-tooltip-name" class="ss-tooltip-name"></div>
-          <div id="ss-tooltip-dates" class="ss-tooltip-dates"></div>
+    </div>
+
+    <!-- EVENT DETAIL PANEL -->
+    <div id="event-detail" class="event-detail">
+      <div class="event-detail-inner">
+        <span id="ed-emoji" class="ed-emoji">⏳</span>
+        <div class="ed-content">
+          <div id="ed-name" class="ed-name">Click an event on the timeline</div>
+          <div id="ed-dates" class="ed-dates">The last clicked event (and slideshow) shows here.</div>
+          <div id="ed-desc" class="ed-desc"></div>
+          <div id="ed-tags" class="ed-tags"></div>
         </div>
+        <a id="ed-source-link" class="btn btn-ghost btn-sm hidden" target="_blank" rel="noopener">Source</a>
+        <button type="button" id="ed-edit-btn" class="btn btn-ghost btn-sm hidden">Edit</button>
+        <button type="button" id="ed-close-btn" class="btn btn-ghost btn-sm ed-close" title="Clear">✕</button>
+      </div>
+      <div id="ss-progress-bar" class="ss-progress-bar hidden">
+        <div id="ss-progress-fill" class="ss-progress-fill"></div>
       </div>
     </div>
 
@@ -91,31 +132,13 @@
       <canvas id="minimap-canvas" class="minimap-canvas" width="200" height="40"></canvas>
     </div>
 
-    <!-- EVENT DETAIL PANEL (shown when an event is clicked or screensaver is active) -->
-    <div id="event-detail" class="event-detail hidden">
-      <div class="event-detail-inner">
-        <span id="ed-emoji" class="ed-emoji"></span>
-        <div class="ed-content">
-          <div id="ed-name" class="ed-name"></div>
-          <div id="ed-dates" class="ed-dates"></div>
-          <div id="ed-desc" class="ed-desc"></div>
-          <div id="ed-tags" class="ed-tags"></div>
-        </div>
-        <button id="ed-close-btn" class="btn btn-ghost btn-sm ed-close" title="Close">✕</button>
-      </div>
-      <!-- Screensaver progress bar lives inside detail panel -->
-      <div id="ss-progress-bar" class="ss-progress-bar hidden">
-        <div id="ss-progress-fill" class="ss-progress-fill"></div>
-      </div>
-    </div>
-
     <!-- EMPTY STATE -->
     <div id="empty-state" class="empty-state hidden">
       <div class="empty-icon">📅</div>
       <h2>No events yet</h2>
-      <p>Add your first event or import a CSV to get started.</p>
+      <p>Add your first event, import a CSV, or pick a built-in timeline.</p>
       <div class="empty-actions">
-        <button id="empty-add-btn" class="btn btn-primary">+ Add Event</button>
+        <button type="button" id="empty-add-btn" class="btn btn-primary">+ Add Event</button>
         <label class="btn btn-ghost">📂 Import CSV<input type="file" accept=".csv" class="hidden-input" id="empty-import-input" /></label>
       </div>
     </div>
@@ -124,69 +147,67 @@
     <div id="heatmap-panel" class="heatmap-panel hidden">
       <div class="heatmap-header">
         <h3>Tag Connections</h3>
-        <button id="heatmap-close-btn" class="btn btn-ghost btn-sm">✕</button>
+        <button type="button" id="heatmap-close-btn" class="btn btn-ghost btn-sm">✕</button>
       </div>
       <div id="heatmap-content" class="heatmap-content"></div>
     </div>
 
-    <!-- SCREENSAVER CONTROLS (shown when active) -->
+    <!-- SCREENSAVER CONTROLS -->
     <div id="ss-controls" class="ss-controls hidden">
-      <button id="ss-prev-btn" class="ss-ctrl-btn" title="Previous (←)">‹</button>
-      <button id="ss-pause-btn" class="ss-ctrl-btn ss-ctrl-primary" title="Pause/Play (Space)">⏸</button>
-      <button id="ss-next-btn" class="ss-ctrl-btn" title="Next (→)">›</button>
-      <button id="ss-stop-btn" class="ss-ctrl-btn" title="Stop screensaver (Esc)">■</button>
-      <label style="font-size:11px;color:var(--text-400);margin-left:6px">Speed</label>
-      <input id="ss-speed" type="range" min="2" max="15" value="5" style="width:70px;accent-color:var(--accent);cursor:pointer" />
-      <span id="ss-speed-val" style="font-size:11px;color:var(--text-200);min-width:22px">5s</span>
-      <span id="ss-counter" style="font-size:11px;color:var(--text-400);margin-left:4px"></span>
+      <button type="button" id="ss-prev-btn" class="ss-ctrl-btn" title="Previous (←)">‹</button>
+      <button type="button" id="ss-pause-btn" class="ss-ctrl-btn ss-ctrl-primary" title="Pause/Play (Space)">⏸</button>
+      <button type="button" id="ss-next-btn" class="ss-ctrl-btn" title="Next (→)">›</button>
+      <button type="button" id="ss-stop-btn" class="ss-ctrl-btn" title="Stop screensaver (Esc)">■</button>
+      <label class="ctrl-label">Speed</label>
+      <input id="ss-speed" type="range" min="2" max="15" value="5" />
+      <span id="ss-speed-val">5s</span>
+      <span id="ss-counter"></span>
     </div>
 
   </main>
 
-  <!-- TOAST CONTAINER -->
   <div id="toast-container" class="toast-container"></div>
 
-  <!-- LOADING SPINNER -->
   <div id="spinner-overlay" class="spinner-overlay hidden">
     <div class="spinner"></div>
   </div>
 
-  <!-- FAB -->
-  <button id="fab-btn" class="fab" title="Add Event">＋</button>
+  <button type="button" id="fab-btn" class="fab" title="Add Event">＋</button>
 
   <!-- CRUD MODAL -->
   <div id="crud-modal" class="modal-backdrop hidden">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
       <div class="modal-header">
         <h2 id="modal-title">Add Event</h2>
-        <button id="modal-close-btn" class="btn btn-ghost btn-sm">✕</button>
+        <button type="button" id="modal-close-btn" class="btn btn-ghost btn-sm">✕</button>
       </div>
       <form id="crud-form" class="modal-form" novalidate>
         <input type="hidden" id="field-id" />
         <div class="form-grid">
           <div class="form-group form-group-full">
             <label for="field-event_name">Event Name <span class="required">*</span></label>
-            <input id="field-event_name" type="text" required placeholder="e.g. World War II" />
+            <input id="field-event_name" type="text" required placeholder="e.g. Magna Carta" />
           </div>
           <div class="form-group">
             <label for="field-date_start">Start Date <span class="required">*</span></label>
-            <input id="field-date_start" type="text" required placeholder="YYYY-MM-DD" pattern="\d{4}-\d{2}-\d{2}" />
+            <input id="field-date_start" type="text" required placeholder="YYYY-MM-DD" inputmode="numeric" autocomplete="off" />
+            <span class="field-hint">Use YYYY-MM-DD (BCE years like -0753-04-21 are ok)</span>
           </div>
           <div class="form-group">
             <label for="field-date_end">End Date</label>
-            <input id="field-date_end" type="text" placeholder="YYYY-MM-DD (optional)" pattern="\d{4}-\d{2}-\d{2}" />
+            <input id="field-date_end" type="text" placeholder="YYYY-MM-DD (optional)" inputmode="numeric" autocomplete="off" />
           </div>
           <div class="form-group">
             <label for="field-category">Category</label>
             <input id="field-category" type="text" placeholder="e.g. Politics" />
           </div>
           <div class="form-group">
-            <label>Emoji</label>
+            <label for="field-emoji">Emoji</label>
             <div class="emoji-field">
               <button type="button" id="emoji-preview-btn" class="emoji-preview-btn" title="Open emoji picker">📌</button>
-              <input id="field-emoji" type="text" class="emoji-text-input" placeholder="or type…" maxlength="8" autocomplete="off" />
+              <input id="field-emoji" type="text" class="emoji-text-input" placeholder="or type…" maxlength="16" autocomplete="off" />
               <div id="emoji-picker-panel" class="emoji-picker-panel hidden">
-                <input id="emoji-search-input" type="text" class="emoji-search" placeholder="🔍 Search emojis…" autocomplete="off" />
+                <input id="emoji-search-input" type="text" class="emoji-search" placeholder="Search: war, money, law…" autocomplete="off" />
                 <div id="emoji-picker-grid" class="emoji-picker-grid"></div>
               </div>
             </div>
@@ -205,11 +226,11 @@
           </div>
           <div class="form-group form-group-full">
             <label for="field-sources">Sources / URL</label>
-            <input id="field-sources" type="url" placeholder="https://en.wikipedia.org/…" />
+            <input id="field-sources" type="text" placeholder="https://en.wikipedia.org/…" />
           </div>
           <div class="form-group form-group-full">
             <label for="field-image_url">Image URL</label>
-            <input id="field-image_url" type="url" placeholder="https://upload.wikimedia.org/…" />
+            <input id="field-image_url" type="text" placeholder="https://upload.wikimedia.org/…" />
           </div>
         </div>
         <div class="modal-footer">
@@ -229,8 +250,8 @@
       </div>
       <p id="confirm-message" class="modal-body-text"></p>
       <div class="modal-footer">
-        <button id="confirm-cancel-btn" class="btn btn-ghost">Cancel</button>
-        <button id="confirm-ok-btn" class="btn btn-danger">Delete</button>
+        <button type="button" id="confirm-cancel-btn" class="btn btn-ghost">Cancel</button>
+        <button type="button" id="confirm-ok-btn" class="btn btn-danger">Delete</button>
       </div>
     </div>
   </div>
@@ -240,17 +261,83 @@
     <div class="modal modal-sm" role="dialog" aria-modal="true">
       <div class="modal-header">
         <h2>New Timeline</h2>
-        <button id="new-timeline-close-btn" class="btn btn-ghost btn-sm">✕</button>
+        <button type="button" id="new-timeline-close-btn" class="btn btn-ghost btn-sm">✕</button>
       </div>
-      <div class="modal-form" style="padding:16px 20px">
+      <div class="modal-form">
         <div class="form-group">
           <label for="new-timeline-name-input">Timeline Name <span class="required">*</span></label>
-          <input id="new-timeline-name-input" type="text" placeholder="e.g. Ancient History" style="width:100%;background:var(--bg-700);border:1px solid var(--bg-600);color:var(--text-100);padding:7px 10px;border-radius:var(--radius-sm);font-size:13px;outline:none;" />
+          <input id="new-timeline-name-input" type="text" placeholder="e.g. Ancient History" />
         </div>
+        <p class="field-hint">Creates a local timeline. If a Google Sheet is connected, a new tab is added there too.</p>
       </div>
       <div class="modal-footer">
-        <button id="new-timeline-cancel-btn" class="btn btn-ghost">Cancel</button>
-        <button id="new-timeline-save-btn" class="btn btn-primary">Create</button>
+        <button type="button" id="new-timeline-cancel-btn" class="btn btn-ghost">Cancel</button>
+        <button type="button" id="new-timeline-save-btn" class="btn btn-primary">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHEET CONNECT MODAL -->
+  <div id="sheet-connect-backdrop" class="modal-backdrop hidden">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <h2>Connect Google Sheet</h2>
+        <button type="button" id="sheet-connect-close-btn" class="btn btn-ghost btn-sm">✕</button>
+      </div>
+      <div class="modal-form">
+        <p class="help-lead">This app talks to <strong>your</strong> spreadsheet. Sign in, then create a new file or paste an existing ID.</p>
+        <div class="form-group form-group-full">
+          <label for="sheet-id-input">Spreadsheet ID or full URL</label>
+          <input id="sheet-id-input" type="text" placeholder="Paste ID or https://docs.google.com/spreadsheets/d/…" />
+          <span class="field-hint">The ID is the long string between /d/ and /edit in the Sheet URL.</span>
+        </div>
+        <p id="sheet-connect-status" class="field-hint"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="sheet-create-btn" class="btn btn-ghost">Create new spreadsheet</button>
+        <button type="button" id="sheet-connect-cancel-btn" class="btn btn-ghost">Cancel</button>
+        <button type="button" id="sheet-connect-save-btn" class="btn btn-primary">Use this Sheet</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW TO USE -->
+  <div id="help-backdrop" class="modal-backdrop hidden">
+    <div class="modal modal-help" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <h2>How to use</h2>
+        <button type="button" id="help-close-btn" class="btn btn-ghost btn-sm">✕</button>
+      </div>
+      <div class="help-body">
+        <h3>What this is</h3>
+        <p>A local-first timeline. Events live in the browser. Google Sheets is an optional backup you can open and edit like a normal spreadsheet.</p>
+
+        <h3>Dates</h3>
+        <p>Everything is <code>YYYY-MM-DD</code> (ISO). Display uses the same order with slashes: <code>2008/09/15</code>. There is no US <code>MM/DD/YYYY</code> picker — those native date widgets follow the OS locale and are the reason dates looked wrong. BCE years use a leading minus, e.g. <code>-0753-04-21</code>.</p>
+
+        <h3>Built-in timelines</h3>
+        <p>Use the dropdown (top left): Glubb’s empire lifecycle, financial crises, human-rights documents, and major inventions. Edits to built-in sets are saved in this browser. <strong>＋ New</strong> starts a blank timeline.</p>
+
+        <h3>Google Sheets</h3>
+        <ol>
+          <li>Sign in with Google.</li>
+          <li>Click <strong>Connect Sheet</strong> — create a new spreadsheet (seeded with the built-in tabs) or paste an existing spreadsheet URL/ID.</li>
+          <li><strong>Open Sheet</strong> jumps straight to that file in Google Sheets (new tab).</li>
+          <li><strong>Sync</strong> pulls rows down; <strong>Push</strong> writes the current timeline up. Each timeline is a tab.</li>
+        </ol>
+        <p>If Open Sheet does nothing, you do not have a spreadsheet ID yet — connect one first. The OAuth client must allow this site’s origin (GitHub Pages URL or <code>http://localhost</code>).</p>
+
+        <h3>Events</h3>
+        <p>＋ (bottom right) adds an event. Click a marker for the detail panel; hover for a card. Edit/delete from the card or panel. Tags like <code>#crisis #banking</code> draw connection lines when you turn Connections on.</p>
+
+        <h3>Import / export</h3>
+        <p>CSV columns: <code>id, version, event_name, date_start, date_end, description, sources, image_url, emoji, category, tags, importance</code>. Drag a <code>.csv</code> onto the page to import.</p>
+
+        <h3>Slideshow</h3>
+        <p>Walks events in date order, filling the detail panel. Space pauses, arrows skip, Esc stops. If it ever sticks, hit ■ or Esc — timers are cleared on stop.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="help-ok-btn" class="btn btn-primary">Got it</button>
       </div>
     </div>
   </div>
@@ -268,8 +355,8 @@
       <p id="popover-desc" class="popover-desc"></p>
       <div id="popover-tags" class="popover-tags"></div>
       <div class="popover-actions">
-        <button id="popover-edit-btn" class="btn btn-ghost btn-sm">✏️ Edit</button>
-        <button id="popover-delete-btn" class="btn btn-danger btn-sm">🗑️ Delete</button>
+        <button type="button" id="popover-edit-btn" class="btn btn-ghost btn-sm">✏️ Edit</button>
+        <button type="button" id="popover-delete-btn" class="btn btn-danger btn-sm">🗑️ Delete</button>
       </div>
     </div>
   </div>
