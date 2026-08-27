@@ -1,3 +1,18 @@
 TODO / Future Sean Problems :
 - The screensaver mode/slideshow froze, ran out of tokens, also, future Sean, do one of these at a time, kiro timed out a bunch trying to 'one shot' it
-
+- ran out of tokens, mid-prompt, again - I left off trying to improve the timeline, so it can go multi level or side scroll 
+- make app responsive, currently only works for large screen (this is a future, future, future sean problem, still have to get the app to work before aesthetics)
+- events sheet / people sheet don't work yet, I should allow the user to create a timeline, and open that up on their google sheets, top row should be clearly labeled, all mandatory entries should have a mandatory * asterisk 
+- rows look wonky, it starts each row back on the left hand side, which is not how timelines should look
+- 'rows' and 'layout' buttons aren't working 
+- add a favicon
+- why is there a schema button there
+- screensaver mode works now, it should display the name of the event first, then the date, then the details and other tags
+- there should be a way in the schema to link people to events using tags '@tony_blair' (intentionally left uncapitalized) or whatever
+- 'export'  should allow the user to download the current timeline they have worked on, so they can 'import' it again whenever they want to use it, it should be spreadsheet or csv (let the user pick what to download as) - they should also be able to edit their own on google sheets by manually filling in the columns
+- 'end date' shouldn't be mandatory (only 'start date') 
+- you should be able to create subevents of the main events like for carthage delende est, you would have the 'Punic Wars' event, and then each 'Battle' could be a subevent, but 'The Punic Wars' would be a subevent of 'The Roman Empire', figure out a way to make that work with link/join those, the schema is gonna need alot of work, because I need to be able to link events, subevents, sub-sub events, people, dates, etc. 
+- user should then be able to click on a 'main event' and see just the timeline of that and it's subevents
+- So, will probably need a way to father-child events, maybe a new column? 
+- fix 'slice' I was trying to allow the user to 'slice' one part of the timeline, but AI misinterpreted that 
+-  
