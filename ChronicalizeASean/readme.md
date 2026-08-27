@@ -15,4 +15,4 @@ TODO / Future Sean Problems :
 - user should then be able to click on a 'main event' and see just the timeline of that and it's subevents
 - So, will probably need a way to father-child events, maybe a new column? 
 - fix 'slice' I was trying to allow the user to 'slice' one part of the timeline, but AI misinterpreted that 
--  
+- also, for some reason, the AI took 'Sir John Glubbs the Fate of Empires' literally, and took abstract concepts like 'the age of decadence' as objective physical events with dates (which is wrong) 
