@@ -133,6 +133,7 @@ Open source - feel free to use and modify for educational purposes.
 - Add cofunction identities for both degrees and radians, currently there is only just radians - also missing cofunction identities for both sec, cosecant, and tangent (they all follow the same rules, and do I really want to add 'more' identities? - It's just the opposite 90 (or \frac{\pi}{2}) minus theta Where Sin=Cos, Sec=Csc, Tan=CoTan) - just noticed that 90 and \pi over 2 are the same, skill issue. 
 - Also, you can derive the power reduction formulas from the double angle formulas
 - Maybe add the 30-60-90 triangle and the 45-45-90 triangle to show how to get the trig ratios from that easily, instead of either drawing a unit circle or thinking about it and taking time to figure out which angle is what ratio
+- Maybe add the special triangles ('3, 4, 5' x2 = '6, 8, 10' x3) ('5,12, 13') ('7, 24, 25') ('8, 15, 17') (9,40,41) (11,60,61) and show how after you know the original triangles, any multiples will also be right angle triangles
 - 'arctan' mathjax isn't working correctly for polar to rectangular coordinates
 - add formulas for converting between degrees and radians (pi / 180)
 - add formula for angular speed (\omega = \frac{\theta}{t}) and (v = r \omega) and apparently, there is another one (\omega = \frac{v}{r})
