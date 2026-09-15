@@ -137,6 +137,10 @@ Open source - feel free to use and modify for educational purposes.
 - 'arctan' mathjax isn't working correctly for polar to rectangular coordinates
 - add formulas for converting between degrees and radians (pi / 180)
 - add formula for angular speed (\omega = \frac{\theta}{t}) and (v = r \omega) and apparently, there is another one (\omega = \frac{v}{r})
-
+- add the new mnemonic 'i+-2^{2}\frac{1}{2} with this layout for product to sum  and sum to product, they are complementary and the layout should show it - so I can mindvomit out the new 'SOHCAHTOA' I need to remember on any tests - you just need to rememember that the sum to product are divided by 2, and the last ones are (C-C) are funky :
+  SC\frac{1}{2} S++- S+S 2SC
+  CS\frac{1}{2} S+-- S-S 2SC
+  CC\frac{1}{2} C++- C+C 2CC
+  CC\frac{1}{2} C--+ C-C -2SS
 
 
