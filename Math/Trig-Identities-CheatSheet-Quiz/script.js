@@ -122,10 +122,12 @@ function init() {
     const mnemonicCluster = document.getElementById('mnemonic-cluster');
     header.after(mnemonicCluster);
     const positionMnemonicCluster = () => {
-        document.documentElement.style.setProperty('--mnemonic-top', `${header.getBoundingClientRect().height + 12}px`);
+        const topOffset = window.scrollY > header.offsetHeight ? 12 : header.getBoundingClientRect().height + 12;
+        document.documentElement.style.setProperty('--mnemonic-top', `${topOffset}px`);
     };
     positionMnemonicCluster();
     window.addEventListener('resize', positionMnemonicCluster);
+    window.addEventListener('scroll', positionMnemonicCluster, { passive: true });
     loadFromURL();
     loadSavedSelections();
     renderCheatsheet();
