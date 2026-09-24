@@ -222,7 +222,7 @@ function toMathJax(formula) {
 
     if (shouldSkipFormulaColoring) {
         let specialMath = math;
-        specialMath = specialMath.replace(/x\s*=\s*r\s*cos\s*θ/gi, 'x = r \color{dodgerblue}{\cos\theta}');
+        specialMath = specialMath.replace(/x\s*=\s*r\s*cos\s*θ/gi, 'x = r \color{#1e90ff}{\cos\theta}');
         specialMath = specialMath.replace(/y\s*=\s*r\s*sin\s*θ/gi, 'y = r \color{red}{\sin\theta}');
         specialMath = specialMath.replace(/\bcos\b/gi, '\\cos');
         specialMath = specialMath.replace(/\bsin\b/gi, '\\sin');
@@ -233,20 +233,20 @@ function toMathJax(formula) {
 
     const trigColorMap = {
         sin: 'red',
-        cos: 'dodgerblue',
-        tan: 'mediumorchid',
+        cos: '#1e90ff',
+        tan: '#ba55d3',
         csc: 'magenta',
-        sec: 'deepskyblue',
-        cot: 'darkorchid',
+        sec: '#00bfff',
+        cot: '#9932cc',
         arcsin: 'red',
-        arccos: 'dodgerblue',
-        arctan: 'mediumorchid',
+        arccos: '#1e90ff',
+        arctan: '#ba55d3',
         arccsc: 'magenta',
-        arcsec: 'deepskyblue',
-        arccot: 'darkorchid'
+        arcsec: '#00bfff',
+        arccot: '#9932cc'
     };
 
-    const segmentColors = ['dodgerblue', 'red', 'mediumorchid', 'deepskyblue', 'darkorchid'];
+    const segmentColors = ['#1e90ff', 'red', '#ba55d3', '#00bfff', '#9932cc'];
 
     const normalizeInverseTrig = (input) => {
         return input
