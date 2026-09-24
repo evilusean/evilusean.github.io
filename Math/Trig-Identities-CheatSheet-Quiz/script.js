@@ -534,7 +534,7 @@ function setupEventListeners() {
     document.getElementById('download-csv-btn').onclick = downloadCSV;
     document.getElementById('clear-saved-btn').onclick = clearSaved;
 
-    document.querySelectorAll('.mnemonic-link').forEach((link) => {
+    document.querySelectorAll('.mnemonic-link, .mnemonic-token').forEach((link) => {
         link.addEventListener('click', () => jumpToIdentity(link.dataset.identity));
     });
     
