@@ -411,14 +411,41 @@ function jumpToIdentity(name) {
     jumpToIdentities([name]);
 }
 
-function toggleMnemonicGrid() {
+function toggleMnemonicGrid(event) {
     const dock = document.getElementById('mnemonic-dock');
-    const isExpanded = dock.dataset.expanded !== 'true';
+    const rowKey = event?.currentTarget?.dataset?.mnemonicRow;
+    const isExpanded = rowKey ? true : dock.dataset.expanded !== 'true';
+    const highlightType = event?.currentTarget?.dataset?.highlightSign || 'code';
     dock.dataset.expanded = String(isExpanded);
     dock.classList.toggle('is-expanded', isExpanded);
+    document.querySelectorAll('[class*="mnemonic-related-"].is-related').forEach((code) => code.classList.remove('is-related'));
+    if (rowKey && isExpanded) {
+        document.querySelectorAll(`.mnemonic-related-${rowKey}-${highlightType}`).forEach((code) => code.classList.add('is-related'));
+    }
     document.querySelectorAll('.mnemonic-grid-toggle').forEach((toggle) => {
         toggle.setAttribute('aria-expanded', String(isExpanded));
     });
+}
+
+function showMnemonicHover(rowKey) {
+    const dock = document.getElementById('mnemonic-dock');
+    if (dock.dataset.expanded !== 'true') return;
+    document.querySelectorAll('.mnemonic-related-hover').forEach((code) => code.classList.remove('mnemonic-related-hover'));
+    document.querySelectorAll(`.mnemonic-related-${rowKey}-code`).forEach((code) => code.classList.add('mnemonic-related-hover'));
+}
+
+function showMnemonicSignHover(rowKey) {
+    const dock = document.getElementById('mnemonic-dock');
+    if (dock.dataset.expanded !== 'true') return;
+    dock.classList.add('is-hover-expanded');
+    document.querySelectorAll('.mnemonic-related-hover').forEach((code) => code.classList.remove('mnemonic-related-hover'));
+    const sign = document.querySelector(`.mnemonic-sign-toggle[data-mnemonic-row="${rowKey}"]`)?.dataset.highlightSign;
+    document.querySelectorAll(`.mnemonic-related-${rowKey}-${sign || 'code'}`).forEach((code) => code.classList.add('mnemonic-related-hover'));
+}
+
+function clearMnemonicHover() {
+    document.querySelectorAll('.mnemonic-related-hover').forEach((code) => code.classList.remove('mnemonic-related-hover'));
+    document.getElementById('mnemonic-dock').classList.remove('is-hover-expanded');
 }
 
 function jumpToIdentities(names) {
@@ -585,8 +612,21 @@ function setupEventListeners() {
     document.querySelectorAll('.mnemonic-grid-toggle').forEach((toggle) => {
         toggle.addEventListener('click', toggleMnemonicGrid);
     });
+    document.querySelectorAll('.mnemonic-sign-toggle').forEach((toggle) => {
+        toggle.addEventListener('click', toggleMnemonicGrid);
+        toggle.addEventListener('mouseenter', () => showMnemonicSignHover(toggle.dataset.mnemonicRow));
+        toggle.addEventListener('mouseleave', clearMnemonicHover);
+        toggle.addEventListener('focus', () => showMnemonicSignHover(toggle.dataset.mnemonicRow));
+        toggle.addEventListener('blur', clearMnemonicHover);
+    });
+    document.querySelectorAll('.mnemonic-grid-toggle').forEach((toggle) => {
+        toggle.addEventListener('mouseenter', () => showMnemonicHover(toggle.dataset.mnemonicRow));
+        toggle.addEventListener('mouseleave', clearMnemonicHover);
+        toggle.addEventListener('focus', () => showMnemonicHover(toggle.dataset.mnemonicRow));
+        toggle.addEventListener('blur', clearMnemonicHover);
+    });
     document.getElementById('mnemonic-dock').addEventListener('click', (event) => {
-        if (!event.target.closest('.mnemonic-link, .mnemonic-token, .mnemonic-grid-toggle')) {
+        if (!event.target.closest('.mnemonic-link, .mnemonic-token, .mnemonic-grid-toggle, .mnemonic-sign-toggle')) {
             toggleMnemonicGrid();
         }
     });

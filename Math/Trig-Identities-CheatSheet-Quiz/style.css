@@ -250,6 +250,80 @@ nav button.saved-btn:hover {
     flex: 0 0 auto;
 }
 
+.mnemonic-string {
+    display: inline-flex;
+    align-items: baseline;
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.mnemonic-relationship-key {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(1.5rem, auto));
+    gap: 0.55rem;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-items: center;
+    padding: 0.7rem 0;
+}
+
+.mnemonic-key-cell {
+    position: relative;
+    display: grid;
+    place-items: center;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+    min-height: 1rem;
+    line-height: 1.1;
+}
+
+.mnemonic-key-cell .mnemonic-sign-toggle {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.mnemonic-key-cell.sign-top .mnemonic-sign-toggle {
+    bottom: calc(100% + 0.15rem);
+}
+
+.mnemonic-key-cell.sign-bottom .mnemonic-sign-toggle {
+    top: calc(100% + 0.15rem);
+}
+
+.mnemonic-sign-toggle {
+    width: max-content;
+    min-width: max-content;
+    white-space: nowrap;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
+}
+
+.mnemonic-sign-expanded {
+    display: none;
+    flex-direction: row;
+    gap: 0.08rem;
+    width: max-content;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.mnemonic-dock.is-expanded .mnemonic-sign-compact,
+.mnemonic-dock[data-expanded="true"] .mnemonic-sign-compact {
+    display: none;
+}
+
+.mnemonic-dock.is-expanded .mnemonic-sign-expanded,
+.mnemonic-dock[data-expanded="true"] .mnemonic-sign-expanded {
+    display: inline-flex;
+}
+
 .mnemonic-grid-toggle {
     padding: 0;
     border: 0;
@@ -279,6 +353,7 @@ nav button.saved-btn:hover {
     background: transparent;
     cursor: pointer;
     font: inherit;
+    white-space: nowrap;
 }
 
 .mnemonic-token:hover,
@@ -320,6 +395,27 @@ nav button.saved-btn:hover {
     display: block !important;
 }
 
+.mnemonic-dock.is-hover-expanded .mnemonic-table,
+.mnemonic-dock.is-hover-expanded .mnemonic-grid-label {
+    display: block;
+}
+
+.mnemonic-dock.is-hover-expanded .mnemonic-table {
+    display: block !important;
+}
+
+.mnemonic-dock.is-hover-expanded .mnemonic-sign-compact {
+    display: none;
+}
+
+.mnemonic-dock.is-hover-expanded .mnemonic-sign-expanded {
+    display: inline-flex;
+}
+
+.mnemonic-dock.is-hover-expanded .mnemonic-sign-expanded {
+    display: inline-flex;
+}
+
 .mnemonic-grid-label {
     display: none;
     margin-top: 0.55rem;
@@ -357,11 +453,20 @@ nav button.saved-btn:hover {
     grid-template-columns: 1fr 1fr;
 }
 
+.mnemonic-dock.is-hover-expanded .mnemonic-table-head,
+.mnemonic-dock.is-hover-expanded .mnemonic-row {
+    grid-template-columns: 1fr 1fr;
+}
+
 .mnemonic-dock.is-expanded .mnemonic-sum-side {
     display: block;
 }
 
 .mnemonic-dock[data-expanded="true"] .mnemonic-sum-side {
+    display: block;
+}
+
+.mnemonic-dock.is-hover-expanded .mnemonic-sum-side {
     display: block;
 }
 
@@ -375,6 +480,86 @@ nav button.saved-btn:hover {
 .mnemonic-row {
     border-top: 1px solid rgba(139, 148, 158, 0.2);
     padding: 0.35rem;
+}
+
+.mnemonic-related-sc-code.is-related,
+.mnemonic-related-cs-code.is-related,
+.mnemonic-related-cc-code.is-related,
+.mnemonic-related-ss-code.is-related {
+    display: inline-block;
+    padding: 0 0.15rem;
+    border: 1px solid var(--tan-purple);
+    border-radius: 3px;
+    border-color: var(--tan-purple);
+    background: var(--highlight-bg);
+    box-shadow: 0 0 0 2px rgba(199, 146, 255, 0.22);
+}
+
+.mnemonic-related-sc-signs.is-related,
+.mnemonic-related-cs-signs.is-related,
+.mnemonic-related-cc-signs.is-related,
+.mnemonic-related-ss-signs.is-related {
+    display: inline-block;
+    padding: 0 0.15rem;
+    border: 1px solid var(--tan-purple);
+    border-radius: 3px;
+    background: var(--highlight-bg);
+    box-shadow: 0 0 0 2px rgba(199, 146, 255, 0.22);
+}
+
+.mnemonic-related-sc-signs.mnemonic-related-hover,
+.mnemonic-related-cs-signs.mnemonic-related-hover,
+.mnemonic-related-cc-signs.mnemonic-related-hover,
+.mnemonic-related-ss-signs.mnemonic-related-hover {
+    display: inline-block;
+    padding: 0 0.15rem;
+    border: 1px solid var(--tan-purple);
+    border-radius: 3px;
+    background: var(--highlight-bg);
+    box-shadow: 0 0 0 2px rgba(199, 146, 255, 0.22);
+}
+
+.mnemonic-related-sc-plus.is-related,
+.mnemonic-related-cs-minus.is-related,
+.mnemonic-related-cc-plus.is-related,
+.mnemonic-related-ss-minus.is-related,
+.mnemonic-related-sc-plus.mnemonic-related-hover,
+.mnemonic-related-cs-minus.mnemonic-related-hover,
+.mnemonic-related-cc-plus.mnemonic-related-hover,
+.mnemonic-related-ss-minus.mnemonic-related-hover {
+    display: inline-block;
+    padding: 0 0.15rem;
+    border: 1px solid var(--tan-purple);
+    border-radius: 3px;
+    background: var(--highlight-bg);
+    box-shadow: 0 0 0 2px rgba(199, 146, 255, 0.22);
+}
+
+.mnemonic-related-sc-minus.is-related,
+.mnemonic-related-cs-plus.is-related,
+.mnemonic-related-cc-minus.is-related,
+.mnemonic-related-ss-plus.is-related,
+.mnemonic-related-sc-minus.mnemonic-related-hover,
+.mnemonic-related-cs-plus.mnemonic-related-hover,
+.mnemonic-related-cc-minus.mnemonic-related-hover,
+.mnemonic-related-ss-plus.mnemonic-related-hover {
+    display: inline-block;
+    padding: 0 0.15rem;
+    border: 1px solid var(--tan-purple);
+    border-radius: 3px;
+    background: var(--highlight-bg);
+    box-shadow: 0 0 0 2px rgba(199, 146, 255, 0.22);
+}
+
+.mnemonic-related-sc-code.mnemonic-related-hover,
+.mnemonic-related-cs-code.mnemonic-related-hover,
+.mnemonic-related-cc-code.mnemonic-related-hover,
+.mnemonic-related-ss-code.mnemonic-related-hover {
+    display: inline-block;
+    padding: 0 0.15rem;
+    border: 1px solid var(--tan-purple);
+    border-radius: 3px;
+    background: var(--highlight-bg);
 }
 
 .mnemonic-hook {
