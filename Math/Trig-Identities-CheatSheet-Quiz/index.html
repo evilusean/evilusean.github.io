@@ -27,6 +27,7 @@
             <button id="screensaver-btn">Screensaver</button>
             <button id="quiz-btn">Quiz Mode</button>
             <button id="help-btn">Help</button>
+            <button id="mobile-mnemonic-toggle" class="mobile-mnemonic-toggle" type="button" aria-expanded="true">Hide mnemonic</button>
             <button id="view-saved-btn-header" class="saved-btn">💾 Saved (<span id="saved-count-header">0</span>)</button>
         </nav>
         <nav class="secondary-nav">
@@ -132,9 +133,7 @@
         </div>
     </div>
 
-    <button id="mobile-mnemonic-toggle" class="mobile-mnemonic-toggle" type="button" aria-expanded="false">Show mnemonic</button>
-
-    <div id="mnemonic-cluster" class="mnemonic-cluster">
+    <div id="mnemonic-cluster" class="mnemonic-cluster is-visible">
         <aside id="mnemonic-dock" class="mnemonic-dock" aria-label="Product-to-sum and sum-to-product mnemonic">
         <div class="mnemonic-heading">
             <span class="mnemonic-kicker">Identities Mnemonic</span>

@@ -119,9 +119,8 @@ let revealedQuizItems = new Set();
 // Initialize
 function init() {
     const header = document.querySelector('header');
-    const mnemonicToggle = document.getElementById('mobile-mnemonic-toggle');
     const mnemonicCluster = document.getElementById('mnemonic-cluster');
-    header.after(mnemonicToggle, mnemonicCluster);
+    header.after(mnemonicCluster);
     const positionMnemonicCluster = () => {
         document.documentElement.style.setProperty('--mnemonic-top', `${header.getBoundingClientRect().height + 12}px`);
     };
@@ -632,7 +631,7 @@ function setupEventListeners() {
     });
     document.getElementById('mobile-mnemonic-toggle').addEventListener('click', () => {
         const cluster = document.getElementById('mnemonic-cluster');
-        const isVisible = cluster.classList.toggle('mobile-visible');
+        const isVisible = cluster.classList.toggle('is-visible');
         document.getElementById('mobile-mnemonic-toggle').setAttribute('aria-expanded', String(isVisible));
         document.getElementById('mobile-mnemonic-toggle').textContent = isVisible ? 'Hide mnemonic' : 'Show mnemonic';
     });

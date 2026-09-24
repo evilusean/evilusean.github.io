@@ -174,16 +174,20 @@ nav button.saved-btn:hover {
 }
 
 .mnemonic-cluster {
+    display: none;
     position: fixed;
     top: var(--mnemonic-top, 10rem);
     right: 1rem;
     margin: 0;
     width: min(540px, calc(100vw - 2rem));
     box-sizing: border-box;
-    display: flex;
     flex-direction: column;
     gap: 0.5rem;
     z-index: 101;
+}
+
+.mnemonic-cluster.is-visible {
+    display: flex;
 }
 
 .legend {
@@ -221,7 +225,7 @@ nav button.saved-btn:hover {
 }
 
 .mobile-mnemonic-toggle {
-    display: none;
+    display: inline-block;
 }
 
 .mnemonic-dock.is-expanded {
@@ -698,7 +702,6 @@ nav button.saved-btn:hover {
 
 @media (max-width: 640px) {
     .mnemonic-cluster {
-        display: none;
         top: var(--mnemonic-top, 5rem);
         right: 0.65rem;
         margin: 0;
@@ -706,28 +709,12 @@ nav button.saved-btn:hover {
         max-height: calc(100vh - 1.3rem);
     }
 
-    .mnemonic-cluster.mobile-visible {
-        display: flex;
-    }
-
     .mobile-mnemonic-toggle {
-        display: block;
-        position: fixed;
-        top: var(--mnemonic-top, 5rem);
-        right: 0.65rem;
-        z-index: 102;
-        padding: 0.45rem 0.65rem;
-        border: 1px solid var(--tan-purple);
-        border-radius: 6px;
-        background: var(--bg-card);
-        color: var(--text-primary);
-        cursor: pointer;
-        font: inherit;
-        font-size: 0.75rem;
+        position: static;
     }
 
-    .mnemonic-cluster.mobile-visible + .notification,
-    .mnemonic-cluster.mobile-visible ~ .notification {
+    .mnemonic-cluster.is-visible + .notification,
+    .mnemonic-cluster.is-visible ~ .notification {
         z-index: 1;
     }
 
