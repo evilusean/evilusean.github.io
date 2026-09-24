@@ -402,6 +402,16 @@ function jumpToIdentity(name) {
     jumpToIdentities([name]);
 }
 
+function toggleMnemonicGrid() {
+    const dock = document.getElementById('mnemonic-dock');
+    const isExpanded = dock.dataset.expanded !== 'true';
+    dock.dataset.expanded = String(isExpanded);
+    dock.classList.toggle('is-expanded', isExpanded);
+    document.querySelectorAll('.mnemonic-grid-toggle').forEach((toggle) => {
+        toggle.setAttribute('aria-expanded', String(isExpanded));
+    });
+}
+
 function jumpToIdentities(names) {
     if (!document.getElementById('cheatsheet-view').classList.contains('active')) {
         switchView('cheatsheet');
@@ -562,6 +572,14 @@ function setupEventListeners() {
             link.appendChild(preview);
         }
         link.addEventListener('click', () => jumpToIdentities(identityNames));
+    });
+    document.querySelectorAll('.mnemonic-grid-toggle').forEach((toggle) => {
+        toggle.addEventListener('click', toggleMnemonicGrid);
+    });
+    document.getElementById('mnemonic-dock').addEventListener('click', (event) => {
+        if (!event.target.closest('.mnemonic-link, .mnemonic-token, .mnemonic-grid-toggle')) {
+            toggleMnemonicGrid();
+        }
     });
     refreshMathJax();
     

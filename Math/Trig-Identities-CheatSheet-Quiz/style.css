@@ -192,7 +192,7 @@ nav button.saved-btn:hover {
     right: 1rem;
     bottom: 4.5rem;
     width: min(440px, calc(100vw - 2rem));
-    max-height: 22rem;
+    max-height: 5.5rem;
     overflow: visible;
     padding: 0.8rem 0.9rem;
     background: rgba(22, 27, 34, 0.96);
@@ -203,8 +203,12 @@ nav button.saved-btn:hover {
     transition: max-height 0.3s ease, box-shadow 0.3s ease;
 }
 
-.mnemonic-dock:hover,
-.mnemonic-dock:focus-within {
+.mnemonic-dock.is-expanded {
+    max-height: 22rem;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+}
+
+.mnemonic-dock[data-expanded="true"] {
     max-height: 22rem;
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
 }
@@ -213,7 +217,23 @@ nav button.saved-btn:hover {
     display: flex;
     align-items: baseline;
     gap: 0.55rem;
-    white-space: nowrap;
+    flex-wrap: wrap;
+}
+
+.mnemonic-code-strip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.55rem;
+    margin-left: 0.2rem;
+}
+
+.mnemonic-grid-toggle {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
 }
 
 .mnemonic-kicker {
@@ -246,16 +266,38 @@ nav button.saved-btn:hover {
 
 .mnemonic-hint {
     margin-left: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
     color: var(--text-secondary);
+    cursor: pointer;
     font-size: 0.7rem;
+    font: inherit;
 }
 
 .mnemonic-table {
     margin-top: 0.8rem;
     font-size: 0.78rem;
+    display: none !important;
+}
+
+.mnemonic-dock.is-expanded .mnemonic-table,
+.mnemonic-dock.is-expanded .mnemonic-grid-label {
+    display: block;
+}
+
+.mnemonic-dock[data-expanded="true"] .mnemonic-table,
+.mnemonic-dock[data-expanded="true"] .mnemonic-grid-label {
+    display: block;
+}
+
+.mnemonic-dock.is-expanded .mnemonic-table,
+.mnemonic-dock[data-expanded="true"] .mnemonic-table {
+    display: block !important;
 }
 
 .mnemonic-grid-label {
+    display: none;
     margin-top: 0.55rem;
     color: var(--text-secondary);
     font-size: 0.66rem;
@@ -272,7 +314,7 @@ nav button.saved-btn:hover {
 .mnemonic-table-head,
 .mnemonic-row {
     display: grid;
-    grid-template-columns: 1.2fr 1fr;
+    grid-template-columns: 1fr;
     align-items: center;
     gap: 0.45rem;
 }
@@ -281,15 +323,21 @@ nav button.saved-btn:hover {
     display: none;
 }
 
-.mnemonic-dock:hover .mnemonic-table-head,
-.mnemonic-dock:hover .mnemonic-row,
-.mnemonic-dock:focus-within .mnemonic-table-head,
-.mnemonic-dock:focus-within .mnemonic-row {
-    grid-template-columns: 1.2fr 1fr 1fr;
+.mnemonic-dock.is-expanded .mnemonic-table-head,
+.mnemonic-dock.is-expanded .mnemonic-row {
+    grid-template-columns: 1fr 1fr;
 }
 
-.mnemonic-dock:hover .mnemonic-sum-side,
-.mnemonic-dock:focus-within .mnemonic-sum-side {
+.mnemonic-dock[data-expanded="true"] .mnemonic-table-head,
+.mnemonic-dock[data-expanded="true"] .mnemonic-row {
+    grid-template-columns: 1fr 1fr;
+}
+
+.mnemonic-dock.is-expanded .mnemonic-sum-side {
+    display: block;
+}
+
+.mnemonic-dock[data-expanded="true"] .mnemonic-sum-side {
     display: block;
 }
 
@@ -315,13 +363,15 @@ nav button.saved-btn:hover {
     display: none;
 }
 
-.mnemonic-hook:hover .mnemonic-hook-code,
-.mnemonic-hook:focus-within .mnemonic-hook-code {
+.mnemonic-hook:hover > .mnemonic-hook-code,
+.mnemonic-hook:focus-visible > .mnemonic-hook-code,
+.mnemonic-hook:focus-within > .mnemonic-hook-code {
     display: none;
 }
 
-.mnemonic-hook:hover .mnemonic-hook-name,
-.mnemonic-hook:focus-within .mnemonic-hook-name {
+.mnemonic-hook:hover > .mnemonic-hook-name,
+.mnemonic-hook:focus-visible > .mnemonic-hook-name,
+.mnemonic-hook:focus-within > .mnemonic-hook-name {
     display: inline;
 }
 
