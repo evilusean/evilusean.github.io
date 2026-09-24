@@ -3,7 +3,8 @@
 const CONFIG = {
   CLIENT_ID: '423584880836-r8jfae1q0e84j94elnriakohr5b9to9m.apps.googleusercontent.com',
   SPREADSHEET_ID: localStorage.getItem('timeline_sheet_id') || '',
-  PEOPLE_SPREADSHEET_ID: localStorage.getItem('timeline_people_sheet_id') || '',
+  // Single spreadsheet — events live in named tabs, people in the 'People' tab of the same file.
+  // PEOPLE_SPREADSHEET_ID is intentionally removed; use CONFIG.SPREADSHEET_ID for everything.
   SHEET_NAME: localStorage.getItem('timeline_sheet_tab') || 'Western canon',
   PEOPLE_SHEET_NAME: localStorage.getItem('timeline_people_tab') || 'People',
   SCOPES: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file',
@@ -404,8 +405,9 @@ function persistLocal() {
   localStorage.setItem('timeline_custom', JSON.stringify(STATE.localCustom));
   localStorage.setItem('timeline_sheet_id', CONFIG.SPREADSHEET_ID || '');
   localStorage.setItem('timeline_sheet_tab', CONFIG.SHEET_NAME || '');
-  localStorage.setItem('timeline_people_sheet_id', CONFIG.PEOPLE_SPREADSHEET_ID || '');
   localStorage.setItem('timeline_people_tab', CONFIG.PEOPLE_SHEET_NAME || '');
+  // Remove the old separate-people-file key so it never resurrects a stale ID
+  localStorage.removeItem('timeline_people_sheet_id');
   localStorage.setItem('timeline_layout', STATE.layoutMode);
   localStorage.setItem('timeline_wrap_rows', String(STATE.wrapRows));
   localStorage.setItem('timeline_slice_grain', STATE.sliceGrain);
@@ -608,14 +610,17 @@ function refreshOpenSheetHref() {
       a.setAttribute('aria-disabled', 'true');
     }
   }
+  // People Sheet button — same spreadsheet, jumps to People tab via #gid
   const p = document.getElementById('open-people-sheet-btn');
   if (p) {
-    if (CONFIG.PEOPLE_SPREADSHEET_ID) {
+    if (CONFIG.SPREADSHEET_ID) {
       const gid = STATE.peopleGid != null ? `#gid=${STATE.peopleGid}` : '';
-      p.href = `https://docs.google.com/spreadsheets/d/${CONFIG.PEOPLE_SPREADSHEET_ID}/edit${gid}`;
+      p.href = `https://docs.google.com/spreadsheets/d/${CONFIG.SPREADSHEET_ID}/edit${gid}`;
       p.classList.remove('hidden');
+      p.removeAttribute('aria-disabled');
     } else {
       p.href = '#';
+      p.setAttribute('aria-disabled', 'true');
     }
   }
 }
@@ -676,68 +681,90 @@ async function listSheetTabs() {
     CONFIG.SHEET_NAME = STATE.sheetTabs[0].title;
     STATE.activeGid = STATE.sheetTabs[0].sheetId;
   }
+  // Track the People tab gid from the same spreadsheet
+  const peopleTab = STATE.sheetTabs.find(t => t.title === CONFIG.PEOPLE_SHEET_NAME);
+  STATE.peopleGid = peopleTab ? peopleTab.sheetId : null;
   refreshOpenSheetHref();
 }
 
 async function createSpreadsheetSeeded() {
+  // ── Duplicate guard: if we already have an ID, verify it's still reachable ──
+  if (CONFIG.SPREADSHEET_ID) {
+    try {
+      const check = await sheetsRequest(
+        `${SHEETS_BASE}/${CONFIG.SPREADSHEET_ID}?fields=spreadsheetId`
+      );
+      if (check && check.spreadsheetId) {
+        // File still exists — just open it, don't create another one
+        hideSpinner();
+        showToast('Spreadsheet already exists — opening it now.', 'info');
+        await listSheetTabs();
+        populateTimelineSelect();
+        renderAuthUI(true);
+        refreshOpenSheetHref();
+        window.open(
+          `https://docs.google.com/spreadsheets/d/${CONFIG.SPREADSHEET_ID}/edit`,
+          '_blank', 'noopener'
+        );
+        return;
+      }
+    } catch (_) {
+      // 404 / 403 — file was deleted or access revoked; fall through and create fresh
+      CONFIG.SPREADSHEET_ID = '';
+    }
+  }
+
   showSpinner();
   try {
-    const eventBody = {
-      properties: { title: 'ChronicalizeASean Events' },
-      sheets: Object.values(BUILTIN).map(t => ({ properties: { title: t.title } })),
+    // One spreadsheet with all event tabs + the People tab
+    const sheetDefs = [
+      ...Object.values(BUILTIN).map(t => ({ properties: { title: t.title } })),
+      { properties: { title: 'People' } },
+    ];
+    const body = {
+      properties: { title: 'ChronicalizeASean' },
+      sheets: sheetDefs,
     };
-    const created = await sheetsRequest(SHEETS_BASE, { method: 'POST', body: JSON.stringify(eventBody) });
+    const created = await sheetsRequest(SHEETS_BASE, { method: 'POST', body: JSON.stringify(body) });
     if (!created) return;
+
     CONFIG.SPREADSHEET_ID = created.spreadsheetId;
     persistLocal();
     await listSheetTabs();
+
+    // Write all event tabs
     for (const t of Object.values(BUILTIN)) {
       await writeSheetTab(CONFIG.SPREADSHEET_ID, t.title, t.records, EVENT_SCHEMA);
     }
+
+    // Write the People tab in the same spreadsheet
+    await writeSheetTab(CONFIG.SPREADSHEET_ID, 'People', STATE.people || TL_PEOPLE, PEOPLE_SCHEMA);
+
     CONFIG.SHEET_NAME = BUILTIN.canon.title;
     STATE.activeKey = 'sheet:' + CONFIG.SHEET_NAME;
-
-    const peopleBody = {
-      properties: { title: 'ChronicalizeASean People' },
-      sheets: [{ properties: { title: 'People' } }],
-    };
-    const peopleCreated = await sheetsRequest(SHEETS_BASE, { method: 'POST', body: JSON.stringify(peopleBody) });
-    if (peopleCreated) {
-      CONFIG.PEOPLE_SPREADSHEET_ID = peopleCreated.spreadsheetId;
-      CONFIG.PEOPLE_SHEET_NAME = 'People';
-      persistLocal();
-      await writeSheetTab(CONFIG.PEOPLE_SPREADSHEET_ID, 'People', STATE.people || TL_PEOPLE, PEOPLE_SCHEMA);
-      await listPeopleTabs();
-    }
+    persistLocal();
 
     populateTimelineSelect();
     renderAuthUI(true);
     await syncFromSheet();
     refreshOpenSheetHref();
     hideSpinner();
-    showToast('Created Events + People spreadsheets. Open them to edit rows (* = required).', 'success');
-    window.open(`https://docs.google.com/spreadsheets/d/${CONFIG.SPREADSHEET_ID}/edit`, '_blank', 'noopener');
-    if (CONFIG.PEOPLE_SPREADSHEET_ID) {
-      window.open(`https://docs.google.com/spreadsheets/d/${CONFIG.PEOPLE_SPREADSHEET_ID}/edit`, '_blank', 'noopener');
-    }
+    showToast('Created spreadsheet with all timelines + People tab. Opening now…', 'success');
+    window.open(
+      `https://docs.google.com/spreadsheets/d/${CONFIG.SPREADSHEET_ID}/edit`,
+      '_blank', 'noopener'
+    );
   } catch (e) {
     hideSpinner();
     showToast('Could not create spreadsheet: ' + e.message, 'error');
   }
 }
 
+// listPeopleTabs is no longer needed — the People tab lives in the same spreadsheet
+// as all event tabs. listSheetTabs() now resolves STATE.peopleGid automatically.
+// This stub is kept so any lingering call sites don't throw.
 async function listPeopleTabs() {
-  if (!CONFIG.PEOPLE_SPREADSHEET_ID) return;
-  const url = `${SHEETS_BASE}/${CONFIG.PEOPLE_SPREADSHEET_ID}?fields=spreadsheetId,sheets.properties`;
-  const data = await sheetsRequest(url);
-  if (!data) return;
-  STATE.peopleTabs = (data.sheets || []).map(s => ({
-    title: s.properties.title,
-    sheetId: s.properties.sheetId,
-  }));
-  const match = STATE.peopleTabs.find(t => t.title === CONFIG.PEOPLE_SHEET_NAME);
-  STATE.peopleGid = match ? match.sheetId : (STATE.peopleTabs[0] ? STATE.peopleTabs[0].sheetId : null);
-  refreshOpenSheetHref();
+  await listSheetTabs();
 }
 
 async function writeSheetTab(spreadsheetId, sheetName, records, schema) {
@@ -753,10 +780,47 @@ async function writeSheetTab(spreadsheetId, sheetName, records, schema) {
   );
 }
 
+// Reads the current header row and appends any schema columns that are missing.
+// Safe to call on every sync — it's a no-op when headers are already up to date.
+async function ensureSheetHeaders(spreadsheetId, sheetName, schema) {
+  const expectedKeys = schema.map(c => c.key);
+  const lastExpectedCol = String.fromCharCode(64 + expectedKeys.length);
+  const rangeEnc = encodeURIComponent(`${sheetName}!A1:${lastExpectedCol}`);
+  const data = await sheetsRequest(`${SHEETS_BASE}/${spreadsheetId}/values/${rangeEnc}`);
+  if (!data) return;
+
+  const existingRow = (data.values && data.values[0]) || [];
+  const existingKeys = existingRow.map(normalizeHeaderCell);
+
+  const missing = expectedKeys.filter(k => !existingKeys.includes(k));
+  if (!missing.length) return; // nothing to do
+
+  // Append missing headers to the right of whatever is already there
+  const startColIndex = existingRow.length; // 0-based
+  const startColLetter = String.fromCharCode(65 + startColIndex);
+  const endColLetter = String.fromCharCode(65 + startColIndex + missing.length - 1);
+  const appendRange = encodeURIComponent(`${sheetName}!${startColLetter}1:${endColLetter}1`);
+
+  // Label with * suffix for required fields, matching schemaHeader() convention
+  const headerLabels = missing.map(k => {
+    const entry = schema.find(c => c.key === k);
+    return entry && entry.required ? k + ' *' : k;
+  });
+
+  await sheetsRequest(
+    `${SHEETS_BASE}/${spreadsheetId}/values/${appendRange}?valueInputOption=RAW`,
+    { method: 'PUT', body: JSON.stringify({ values: [headerLabels] }) }
+  );
+  console.info(`[ChronicalizeASean] Added missing columns to "${sheetName}": ${missing.join(', ')}`);
+}
+
 async function syncFromSheet() {
   if (!CONFIG.SPREADSHEET_ID) { showToast('No spreadsheet connected', 'warning'); return; }
   showSpinner();
   try {
+    // Forward-migrate headers in case the schema has grown since the sheet was created
+    await ensureSheetHeaders(CONFIG.SPREADSHEET_ID, CONFIG.SHEET_NAME, EVENT_SCHEMA);
+
     // Derive last column letter from schema length so range never goes stale when columns are added
     const lastCol = String.fromCharCode(64 + FIELDS.length);
     const range = encodeURIComponent(`${CONFIG.SHEET_NAME}!A1:${lastCol}`);
@@ -792,6 +856,28 @@ async function syncFromSheet() {
     STATE.activeKey = 'sheet:' + CONFIG.SHEET_NAME;
     applyFilters();
     renderTimeline();
+
+    // Also sync the People tab from the same spreadsheet (best-effort — don't fail the whole sync)
+    try {
+      await ensureSheetHeaders(CONFIG.SPREADSHEET_ID, CONFIG.PEOPLE_SHEET_NAME, PEOPLE_SCHEMA);
+      const peopleLastCol = String.fromCharCode(64 + PEOPLE_FIELDS.length);
+      const peopleRange = encodeURIComponent(CONFIG.PEOPLE_SHEET_NAME + '!A1:' + peopleLastCol);
+      const peopleData = await sheetsRequest(SHEETS_BASE + '/' + CONFIG.SPREADSHEET_ID + '/values/' + peopleRange);
+      if (peopleData && (peopleData.values || []).length >= 2) {
+        const ph = peopleData.values[0].map(normalizeHeaderCell);
+        STATE.people = peopleData.values.slice(1).map(row => {
+          const p = {};
+          PEOPLE_FIELDS.forEach(f => {
+            const idx = ph.indexOf(f);
+            p[f] = idx >= 0 ? (row[idx] || '') : '';
+          });
+          p.id = p.id || generateId();
+          return p;
+        }).filter(p => p.name);
+        persistLocal();
+      }
+    } catch (_) { /* People tab missing or unreadable — not fatal */ }
+
     hideSpinner();
     showToast(`Synced ${incoming.length} rows from “${CONFIG.SHEET_NAME}”`, 'success');
   } catch (e) {

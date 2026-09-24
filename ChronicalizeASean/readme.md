@@ -2,7 +2,7 @@ TODO / Future Sean Problems :
 - The screensaver mode/slideshow froze, ran out of tokens, also, future Sean, do one of these at a time, kiro timed out a bunch trying to 'one shot' it
 - ran out of tokens, mid-prompt, again - I left off trying to improve the timeline, so it can go multi level or side scroll 
 - make app responsive, currently only works for large screen (this is a future, future, future sean problem, still have to get the app to work before aesthetics)
-- events sheet / people sheet don't work yet, I should allow the user to create a timeline, and open that up on their google sheets, top row should be clearly labeled, all mandatory entries should have a mandatory * asterisk 
+- events sheet / people sheet don't work yet, I should allow the user to create a timeline, and open that up on their google sheets, top row should be clearly labeled, all mandatory entries should have a mandatory * asterisk or whatever the user should leave empty (like id)
 - rows look wonky, it starts each row back on the left hand side, which is not how timelines should look
 - 'rows' and 'layout' buttons aren't working 
 - add a favicon
@@ -12,7 +12,11 @@ TODO / Future Sean Problems :
 - 'export'  should allow the user to download the current timeline they have worked on, so they can 'import' it again whenever they want to use it, it should be spreadsheet or csv (let the user pick what to download as) - they should also be able to edit their own on google sheets by manually filling in the columns
 - 'end date' shouldn't be mandatory (only 'start date') 
 - you should be able to create subevents of the main events like for carthage delende est, you would have the 'Punic Wars' event, and then each 'Battle' could be a subevent, but 'The Punic Wars' would be a subevent of 'The Roman Empire', figure out a way to make that work with link/join those, the schema is gonna need alot of work, because I need to be able to link events, subevents, sub-sub events, people, dates, etc. 
+- add view toggles for each subevent - maybe layers? I'm trying to think of ways to reduce how much stuff needs to be on screen at once, right now, with just the examples, things look very 'busy'
 - user should then be able to click on a 'main event' and see just the timeline of that and it's subevents
 - So, will probably need a way to father-child events, maybe a new column? 
 - fix 'slice' I was trying to allow the user to 'slice' one part of the timeline, but AI misinterpreted that 
 - also, for some reason, the AI took 'Sir John Glubbs the Fate of Empires' literally, and took abstract concepts like 'the age of decadence' as objective physical events with dates (which is wrong) 
+- Instead of a timeLINE, what about a fractal circle? where you can scroll in infinitely, like start at year '0' and scroll out to current day
+- Don't forget the heat map for schizochartmaxxing
+- update the schema 
