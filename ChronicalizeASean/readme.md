@@ -74,4 +74,7 @@ TODO / Future Sean Problems :
 - also, for some reason, the AI took 'Sir John Glubbs the Fate of Empires' literally, and took abstract concepts like 'the age of decadence' as objective physical events with dates (which is wrong) 
 - Instead of a timeLINE, what about a fractal circle? where you can scroll in infinitely, like start at year '0' and scroll out to current day
 - Don't forget the heat map for schizochartmaxxing
-- update the schema, make it visual 
+- update the schema, make it visual - maybe have the defeault as a spreadsheet to use as an example - it should be clearly labeled what each row is, which ones to fill in, which ones are mandatory, which to leave empty for the app to fill - I want these overly descriptive so there is no doubt, what to do on the spreadsheet, and if something breaks, I tried, it's your fault
+- update the how to, so the user knows how to use it
+- make the spiral zoom in relative to where the pointer is - so instead of it always zooming back, it can zoom / slice to a certain time, like if I want to zoom in on a specific time period on the spiral, I just have to hover and scroll wheel up - if I want to 
+- maybe make a way to invert the spiral timeline? which makes more intuitive sense? outward events happening inward making you the person/timeline you are today - or past events happening outward reaching out in a fractal spiral infinitely 'prime mover' vs 'unmoved mover' - maybe add a toggle? - I've already got 2 rows of buttons 

@@ -332,6 +332,8 @@ const STATE = {
   layoutMode: localStorage.getItem('timeline_layout') || 'wrap',
   wrapRows: localStorage.getItem('timeline_wrap_rows') || 'auto',
   sliceGrain: localStorage.getItem('timeline_slice_grain') || 'all',
+  viewMode: localStorage.getItem('timeline_view_mode') || 'timeline', // 'timeline' | 'spiral'
+  spiralZoom: parseFloat(localStorage.getItem('timeline_spiral_zoom') || '1'),
   people: JSON.parse(localStorage.getItem('timeline_people') || 'null') || TL_PEOPLE,
 };
 
@@ -435,6 +437,8 @@ function persistLocal() {
   localStorage.setItem('timeline_layout', STATE.layoutMode);
   localStorage.setItem('timeline_wrap_rows', String(STATE.wrapRows));
   localStorage.setItem('timeline_slice_grain', STATE.sliceGrain);
+  localStorage.setItem('timeline_view_mode', STATE.viewMode);
+  localStorage.setItem('timeline_spiral_zoom', String(STATE.spiralZoom));
   localStorage.setItem('timeline_people', JSON.stringify(STATE.people || []));
 }
 
@@ -520,7 +524,7 @@ async function switchTimeline(key) {
   persistLocal();
   refreshOpenSheetHref();
   applyFilters();
-  renderTimeline();
+  renderView();
 }
 
 /* ── Google auth ── */
@@ -964,7 +968,7 @@ async function syncFromSheet() {
     if (rows.length < 2) {
       STATE.records = [];
       applyFilters();
-      renderTimeline();
+      renderView();
       hideSpinner();
       showToast('Sheet tab is empty', 'info');
       return;
@@ -989,7 +993,7 @@ async function syncFromSheet() {
     STATE.records = incoming;
     STATE.activeKey = 'sheet:' + CONFIG.SHEET_NAME;
     applyFilters();
-    renderTimeline();
+    renderView();
 
     // Also sync the People tab from the same spreadsheet (best-effort — don't fail the whole sync)
     try {
@@ -1110,7 +1114,7 @@ function afterMutation() {
   }
   persistLocal();
   applyFilters();
-  renderTimeline();
+  renderView();
 }
 
 function applyFilters() {
@@ -1343,6 +1347,202 @@ function renderTimeline() {
 
   updateMinimap(totalWidth, baseWidth);
   highlightActiveMarkers();
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   SPIRAL VIEW
+   Archimedean spiral: r = spacing * (totalTurns - θ / (2π))
+   θ=0 → outermost ring (oldest events), θ=max → centre (newest).
+   spiralZoom controls how many turns are shown — scroll wheel zooms in/out.
+   Hit targets are stored in SPIRAL_HITS so click/hover can fire the
+   same selectEvent / showPopoverDelayed handlers as the SVG timeline.
+──────────────────────────────────────────────────────────────────── */
+let SPIRAL_HITS = []; // [{ id, x, y, r }]
+
+function renderSpiral() {
+  const canvas = document.getElementById('spiral-canvas');
+  const wrapper = document.getElementById('timeline-wrapper');
+  const W = wrapper.clientWidth  || 800;
+  const H = wrapper.clientHeight || 500;
+  canvas.width  = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, W, H);
+
+  const records = STATE.filtered;
+  SPIRAL_HITS = [];
+  if (!records.length) return;
+
+  // Sort chronologically so oldest is outermost
+  const sorted = [...records].sort((a, b) =>
+    (parseDate(a.date_start) || 0) - (parseDate(b.date_start) || 0)
+  );
+
+  const cx = W / 2;
+  const cy = H / 2;
+
+  // spiralZoom: 1 = default density, higher = more turns (zoom out / see more history)
+  // Scroll-wheel increases/decreases spiralZoom
+  const zoom  = Math.max(0.3, Math.min(10, STATE.spiralZoom));
+  // How many full turns the spiral makes
+  const turns = 2.5 * zoom;
+  // Spacing between successive turns (px)
+  const spacing = Math.min(W, H) * 0.5 / (turns + 1);
+  // Maximum radius (outermost ring)
+  const maxR = spacing * turns;
+  // θ range: 0 (outer/oldest) → 2π*turns (centre/newest)
+  const maxTheta = 2 * Math.PI * turns;
+
+  // Map a record to its θ position along the spiral
+  const dates = sorted.map(r => parseDate(r.date_start)).filter(Boolean);
+  const minT = dates[0].getTime();
+  const maxT = dates[dates.length - 1].getTime();
+  const spanT = maxT - minT || 1;
+
+  function thetaFor(r) {
+    const d = parseDate(r.date_start);
+    if (!d) return 0;
+    const frac = (d.getTime() - minT) / spanT; // 0=oldest, 1=newest
+    return frac * maxTheta;
+  }
+
+  function xyFor(theta) {
+    // r decreases as theta increases so newest is at centre
+    const radius = maxR * (1 - theta / maxTheta);
+    return {
+      x: cx + radius * Math.cos(theta - Math.PI / 2),
+      y: cy + radius * Math.sin(theta - Math.PI / 2),
+    };
+  }
+
+  // ── Draw spiral track ────────────────────────────────────────────
+  ctx.save();
+  ctx.strokeStyle = 'rgba(71,85,105,0.5)';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([4, 6]);
+  ctx.beginPath();
+  const steps = Math.ceil(turns * 120); // smooth
+  for (let i = 0; i <= steps; i++) {
+    const theta = (i / steps) * maxTheta;
+    const { x, y } = xyFor(theta);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  ctx.restore();
+
+  // ── Draw year labels along the track ────────────────────────────
+  ctx.save();
+  ctx.fillStyle = 'rgba(148,163,184,0.7)';
+  ctx.font = '10px system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  // Place a year tick every full turn
+  for (let t = 0; t <= turns; t++) {
+    const theta = (t / turns) * maxTheta;
+    const frac  = theta / maxTheta;
+    const year  = new Date(minT + frac * spanT).getUTCFullYear();
+    const { x, y } = xyFor(theta);
+    const label = year < 0 ? Math.abs(year) + ' BCE' : String(year);
+    ctx.fillText(label, x + 12, y - 12);
+    // Small tick mark
+    ctx.strokeStyle = 'rgba(148,163,184,0.4)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(x, y, 3, 0, 2 * Math.PI);
+    ctx.fillStyle = 'rgba(148,163,184,0.4)';
+    ctx.fill();
+    ctx.fillStyle = 'rgba(148,163,184,0.7)';
+  }
+  ctx.restore();
+
+  // ── Draw duration arcs for events with date_end ──────────────────
+  sorted.forEach(r => {
+    if (!r.date_end) return;
+    const tStart = thetaFor(r);
+    const dEnd   = parseDate(r.date_end);
+    if (!dEnd) return;
+    const fracEnd  = (dEnd.getTime() - minT) / spanT;
+    const tEnd     = Math.min(fracEnd * maxTheta, maxTheta);
+    if (tEnd <= tStart) return;
+
+    const color = categoryColor(r.category);
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.globalAlpha = 0.3;
+    ctx.lineWidth   = 6;
+    ctx.lineCap     = 'round';
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    const arcSteps = Math.max(4, Math.ceil((tEnd - tStart) / (maxTheta / steps)));
+    for (let i = 0; i <= arcSteps; i++) {
+      const theta    = tStart + (i / arcSteps) * (tEnd - tStart);
+      const { x, y } = xyFor(theta);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.restore();
+  });
+
+  // ── Draw emoji markers ────────────────────────────────────────────
+  const imp2size = imp => 12 + (Math.min(10, Math.max(1, imp || 5)) - 1) * 1.4;
+
+  sorted.forEach(r => {
+    const theta     = thetaFor(r);
+    const { x, y } = xyFor(theta);
+    const imp       = Number(r.importance) || 5;
+    const fontSize  = imp2size(imp);
+    const hitR      = fontSize * 0.8;
+
+    // Highlight ring for active event
+    if (r.id === STATE.lastClickedId) {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(250,204,21,0.9)';
+      ctx.lineWidth   = 2;
+      ctx.beginPath();
+      ctx.arc(x, y, hitR + 4, 0, 2 * Math.PI);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    ctx.save();
+    ctx.font          = fontSize + 'px serif';
+    ctx.textAlign     = 'center';
+    ctx.textBaseline  = 'middle';
+    ctx.fillText(r.emoji || '📌', x, y);
+    ctx.restore();
+
+    SPIRAL_HITS.push({ id: r.id, x, y, r: hitR });
+  });
+
+  // ── Centre label: most recent date ───────────────────────────────
+  const newest = sorted[sorted.length - 1];
+  if (newest) {
+    ctx.save();
+    ctx.fillStyle  = 'rgba(148,163,184,0.5)';
+    ctx.font       = '11px system-ui, sans-serif';
+    ctx.textAlign  = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('← recent', cx, cy);
+    ctx.restore();
+  }
+}
+
+function spiralHitTest(canvasX, canvasY) {
+  for (let i = SPIRAL_HITS.length - 1; i >= 0; i--) {
+    const h = SPIRAL_HITS[i];
+    const dx = canvasX - h.x;
+    const dy = canvasY - h.y;
+    if (dx * dx + dy * dy <= h.r * h.r) return h.id;
+  }
+  return null;
+}
+
+function renderView() {
+  if (STATE.viewMode === 'spiral') {
+    renderSpiral();
+  } else {
+    renderTimeline();
+  }
 }
 
 function drawConnectionsXY(svg, records, posFor) {
@@ -1901,22 +2101,22 @@ function hideSpinner() { document.getElementById('spinner-overlay').classList.ad
 function setupZoomControls() {
   document.getElementById('zoom-in-btn').addEventListener('click', () => {
     STATE.zoom = Math.min(CONFIG.ZOOM_MAX, STATE.zoom + CONFIG.ZOOM_STEP);
-    renderTimeline();
+    renderView();
   });
   document.getElementById('zoom-out-btn').addEventListener('click', () => {
     STATE.zoom = Math.max(CONFIG.ZOOM_MIN, STATE.zoom - CONFIG.ZOOM_STEP);
-    renderTimeline();
+    renderView();
   });
   document.getElementById('zoom-reset-btn').addEventListener('click', () => {
     STATE.zoom = 1;
-    renderTimeline();
+    renderView();
   });
   document.getElementById('timeline-wrapper').addEventListener('wheel', e => {
     if (e.ctrlKey || e.metaKey) {
       e.preventDefault();
       const delta = e.deltaY < 0 ? CONFIG.ZOOM_STEP : -CONFIG.ZOOM_STEP;
       STATE.zoom = Math.min(CONFIG.ZOOM_MAX, Math.max(CONFIG.ZOOM_MIN, STATE.zoom + delta));
-      renderTimeline();
+      renderView();
     }
   }, { passive: false });
 }
@@ -1948,22 +2148,22 @@ function setupDragScroll() {
 function setupFilters() {
   document.getElementById('search-input').addEventListener('input', e => {
     STATE.filterText = e.target.value;
-    applyFilters(); renderTimeline();
+    applyFilters(); renderView();
   });
   document.getElementById('category-filter').addEventListener('change', e => {
     STATE.filterCategory = e.target.value;
-    applyFilters(); renderTimeline();
+    applyFilters(); renderView();
   });
   document.getElementById('tag-filter').addEventListener('change', e => {
     STATE.filterTag = e.target.value;
-    applyFilters(); renderTimeline();
+    applyFilters(); renderView();
   });
   document.getElementById('clear-filters-btn').addEventListener('click', () => {
     document.getElementById('search-input').value = '';
     document.getElementById('category-filter').value = '';
     document.getElementById('tag-filter').value = '';
     STATE.filterText = STATE.filterCategory = STATE.filterTag = '';
-    applyFilters(); renderTimeline();
+    applyFilters(); renderView();
   });
   const fromEl = document.getElementById('date-from-input');
   const toEl = document.getElementById('date-to-input');
@@ -1976,7 +2176,7 @@ function setupFilters() {
     toEl.value = STATE.dateTo;
     localStorage.setItem('timeline_date_from', STATE.dateFrom);
     localStorage.setItem('timeline_date_to', STATE.dateTo);
-    applyFilters(); renderTimeline();
+    applyFilters(); renderView();
   };
   fromEl.addEventListener('change', applyRange);
   toEl.addEventListener('change', applyRange);
@@ -1984,7 +2184,7 @@ function setupFilters() {
     fromEl.value = toEl.value = STATE.dateFrom = STATE.dateTo = '';
     localStorage.removeItem('timeline_date_from');
     localStorage.removeItem('timeline_date_to');
-    applyFilters(); renderTimeline();
+    applyFilters(); renderView();
   });
 }
 
@@ -1994,13 +2194,13 @@ function setupConnections() {
     document.getElementById('connections-btn').textContent = STATE.showConnections ? '🔗 Hide Connections' : '🔗 Connections';
     document.getElementById('heatmap-panel').classList.toggle('hidden', !STATE.showConnections);
     if (STATE.showConnections) renderHeatmapPanel();
-    renderTimeline();
+    renderView();
   });
   document.getElementById('heatmap-close-btn').addEventListener('click', () => {
     STATE.showConnections = false;
     document.getElementById('connections-btn').textContent = '🔗 Connections';
     document.getElementById('heatmap-panel').classList.add('hidden');
-    renderTimeline();
+    renderView();
   });
 }
 
@@ -2209,7 +2409,7 @@ function setupNewTimeline() {
     populateTimelineSelect();
     loadActiveTimeline();
     applyFilters();
-    renderTimeline();
+    renderView();
     close();
     showToast('Timeline “' + name + '” created', 'success');
   });
@@ -2224,6 +2424,72 @@ function setupHelp() {
   document.getElementById('help-backdrop').addEventListener('click', e => {
     if (e.target === e.currentTarget) close();
   });
+}
+
+function setupSpiralView() {
+  const btn    = document.getElementById('view-mode-btn');
+  const canvas = document.getElementById('spiral-canvas');
+  const svg    = document.getElementById('timeline-svg');
+
+  function applyViewMode() {
+    const isSpiral = STATE.viewMode === 'spiral';
+    canvas.classList.toggle('hidden', !isSpiral);
+    svg.classList.toggle('hidden', isSpiral);
+    btn.classList.toggle('btn-active', isSpiral);
+    btn.textContent = isSpiral ? '📅 Timeline' : '🌀 Spiral';
+    renderView();
+    persistLocal();
+  }
+
+  btn.addEventListener('click', () => {
+    STATE.viewMode = STATE.viewMode === 'spiral' ? 'timeline' : 'spiral';
+    applyViewMode();
+  });
+
+  // Scroll wheel on the canvas zooms the spiral (no modifier key needed)
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? 0.15 : -0.15;
+    STATE.spiralZoom = Math.max(0.3, Math.min(10, STATE.spiralZoom + delta));
+    persistLocal();
+    renderSpiral();
+  }, { passive: false });
+
+  // Click — find hit target and select event
+  canvas.addEventListener('click', e => {
+    const rect = canvas.getBoundingClientRect();
+    const id = spiralHitTest(e.clientX - rect.left, e.clientY - rect.top);
+    if (id) selectEvent(id, { x: e.clientX - rect.left, y: e.clientY - rect.top, axisY: e.clientY - rect.top });
+    else { hidePopover(); }
+  });
+
+  // Hover — show popover on hit target
+  let _spiralHoverTimer = null;
+  canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    const id = spiralHitTest(e.clientX - rect.left, e.clientY - rect.top);
+    canvas.style.cursor = id ? 'pointer' : 'default';
+    clearTimeout(_spiralHoverTimer);
+    if (id) {
+      _spiralHoverTimer = setTimeout(() => {
+        showPopover(id, e.clientX - rect.left, e.clientY - rect.top);
+      }, 280);
+    } else {
+      hidePopover();
+    }
+  });
+
+  canvas.addEventListener('mouseleave', () => {
+    clearTimeout(_spiralHoverTimer);
+    hidePopover();
+  });
+
+  // Apply initial state without re-persisting
+  const isSpiral = STATE.viewMode === 'spiral';
+  canvas.classList.toggle('hidden', !isSpiral);
+  svg.classList.toggle('hidden', isSpiral);
+  btn.classList.toggle('btn-active', isSpiral);
+  btn.textContent = isSpiral ? '📅 Timeline' : '🌀 Spiral';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -2301,7 +2567,8 @@ document.addEventListener('DOMContentLoaded', () => {
   setupSheetConnect();
   setupNewTimeline();
   setupHelp();
+  setupSpiralView();
   renderAuthUI(!!STATE.accessToken);
-  window.addEventListener('resize', () => renderTimeline());
-  renderTimeline();
+  window.addEventListener('resize', () => renderView());
+  renderView();
 });

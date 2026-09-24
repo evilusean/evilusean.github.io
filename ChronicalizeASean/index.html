@@ -84,6 +84,7 @@
       </select>
       <button type="button" id="connections-btn" class="btn btn-ghost btn-sm" title="Toggle connections">🔗 Connections</button>
       <button type="button" id="screensaver-btn" class="btn btn-ghost btn-sm" title="Slideshow / Screensaver">▶ Slideshow</button>
+      <button type="button" id="view-mode-btn" class="btn btn-ghost btn-sm" title="Switch between timeline and spiral view">🌀 Spiral</button>
       <span class="ctrl-sep">│</span>
       <span class="ctrl-label">Slice</span>
       <select id="slice-grain-select" class="filter-select" title="Jump to a decade or century">
@@ -105,6 +106,7 @@
     <!-- TIMELINE CANVAS -->
     <div id="timeline-wrapper" class="timeline-wrapper">
       <svg id="timeline-svg" class="timeline-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+      <canvas id="spiral-canvas" class="spiral-canvas hidden"></canvas>
     </div>
 
     <!-- EVENT DETAIL PANEL -->
