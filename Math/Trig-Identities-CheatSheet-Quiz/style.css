@@ -606,6 +606,7 @@ nav button.saved-btn:hover {
     cursor: pointer;
     font: inherit;
     text-align: left;
+    white-space: nowrap;
     transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
@@ -638,6 +639,38 @@ nav button.saved-btn:hover {
     font-size: 0.82rem;
     white-space: normal;
     z-index: 2;
+}
+
+.mnemonic-sum-code {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    white-space: nowrap;
+    line-height: 0.9;
+}
+
+.mnemonic-sum-numerator {
+    display: inline-flex;
+    flex-direction: row;
+    white-space: nowrap;
+}
+
+.mnemonic-sum-code::after {
+    content: "2";
+    margin-top: 0.08rem;
+    padding: 0.08rem 0.15rem 0;
+    border-top: 1px solid currentColor;
+    color: var(--text-secondary);
+    font-size: 0.68rem;
+    font-weight: 500;
+}
+
+.mnemonic-product-half {
+    display: inline-block;
+    white-space: nowrap;
+    vertical-align: middle;
 }
 
 .mnemonic-formula + .mnemonic-formula {
