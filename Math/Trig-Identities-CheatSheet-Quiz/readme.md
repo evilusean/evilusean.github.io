@@ -137,11 +137,4 @@ Open source - feel free to use and modify for educational purposes.
 - 'arctan' mathjax isn't working correctly for polar to rectangular coordinates
 - add formulas for converting between degrees and radians (pi / 180)
 - add formula for angular speed (\omega = \frac{\theta}{t}) and (v = r \omega) and apparently, there is another one (\omega = \frac{v}{r})
-- add the new mnemonic (somewhere future Sean can find easily, in case I forget) 'i+-2^{2}\frac{1}{2} with this layout for product to sum  and sum to product, they are complementary and the layout should show it - so I can mindvomit out the new 'SOHCAHTOA' I need to remember on any tests - you just need to rememember that the sum to product are divided by 2 (and always A+B followed by A-B divided by 2, adding all this in is bloat.), and the last ones (C-C or SS) are funky 'StarCraft' 'ComputerScience' 'CC' 'SS' :
-  'S'tar'C'raft | SC \frac{1}{2} S++- | S+S 2SC
-  'C'omputer 'S'cience | CS \frac{1}{2} S+-- | S-S 2CS
-  'CC' | CC \frac{1}{2} C++- | C+C 2CC
-  'SS' | SS \frac{1}{2} C--+ | C-C -2SS
-- maybe add a practice template/quiz for the mnemonic? realistically you should be able to pull that out of your head on command, it feels like a crutch having it written down
-- Maybe, place the mnemonic in a prominent place, so future Sean can see easily, when you 'hOver' over it, it expands to show the full equations, easy to review and reference before a test or if I ever forget - also, colour code it so you can clearly see the complementary nature of product to sum and sum to product (like all '+' in red and '-' in blue and keep the cos/sin colours the same as the rest of the app) - maybe add a highlight feature on hover (for the + and -)
 
