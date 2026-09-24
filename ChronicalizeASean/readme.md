@@ -74,3 +74,4 @@ TODO / Future Sean Problems :
 - make the spiral zoom in relative to where the pointer is - so instead of it always zooming back, it can zoom / slice to a certain time, like if I want to zoom in on a specific time period on the spiral, I just have to hover and scroll wheel up - if I want to 
 - maybe make a way to invert the spiral timeline? which makes more intuitive sense? outward events happening inward making you the person/timeline you are today - or past events happening outward reaching out in a fractal spiral infinitely 'prime mover' vs 'unmoved mover' - maybe add a toggle? - I've already got 2 rows of buttons 
 - Add a toggle to get rid of the 2 rows of buttons for more realestate like 'Hide / Show Controls'  
+- Ran out of tokens on kiro/cursor - Future Sean will need to check over the code for any superfluous stuff/leftovers from when it stopped - I need to get the schema and everything sorted before I can make it pretty 
