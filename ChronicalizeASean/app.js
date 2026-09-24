@@ -1140,6 +1140,58 @@ function parseTags(tagStr) {
   return (tagStr || '').match(/#[\w]+/g) || [];
 }
 
+function parsePeopleHandles(str) {
+  return (str || '').match(/@[\w]+/g) || [];
+}
+
+function personHandle(p) {
+  const raw = (p && p.handle) ? String(p.handle) : String((p && p.name) || '');
+  return raw.replace(/^@/, '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+}
+
+function lookupPersonByHandle(handle) {
+  const h = String(handle || '').replace(/^@/, '').toLowerCase();
+  return (STATE.people || []).find(p => personHandle(p) === h) || null;
+}
+
+function normalizePeopleInput(str) {
+  return (str || '')
+    .split(/[\s,]+/)
+    .map(s => s.trim())
+    .filter(Boolean)
+    .map(s => (s.startsWith('@') ? s : '@' + s).toLowerCase().replace(/[^@\w]/g, ''))
+    .filter(s => s.length > 1)
+    .join(' ');
+}
+
+function fillParentSelect(excludeId, currentParentId) {
+  const sel = document.getElementById('field-parent_id');
+  const current = currentParentId || '';
+  const candidates = STATE.records
+    .filter(r => r.id && r.id !== excludeId)
+    .sort((a, b) => (parseDate(a.date_start) || 0) - (parseDate(b.date_start) || 0));
+  sel.innerHTML = '';
+  const none = document.createElement('option');
+  none.value = '';
+  none.textContent = 'None (root event)';
+  sel.appendChild(none);
+  candidates.forEach(r => {
+    const opt = document.createElement('option');
+    opt.value = r.id;
+    const d = parseDate(r.date_start);
+    const year = d ? (d.getUTCFullYear() < 0 ? Math.abs(d.getUTCFullYear()) + ' BCE' : String(d.getUTCFullYear())) : '';
+    opt.textContent = [r.emoji, r.event_name, year ? '(' + year + ')' : ''].filter(Boolean).join(' ');
+    sel.appendChild(opt);
+  });
+  if (current && !candidates.some(r => r.id === current) && current !== excludeId) {
+    const opt = document.createElement('option');
+    opt.value = current;
+    opt.textContent = current + ' (not in this timeline)';
+    sel.appendChild(opt);
+  }
+  sel.value = current;
+}
+
 function updateFilterOptions() {
   const catSel = document.getElementById('category-filter');
   const tagSel = document.getElementById('tag-filter');
@@ -1787,9 +1839,23 @@ function showEventDetail(id) {
     nameEl.textContent = r.event_name;
   }
   document.getElementById('ed-dates').textContent = formatDateRange(r.date_start, r.date_end);
+  const metaBits = [];
+  if (r.location) metaBits.push(r.location);
+  if (r.parent_id) {
+    const parent = STATE.records.find(p => p.id === r.parent_id);
+    metaBits.push(parent ? 'under ' + parent.event_name : 'parent ' + r.parent_id);
+  }
+  document.getElementById('ed-meta').textContent = metaBits.join(' · ');
   document.getElementById('ed-desc').textContent = r.description || '';
   const tags = parseTags(r.tags);
-  document.getElementById('ed-tags').innerHTML = tags.map(t => `<span class="tag-badge">${esc(t)}</span>`).join('');
+  const people = parsePeopleHandles(r.people);
+  const peopleHtml = people.map(h => {
+    const p = lookupPersonByHandle(h);
+    const label = p ? (p.emoji ? p.emoji + ' ' : '') + p.name : h;
+    return `<span class="handle-badge" title="${esc(h)}">${esc(label)}</span>`;
+  }).join('');
+  document.getElementById('ed-tags').innerHTML =
+    tags.map(t => `<span class="tag-badge">${esc(t)}</span>`).join('') + peopleHtml;
   const src = document.getElementById('ed-source-link');
   if (r.sources) {
     src.href = r.sources;
@@ -1807,6 +1873,7 @@ function clearEventDetail() {
   document.getElementById('ed-emoji').textContent = '⏳';
   document.getElementById('ed-name').textContent = 'Click an event on the timeline';
   document.getElementById('ed-dates').textContent = 'The last clicked event (and slideshow) shows here.';
+  document.getElementById('ed-meta').textContent = '';
   document.getElementById('ed-desc').textContent = '';
   document.getElementById('ed-tags').innerHTML = '';
   document.getElementById('ed-source-link').classList.add('hidden');
@@ -1933,6 +2000,9 @@ function openCreateModal() {
   document.getElementById('crud-form').reset();
   document.getElementById('field-id').value = '';
   setEmojiPreview('📌');
+  fillParentSelect('', '');
+  document.getElementById('field-people').value = '';
+  document.getElementById('field-location').value = '';
   document.getElementById('modal-title').textContent = 'Add Event';
   document.getElementById('modal-delete-btn').classList.add('hidden');
   document.getElementById('emoji-picker-panel').classList.add('hidden');
@@ -1951,6 +2021,9 @@ function openEditModal(id) {
   setEmojiPreview(r.emoji || '📌');
   document.getElementById('field-importance').value = r.importance || 5;
   document.getElementById('field-tags').value = r.tags || '';
+  fillParentSelect(r.id, r.parent_id || '');
+  document.getElementById('field-people').value = r.people || '';
+  document.getElementById('field-location').value = r.location || '';
   document.getElementById('field-description').value = r.description || '';
   document.getElementById('field-sources').value = r.sources || '';
   document.getElementById('field-image_url').value = r.image_url || '';
@@ -1977,10 +2050,14 @@ function handleCrudSubmit(e) {
     emoji: document.getElementById('field-emoji').value,
     importance: document.getElementById('field-importance').value,
     tags: document.getElementById('field-tags').value,
+    parent_id: document.getElementById('field-parent_id').value,
+    people: normalizePeopleInput(document.getElementById('field-people').value),
+    location: document.getElementById('field-location').value,
     description: document.getElementById('field-description').value,
     sources: document.getElementById('field-sources').value,
     image_url: document.getElementById('field-image_url').value,
   };
+  document.getElementById('field-people').value = data.people;
   data.date_start = normalizeDateInput(data.date_start);
   data.date_end = normalizeDateInput(data.date_end);
   document.getElementById('field-date_start').value = data.date_start;

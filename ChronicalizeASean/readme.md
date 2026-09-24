@@ -8,12 +8,6 @@
 
 ## Up next (priority order)
 
-### C — Expose parent_id and people fields in the Add/Edit event modal
-The schema has `parent_id` and `people (@handle)` but the CRUD form doesn't show them yet.
-Users can't set hierarchical relationships through the app — only by editing the sheet directly.
-- `parent_id` field: dropdown or text input to pick/type the parent event id
-- `people` field: text input for `@handle1 @handle2` style entry
-
 ### D — Hierarchical drill-down view
 Click a parent event → timeline filters to show only that event and all its descendants.
 Uses `parent_id` traversal (already in schema). Needs a "back to full timeline" breadcrumb.
@@ -37,6 +31,7 @@ Add view toggles / layer controls to reduce visual busyness — the current buil
 ---
 
 ## Completed
+- UI: Add/Edit event modal now has Parent event (dropdown of other events), People (`@handle`s), and Location
 - Schema: added `parent_id` for unlimited-depth sub-events (Roman Empire → Punic Wars → Battle of Zama)
 - Schema: added `people` field for `@handle` linking to People tab
 - Schema: added `location` field
@@ -78,3 +73,4 @@ TODO / Future Sean Problems :
 - update the how to, so the user knows how to use it
 - make the spiral zoom in relative to where the pointer is - so instead of it always zooming back, it can zoom / slice to a certain time, like if I want to zoom in on a specific time period on the spiral, I just have to hover and scroll wheel up - if I want to 
 - maybe make a way to invert the spiral timeline? which makes more intuitive sense? outward events happening inward making you the person/timeline you are today - or past events happening outward reaching out in a fractal spiral infinitely 'prime mover' vs 'unmoved mover' - maybe add a toggle? - I've already got 2 rows of buttons 
+- Add a toggle to get rid of the 2 rows of buttons for more realestate like 'Hide / Show Controls'  
