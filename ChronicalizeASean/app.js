@@ -51,8 +51,32 @@ const PEOPLE_SCHEMA = [
 const FIELDS = EVENT_SCHEMA.map(c => c.key);
 const PEOPLE_FIELDS = PEOPLE_SCHEMA.map(c => c.key);
 
+// Produces the human-readable header row written to row 1 of each sheet.
+// * = required (must fill in)    (auto) = app fills this, leave blank when adding rows manually
+// Date fields include the format so users know what to type.
+// normalizeHeaderCell() strips all suffixes when reading back, so these labels are safe.
 function schemaHeader(schema) {
-  return schema.map(c => c.required ? c.key + ' *' : c.key);
+  return schema.map(c => {
+    let label = c.key;
+    if (c.required) {
+      label += ' *';          // required — must fill in
+    } else if (['id', 'version'].includes(c.key)) {
+      label += ' (auto)';     // auto-filled by the app — leave blank
+    } else if (c.key === 'date_start' || c.key === 'date_end' || c.key === 'date_birth' || c.key === 'date_death') {
+      label += ' (YYYY-MM-DD)'; // format reminder for date columns
+    } else if (c.key === 'parent_id') {
+      label += ' (id of parent event)';
+    } else if (c.key === 'people') {
+      label += ' (@handle1 @handle2)';
+    } else if (c.key === 'tags') {
+      label += ' (#tag1 #tag2)';
+    } else if (c.key === 'importance') {
+      label += ' (1-10)';
+    } else if (c.key === 'handle') {
+      label += ' (auto)';     // auto-derived from name if blank
+    }
+    return label;
+  });
 }
 function normalizeHeaderCell(h) {
   return String(h || '').trim().toLowerCase().replace(/\s*\*+\s*$/, '').replace(/\s+/g, '_');
@@ -605,9 +629,11 @@ function refreshOpenSheetHref() {
       const gid = STATE.activeGid != null ? `#gid=${STATE.activeGid}` : '';
       a.href = `https://docs.google.com/spreadsheets/d/${CONFIG.SPREADSHEET_ID}/edit${gid}`;
       a.removeAttribute('aria-disabled');
+      a.classList.remove('hidden');
     } else {
       a.href = '#';
       a.setAttribute('aria-disabled', 'true');
+      a.classList.add('hidden');
     }
   }
   // People Sheet button — same spreadsheet, jumps to People tab via #gid
@@ -621,6 +647,7 @@ function refreshOpenSheetHref() {
     } else {
       p.href = '#';
       p.setAttribute('aria-disabled', 'true');
+      p.classList.add('hidden');
     }
   }
 }
@@ -778,6 +805,111 @@ async function writeSheetTab(spreadsheetId, sheetName, records, schema) {
     `${SHEETS_BASE}/${sid}/values/${encodeURIComponent(sheetName + '!A1')}?valueInputOption=RAW`,
     { method: 'PUT', body: JSON.stringify({ values }) }
   );
+  // Apply formatting after writing — best-effort, don't fail the whole write if it errors
+  try { await formatSheetHeaders(sid, sheetName, schema, 0); } catch (_) {}
+}
+
+// Applies header formatting to a sheet tab:
+//   - Freezes row 1 so it stays visible while scrolling
+//   - Bolds the header row and sets a dark background with white text
+//   - Writes a per-column note containing the field's meaning and any hints
+//   - Auto-resizes all columns to fit their content
+//
+// sheetId   : numeric Google Sheet tab id (from listSheetTabs)
+// startColIndex : 0-based index of the first column to format (0 for a full write, or
+//                 existingRow.length when appending missing columns)
+async function formatSheetHeaders(spreadsheetId, sheetName, schema, startColIndex) {
+  // Resolve the numeric sheetId for this tab name
+  const meta = await sheetsRequest(
+    SHEETS_BASE + '/' + spreadsheetId + '?fields=sheets.properties'
+  );
+  if (!meta) return;
+  const tabMeta = (meta.sheets || []).find(s => s.properties.title === sheetName);
+  if (!tabMeta) return;
+  const sheetId = tabMeta.properties.sheetId;
+  const numCols = schema.length;
+
+  const requests = [];
+
+  // 1. Freeze row 1 (only set when formatting from column 0 — full write)
+  if (startColIndex === 0) {
+    requests.push({
+      updateSheetProperties: {
+        properties: { sheetId, gridProperties: { frozenRowCount: 1 } },
+        fields: 'gridProperties.frozenRowCount',
+      },
+    });
+  }
+
+  // 2. Bold + dark background (#1e293b slate-800) + white text for the header row
+  requests.push({
+    repeatCell: {
+      range: {
+        sheetId,
+        startRowIndex: 0, endRowIndex: 1,
+        startColumnIndex: startColIndex, endColumnIndex: startColIndex + (numCols - startColIndex),
+      },
+      cell: {
+        userEnteredFormat: {
+          backgroundColor: { red: 0.118, green: 0.161, blue: 0.231 }, // #1e293b
+          textFormat: {
+            bold: true,
+            foregroundColor: { red: 1, green: 1, blue: 1 },
+            fontSize: 10,
+          },
+          wrapStrategy: 'CLIP',
+        },
+      },
+      fields: 'userEnteredFormat(backgroundColor,textFormat,wrapStrategy)',
+    },
+  });
+
+  // 3. Per-column notes: field meaning + any format hints from the label
+  schema.slice(startColIndex).forEach((col, i) => {
+    const colIdx = startColIndex + i;
+    let note = col.meaning || '';
+    // Append explicit hints for key special fields
+    if (col.key === 'date_start' || col.key === 'date_end' || col.key === 'date_birth' || col.key === 'date_death') {
+      note += '\n\nFormat: YYYY-MM-DD\nBCE dates use a leading minus: -0264-01-01\ndate_end can be left blank for point-in-time events.';
+    } else if (col.key === 'id' || col.key === 'version' || col.key === 'handle') {
+      note += '\n\nLeave blank — the app fills this automatically.';
+    } else if (col.key === 'parent_id') {
+      note += '\n\nPaste the id value of the parent event.\nLeave blank for a top-level (root) event.\nExample chain: Roman Empire → Punic Wars → Battle of Zama';
+    } else if (col.key === 'people') {
+      note += '\n\nSpace-separated @handles from the People tab.\nExample: @julius_caesar @augustus';
+    } else if (col.key === 'tags') {
+      note += '\n\nSpace-separated hashtags.\nExample: #war #rome #empire\nShared tags draw connection lines on the timeline.';
+    } else if (col.key === 'importance') {
+      note += '\n\nNumber from 1 to 10.\nHigher = larger emoji on the timeline. Default: 5.';
+    } else if (col.key === 'emoji') {
+      note += '\n\nSingle emoji character. Default: 📌';
+    }
+    if (!note) return;
+    requests.push({
+      updateCells: {
+        range: { sheetId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: colIdx, endColumnIndex: colIdx + 1 },
+        rows: [{ values: [{ note }] }],
+        fields: 'note',
+      },
+    });
+  });
+
+  // 4. Auto-resize all columns so labels aren't truncated
+  requests.push({
+    autoResizeDimensions: {
+      dimensions: {
+        sheetId,
+        dimension: 'COLUMNS',
+        startIndex: startColIndex,
+        endIndex: startColIndex + (numCols - startColIndex),
+      },
+    },
+  });
+
+  await sheetsRequest(SHEETS_BASE + '/' + spreadsheetId + ':batchUpdate', {
+    method: 'POST',
+    body: JSON.stringify({ requests }),
+  });
 }
 
 // Reads the current header row and appends any schema columns that are missing.
@@ -785,8 +917,8 @@ async function writeSheetTab(spreadsheetId, sheetName, records, schema) {
 async function ensureSheetHeaders(spreadsheetId, sheetName, schema) {
   const expectedKeys = schema.map(c => c.key);
   const lastExpectedCol = String.fromCharCode(64 + expectedKeys.length);
-  const rangeEnc = encodeURIComponent(`${sheetName}!A1:${lastExpectedCol}`);
-  const data = await sheetsRequest(`${SHEETS_BASE}/${spreadsheetId}/values/${rangeEnc}`);
+  const rangeEnc = encodeURIComponent(sheetName + '!A1:' + lastExpectedCol);
+  const data = await sheetsRequest(SHEETS_BASE + '/' + spreadsheetId + '/values/' + rangeEnc);
   if (!data) return;
 
   const existingRow = (data.values && data.values[0]) || [];
@@ -798,20 +930,22 @@ async function ensureSheetHeaders(spreadsheetId, sheetName, schema) {
   // Append missing headers to the right of whatever is already there
   const startColIndex = existingRow.length; // 0-based
   const startColLetter = String.fromCharCode(65 + startColIndex);
-  const endColLetter = String.fromCharCode(65 + startColIndex + missing.length - 1);
-  const appendRange = encodeURIComponent(`${sheetName}!${startColLetter}1:${endColLetter}1`);
+  const endColLetter   = String.fromCharCode(65 + startColIndex + missing.length - 1);
+  const appendRange = encodeURIComponent(sheetName + '!' + startColLetter + '1:' + endColLetter + '1');
 
-  // Label with * suffix for required fields, matching schemaHeader() convention
-  const headerLabels = missing.map(k => {
-    const entry = schema.find(c => c.key === k);
-    return entry && entry.required ? k + ' *' : k;
-  });
+  // Use the same rich label convention as schemaHeader()
+  const missingSchema = missing.map(k => schema.find(c => c.key === k)).filter(Boolean);
+  const headerLabels = schemaHeader(missingSchema);
 
   await sheetsRequest(
-    `${SHEETS_BASE}/${spreadsheetId}/values/${appendRange}?valueInputOption=RAW`,
+    SHEETS_BASE + '/' + spreadsheetId + '/values/' + appendRange + '?valueInputOption=RAW',
     { method: 'PUT', body: JSON.stringify({ values: [headerLabels] }) }
   );
-  console.info(`[ChronicalizeASean] Added missing columns to "${sheetName}": ${missing.join(', ')}`);
+
+  // Format the newly-added columns to match the existing header style
+  try { await formatSheetHeaders(spreadsheetId, sheetName, missingSchema, startColIndex); } catch (_) {}
+
+  console.info('[ChronicalizeASean] Added missing columns to "' + sheetName + '": ' + missing.join(', '));
 }
 
 async function syncFromSheet() {
@@ -1987,7 +2121,14 @@ function setupSheetConnect() {
     if (!CONFIG.SPREADSHEET_ID) {
       e.preventDefault();
       openSheetConnectModal();
-      showToast('No spreadsheet ID yet. Create one or paste a URL.', 'warning');
+      showToast('No spreadsheet connected yet. Create one or paste a URL.', 'warning');
+    }
+  });
+  document.getElementById('open-people-sheet-btn').addEventListener('click', (e) => {
+    if (!CONFIG.SPREADSHEET_ID) {
+      e.preventDefault();
+      openSheetConnectModal();
+      showToast('No spreadsheet connected yet. Create one or paste a URL.', 'warning');
     }
   });
   document.getElementById('sheet-connect-close-btn').addEventListener('click', closeSheetConnectModal);

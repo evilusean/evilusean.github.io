@@ -1,3 +1,61 @@
+# ChronicalizeASean — TODO / Future Sean Problems
+
+## Ground rules
+- Do one thing at a time. Kiro times out trying to one-shot everything.
+- Get the app working before aesthetics (responsiveness is last).
+
+---
+
+## Up next (priority order)
+
+### B — Fix timeline row wrapping
+Rows start back at the left on each new row, which is wrong for a timeline.
+Each row should continue chronologically from where the previous one left off.
+The wrap layout logic needs to be reworked so time flows continuously across rows.
+
+### C — Expose parent_id and people fields in the Add/Edit event modal
+The schema has `parent_id` and `people (@handle)` but the CRUD form doesn't show them yet.
+Users can't set hierarchical relationships through the app — only by editing the sheet directly.
+- `parent_id` field: dropdown or text input to pick/type the parent event id
+- `people` field: text input for `@handle1 @handle2` style entry
+
+### D — Hierarchical drill-down view
+Click a parent event → timeline filters to show only that event and all its descendants.
+Uses `parent_id` traversal (already in schema). Needs a "back to full timeline" breadcrumb.
+Add view toggles / layer controls to reduce visual busyness — the current built-in data is crowded.
+
+---
+
+## Backlog
+
+- Fix 'slice' — was meant to let user view a slice of the timeline, AI misinterpreted it
+- Screensaver mode: display event name first, then date, then description and tags
+- Export: let user pick CSV or spreadsheet format; user should be able to edit their sheet manually and re-import
+- 'rows' and 'layout' buttons aren't working
+- Add a favicon
+- Remove or repurpose the 'Schema' button — unclear why it's in the toolbar
+- Make app responsive for smaller screens (future, future problem)
+- Fractal circle view? Scroll in/out infinitely from year 0 to current day
+- Heatmap for tag connections (schizochartmaxxing)
+- Screensaver froze previously — investigate if still broken after row wrapping fix
+
+---
+
+## Completed
+- Schema: added `parent_id` for unlimited-depth sub-events (Roman Empire → Punic Wars → Battle of Zama)
+- Schema: added `people` field for `@handle` linking to People tab
+- Schema: added `location` field
+- People schema: added `handle` and `nationality` fields
+- Google Sheets: merged two-spreadsheet architecture into one file with tabs (Events tabs + People tab)
+- Google Sheets: duplicate creation guard — checks if spreadsheet already exists before creating
+- Google Sheets: `ensureSheetHeaders()` — auto-migrates sheet headers when schema changes, no manual column editing needed
+- Google Sheets: People tab now syncs from same spreadsheet on every event sync
+- Google Sheets: `formatSheetHeaders()` — frozen header row, bold/dark styling, per-column notes with format hints, auto-resize
+- Google Sheets: rich column labels (`*` for required, `(auto)` for app-filled, format hints for dates/people/tags)
+- UI: Events Sheet and People Sheet buttons now hidden until a spreadsheet is connected
+- UI: both sheet buttons now open the connect modal if clicked without a spreadsheet, instead of silently going to `#`
+- `end date` is not mandatory (only `start date` is required)
+
 TODO / Future Sean Problems :
 - The screensaver mode/slideshow froze, ran out of tokens, also, future Sean, do one of these at a time, kiro timed out a bunch trying to 'one shot' it
 - ran out of tokens, mid-prompt, again - I left off trying to improve the timeline, so it can go multi level or side scroll 
@@ -19,4 +77,4 @@ TODO / Future Sean Problems :
 - also, for some reason, the AI took 'Sir John Glubbs the Fate of Empires' literally, and took abstract concepts like 'the age of decadence' as objective physical events with dates (which is wrong) 
 - Instead of a timeLINE, what about a fractal circle? where you can scroll in infinitely, like start at year '0' and scroll out to current day
 - Don't forget the heat map for schizochartmaxxing
-- update the schema 
+- update the schema, make it visual 
