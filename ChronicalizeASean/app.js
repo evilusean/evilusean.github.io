@@ -16,31 +16,36 @@ const CONFIG = {
 };
 
 const EVENT_SCHEMA = [
-  { key: 'id', required: false, meaning: 'Stable unique id. Leave blank on new rows; the app fills a UUID.' },
-  { key: 'version', required: false, meaning: 'Integer, default 1. Bump if you care about merge conflicts.' },
-  { key: 'event_name', required: true, meaning: 'Short title shown on the timeline and in the detail panel.' },
-  { key: 'date_start', required: true, meaning: 'YYYY-MM-DD (or YYYY/MM/DD). BCE: leading minus, e.g. -0753-04-21.' },
-  { key: 'date_end', required: false, meaning: 'YYYY-MM-DD if the event has duration (a war, an empire). Leave blank for a point.' },
+  { key: 'id',          required: false, meaning: 'Stable unique id. Leave blank on new rows; the app fills a UUID.' },
+  { key: 'version',     required: false, meaning: 'Integer, default 1. Bump if you care about merge conflicts.' },
+  { key: 'parent_id',   required: false, meaning: 'id of the parent event. Leave blank for a root event. Enables unlimited-depth sub-events (e.g. Roman Empire → Punic Wars → Battle of Zama).' },
+  { key: 'event_name',  required: true,  meaning: 'Short title shown on the timeline and in the detail panel.' },
+  { key: 'date_start',  required: true,  meaning: 'YYYY-MM-DD (or YYYY/MM/DD). BCE: leading minus, e.g. -0753-04-21.' },
+  { key: 'date_end',    required: false, meaning: 'YYYY-MM-DD if the event has duration (a war, an empire). Leave blank for a point.' },
   { key: 'description', required: false, meaning: 'What happened. Shows in the panel and popover.' },
-  { key: 'sources', required: false, meaning: 'URL or citation. Clicking the title opens this.' },
-  { key: 'image_url', required: false, meaning: 'Direct image URL for the popover.' },
-  { key: 'emoji', required: false, meaning: 'Marker on the axis. Default 📌.' },
-  { key: 'category', required: false, meaning: 'War, Law, Empire, Revolution, etc. Colors the marker.' },
-  { key: 'tags', required: false, meaning: 'Space-separated #hashtags. Shared tags draw connection lines.' },
-  { key: 'importance', required: false, meaning: '1–10. Bigger emoji = more important. Default 5.' },
+  { key: 'sources',     required: false, meaning: 'URL or citation. Clicking the title opens this.' },
+  { key: 'image_url',   required: false, meaning: 'Direct image URL for the popover.' },
+  { key: 'emoji',       required: false, meaning: 'Marker on the axis. Default 📌.' },
+  { key: 'category',    required: false, meaning: 'War, Law, Empire, Revolution, etc. Colors the marker.' },
+  { key: 'tags',        required: false, meaning: 'Space-separated #hashtags. Shared tags draw connection lines.' },
+  { key: 'people',      required: false, meaning: 'Space-separated @handles of people involved (e.g. @julius_caesar @augustus). Links to People sheet records.' },
+  { key: 'location',    required: false, meaning: 'Free-text place name (city, region, empire). Used for filtering and display.' },
+  { key: 'importance',  required: false, meaning: '1–10. Bigger emoji = more important. Default 5.' },
 ];
 const PEOPLE_SCHEMA = [
-  { key: 'id', required: false, meaning: 'Stable unique id. Auto-filled if blank.' },
-  { key: 'name', required: true, meaning: 'Person’s name as you want it listed.' },
-  { key: 'date_birth', required: false, meaning: 'YYYY-MM-DD. BCE uses a leading minus.' },
-  { key: 'date_death', required: false, meaning: 'YYYY-MM-DD. Blank if still living or unknown.' },
-  { key: 'role', required: false, meaning: 'Monarch, general, jurist, philosopher, etc.' },
-  { key: 'event_ids', required: false, meaning: 'Comma-separated event id values this person is tied to.' },
+  { key: 'id',          required: false, meaning: 'Stable unique id. Auto-filled if blank.' },
+  { key: 'handle',      required: false, meaning: 'Lowercase @handle used to link this person from event people fields (e.g. julius_caesar → @julius_caesar). Auto-derived from name if blank.' },
+  { key: 'name',        required: true,  meaning: 'Person’s name as you want it listed.' },
+  { key: 'date_birth',  required: false, meaning: 'YYYY-MM-DD. BCE uses a leading minus.' },
+  { key: 'date_death',  required: false, meaning: 'YYYY-MM-DD. Blank if still living or unknown.' },
+  { key: 'role',        required: false, meaning: 'Monarch, general, jurist, philosopher, etc.' },
+  { key: 'event_ids',   required: false, meaning: 'Comma-separated event id values this person is tied to (legacy; prefer @handle links in events).' },
+  { key: 'nationality', required: false, meaning: 'Country, empire, or civilisation (e.g. Roman, Macedonian, British).' },
   { key: 'description', required: false, meaning: 'Why they matter on this timeline.' },
-  { key: 'sources', required: false, meaning: 'URL or citation.' },
-  { key: 'image_url', required: false, meaning: 'Direct image URL.' },
-  { key: 'emoji', required: false, meaning: 'Optional marker.' },
-  { key: 'tags', required: false, meaning: 'Space-separated #hashtags.' },
+  { key: 'sources',     required: false, meaning: 'URL or citation.' },
+  { key: 'image_url',   required: false, meaning: 'Direct image URL.' },
+  { key: 'emoji',       required: false, meaning: 'Optional marker.' },
+  { key: 'tags',        required: false, meaning: 'Space-separated #hashtags.' },
 ];
 const FIELDS = EVENT_SCHEMA.map(c => c.key);
 const PEOPLE_FIELDS = PEOPLE_SCHEMA.map(c => c.key);
@@ -53,12 +58,19 @@ function normalizeHeaderCell(h) {
 }
 const DATE_RE = /^-?\d{1,6}-\d{2}-\d{2}$/;
 const SVG_NS = 'http://www.w3.org/2000/svg';
-function E(id, name, start, end, desc, src, emoji, cat, tags, imp) {
+// E(id, name, start, end, desc, src, emoji, cat, tags, imp, parentId, people, location)
+// parentId / people / location are optional — existing call sites omit them safely.
+function E(id, name, start, end, desc, src, emoji, cat, tags, imp, parentId, people, location) {
   return {
-    id, version: 1, event_name: name,
+    id, version: 1,
+    parent_id: parentId || '',
+    event_name: name,
     date_start: start, date_end: end || '',
     description: desc, sources: src || '', image_url: '',
-    emoji, category: cat, tags, importance: imp || 5,
+    emoji, category: cat, tags,
+    people: people || '',
+    location: location || '',
+    importance: imp || 5,
   };
 }
 
@@ -811,6 +823,7 @@ function createRecord(data) {
   const rec = {
     id: generateId(),
     version: 1,
+    parent_id: (data.parent_id || '').trim(),
     event_name: (data.event_name || '').trim(),
     date_start: normalizeDateInput(data.date_start),
     date_end: normalizeDateInput(data.date_end),
@@ -820,6 +833,8 @@ function createRecord(data) {
     emoji: (data.emoji || '📌').trim() || '📌',
     category: (data.category || '').trim(),
     tags: (data.tags || '').trim(),
+    people: (data.people || '').trim(),
+    location: (data.location || '').trim(),
     importance: Math.min(10, Math.max(1, Number(data.importance) || 5)),
   };
   const errors = validateRecord(rec);
@@ -834,6 +849,7 @@ function updateRecord(id, data) {
   if (idx < 0) return null;
   const rec = {
     ...STATE.records[idx],
+    parent_id: (data.parent_id || '').trim(),
     event_name: (data.event_name || '').trim(),
     date_start: normalizeDateInput(data.date_start),
     date_end: normalizeDateInput(data.date_end),
@@ -843,6 +859,8 @@ function updateRecord(id, data) {
     emoji: (data.emoji || '📌').trim() || '📌',
     category: (data.category || '').trim(),
     tags: (data.tags || '').trim(),
+    people: (data.people || '').trim(),
+    location: (data.location || '').trim(),
     importance: Math.min(10, Math.max(1, Number(data.importance) || 5)),
   };
   const errors = validateRecord(rec);
