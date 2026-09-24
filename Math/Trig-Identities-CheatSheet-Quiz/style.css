@@ -187,6 +187,141 @@ nav button.saved-btn:hover {
     z-index: 100;
 }
 
+.mnemonic-dock {
+    position: fixed;
+    right: 1rem;
+    bottom: 4.5rem;
+    width: min(440px, calc(100vw - 2rem));
+    max-height: 3.9rem;
+    overflow: hidden;
+    padding: 0.8rem 0.9rem;
+    background: rgba(22, 27, 34, 0.96);
+    border: 1px solid var(--tan-purple);
+    border-radius: 8px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    z-index: 101;
+    transition: max-height 0.3s ease, box-shadow 0.3s ease;
+}
+
+.mnemonic-dock:hover,
+.mnemonic-dock:focus-within {
+    max-height: 22rem;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+}
+
+.mnemonic-heading {
+    display: flex;
+    align-items: baseline;
+    gap: 0.55rem;
+    white-space: nowrap;
+}
+
+.mnemonic-kicker {
+    color: var(--tan-purple);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.mnemonic-heading strong {
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.mnemonic-hint {
+    margin-left: auto;
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+}
+
+.mnemonic-table {
+    margin-top: 0.8rem;
+    font-size: 0.78rem;
+}
+
+.mnemonic-table-head,
+.mnemonic-row {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.mnemonic-table-head {
+    padding: 0 0.35rem 0.35rem;
+    color: var(--text-secondary);
+    font-size: 0.66rem;
+    text-transform: uppercase;
+}
+
+.mnemonic-row {
+    border-top: 1px solid rgba(139, 148, 158, 0.2);
+    padding: 0.35rem;
+}
+
+.mnemonic-hook {
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+.mnemonic-hook em {
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    font-style: normal;
+    font-weight: 500;
+}
+
+.mnemonic-link {
+    padding: 0.3rem 0.35rem;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: var(--text-primary);
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.mnemonic-s { color: var(--sin-red); }
+.mnemonic-c { color: var(--cos-blue); }
+.mnemonic-plus { color: var(--sin-red); font-weight: 700; }
+.mnemonic-minus { color: var(--cos-blue); font-weight: 700; }
+
+.mnemonic-link:hover,
+.mnemonic-link:focus-visible {
+    border-color: var(--cos-blue);
+    background: var(--highlight-bg);
+    outline: none;
+    transform: translateX(2px);
+}
+
+.mnemonic-target {
+    animation: mnemonic-pulse 1.6s ease;
+}
+
+@keyframes mnemonic-pulse {
+    0%, 100% { box-shadow: none; }
+    25%, 70% { box-shadow: 0 0 0 4px var(--tan-purple), 0 0 28px rgba(199, 146, 255, 0.35); }
+}
+
+@media (max-width: 640px) {
+    .mnemonic-dock {
+        right: 0.65rem;
+        bottom: 4rem;
+        width: calc(100vw - 1.3rem);
+    }
+
+    .mnemonic-hint {
+        display: none;
+    }
+
+    .mnemonic-table {
+        font-size: 0.72rem;
+    }
+}
+
 .view {
     display: none;
     padding: 1rem;

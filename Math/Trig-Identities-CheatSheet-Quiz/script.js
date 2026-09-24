@@ -398,6 +398,31 @@ function toggleSelection(index, name) {
     saveSelections();
 }
 
+function jumpToIdentity(name) {
+    if (!document.getElementById('cheatsheet-view').classList.contains('active')) {
+        switchView('cheatsheet');
+    }
+
+    if (isCheatsheetQuizActive) {
+        isCheatsheetQuizActive = false;
+        revealedQuizItems.clear();
+        document.getElementById('quiz-btn').classList.remove('active');
+        document.getElementById('cheatsheet-btn').classList.add('active');
+        renderCheatsheet();
+    }
+
+    const index = trigIdentities.findIndex(identity => identity.name === name);
+    const item = document.querySelectorAll('.identity-item')[index];
+    const details = document.getElementById(`details-${index}`);
+
+    if (!item || !details) return;
+
+    details.classList.add('visible');
+    item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    item.classList.add('mnemonic-target');
+    setTimeout(() => item.classList.remove('mnemonic-target'), 1600);
+}
+
 function saveSelections() {
     localStorage.setItem('selectedIdentities', JSON.stringify([...selectedIdentities]));
 }
@@ -508,6 +533,10 @@ function setupEventListeners() {
     document.getElementById('download-txt-btn').onclick = downloadTXT;
     document.getElementById('download-csv-btn').onclick = downloadCSV;
     document.getElementById('clear-saved-btn').onclick = clearSaved;
+
+    document.querySelectorAll('.mnemonic-link').forEach((link) => {
+        link.addEventListener('click', () => jumpToIdentity(link.dataset.identity));
+    });
     
     window.onclick = (e) => {
         const modal = document.getElementById('saved-modal');
