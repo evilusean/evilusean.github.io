@@ -8,11 +8,6 @@
 
 ## Up next (priority order)
 
-### B — Fix timeline row wrapping
-Rows start back at the left on each new row, which is wrong for a timeline.
-Each row should continue chronologically from where the previous one left off.
-The wrap layout logic needs to be reworked so time flows continuously across rows.
-
 ### C — Expose parent_id and people fields in the Add/Edit event modal
 The schema has `parent_id` and `people (@handle)` but the CRUD form doesn't show them yet.
 Users can't set hierarchical relationships through the app — only by editing the sheet directly.
@@ -54,6 +49,8 @@ Add view toggles / layer controls to reduce visual busyness — the current buil
 - Google Sheets: rich column labels (`*` for required, `(auto)` for app-filled, format hints for dates/people/tags)
 - UI: Events Sheet and People Sheet buttons now hidden until a spreadsheet is connected
 - UI: both sheet buttons now open the connect modal if clicked without a spreadsheet, instead of silently going to `#`
+- Timeline: fixed row wrapping — duration bars for multi-row events now draw continuous segments across every row they span (start row → full-width intermediate rows → end row)
+- Timeline: added end-year label at the right edge of each row so the wrap reads as a continuous chronological flow
 - `end date` is not mandatory (only `start date` is required)
 
 TODO / Future Sean Problems :

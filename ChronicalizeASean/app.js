@@ -1195,9 +1195,10 @@ function renderTimeline() {
     }
   }
 
-  const rowH = STATE.layoutMode === 'wrap' ? Math.max(120, availH / numRows) : availH;
+  const rowH = STATE.layoutMode === 'wrap' ? Math.max(80, Math.floor(availH / numRows)) : availH;
   const svgH = STATE.layoutMode === 'wrap' ? rowH * numRows : Math.max(availH, 280);
-  const axisOffset = STATE.layoutMode === 'wrap' ? Math.round(rowH * 0.62) : Math.round(svgH * 0.55);
+  // axisOffset: axis sits 55% down each row in wrap mode, leaving room for labels above and bars below
+  const axisOffset = STATE.layoutMode === 'wrap' ? Math.round(rowH * 0.55) : Math.round(svgH * 0.55);
   const rowMs = totalMs / numRows;
 
   svg.setAttribute('width', totalWidth);
@@ -1232,14 +1233,22 @@ function renderTimeline() {
     const rowEnd = new Date(minT + (i + 1) * rowMs);
     drawTicks(svg, rowStart, rowEnd, axisY, pad, axisWidth, rowMs);
     svg.appendChild(svgEl('line', { x1: pad, y1: axisY, x2: pad + axisWidth, y2: axisY, class: 'axis-line' }));
-    const band = svgEl('text', { x: pad - 8, y: axisY - 10, 'text-anchor': 'end', class: 'tick-label' });
-    band.textContent = formatTickYear(rowStart);
-    svg.appendChild(band);
+    // Left label: row start year
+    const bandStart = svgEl('text', { x: pad - 8, y: axisY - 10, 'text-anchor': 'end', class: 'tick-label' });
+    bandStart.textContent = formatTickYear(rowStart);
+    svg.appendChild(bandStart);
+    // Right label: row end year (shows continuity across the wrap)
+    const bandEnd = svgEl('text', { x: pad + axisWidth + 8, y: axisY - 10, 'text-anchor': 'start', class: 'tick-label' });
+    bandEnd.textContent = formatTickYear(rowEnd);
+    svg.appendChild(bandEnd);
     if (i < numRows - 1) {
       const y2 = (i + 1) * rowH + axisOffset;
       const xEnd = pad + axisWidth;
+      // S-curve runs from the end of this axis line to the start of the next one.
+      // Control points pull just 20px outside the axis edges so the curve stays tight.
+      const midY = (axisY + y2) / 2;
       svg.appendChild(svgEl('path', {
-        d: `M ${xEnd} ${axisY} C ${xEnd + 28} ${axisY}, ${xEnd + 28} ${(axisY + y2) / 2}, ${xEnd + 8} ${(axisY + y2) / 2} C ${pad - 28} ${(axisY + y2) / 2}, ${pad - 28} ${y2}, ${pad} ${y2}`,
+        d: `M ${xEnd} ${axisY} C ${xEnd + 20} ${axisY}, ${xEnd + 20} ${midY}, ${xEnd} ${midY} M ${pad} ${midY} C ${pad - 20} ${midY}, ${pad - 20} ${y2}, ${pad} ${y2}`,
         fill: 'none', stroke: '#475569', 'stroke-width': 1.5, 'stroke-dasharray': '4 4', class: 'row-join',
       }));
     }
@@ -1263,18 +1272,42 @@ function renderTimeline() {
     const p1 = posFor(r);
     const end = parseDate(r.date_end);
     const p2 = dateToXY(end);
-    if (p2.row !== p1.row) {
-      const axisY = p1.axisY;
-      const xEnd = pad + axisWidth;
+    const color = categoryColor(r.category);
+    const barY = p1.y + 10;
+    const barH = 14;
+
+    if (p2.row === p1.row) {
+      // Simple case: event starts and ends in the same row
       svg.appendChild(svgEl('rect', {
-        x: p1.x, y: p1.y + 10, width: Math.max(xEnd - p1.x, 4), height: 14,
-        fill: categoryColor(r.category), rx: 3, ry: 3, opacity: 0.45, class: 'duration-bar',
+        x: p1.x, y: barY, width: Math.max(p2.x - p1.x, 4), height: barH,
+        fill: color, rx: 3, ry: 3, opacity: 0.55, class: 'duration-bar',
       }));
       return;
     }
+
+    // Multi-row case: draw one bar segment per row the event spans
+    const xEnd = pad + axisWidth;
+
+    // Segment on the starting row: from p1.x to the right edge
     svg.appendChild(svgEl('rect', {
-      x: p1.x, y: p1.y + 10, width: Math.max(p2.x - p1.x, 4), height: 14,
-      fill: categoryColor(r.category), rx: 3, ry: 3, opacity: 0.55, class: 'duration-bar',
+      x: p1.x, y: barY, width: Math.max(xEnd - p1.x, 4), height: barH,
+      fill: color, rx: 3, ry: 3, opacity: 0.45, class: 'duration-bar',
+    }));
+
+    // Full-width segments on any intermediate rows — sit on each row's axis line
+    for (let row = p1.row + 1; row < p2.row; row++) {
+      const midAxisY = row * rowH + axisOffset;
+      svg.appendChild(svgEl('rect', {
+        x: pad, y: midAxisY - 7, width: axisWidth, height: barH,
+        fill: color, rx: 3, ry: 3, opacity: 0.35, class: 'duration-bar',
+      }));
+    }
+
+    // Segment on the ending row: from the left edge to p2.x — sit on that row's axis
+    const endAxisY = p2.row * rowH + axisOffset;
+    svg.appendChild(svgEl('rect', {
+      x: pad, y: endAxisY - 7, width: Math.max(p2.x - pad, 4), height: barH,
+      fill: color, rx: 3, ry: 3, opacity: 0.45, class: 'duration-bar',
     }));
   });
 
