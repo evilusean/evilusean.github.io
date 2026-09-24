@@ -583,14 +583,12 @@ nav button.saved-btn:hover {
 }
 
 .mnemonic-hook:hover > .mnemonic-hook-code,
-.mnemonic-hook:focus-visible > .mnemonic-hook-code,
-.mnemonic-hook:focus-within > .mnemonic-hook-code {
+.mnemonic-hook:focus-visible > .mnemonic-hook-code {
     display: none;
 }
 
 .mnemonic-hook:hover > .mnemonic-hook-name,
-.mnemonic-hook:focus-visible > .mnemonic-hook-name,
-.mnemonic-hook:focus-within > .mnemonic-hook-name {
+.mnemonic-hook:focus-visible > .mnemonic-hook-name {
     display: inline;
 }
 
