@@ -535,8 +535,17 @@ function setupEventListeners() {
     document.getElementById('clear-saved-btn').onclick = clearSaved;
 
     document.querySelectorAll('.mnemonic-link, .mnemonic-token').forEach((link) => {
+        const identity = trigIdentities.find((item) => item.name === link.dataset.identity);
+        if (identity) {
+            link.title = identity.formula;
+            const preview = document.createElement('span');
+            preview.className = 'mnemonic-preview';
+            preview.innerHTML = toMathJax(identity.formula);
+            link.appendChild(preview);
+        }
         link.addEventListener('click', () => jumpToIdentity(link.dataset.identity));
     });
+    refreshMathJax();
     
     window.onclick = (e) => {
         const modal = document.getElementById('saved-modal');
