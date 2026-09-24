@@ -200,6 +200,13 @@ nav button.saved-btn:hover {
     border-radius: 8px;
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
     z-index: 101;
+    transition: max-height 0.3s ease, box-shadow 0.3s ease;
+}
+
+.mnemonic-dock:hover,
+.mnemonic-dock:focus-within {
+    max-height: 22rem;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
 }
 
 .mnemonic-heading {
@@ -248,12 +255,42 @@ nav button.saved-btn:hover {
     font-size: 0.78rem;
 }
 
+.mnemonic-grid-label {
+    margin-top: 0.55rem;
+    color: var(--text-secondary);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.mnemonic-grid-label span {
+    margin: 0 0.35rem;
+    color: var(--tan-purple);
+}
+
 .mnemonic-table-head,
 .mnemonic-row {
     display: grid;
-    grid-template-columns: 1.2fr 1fr 1fr;
+    grid-template-columns: 1.2fr 1fr;
     align-items: center;
     gap: 0.45rem;
+}
+
+.mnemonic-sum-side {
+    display: none;
+}
+
+.mnemonic-dock:hover .mnemonic-table-head,
+.mnemonic-dock:hover .mnemonic-row,
+.mnemonic-dock:focus-within .mnemonic-table-head,
+.mnemonic-dock:focus-within .mnemonic-row {
+    grid-template-columns: 1.2fr 1fr 1fr;
+}
+
+.mnemonic-dock:hover .mnemonic-sum-side,
+.mnemonic-dock:focus-within .mnemonic-sum-side {
+    display: block;
 }
 
 .mnemonic-table-head {
@@ -274,27 +311,18 @@ nav button.saved-btn:hover {
     font-weight: 700;
 }
 
-.mnemonic-hook-preview {
+.mnemonic-hook-name {
     display: none;
-    position: absolute;
-    left: 0;
-    bottom: calc(100% + 0.35rem);
-    width: max-content;
-    padding: 0.4rem 0.55rem;
-    border: 1px solid var(--tan-purple);
-    border-radius: 4px;
-    background: var(--bg-card);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
-    color: var(--text-primary);
-    font-size: 0.78rem;
-    font-weight: 500;
-    white-space: nowrap;
-    z-index: 2;
 }
 
-.mnemonic-hook:hover .mnemonic-hook-preview,
-.mnemonic-hook:focus-within .mnemonic-hook-preview {
-    display: block;
+.mnemonic-hook:hover .mnemonic-hook-code,
+.mnemonic-hook:focus-within .mnemonic-hook-code {
+    display: none;
+}
+
+.mnemonic-hook:hover .mnemonic-hook-name,
+.mnemonic-hook:focus-within .mnemonic-hook-name {
+    display: inline;
 }
 
 .mnemonic-link,
