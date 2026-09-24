@@ -384,9 +384,12 @@ function validateRecord(rec) {
   const errors = [];
   if (!rec.event_name || !rec.event_name.trim()) errors.push('event_name is required');
   rec.date_start = normalizeDateInput(rec.date_start);
-  rec.date_end = normalizeDateInput(rec.date_end);
+  rec.date_end   = normalizeDateInput(rec.date_end);
   if (!DATE_RE.test(rec.date_start) || !parseDate(rec.date_start)) errors.push('date_start must be YYYY-MM-DD');
   if (rec.date_end && (!DATE_RE.test(rec.date_end) || !parseDate(rec.date_end))) errors.push('date_end must be YYYY-MM-DD');
+  // parent_id is intentionally not validated against existing records here —
+  // it may reference a record that hasn't been pushed/imported yet.
+  // people is a space-separated list of @handles — free-form, no validation needed.
   return errors;
 }
 
@@ -754,7 +757,9 @@ async function syncFromSheet() {
   if (!CONFIG.SPREADSHEET_ID) { showToast('No spreadsheet connected', 'warning'); return; }
   showSpinner();
   try {
-    const range = encodeURIComponent(`${CONFIG.SHEET_NAME}!A1:L`);
+    // Derive last column letter from schema length so range never goes stale when columns are added
+    const lastCol = String.fromCharCode(64 + FIELDS.length);
+    const range = encodeURIComponent(`${CONFIG.SHEET_NAME}!A1:${lastCol}`);
     const data = await sheetsRequest(`${SHEETS_BASE}/${CONFIG.SPREADSHEET_ID}/values/${range}`);
     if (!data) return;
     const rows = data.values || [];
@@ -778,6 +783,9 @@ async function syncFromSheet() {
       rec.version = Number(rec.version) || 1;
       rec.importance = Number(rec.importance) || 5;
       rec.id = rec.id || generateId();
+      rec.parent_id  = (rec.parent_id  || '').trim();
+      rec.people     = (rec.people     || '').trim();
+      rec.location   = (rec.location   || '').trim();
       return rec;
     }).filter(r => r.event_name && parseDate(r.date_start));
     STATE.records = incoming;
@@ -1587,6 +1595,9 @@ function importCSV(file) {
         rec.id = rec.id || generateId();
         rec.version = Number(rec.version) || 1;
         rec.importance = Number(rec.importance) || 5;
+        rec.parent_id  = (rec.parent_id  || '').trim();
+        rec.people     = (rec.people     || '').trim();
+        rec.location   = (rec.location   || '').trim();
         const errors = validateRecord(rec);
         if (errors.length) { skipped.push(`Row ${i + 2}: ${errors.join(', ')}`); return; }
         imported.push(rec);
