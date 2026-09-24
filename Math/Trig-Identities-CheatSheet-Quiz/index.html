@@ -132,16 +132,10 @@
         </div>
     </div>
 
-    <div class="legend">
-        <span class="color-sin">sin</span>
-        <span class="color-cos">cos</span>
-        <span class="color-tan">tan</span>
-        <span class="color-csc">csc</span>
-        <span class="color-sec">sec</span>
-        <span class="color-cot">cot</span>
-    </div>
+    <button id="mobile-mnemonic-toggle" class="mobile-mnemonic-toggle" type="button" aria-expanded="false">Show mnemonic</button>
 
-    <aside id="mnemonic-dock" class="mnemonic-dock" aria-label="Product-to-sum and sum-to-product mnemonic">
+    <div id="mnemonic-cluster" class="mnemonic-cluster">
+        <aside id="mnemonic-dock" class="mnemonic-dock" aria-label="Product-to-sum and sum-to-product mnemonic">
         <div class="mnemonic-heading">
             <span class="mnemonic-kicker">Identities Mnemonic</span>
             <strong class="mnemonic-string" aria-label="Mnemonic navigation">
@@ -174,7 +168,16 @@
                 <button type="button" class="mnemonic-link sum-link mnemonic-sum-side" data-identity="Sum to Product: cos−cos" aria-label="Open sum to product cosine minus cosine identity"><b class="mnemonic-c">C</b><span class="mnemonic-minus">−</span><b class="mnemonic-c">C</b> <span class="mnemonic-minus">−</span>2<b class="mnemonic-s">S</b><b class="mnemonic-s">S</b></button>
             </div>
         </div>
-    </aside>
+            </aside>
+            <div class="legend">
+                <span class="color-sin">sin</span>
+                <span class="color-cos">cos</span>
+                <span class="color-tan">tan</span>
+                <span class="color-csc">csc</span>
+                <span class="color-sec">sec</span>
+                <span class="color-cot">cot</span>
+            </div>
+    </div>
 
     <div id="notification" class="notification"></div>
 
