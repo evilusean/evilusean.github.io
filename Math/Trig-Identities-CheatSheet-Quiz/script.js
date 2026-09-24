@@ -399,6 +399,10 @@ function toggleSelection(index, name) {
 }
 
 function jumpToIdentity(name) {
+    jumpToIdentities([name]);
+}
+
+function jumpToIdentities(names) {
     if (!document.getElementById('cheatsheet-view').classList.contains('active')) {
         switchView('cheatsheet');
     }
@@ -411,16 +415,27 @@ function jumpToIdentity(name) {
         renderCheatsheet();
     }
 
-    const index = trigIdentities.findIndex(identity => identity.name === name);
-    const item = document.querySelectorAll('.identity-item')[index];
-    const details = document.getElementById(`details-${index}`);
+    const items = document.querySelectorAll('.identity-item');
+    const matchedItems = names.map((name) => {
+        const index = trigIdentities.findIndex(identity => identity.name === name);
+        return {
+            item: items[index],
+            details: document.getElementById(`details-${index}`)
+        };
+    }).filter(({ item, details }) => item && details);
 
-    if (!item || !details) return;
+    if (!matchedItems.length) return;
 
-    details.classList.add('visible');
-    item.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    item.classList.add('mnemonic-target');
-    setTimeout(() => item.classList.remove('mnemonic-target'), 1600);
+    document.querySelectorAll('.mnemonic-target').forEach((item) => item.classList.remove('mnemonic-target'));
+    matchedItems.forEach(({ item, details }) => {
+        details.classList.add('visible');
+        item.classList.add('mnemonic-target');
+    });
+    matchedItems[0].item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    clearTimeout(window.mnemonicHighlightTimeout);
+    window.mnemonicHighlightTimeout = setTimeout(() => {
+        matchedItems.forEach(({ item }) => item.classList.remove('mnemonic-target'));
+    }, 5000);
 }
 
 function saveSelections() {
@@ -535,15 +550,18 @@ function setupEventListeners() {
     document.getElementById('clear-saved-btn').onclick = clearSaved;
 
     document.querySelectorAll('.mnemonic-link, .mnemonic-token').forEach((link) => {
-        const identity = trigIdentities.find((item) => item.name === link.dataset.identity);
-        if (identity) {
-            link.title = identity.formula;
+        const identityNames = (link.dataset.identities || link.dataset.identity || '').split('|').filter(Boolean);
+        const identities = identityNames
+            .map((name) => trigIdentities.find((item) => item.name === name))
+            .filter(Boolean);
+        if (identities.length) {
+            link.title = identities.map((identity) => identity.formula).join('\n');
             const preview = document.createElement('span');
             preview.className = 'mnemonic-preview';
-            preview.innerHTML = toMathJax(identity.formula);
+            preview.innerHTML = identities.map((identity) => `<span class="mnemonic-formula">${toMathJax(identity.formula)}</span>`).join('');
             link.appendChild(preview);
         }
-        link.addEventListener('click', () => jumpToIdentity(link.dataset.identity));
+        link.addEventListener('click', () => jumpToIdentities(identityNames));
     });
     refreshMathJax();
     

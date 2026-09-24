@@ -269,15 +269,32 @@ nav button.saved-btn:hover {
 }
 
 .mnemonic-hook {
+    position: relative;
     color: var(--text-primary);
     font-weight: 700;
 }
 
-.mnemonic-hook em {
-    color: var(--text-secondary);
-    font-size: 0.7rem;
-    font-style: normal;
+.mnemonic-hook-preview {
+    display: none;
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + 0.35rem);
+    width: max-content;
+    padding: 0.4rem 0.55rem;
+    border: 1px solid var(--tan-purple);
+    border-radius: 4px;
+    background: var(--bg-card);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+    color: var(--text-primary);
+    font-size: 0.78rem;
     font-weight: 500;
+    white-space: nowrap;
+    z-index: 2;
+}
+
+.mnemonic-hook:hover .mnemonic-hook-preview,
+.mnemonic-hook:focus-within .mnemonic-hook-preview {
+    display: block;
 }
 
 .mnemonic-link,
@@ -328,6 +345,13 @@ nav button.saved-btn:hover {
     z-index: 2;
 }
 
+.mnemonic-formula + .mnemonic-formula {
+    display: block;
+    margin-top: 0.35rem;
+    padding-top: 0.35rem;
+    border-top: 1px solid rgba(139, 148, 158, 0.25);
+}
+
 .mnemonic-link:hover .mnemonic-preview,
 .mnemonic-link:focus-visible .mnemonic-preview,
 .mnemonic-token:hover .mnemonic-preview,
@@ -336,12 +360,12 @@ nav button.saved-btn:hover {
 }
 
 .mnemonic-target {
-    animation: mnemonic-pulse 1.6s ease;
+    animation: mnemonic-pulse 5s ease;
 }
 
 @keyframes mnemonic-pulse {
     0%, 100% { box-shadow: none; }
-    25%, 70% { box-shadow: 0 0 0 4px var(--tan-purple), 0 0 28px rgba(199, 146, 255, 0.35); }
+    15%, 85% { box-shadow: 0 0 0 4px var(--tan-purple), 0 0 28px rgba(199, 146, 255, 0.35); }
 }
 
 @media (max-width: 640px) {
