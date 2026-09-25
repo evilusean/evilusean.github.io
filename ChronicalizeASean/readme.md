@@ -76,3 +76,4 @@ TODO / Future Sean Problems :
 - Add a toggle to get rid of the 2 rows of buttons for more realestate like 'Hide / Show Controls'  
 - Ran out of tokens on kiro/cursor - Future Sean will need to check over the code for any superfluous stuff/leftovers from when it stopped - I need to get the schema and everything sorted before I can make it pretty 
 - Spiral layout doesn't allow you to click on some events
+- The mnemonic memeonic doesn't do the highlighting correctly on the arconyms for anything divided by 2 
