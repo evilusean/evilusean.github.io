@@ -139,5 +139,6 @@ Open source - feel free to use and modify for educational purposes.
 - add formula for angular speed (\omega = \frac{\theta}{t}) and (v = r \omega) and apparently, there is another one (\omega = \frac{v}{r})
 - Add a toggle to remove all colours - personally I like them, but I can definitely see how they would be distracting 
 - Add a toggle button checkbox, currently the 'Hide mnemonic' is just a generic block of text and doesn't appear obvious what it does - Mnemonic needs capitalize - Memeonic?
-- Still need to test mobile versions, it works good on my machine 
+- Still need to test mobile versions, it works good on my machine
+ 
 

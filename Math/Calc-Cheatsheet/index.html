@@ -3,18 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New App</title>
+    <meta name="theme-color" content="#0d1117">
+    <meta name="description" content="An interactive Calc 1 derivative rules cheatsheet with practice, screensaver, and saved formulas.">
+    <title>Calc Cheatsheet &amp; Quiz</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>∫</text></svg>">
     <link rel="stylesheet" href="style.css">
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
 </head>
 <body>
-    <header>
-        <h1>App Title</h1>
+    <header class="app-header">
+        <div class="brand-row">
+            <div class="brand-mark" aria-hidden="true">∂</div>
+            <div class="brand-copy">
+                <p class="eyebrow">CALCULUS I · QUICK REVIEW</p>
+                <h1>Calc Cheatsheet <span>&amp; Quiz</span></h1>
+            </div>
+        </div>
+        <nav class="main-nav" aria-label="Main navigation">
+            <button type="button" class="nav-button active" data-view="cheatsheet">Cheatsheet</button>
+            <button type="button" class="nav-button" data-view="screensaver">Screensaver</button>
+            <button type="button" class="nav-button" data-view="flashcards">Flashcards</button>
+            <button type="button" class="nav-button" data-view="help">Help</button>
+            <button type="button" id="saved-open" class="saved-open">♧ Saved <span id="saved-count">0</span></button>
+        </nav>
     </header>
 
     <main>
-        <!-- Content goes here -->
+        <section id="cheatsheet-view" class="view active" aria-label="Derivative rules cheatsheet">
+            <div class="intro-row">
+                <div>
+                    <p class="eyebrow">YOUR FORMULA LIBRARY</p>
+                    <h2>Derivative rules, made easier to recall.</h2>
+                    <p class="intro-copy">Choose the rules you’re studying, open a card for context, or switch to practice mode to test your recall.</p>
+                </div>
+                <div class="formula-total"><strong id="formula-count">0</strong><span>rules</span></div>
+            </div>
+            <div class="toolbar" aria-label="Cheatsheet controls">
+                <label class="search-field"><span aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="Search rules or formulas…" autocomplete="off" aria-label="Search formulas"></label>
+                <select id="preset-select" aria-label="Load a study set">
+                    <option value="">Study set…</option>
+                    <option value="all">All derivative rules</option>
+                    <option value="basics">Basic rules</option>
+                    <option value="operations">Operations &amp; combinations</option>
+                    <option value="exponential">Exponential &amp; logarithmic</option>
+                    <option value="trigonometric">Trigonometric</option>
+                    <option value="inverse">Inverse trigonometric</option>
+                </select>
+                <button type="button" id="select-all">Select all</button>
+                <button type="button" id="deselect-all" class="button-quiet">Clear</button>
+                <button type="button" id="share-selection" class="button-quiet">↗ Share set</button>
+            </div>
+            <div class="practice-strip">
+                <div><span class="practice-indicator"></span><span id="practice-status">Study mode · formulas are visible</span></div>
+                <button type="button" id="toggle-practice" class="text-button">Practice: hide formulas</button>
+            </div>
+            <div id="formula-list" class="formula-list"></div>
+            <p id="empty-state" class="empty-state" hidden>No rules match that search.</p>
+        </section>
+
+        <section id="study-view" class="view" aria-label="Study mode">
+            <div class="study-topline">
+                <button type="button" id="exit-study" class="button-quiet">← Back to cheatsheet</button>
+                <span id="study-mode-label" class="mode-label">SCREENSAVER</span>
+            </div>
+            <div id="study-card" class="study-card" tabindex="0" aria-live="polite">
+                <div class="study-card-meta"><span id="study-category"></span><span id="study-position"></span></div>
+                <h2 id="study-name"></h2>
+                <div id="study-formula" class="study-formula"></div>
+                <p id="study-prompt" class="study-prompt" hidden>Tap or press Space to reveal the rule</p>
+                <div id="study-details" class="study-details">
+                    <p id="study-description"></p>
+                    <div class="study-detail-grid">
+                        <section><h3>When to use it</h3><p id="study-when"></p></section>
+                        <section><h3>Example</h3><p id="study-example"></p></section>
+                    </div>
+                </div>
+                <button type="button" id="study-save" class="save-formula-button">＋ Save for later</button>
+            </div>
+            <div class="study-controls">
+                <button type="button" id="study-prev" aria-label="Previous formula">← Previous</button>
+                <button type="button" id="study-pause">Ⅱ Pause</button>
+                <button type="button" id="study-next">Next →</button>
+                <button type="button" id="study-fullscreen">⛶ Fullscreen</button>
+            </div>
+            <div id="study-settings" class="study-settings">
+                <label class="speed-setting">Advance speed <input id="speed-slider" type="range" min="3" max="12" value="6"><span id="speed-value">6 sec</span></label>
+                <label class="toggle-setting"><input id="show-details" type="checkbox" checked> Show explanations</label>
+            </div>
+            <p class="keyboard-hint">← → navigate <span>·</span> Space reveal / pause <span>·</span> F fullscreen <span>·</span> Esc exit</p>
+        </section>
+
+        <section id="help-view" class="view help-view" aria-label="Help">
+            <p class="eyebrow">GETTING STARTED</p>
+            <h2>A flexible way to review Calc 1 derivatives.</h2>
+            <div class="help-grid">
+                <article class="help-card"><span class="help-number">01</span><h3>Build a study set</h3><p>Use checkboxes to choose formulas. The study-set menu selects a whole topic at once. Your selection is saved in this browser.</p></article>
+                <article class="help-card"><span class="help-number">02</span><h3>Practice recall</h3><p>Turn on “Practice: hide formulas” to quiz yourself in the list, or open Flashcards to reveal one formula at a time.</p></article>
+                <article class="help-card"><span class="help-number">03</span><h3>Review later</h3><p>Save tricky formulas from a card or flashcard. Open Saved to remove items or export your list as TXT or CSV.</p></article>
+                <article class="help-card"><span class="help-number">04</span><h3>Color cues</h3><p><span class="color-sin">Sine and cosecant</span> use warm red; <span class="color-cos">cosine and secant</span> use blue. The same cues appear throughout the app.</p></article>
+            </div>
+            <div class="help-note"><strong>Included so far:</strong> the Calc 1 derivative rules provided for this app. More course topics can be added to this same formula library.</div>
+        </section>
     </main>
 
+    <div id="saved-modal" class="modal" aria-hidden="true">
+        <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="saved-title">
+            <div class="modal-heading"><div><p class="eyebrow">YOUR REVIEW LIST</p><h2 id="saved-title">Saved for later</h2></div><button type="button" id="saved-close" class="close-button" aria-label="Close saved formulas">×</button></div>
+            <div id="saved-list" class="saved-list"></div>
+            <div class="modal-actions"><button type="button" id="download-txt">Download TXT</button><button type="button" id="download-csv" class="button-secondary">Download CSV</button><button type="button" id="clear-saved" class="button-danger">Clear all</button></div>
+        </div>
+    </div>
+    <div id="notification" class="notification" role="status" aria-live="polite"></div>
     <script src="script.js"></script>
 </body>
 </html>
