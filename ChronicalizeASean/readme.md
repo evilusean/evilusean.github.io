@@ -9,7 +9,11 @@
 ## Up next (priority order)
 
 ### Fix 'slice' view
-Was meant to let user view a slice of the timeline, AI misinterpreted it.
+~~Was meant to let user view a slice of the timeline, AI misinterpreted it.~~ Done — see Completed.
+
+### Next up
+- Schema button removal + favicon (quick cleanup)
+- Make app responsive (future Sean problem)
 
 ---
 
@@ -31,6 +35,14 @@ Was meant to let user view a slice of the timeline, AI misinterpreted it.
 ## Completed
 - Hierarchical drill-down: click "🔍 Drill in" on any event with children (detail panel or popover) → timeline/spiral filters to that event + all descendants. Breadcrumb bar shows the drill path with clickable crumbs to navigate up. "⬆ Up" goes one level, "✕ All events" clears. "under ParentName" in the detail panel is a clickable link to drill into the parent. Escape also clears drill. Drill resets on timeline switch.
 - Layout / Rows controls now work: Layout (Wrap rows / Single strip) and Rows (Auto / 2–8) selects were never wired to event listeners or initialized from persisted state — both now respond immediately and persist across reloads. Rows select is disabled when in Single strip mode.
+- Slice view fixed: grain select (All / Decade / Century) + ‹ › buttons now navigate time windows derived from actual record year range. Chip bar appears below controls showing all windows; click any chip to jump. Switching to "All time" clears the date range.
+- Parent marker indicator: events with children show a small amber ring below their emoji on both the SVG timeline and the spiral canvas — makes drill-down discoverable at a glance.
+- Screensaver staged reveal: name appears first, then dates fade in after ⅓ of the slide duration, then description + tags after ⅔. Pausing fast-forwards to fully revealed. Stop/skip restore full visibility.
+- Spiral zoom-to-pointer: scroll wheel now zooms toward the cursor position rather than always re-centering. Pan offset is maintained across renders. Zoom-reset (⊙) also resets pan to center.
+- Schema button removed (was dead — no listener, no modal).
+- Favicon added (⏳ emoji SVG data URI, no image file needed).
+- "How to use" fully rewritten to cover drill-down, spiral, slice, layout/rows, staged slideshow, and all current fields.
+- Spiral click reliability fixed: minimum hit radius raised to 14px so small/low-importance events are always clickable.
 - UI: Add/Edit event modal now has Parent event (dropdown of other events), People (`@handle`s), and Location
 - Schema: added `parent_id` for unlimited-depth sub-events (Roman Empire → Punic Wars → Battle of Zama)
 - Schema: added `people` field for `@handle` linking to People tab

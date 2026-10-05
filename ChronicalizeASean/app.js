@@ -1649,7 +1649,7 @@ function renderSpiral() {
     const { x, y } = xyFor(theta);
     const imp       = Number(r.importance) || 5;
     const fontSize  = imp2size(imp);
-    const hitR      = fontSize * 0.8;
+    const hitR      = Math.max(14, fontSize * 0.8);
 
     // Highlight ring for active event
     if (r.id === STATE.lastClickedId) {
@@ -2335,6 +2335,9 @@ function setupZoomControls() {
   });
   document.getElementById('zoom-reset-btn').addEventListener('click', () => {
     STATE.zoom = 1;
+    STATE.spiralZoom = 1;
+    STATE.spiralPanX = 0;
+    STATE.spiralPanY = 0;
     renderView();
   });
   document.getElementById('timeline-wrapper').addEventListener('wheel', e => {
@@ -2865,8 +2868,19 @@ function setupSpiralView() {
   // Scroll wheel on the canvas zooms the spiral (no modifier key needed)
   canvas.addEventListener('wheel', e => {
     e.preventDefault();
-    const delta = e.deltaY > 0 ? 0.15 : -0.15;
-    STATE.spiralZoom = Math.max(0.3, Math.min(10, STATE.spiralZoom + delta));
+    const rect    = canvas.getBoundingClientRect();
+    const px      = e.clientX - rect.left;   // pointer in canvas space
+    const py      = e.clientY - rect.top;
+    const oldZoom = STATE.spiralZoom;
+    const delta   = e.deltaY > 0 ? 0.15 : -0.15;
+    const newZoom = Math.max(0.3, Math.min(10, oldZoom + delta));
+    // Zoom-to-pointer: shift the pan so the point under the cursor stays fixed.
+    // Point under cursor in spiral space: (px - cx, py - cy) where cx = W/2 + panX.
+    // After zoom, scale factor k = newZoom/oldZoom; pan adjusts by ptr*(1-k).
+    const k = newZoom / oldZoom;
+    STATE.spiralPanX = (STATE.spiralPanX || 0) + px * (1 - k) - (canvas.width  / 2) * (1 - k);
+    STATE.spiralPanY = (STATE.spiralPanY || 0) + py * (1 - k) - (canvas.height / 2) * (1 - k);
+    STATE.spiralZoom = newZoom;
     persistLocal();
     renderSpiral();
   }, { passive: false });

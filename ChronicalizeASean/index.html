@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ChronicalizeASean</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏳</text></svg>" />
   <link rel="stylesheet" href="style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -53,7 +54,6 @@
       </div>
       <button type="button" id="export-btn" class="btn btn-ghost btn-sm" title="Export CSV">💾 Export</button>
       <label id="import-label" class="btn btn-ghost btn-sm" title="Import CSV">📂 Import<input id="import-input" type="file" accept=".csv" class="hidden-input" /></label>
-      <button type="button" id="schema-btn" class="btn btn-ghost btn-sm" title="Column schema and sheet preview">▦ Schema</button>
       <button type="button" id="help-btn" class="btn btn-ghost btn-sm" title="How to use">❓ How to</button>
     </div>
   </header>
@@ -338,31 +338,48 @@
       </div>
       <div class="help-body">
         <h3>What this is</h3>
-        <p>A local-first timeline. Events live in the browser. Google Sheets is an optional backup you can open and edit like a normal spreadsheet.</p>
+        <p>A local-first timeline app. Events live in your browser. Google Sheets is an optional sync backend you can edit like a normal spreadsheet. Everything works offline.</p>
 
         <h3>Dates</h3>
-        <p>Everything is <code>YYYY-MM-DD</code> (ISO). Display uses the same order with slashes: <code>2008/09/15</code>. There is no US <code>MM/DD/YYYY</code> picker — those native date widgets follow the OS locale and are the reason dates looked wrong. BCE years use a leading minus, e.g. <code>-0753-04-21</code>.</p>
+        <p>Use <code>YYYY-MM-DD</code> (ISO 8601). BCE years use a leading minus: <code>-0753-04-21</code>. Only the start date is required — leave end date blank for point events.</p>
 
         <h3>Built-in timelines</h3>
-        <p>Use the dropdown (top left): Glubb’s empire lifecycle, financial crises, human-rights documents, and major inventions. Edits to built-in sets are saved in this browser. <strong>＋ New</strong> starts a blank timeline.</p>
+        <p>Pick from the dropdown (top left): Western canon, empires, financial crises, human-rights documents. Your edits are saved locally per timeline. <strong>＋ New</strong> creates a blank one.</p>
+
+        <h3>Adding &amp; editing events</h3>
+        <p>Click <strong>＋</strong> (bottom right) to add. Click any marker to open the detail panel — then hit <strong>Edit</strong>. Hover a marker for the quick-action card. Fields include:</p>
+        <ul>
+          <li><strong>Parent event</strong> — nest this under another event (unlimited depth: Empire → War → Battle). Events with children show a small amber ring under their emoji.</li>
+          <li><strong>People</strong> — space-separated <code>@handles</code> linking to People sheet records (e.g. <code>@julius_caesar</code>).</li>
+          <li><strong>Location</strong> — free text, shown in the detail panel.</li>
+          <li><strong>Tags</strong> — <code>#hashtags</code>. Shared tags draw connection lines when Connections is on.</li>
+          <li><strong>Importance 1–10</strong> — scales the emoji marker size.</li>
+        </ul>
+
+        <h3>Drill-down</h3>
+        <p>Click <strong>🔍 Drill in</strong> on any event (detail panel or hover card) to filter the timeline to that event and all its descendants. A breadcrumb bar appears — click any crumb to navigate up, or hit <strong>✕ All events</strong> to clear. Clicking “under ParentName” in the detail panel drills into the parent. Escape also clears drill.</p>
+
+        <h3>Views &amp; layout</h3>
+        <ul>
+          <li><strong>Timeline</strong> (default) — horizontal axis, wraps into stacked rows. Use <em>Layout</em> and <em>Rows</em> controls to switch between wrap and single strip, and to fix the row count.</li>
+          <li><strong>🌀 Spiral</strong> — Archimedean spiral, oldest outermost, newest at centre. Scroll wheel zooms toward the pointer. ⊙ resets zoom and pan.</li>
+          <li><strong>Slice</strong> — pick Decade or Century, then use ‹ › to step through time windows. The chip bar shows all windows; click any chip to jump directly.</li>
+          <li><strong>From / To</strong> — manual date-range filter in the controls bar.</li>
+        </ul>
+
+        <h3>Slideshow</h3>
+        <p>Click <strong>▶ Slideshow</strong>. Events play in date order: the name fades in first, then dates, then description and tags. Space pauses (and fast-forwards to full detail), arrows skip, Esc stops.</p>
 
         <h3>Google Sheets</h3>
         <ol>
           <li>Sign in with Google.</li>
-          <li>Click <strong>Connect Sheet</strong> — create a new spreadsheet (seeded with the built-in tabs) or paste an existing spreadsheet URL/ID.</li>
-          <li><strong>Open Sheet</strong> jumps straight to that file in Google Sheets (new tab).</li>
-          <li><strong>Sync</strong> pulls rows down; <strong>Push</strong> writes the current timeline up. Each timeline is a tab.</li>
+          <li>Click <strong>🔗 Connect Sheet</strong> — create a new spreadsheet or paste an existing URL/ID.</li>
+          <li><strong>📊 Events Sheet</strong> / <strong>👤 People Sheet</strong> open those tabs in Google Sheets.</li>
+          <li><strong>⬇️ Sync</strong> pulls rows down; <strong>⬆️ Push</strong> writes the current timeline up.</li>
         </ol>
-        <p>If Open Sheet does nothing, you do not have a spreadsheet ID yet — connect one first. The OAuth client must allow this site’s origin (GitHub Pages URL or <code>http://localhost</code>).</p>
 
-        <h3>Events</h3>
-        <p>＋ (bottom right) adds an event. Click a marker for the detail panel; hover for a card. Edit/delete from the card or panel. Tags like <code>#crisis #banking</code> draw connection lines when you turn Connections on. Parent event nests this row under another; People uses space-separated <code>@handles</code>; Location is free text.</p>
-
-        <h3>Import / export</h3>
-        <p>CSV columns match the sheet schema, including <code>parent_id</code>, <code>people</code>, and <code>location</code>. Drag a <code>.csv</code> onto the page to import.</p>
-
-        <h3>Slideshow</h3>
-        <p>Walks events in date order, filling the detail panel. Space pauses, arrows skip, Esc stops. If it ever sticks, hit ■ or Esc — timers are cleared on stop.</p>
+        <h3>Import / Export</h3>
+        <p>💾 <strong>Export</strong> downloads the current timeline as CSV. 📂 <strong>Import</strong> loads a CSV — or drag a <code>.csv</code> file onto the page. Columns match the full schema including <code>parent_id</code>, <code>people</code>, and <code>location</code>.</p>
       </div>
       <div class="modal-footer">
         <button type="button" id="help-ok-btn" class="btn btn-primary">Got it</button>
