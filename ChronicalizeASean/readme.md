@@ -30,6 +30,7 @@ Was meant to let user view a slice of the timeline, AI misinterpreted it.
 
 ## Completed
 - Hierarchical drill-down: click "🔍 Drill in" on any event with children (detail panel or popover) → timeline/spiral filters to that event + all descendants. Breadcrumb bar shows the drill path with clickable crumbs to navigate up. "⬆ Up" goes one level, "✕ All events" clears. "under ParentName" in the detail panel is a clickable link to drill into the parent. Escape also clears drill. Drill resets on timeline switch.
+- Layout / Rows controls now work: Layout (Wrap rows / Single strip) and Rows (Auto / 2–8) selects were never wired to event listeners or initialized from persisted state — both now respond immediately and persist across reloads. Rows select is disabled when in Single strip mode.
 - UI: Add/Edit event modal now has Parent event (dropdown of other events), People (`@handle`s), and Location
 - Schema: added `parent_id` for unlimited-depth sub-events (Roman Empire → Punic Wars → Battle of Zama)
 - Schema: added `people` field for `@handle` linking to People tab
@@ -46,6 +47,26 @@ Was meant to let user view a slice of the timeline, AI misinterpreted it.
 - Timeline: fixed row wrapping — duration bars for multi-row events now draw continuous segments across every row they span (start row → full-width intermediate rows → end row)
 - Timeline: added end-year label at the right edge of each row so the wrap reads as a continuous chronological flow
 - `end date` is not mandatory (only `start date` is required)
+
+Default Timeline to Add :
+- Gutenberg Printing Press
+- 'Propaganda' 1622 - Pope Gregory XV - 'Sacra Congretio de Propaganda Fide' 
+- 1770 Pamphleteers America
+- 1830 chartist movement - penny press - northern star press
+- 1853 Crimean War Vs John Thadeus Delane (The Times London) Vs Horace Greely (NY Tribune)
+- WT Stead Writes 'Govern by Journalism' 1886
+- Alfred Milner + WT Stead + Cecil Rhodes Roundtable Groups Origins - 1891
+- 1897-1905 (Milners Kindergarten)
+- 1909 Roundtable Group Vs Carrol Quigley
+- 1919 (Chatham House - RIIA = Royal Institute for International Affairs)
+- 1921 CFR
+- 1923 Edward Bernays 'Crystalizing Public Opinion' 1928 'Propaganda'
+- Opium Wars - Sassoons - British East India Co
+- Enclosure Movement
+- Treaty of Westphalia
+- War of 1812 / Battle of Waterloo
+- Bank of Engerland
+- 
 
 TODO / Future Sean Problems :
 - The screensaver mode/slideshow froze, ran out of tokens, also, future Sean, do one of these at a time, kiro timed out a bunch trying to 'one shot' it

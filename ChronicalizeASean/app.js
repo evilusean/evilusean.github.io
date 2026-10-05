@@ -2320,6 +2320,33 @@ function setupZoomControls() {
       renderView();
     }
   }, { passive: false });
+
+  // Layout mode (wrap / strip) — initialize select to persisted value, then listen for changes
+  const layoutSel = document.getElementById('layout-mode-select');
+  const rowsSel = document.getElementById('wrap-rows-select');
+
+  const syncRowsDisabled = () => {
+    rowsSel.disabled = STATE.layoutMode !== 'wrap';
+    rowsSel.title = STATE.layoutMode !== 'wrap' ? 'Only applies in wrap mode' : 'How many stacked time rows';
+  };
+
+  layoutSel.value = STATE.layoutMode;
+  layoutSel.addEventListener('change', () => {
+    STATE.layoutMode = layoutSel.value;
+    syncRowsDisabled();
+    persistLocal();
+    renderView();
+  });
+
+  // Wrap rows count — same pattern
+  rowsSel.value = STATE.wrapRows;
+  rowsSel.addEventListener('change', () => {
+    STATE.wrapRows = rowsSel.value;
+    persistLocal();
+    renderView();
+  });
+
+  syncRowsDisabled(); // set correct initial disabled state
 }
 
 function setupDragScroll() {
