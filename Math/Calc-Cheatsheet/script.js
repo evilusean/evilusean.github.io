@@ -41,7 +41,7 @@ const formulaGroups = [
             { id: 'tan', name: 'Tangent', formula: '\\frac{d}{dx}[\\tan x] = \\sec^2 x', description: 'The derivative of tangent is secant squared.', when: 'Use for $\\tan x$. For $\\tan(u)$, apply the chain rule.', example: '$\\frac{d}{dx}[\\tan(4x)] = 4\\sec^2(4x)$' },
             { id: 'csc', name: 'Cosecant', formula: '\\frac{d}{dx}[\\csc x] = -\\csc x\\cot x', description: 'Cosecant differentiates to negative cosecant times cotangent.', when: 'Use for $\\csc x$. For $\\csc(u)$, multiply by $u\'$ as well.', example: '$\\frac{d}{dx}[\\csc(2x)] = -2\\csc(2x)\\cot(2x)$' },
             { id: 'sec', name: 'Secant', formula: '\\frac{d}{dx}[\\sec x] = \\sec x\\tan x', description: 'Secant differentiates to secant times tangent.', when: 'Use for $\\sec x$. For $\\sec(u)$, apply the chain rule.', example: '$\\frac{d}{dx}[\\sec(x^2)] = 2x\\sec(x^2)\\tan(x^2)$' },
-            { id: 'cot', name: 'Cotangent', formula: '\\frac{d}{dx}[\\cot x] = -\\csc^2 x', description: 'Cotangent differentiates to negative cosecant squared.', when: 'Use for $\\cot x$. For $\\cot(u)$, multiply by $u\'$ using the chain rule.', example: '$\\frac{d}{dx}[\\cot(5x)] = -5\\csc^2(5x)$' }
+            { id: 'cot', name: 'Derivative of Cotangent', formula: '\\frac{d}{dx}[\\cot x] = -\\csc^2 x', description: 'Cotangent differentiates to negative cosecant squared.', when: 'Use for $\\cot x$. For $\\cot(u)$, multiply by $u\'$ using the chain rule.', example: '$\\frac{d}{dx}[\\cot(5x)] = -5\\csc^2(5x)$' }
         ]
     },
     {
@@ -73,6 +73,7 @@ let activeView = 'cheatsheet';
 let studyMode = 'screensaver';
 let studyList = [];
 let studyIndex = 0;
+let studyPhase = 0;
 let isRevealed = false;
 let isPaused = false;
 let timer = null;
@@ -85,7 +86,14 @@ function escapeHTML(value) {
 
 function coloredFormula(formula) {
     const colors = { sin: '#e06666', csc: '#ea9999', cos: '#74c0ff', sec: '#8fc9ff', tan: '#c792ff', cot: '#d4adff', arcsin: '#e06666', arccsc: '#ea9999', arccos: '#74c0ff', arcsec: '#8fc9ff', arctan: '#c792ff', arccot: '#d4adff' };
-    return formula.replace(/\\(arcsin|arccos|arctan|arccsc|arcsec|arccot|sin|cos|tan|csc|sec|cot)\b/g, (command, name) => `\\color{${colors[name]}}{${command}}`);
+    const normalized = formula.replace(/\\(arcsin|arccos|arctan|arccsc|arcsec|arccot)\b/g, (_, name) => `\\operatorname{${name}}`);
+    return normalized
+        .replace(/\\operatorname\{(arcsin|arccos|arctan|arccsc|arcsec|arccot)\}/g, (command, name) => `\\color{${colors[name]}}{${command}}`)
+        .replace(/\\(sin|cos|tan|csc|sec|cot)\b/g, (command, name) => `\\color{${colors[name]}}{${command}}`);
+}
+
+function normalizeMathText(text) {
+    return text.replace(/\\(arcsin|arccos|arctan|arccsc|arcsec|arccot)\b/g, (_, name) => `\\operatorname{${name}}`);
 }
 
 function typeset() {
@@ -118,7 +126,7 @@ function renderList() {
                     <button type="button" class="formula-display ${quizHidden ? 'is-hidden' : ''}" data-formula="${item.id}" aria-label="${quizHidden ? 'Reveal formula for ' + escapeHTML(item.name) : 'Copy formula for ' + escapeHTML(item.name)}">${quizHidden ? '<span>Tap to reveal formula</span>' : `\\[${coloredFormula(item.formula)}\\]`}</button>
                     <div class="formula-details ${isExpanded ? 'is-open' : ''}" data-details="${item.id}">
                         <p class="formula-description">${escapeHTML(item.description)}</p>
-                        <div class="card-detail-grid"><div><h4>When to use it</h4><p>${item.when}</p></div><div><h4>Example</h4><p>${item.example}</p></div></div>
+                        <div class="card-detail-grid"><div><h4>When to use it</h4><p>${normalizeMathText(item.when)}</p></div><div><h4>Example</h4><p>${normalizeMathText(item.example)}</p></div></div>
                         ${practiceMode && revealed.has(item.id) ? `<button type="button" class="save-inline" data-save="${item.id}">＋ Save for later</button>` : ''}
                     </div>
                 </article>`;
@@ -206,7 +214,8 @@ function startStudy(mode) {
     }
     studyList = shuffle(studyList);
     studyIndex = 0;
-    isRevealed = mode === 'screensaver';
+    studyPhase = 0;
+    isRevealed = false;
     isPaused = false;
     document.getElementById('study-mode-label').textContent = mode === 'screensaver' ? 'SCREENSAVER' : 'FLASHCARDS';
     document.getElementById('study-settings').classList.toggle('is-screensaver', mode === 'screensaver');
@@ -230,24 +239,32 @@ function renderStudyCard() {
     document.getElementById('study-category').textContent = item.groupTitle;
     document.getElementById('study-position').textContent = `${String(studyIndex + 1).padStart(2, '0')} / ${String(studyList.length).padStart(2, '0')}`;
     document.getElementById('study-name').textContent = item.name;
+    const showAnswer = studyMode === 'screensaver' ? studyPhase === 1 : isRevealed;
     const formula = document.getElementById('study-formula');
-    formula.innerHTML = isRevealed ? `\\[${coloredFormula(item.formula)}\\]` : '';
-    formula.classList.toggle('is-concealed', !isRevealed);
-    document.getElementById('study-prompt').hidden = isRevealed;
+    formula.innerHTML = showAnswer ? `\\[${coloredFormula(item.formula)}\\]` : '';
+    formula.classList.toggle('is-concealed', !showAnswer);
+    document.getElementById('study-prompt').hidden = showAnswer || studyMode === 'screensaver';
     document.getElementById('study-description').textContent = item.description;
-    document.getElementById('study-when').innerHTML = item.when;
-    document.getElementById('study-example').innerHTML = item.example;
-    document.getElementById('study-details').classList.toggle('is-visible', isRevealed && document.getElementById('show-details').checked);
+    document.getElementById('study-when').innerHTML = normalizeMathText(item.when);
+    document.getElementById('study-example').innerHTML = normalizeMathText(item.example);
+    document.getElementById('study-details').classList.toggle('is-visible', showAnswer && document.getElementById('show-details').checked);
     const saveButton = document.getElementById('study-save');
     const alreadySaved = saved.some(entry => entry.id === item.id);
-    saveButton.disabled = alreadySaved || !isRevealed;
+    saveButton.disabled = alreadySaved || !showAnswer;
     saveButton.textContent = alreadySaved ? '✓ Saved for later' : '＋ Save for later';
-    document.getElementById('study-card').classList.toggle('is-question', !isRevealed);
+    document.getElementById('study-card').classList.toggle('is-question', studyMode === 'flashcards' && !showAnswer);
     document.getElementById('study-pause').textContent = isPaused ? '▶ Resume' : 'Ⅱ Pause';
     typeset();
     if (studyMode === 'screensaver' && !isPaused) {
         const seconds = Number(document.getElementById('speed-slider').value);
-        timer = setTimeout(nextStudyCard, seconds * 1000);
+        timer = setTimeout(() => {
+            if (studyPhase === 0) {
+                studyPhase = 1;
+                renderStudyCard();
+            } else {
+                nextStudyCard();
+            }
+        }, seconds * 1000);
     }
 }
 
@@ -260,14 +277,16 @@ function nextStudyCard() {
     if (!studyList.length) return;
     studyIndex = (studyIndex + 1) % studyList.length;
     if (studyIndex === 0) studyList = shuffle(studyList);
-    isRevealed = studyMode === 'screensaver';
+    studyPhase = 0;
+    isRevealed = false;
     renderStudyCard();
 }
 
 function moveStudyCard(direction) {
     if (!studyList.length) return;
     studyIndex = (studyIndex + direction + studyList.length) % studyList.length;
-    isRevealed = studyMode === 'screensaver';
+    studyPhase = 0;
+    isRevealed = false;
     renderStudyCard();
 }
 
@@ -411,7 +430,10 @@ function initialize() {
         renderStudyCard();
     });
     document.getElementById('study-fullscreen').addEventListener('click', toggleFullscreen);
-    document.getElementById('study-save').addEventListener('click', () => { if (isRevealed) saveFormula(studyList[studyIndex]?.id); });
+    document.getElementById('study-save').addEventListener('click', () => {
+        const answerVisible = studyMode === 'screensaver' ? studyPhase === 1 : isRevealed;
+        if (answerVisible) saveFormula(studyList[studyIndex]?.id);
+    });
     document.getElementById('study-card').addEventListener('click', event => {
         if (studyMode === 'flashcards' && !event.target.closest('button')) {
             isRevealed = !isRevealed;
@@ -425,7 +447,8 @@ function initialize() {
             renderStudyCard();
             return;
         }
-        if (isRevealed && studyList[studyIndex]) {
+        const answerVisible = studyMode === 'screensaver' ? studyPhase === 1 : isRevealed;
+        if (answerVisible && studyList[studyIndex]) {
             event.stopPropagation();
             copyText(studyList[studyIndex].formula, 'Formula copied');
         }
