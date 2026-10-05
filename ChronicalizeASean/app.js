@@ -322,6 +322,8 @@ const STATE = {
   ssSpeed: 5000,
   ssProgressRaf: null,
   ssProgressStart: 0,
+  ssPhase: 0,        // 0=name only, 1=+dates, 2=+description/tags
+  ssPhaseTimer: null,
   lastClickedId: null,
   activeKey: localStorage.getItem('timeline_active_key') || 'builtin:canon',
   localCustom: JSON.parse(localStorage.getItem('timeline_custom') || '{}'),
@@ -332,8 +334,11 @@ const STATE = {
   layoutMode: localStorage.getItem('timeline_layout') || 'wrap',
   wrapRows: localStorage.getItem('timeline_wrap_rows') || 'auto',
   sliceGrain: localStorage.getItem('timeline_slice_grain') || 'all',
+  sliceIndex: 0,    // current decade/century window index (0 = first)
   viewMode: localStorage.getItem('timeline_view_mode') || 'timeline', // 'timeline' | 'spiral'
   spiralZoom: parseFloat(localStorage.getItem('timeline_spiral_zoom') || '1'),
+  spiralPanX: 0,    // pan offset for zoom-to-pointer (pixels, applied to cx)
+  spiralPanY: 0,
   people: JSON.parse(localStorage.getItem('timeline_people') || 'null') || TL_PEOPLE,
   drillStack: [],   // array of event IDs forming the current drill-down path (innermost last)
 };
@@ -1474,6 +1479,15 @@ function renderTimeline() {
     const txt = svgEl('text', { x: 0, y: 0, 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': fontSize });
     txt.textContent = r.emoji || '📌';
     g.appendChild(txt);
+    // Small indicator dot below the emoji for events that have children
+    if (STATE.records.some(rec => rec.parent_id === r.id)) {
+      const dot = svgEl('circle', {
+        cx: 0, cy: Math.round(fontSize / 2 + 5),
+        r: 3, fill: 'none',
+        stroke: 'rgba(251,191,36,0.75)', 'stroke-width': 1.5,
+      });
+      g.appendChild(dot);
+    }
     g.addEventListener('click', (e) => {
       e.stopPropagation();
       selectEvent(r.id, { x: p.x, y: p.y, axisY: p.axisY });
@@ -1522,8 +1536,8 @@ function renderSpiral() {
     (parseDate(a.date_start) || 0) - (parseDate(b.date_start) || 0)
   );
 
-  const cx = W / 2;
-  const cy = H / 2;
+  const cx = W / 2 + (STATE.spiralPanX || 0);
+  const cy = H / 2 + (STATE.spiralPanY || 0);
 
   // spiralZoom: 1 = default density, higher = more turns (zoom out / see more history)
   // Scroll-wheel increases/decreases spiralZoom
@@ -1654,6 +1668,17 @@ function renderSpiral() {
     ctx.textBaseline  = 'middle';
     ctx.fillText(r.emoji || '📌', x, y);
     ctx.restore();
+
+    // Small indicator ring below emoji for events with children
+    if (STATE.records.some(rec => rec.parent_id === r.id)) {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(251,191,36,0.75)';
+      ctx.lineWidth   = 1.5;
+      ctx.beginPath();
+      ctx.arc(x, y + fontSize * 0.6, 3, 0, 2 * Math.PI);
+      ctx.stroke();
+      ctx.restore();
+    }
 
     SPIRAL_HITS.push({ id: r.id, x, y, r: hitR });
   });
@@ -2416,6 +2441,112 @@ function setupFilters() {
   });
 }
 
+function setupSlice() {
+  const grainSel  = document.getElementById('slice-grain-select');
+  const prevBtn   = document.getElementById('slice-prev-btn');
+  const nextBtn   = document.getElementById('slice-next-btn');
+  const fromEl    = document.getElementById('date-from-input');
+  const toEl      = document.getElementById('date-to-input');
+
+  // Returns an array of { label, from (YYYY-MM-DD), to (YYYY-MM-DD) } windows
+  // covering the full span of current records for the chosen grain.
+  function buildWindows(grain) {
+    if (grain === 'all' || !STATE.records.length) return [];
+    const years = STATE.records
+      .map(r => parseDate(r.date_start))
+      .filter(Boolean)
+      .map(d => d.getUTCFullYear());
+    const minY = Math.min(...years);
+    const maxY = Math.max(...years);
+    const step = grain === 'decade' ? 10 : 100;
+    const first = Math.floor(minY / step) * step;
+    const windows = [];
+    for (let y = first; y <= maxY; y += step) {
+      const label = grain === 'decade'
+        ? (y < 0 ? Math.abs(y) + 's BCE' : y + 's')
+        : (y < 0 ? Math.abs(y) + ' BCE century' : y + 's');
+      windows.push({
+        label,
+        from: `${String(y).padStart(y < 0 ? 5 : 4, '0')}-01-01`,
+        to:   `${String(y + step - 1).padStart((y + step - 1) < 0 ? 5 : 4, '0')}-12-31`,
+      });
+    }
+    return windows;
+  }
+
+  function applySliceWindow() {
+    const grain = STATE.sliceGrain;
+    if (grain === 'all') {
+      // Reset date range filters
+      fromEl.value = toEl.value = STATE.dateFrom = STATE.dateTo = '';
+      localStorage.removeItem('timeline_date_from');
+      localStorage.removeItem('timeline_date_to');
+      updateSliceChipBar([]);
+    } else {
+      const windows = buildWindows(grain);
+      if (!windows.length) return;
+      STATE.sliceIndex = Math.max(0, Math.min(STATE.sliceIndex, windows.length - 1));
+      const win = windows[STATE.sliceIndex];
+      STATE.dateFrom = win.from;
+      STATE.dateTo   = win.to;
+      fromEl.value   = win.from;
+      toEl.value     = win.to;
+      localStorage.setItem('timeline_date_from', win.from);
+      localStorage.setItem('timeline_date_to',   win.to);
+      updateSliceChipBar(windows);
+    }
+    applyFilters();
+    renderView();
+  }
+
+  function updateSliceChipBar(windows) {
+    const bar = document.getElementById('slice-chip-bar');
+    if (!windows.length) { bar.hidden = true; bar.innerHTML = ''; return; }
+    bar.hidden = false;
+    bar.innerHTML = '';
+    windows.forEach((w, i) => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'slice-chip' + (i === STATE.sliceIndex ? ' slice-chip-active' : '');
+      chip.textContent = w.label;
+      chip.addEventListener('click', () => {
+        STATE.sliceIndex = i;
+        applySliceWindow();
+      });
+      bar.appendChild(chip);
+    });
+    // Scroll active chip into view
+    const active = bar.querySelector('.slice-chip-active');
+    if (active) active.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+  }
+
+  // Initialize select from persisted state
+  grainSel.value = STATE.sliceGrain;
+  grainSel.addEventListener('change', () => {
+    STATE.sliceGrain = grainSel.value;
+    STATE.sliceIndex = 0;
+    persistLocal();
+    applySliceWindow();
+  });
+
+  prevBtn.addEventListener('click', () => {
+    if (STATE.sliceGrain === 'all') return;
+    const windows = buildWindows(STATE.sliceGrain);
+    STATE.sliceIndex = Math.max(0, STATE.sliceIndex - 1);
+    applySliceWindow();
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (STATE.sliceGrain === 'all') return;
+    const windows = buildWindows(STATE.sliceGrain);
+    STATE.sliceIndex = Math.min(windows.length - 1, STATE.sliceIndex + 1);
+    applySliceWindow();
+  });
+
+  // Apply persisted slice on load
+  if (STATE.sliceGrain !== 'all') applySliceWindow();
+}
+
 function setupConnections() {
   document.getElementById('connections-btn').addEventListener('click', () => {
     STATE.showConnections = !STATE.showConnections;
@@ -2439,12 +2570,19 @@ function ssSorted() {
 function clearSsTimers() {
   if (STATE.ssTimer) { clearTimeout(STATE.ssTimer); STATE.ssTimer = null; }
   if (STATE.ssProgressRaf) { cancelAnimationFrame(STATE.ssProgressRaf); STATE.ssProgressRaf = null; }
+  if (STATE.ssPhaseTimer) { clearTimeout(STATE.ssPhaseTimer); STATE.ssPhaseTimer = null; }
 }
 
 function stopScreensaver() {
   clearSsTimers();
   STATE.screensaver = false;
   STATE.ssPaused = false;
+  STATE.ssPhase = 0;
+  // Restore full detail panel visibility in case we stopped mid-reveal
+  ['ed-dates','ed-meta','ed-desc','ed-tags','ed-source-link','ed-drill-btn','ed-edit-btn'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('ss-hidden');
+  });
   document.getElementById('ss-controls').classList.add('hidden');
   document.getElementById('ss-progress-bar').classList.add('hidden');
   document.getElementById('screensaver-btn').textContent = '▶ Slideshow';
@@ -2459,19 +2597,52 @@ function tickProgress() {
   STATE.ssProgressRaf = requestAnimationFrame(tickProgress);
 }
 
+// Show only the parts of the detail panel appropriate for the current SS phase.
+// Phase 0: emoji + name only.
+// Phase 1: + dates + meta.
+// Phase 2: + description + tags + source/drill/edit buttons.
+function applySsPhase(phase) {
+  const phase1Els = ['ed-dates', 'ed-meta'];
+  const phase2Els = ['ed-desc', 'ed-tags', 'ed-source-link', 'ed-drill-btn', 'ed-edit-btn'];
+  phase1Els.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('ss-hidden', phase < 1);
+  });
+  phase2Els.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('ss-hidden', phase < 2);
+  });
+}
+
 function showSsIndex() {
   const list = ssSorted();
   if (!list.length) { stopScreensaver(); return; }
   STATE.ssIndex = ((STATE.ssIndex % list.length) + list.length) % list.length;
+  STATE.ssPhase = 0;
+  if (STATE.ssPhaseTimer) { clearTimeout(STATE.ssPhaseTimer); STATE.ssPhaseTimer = null; }
   const r = list[STATE.ssIndex];
   STATE.lastClickedId = r.id;
   hidePopover();
-  showEventDetail(r.id);
+  showEventDetail(r.id);   // populates all DOM fields
+  applySsPhase(0);         // then hide phases 1 & 2
   highlightActiveMarkers();
   scrollToEvent(r.id);
   document.getElementById('ss-counter').textContent = `${STATE.ssIndex + 1}/${list.length}`;
   document.getElementById('ss-progress-fill').style.width = '0%';
   STATE.ssProgressStart = Date.now();
+  // Phase advance timers: reveal dates after 1/3 of speed, full detail after 2/3
+  const phaseDelay = Math.round(STATE.ssSpeed / 3);
+  STATE.ssPhaseTimer = setTimeout(() => {
+    if (!STATE.screensaver || STATE.ssPaused) return;
+    STATE.ssPhase = 1;
+    applySsPhase(1);
+    STATE.ssPhaseTimer = setTimeout(() => {
+      if (!STATE.screensaver || STATE.ssPaused) return;
+      STATE.ssPhase = 2;
+      applySsPhase(2);
+      STATE.ssPhaseTimer = null;
+    }, phaseDelay);
+  }, phaseDelay);
 }
 
 function scheduleSsAdvance() {
@@ -2505,8 +2676,15 @@ function toggleSsPause() {
   if (!STATE.screensaver) return;
   STATE.ssPaused = !STATE.ssPaused;
   document.getElementById('ss-pause-btn').textContent = STATE.ssPaused ? '▶' : '⏸';
-  if (STATE.ssPaused) clearSsTimers();
-  else scheduleSsAdvance();
+  if (STATE.ssPaused) {
+    clearSsTimers(); // also clears ssPhaseTimer
+  } else {
+    // On resume: fast-forward to fully revealed state for current event,
+    // then start counting down for the next advance.
+    STATE.ssPhase = 2;
+    applySsPhase(2);
+    scheduleSsAdvance();
+  }
 }
 
 function setupScreensaver() {
@@ -2800,6 +2978,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupZoomControls();
   setupDragScroll();
   setupFilters();
+  setupSlice();
   setupConnections();
   setupDragDrop();
   setupScreensaver();

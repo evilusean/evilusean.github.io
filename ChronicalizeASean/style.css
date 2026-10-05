@@ -484,6 +484,44 @@ body { display: flex; flex-direction: column; }
 .handle-badge { font-size: 11px; padding: 1px 7px; border-radius: 99px; background: rgba(59,130,246,0.18); color: #93c5fd; }
 .ss-progress-bar { height: 3px; background: var(--bg-700); }
 .ss-progress-fill { height: 100%; width: 0; background: var(--accent); }
+/* Screensaver staged reveal — hide elements between phases with a fade */
+.ss-hidden { opacity: 0; pointer-events: none; transition: opacity 0.35s ease; }
+.ed-dates, .ed-meta, .ed-desc, .ed-tags, .ed-source-link, .ed-drill-btn, .ed-edit-btn {
+  transition: opacity 0.35s ease;
+}
+
+/* ── Slice chip bar ── */
+.slice-chip-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 14px;
+  background: var(--bg-900);
+  border-bottom: 1px solid var(--bg-700);
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-wrap: nowrap;
+}
+.slice-chip-bar::-webkit-scrollbar { display: none; }
+.slice-chip {
+  flex-shrink: 0;
+  background: var(--bg-800);
+  border: 1px solid var(--bg-600);
+  color: var(--text-400);
+  border-radius: 99px;
+  padding: 2px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.slice-chip:hover { background: var(--bg-700); color: var(--text-200); }
+.slice-chip.slice-chip-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
 
 /* ── Drill-down breadcrumb bar ── */
 .drill-bar {
