@@ -335,6 +335,7 @@ const STATE = {
   viewMode: localStorage.getItem('timeline_view_mode') || 'timeline', // 'timeline' | 'spiral'
   spiralZoom: parseFloat(localStorage.getItem('timeline_spiral_zoom') || '1'),
   people: JSON.parse(localStorage.getItem('timeline_people') || 'null') || TL_PEOPLE,
+  drillStack: [],   // array of event IDs forming the current drill-down path (innermost last)
 };
 
 const CATEGORY_COLORS = {};
@@ -510,6 +511,7 @@ function populateTimelineSelect() {
 async function switchTimeline(key) {
   stopScreensaver();
   STATE.activeKey = key;
+  STATE.drillStack = [];    // clear drill scope on timeline switch
   if (key.startsWith('sheet:')) {
     CONFIG.SHEET_NAME = key.slice(6);
     const tab = STATE.sheetTabs.find(t => t.title === CONFIG.SHEET_NAME);
@@ -1123,7 +1125,15 @@ function applyFilters() {
   const tag = STATE.filterTag;
   const from = parseDate(STATE.dateFrom);
   const to = parseDate(STATE.dateTo);
+
+  // Build the drill scope: if drilling, only allow the root event + all descendants.
+  let drillIds = null;
+  if (STATE.drillStack.length) {
+    drillIds = getDescendantIds(STATE.drillStack[STATE.drillStack.length - 1]);
+  }
+
   STATE.filtered = STATE.records.filter(r => {
+    if (drillIds && !drillIds.has(r.id)) return false;
     if (cat && r.category !== cat) return false;
     if (tag && !parseTags(r.tags).includes(tag)) return false;
     if (txt && !r.event_name.toLowerCase().includes(txt) && !(r.description || '').toLowerCase().includes(txt)) return false;
@@ -1134,6 +1144,88 @@ function applyFilters() {
     return true;
   });
   updateFilterOptions();
+}
+
+// ── Drill-down helpers ────────────────────────────────────────────────────────
+
+// Returns the set of all IDs that are the given root ID itself or any transitive descendant.
+function getDescendantIds(rootId) {
+  const result = new Set();
+  const queue = [rootId];
+  while (queue.length) {
+    const cur = queue.shift();
+    result.add(cur);
+    STATE.records.forEach(r => { if (r.parent_id === cur) queue.push(r.id); });
+  }
+  return result;
+}
+
+// Drill into a specific event: push onto stack, re-filter, re-render.
+function drillInto(id) {
+  const r = STATE.records.find(rec => rec.id === id);
+  if (!r) return;
+  // If already drilling into this exact event, do nothing.
+  if (STATE.drillStack.length && STATE.drillStack[STATE.drillStack.length - 1] === id) return;
+  // If it's already in the stack (going back up the breadcrumb), truncate there.
+  const existingIdx = STATE.drillStack.indexOf(id);
+  if (existingIdx !== -1) {
+    STATE.drillStack = STATE.drillStack.slice(0, existingIdx + 1);
+  } else {
+    STATE.drillStack.push(id);
+  }
+  applyFilters();
+  renderView();
+  updateDrillBar();
+}
+
+// Step up one level in the drill stack.
+function drillUp() {
+  if (!STATE.drillStack.length) return;
+  STATE.drillStack.pop();
+  applyFilters();
+  renderView();
+  updateDrillBar();
+}
+
+// Clear the entire drill stack — show all events again.
+function drillClear() {
+  STATE.drillStack = [];
+  applyFilters();
+  renderView();
+  updateDrillBar();
+}
+
+// Render the breadcrumb bar from STATE.drillStack.
+function updateDrillBar() {
+  const bar = document.getElementById('drill-bar');
+  const crumbs = document.getElementById('drill-crumbs');
+  if (!STATE.drillStack.length) {
+    bar.classList.add('hidden');
+    crumbs.innerHTML = '';
+    return;
+  }
+  bar.classList.remove('hidden');
+  crumbs.innerHTML = '';
+  STATE.drillStack.forEach((id, idx) => {
+    const r = STATE.records.find(rec => rec.id === id);
+    const label = r ? (r.emoji ? r.emoji + ' ' : '') + r.event_name : id;
+    const isLast = idx === STATE.drillStack.length - 1;
+    if (idx > 0) {
+      const sep = document.createElement('span');
+      sep.className = 'drill-sep';
+      sep.textContent = '›';
+      crumbs.appendChild(sep);
+    }
+    const crumb = document.createElement('button');
+    crumb.type = 'button';
+    crumb.className = 'drill-crumb' + (isLast ? ' drill-crumb-active' : '');
+    crumb.textContent = label;
+    crumb.title = isLast ? 'Current drill scope' : 'Jump to this level';
+    if (!isLast) {
+      crumb.addEventListener('click', () => drillInto(id));
+    }
+    crumbs.appendChild(crumb);
+  });
 }
 
 function parseTags(tagStr) {
@@ -1595,6 +1687,8 @@ function renderView() {
   } else {
     renderTimeline();
   }
+  // Keep breadcrumb bar in sync with every render
+  if (typeof updateDrillBar === 'function') updateDrillBar();
 }
 
 function drawConnectionsXY(svg, records, posFor) {
@@ -1839,13 +1933,31 @@ function showEventDetail(id) {
     nameEl.textContent = r.event_name;
   }
   document.getElementById('ed-dates').textContent = formatDateRange(r.date_start, r.date_end);
-  const metaBits = [];
-  if (r.location) metaBits.push(r.location);
+
+  // Meta line: location + parent (parent is a clickable drill-up link)
+  const metaEl = document.getElementById('ed-meta');
+  metaEl.innerHTML = '';
+  const metaParts = [];
+  if (r.location) metaParts.push(document.createTextNode(r.location));
   if (r.parent_id) {
     const parent = STATE.records.find(p => p.id === r.parent_id);
-    metaBits.push(parent ? 'under ' + parent.event_name : 'parent ' + r.parent_id);
+    if (parent) {
+      const link = document.createElement('a');
+      link.href = '#';
+      link.className = 'drill-parent-link';
+      link.title = 'Drill into ' + parent.event_name;
+      link.textContent = 'under ' + parent.event_name;
+      link.addEventListener('click', e => { e.preventDefault(); drillInto(parent.id); });
+      metaParts.push(link);
+    } else {
+      metaParts.push(document.createTextNode('parent ' + r.parent_id));
+    }
   }
-  document.getElementById('ed-meta').textContent = metaBits.join(' · ');
+  metaParts.forEach((part, i) => {
+    if (i > 0) metaEl.appendChild(document.createTextNode(' · '));
+    metaEl.appendChild(part);
+  });
+
   document.getElementById('ed-desc').textContent = r.description || '';
   const tags = parseTags(r.tags);
   const people = parsePeopleHandles(r.people);
@@ -1863,6 +1975,12 @@ function showEventDetail(id) {
   } else {
     src.classList.add('hidden');
   }
+  // Show drill button only if this event has children
+  const drillBtn = document.getElementById('ed-drill-btn');
+  const hasChildren = STATE.records.some(rec => rec.parent_id === r.id);
+  drillBtn.classList.toggle('hidden', !hasChildren);
+  drillBtn.onclick = () => drillInto(id);
+
   const edit = document.getElementById('ed-edit-btn');
   edit.classList.remove('hidden');
   edit.onclick = () => openEditModal(id);
@@ -1873,10 +1991,11 @@ function clearEventDetail() {
   document.getElementById('ed-emoji').textContent = '⏳';
   document.getElementById('ed-name').textContent = 'Click an event on the timeline';
   document.getElementById('ed-dates').textContent = 'The last clicked event (and slideshow) shows here.';
-  document.getElementById('ed-meta').textContent = '';
+  document.getElementById('ed-meta').innerHTML = '';
   document.getElementById('ed-desc').textContent = '';
   document.getElementById('ed-tags').innerHTML = '';
   document.getElementById('ed-source-link').classList.add('hidden');
+  document.getElementById('ed-drill-btn').classList.add('hidden');
   document.getElementById('ed-edit-btn').classList.add('hidden');
   highlightActiveMarkers();
 }
@@ -1925,6 +2044,11 @@ function showPopover(id, svgX, svgY) {
   document.getElementById('popover-tags').innerHTML = parseTags(r.tags).map(t => `<span class="tag-badge">${esc(t)}</span>`).join('');
   document.getElementById('popover-edit-btn').onclick = () => { hidePopover(); openEditModal(id); };
   document.getElementById('popover-delete-btn').onclick = () => { hidePopover(); confirmDelete(id); };
+  // Show drill button only if this event has children
+  const popDrillBtn = document.getElementById('popover-drill-btn');
+  const hasChildren = STATE.records.some(rec => rec.parent_id === r.id);
+  popDrillBtn.classList.toggle('hidden', !hasChildren);
+  popDrillBtn.onclick = () => { hidePopover(); drillInto(id); };
   popover.classList.remove('hidden');
   const pw = popover.offsetWidth || 280;
   const ph = popover.offsetHeight || 260;
@@ -2503,6 +2627,16 @@ function setupHelp() {
   });
 }
 
+function setupDrillBar() {
+  document.getElementById('drill-up-btn').addEventListener('click', drillUp);
+  document.getElementById('drill-clear-btn').addEventListener('click', drillClear);
+  // Also clear drill when the timeline is switched
+  document.getElementById('timeline-select').addEventListener('change', () => {
+    STATE.drillStack = [];
+    updateDrillBar();
+  });
+}
+
 function setupSpiralView() {
   const btn    = document.getElementById('view-mode-btn');
   const canvas = document.getElementById('spiral-canvas');
@@ -2626,6 +2760,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('new-timeline-backdrop').classList.add('hidden');
       hidePopover();
       if (STATE.screensaver) stopScreensaver();
+      if (STATE.drillStack.length) drillClear();
     }
     if (STATE.screensaver) {
       if (e.key === ' ') { e.preventDefault(); toggleSsPause(); }
@@ -2645,6 +2780,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupNewTimeline();
   setupHelp();
   setupSpiralView();
+  setupDrillBar();
   renderAuthUI(!!STATE.accessToken);
   window.addEventListener('resize', () => renderView());
   renderView();

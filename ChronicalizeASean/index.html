@@ -103,6 +103,14 @@
     </div>
     <div id="slice-chip-bar" class="slice-chip-bar" hidden></div>
 
+    <!-- DRILL-DOWN BREADCRUMB BAR -->
+    <div id="drill-bar" class="drill-bar hidden">
+      <span class="drill-bar-label">Drill:</span>
+      <div id="drill-crumbs" class="drill-crumbs"></div>
+      <button type="button" id="drill-up-btn" class="btn btn-ghost btn-sm" title="Go up one level">⬆ Up</button>
+      <button type="button" id="drill-clear-btn" class="btn btn-ghost btn-sm" title="Show all events">✕ All events</button>
+    </div>
+
     <!-- TIMELINE CANVAS -->
     <div id="timeline-wrapper" class="timeline-wrapper">
       <svg id="timeline-svg" class="timeline-svg" xmlns="http://www.w3.org/2000/svg"></svg>
@@ -121,6 +129,7 @@
           <div id="ed-tags" class="ed-tags"></div>
         </div>
         <a id="ed-source-link" class="btn btn-ghost btn-sm hidden" target="_blank" rel="noopener">Source</a>
+        <button type="button" id="ed-drill-btn" class="btn btn-ghost btn-sm hidden" title="Drill into this event and its descendants">🔍 Drill in</button>
         <button type="button" id="ed-edit-btn" class="btn btn-ghost btn-sm hidden">Edit</button>
         <button type="button" id="ed-close-btn" class="btn btn-ghost btn-sm ed-close" title="Clear">✕</button>
       </div>
@@ -374,6 +383,7 @@
       <p id="popover-desc" class="popover-desc"></p>
       <div id="popover-tags" class="popover-tags"></div>
       <div class="popover-actions">
+        <button type="button" id="popover-drill-btn" class="btn btn-ghost btn-sm" title="Drill into sub-events">🔍 Drill in</button>
         <button type="button" id="popover-edit-btn" class="btn btn-ghost btn-sm">✏️ Edit</button>
         <button type="button" id="popover-delete-btn" class="btn btn-danger btn-sm">🗑️ Delete</button>
       </div>

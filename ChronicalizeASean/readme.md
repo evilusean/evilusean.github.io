@@ -8,10 +8,8 @@
 
 ## Up next (priority order)
 
-### D — Hierarchical drill-down view
-Click a parent event → timeline filters to show only that event and all its descendants.
-Uses `parent_id` traversal (already in schema). Needs a "back to full timeline" breadcrumb.
-Add view toggles / layer controls to reduce visual busyness — the current built-in data is crowded.
+### Fix 'slice' view
+Was meant to let user view a slice of the timeline, AI misinterpreted it.
 
 ---
 
@@ -31,6 +29,7 @@ Add view toggles / layer controls to reduce visual busyness — the current buil
 ---
 
 ## Completed
+- Hierarchical drill-down: click "🔍 Drill in" on any event with children (detail panel or popover) → timeline/spiral filters to that event + all descendants. Breadcrumb bar shows the drill path with clickable crumbs to navigate up. "⬆ Up" goes one level, "✕ All events" clears. "under ParentName" in the detail panel is a clickable link to drill into the parent. Escape also clears drill. Drill resets on timeline switch.
 - UI: Add/Edit event modal now has Parent event (dropdown of other events), People (`@handle`s), and Location
 - Schema: added `parent_id` for unlimited-depth sub-events (Roman Empire → Punic Wars → Battle of Zama)
 - Schema: added `people` field for `@handle` linking to People tab
