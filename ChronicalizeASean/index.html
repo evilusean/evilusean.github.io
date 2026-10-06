@@ -52,7 +52,13 @@
         <button type="button" id="sync-btn" class="btn btn-ghost btn-sm hidden" title="Sync from Sheet">⬇️ Sync</button>
         <button type="button" id="push-btn" class="btn btn-ghost btn-sm hidden" title="Push to Sheet">⬆️ Push</button>
       </div>
-      <button type="button" id="export-btn" class="btn btn-ghost btn-sm" title="Export CSV">💾 Export</button>
+      <div class="export-wrap">
+        <button type="button" id="export-btn" class="btn btn-ghost btn-sm" title="Export timeline">💾 Export ▾</button>
+        <div id="export-menu" class="export-menu hidden">
+          <button type="button" id="export-csv-btn" class="export-menu-item">CSV (.csv)</button>
+          <button type="button" id="export-tsv-btn" class="export-menu-item">TSV — pastes into Google Sheets</button>
+        </div>
+      </div>
       <label id="import-label" class="btn btn-ghost btn-sm" title="Import CSV">📂 Import<input id="import-input" type="file" accept=".csv" class="hidden-input" /></label>
       <button type="button" id="help-btn" class="btn btn-ghost btn-sm" title="How to use">❓ How to</button>
     </div>
@@ -63,7 +69,9 @@
 
     <!-- ZOOM / CONTROLS BAR -->
     <div class="zoom-controls">
-      <button type="button" id="zoom-in-btn" class="btn btn-ghost btn-sm" title="Zoom In">＋</button>
+      <button type="button" id="hide-controls-btn" class="btn btn-ghost btn-sm ctrl-toggle" title="Hide controls bar">⊟</button>
+      <span class="ctrl-sep ctrl-collapsible">│</span>
+      <button type="button" id="zoom-in-btn" class="btn btn-ghost btn-sm ctrl-collapsible" title="Zoom In">＋</button>
       <button type="button" id="zoom-reset-btn" class="btn btn-ghost btn-sm" title="Reset Zoom">⊙</button>
       <button type="button" id="zoom-out-btn" class="btn btn-ghost btn-sm" title="Zoom Out">－</button>
       <span class="ctrl-sep">│</span>
@@ -85,6 +93,14 @@
       <button type="button" id="connections-btn" class="btn btn-ghost btn-sm" title="Toggle connections">🔗 Connections</button>
       <button type="button" id="screensaver-btn" class="btn btn-ghost btn-sm" title="Slideshow / Screensaver">▶ Slideshow</button>
       <button type="button" id="view-mode-btn" class="btn btn-ghost btn-sm" title="Switch between timeline and spiral view">🌀 Spiral</button>
+      <span class="ctrl-sep">│</span>
+      <span class="ctrl-label">Depth</span>
+      <select id="depth-filter-select" class="filter-select" title="Limit visible hierarchy depth">
+        <option value="all">All levels</option>
+        <option value="0">Root only</option>
+        <option value="1">Root + 1</option>
+        <option value="2">Root + 2</option>
+      </select>
       <span class="ctrl-sep">│</span>
       <span class="ctrl-label">Slice</span>
       <select id="slice-grain-select" class="filter-select" title="Jump to a decade or century">

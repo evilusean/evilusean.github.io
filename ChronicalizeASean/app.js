@@ -341,6 +341,7 @@ const STATE = {
   spiralPanY: 0,
   people: JSON.parse(localStorage.getItem('timeline_people') || 'null') || TL_PEOPLE,
   drillStack: [],   // array of event IDs forming the current drill-down path (innermost last)
+  depthFilter: 'all', // 'all' | '0' | '1' | '2' — max visible hierarchy depth
 };
 
 const CATEGORY_COLORS = {};
@@ -1139,6 +1140,11 @@ function applyFilters() {
 
   STATE.filtered = STATE.records.filter(r => {
     if (drillIds && !drillIds.has(r.id)) return false;
+    // Depth filter: hide events deeper than the selected level
+    if (STATE.depthFilter !== 'all') {
+      const maxDepth = parseInt(STATE.depthFilter, 10);
+      if (recordDepth(r) > maxDepth) return false;
+    }
     if (cat && r.category !== cat) return false;
     if (tag && !parseTags(r.tags).includes(tag)) return false;
     if (txt && !r.event_name.toLowerCase().includes(txt) && !(r.description || '').toLowerCase().includes(txt)) return false;
@@ -1152,6 +1158,20 @@ function applyFilters() {
 }
 
 // ── Drill-down helpers ────────────────────────────────────────────────────────
+
+// Returns the depth of a record in the hierarchy (0 = root, 1 = child of root, etc.)
+function recordDepth(r) {
+  let depth = 0;
+  let cur = r;
+  const seen = new Set();
+  while (cur && cur.parent_id) {
+    if (seen.has(cur.id)) break; // cycle guard
+    seen.add(cur.id);
+    cur = STATE.records.find(p => p.id === cur.parent_id);
+    depth++;
+  }
+  return depth;
+}
 
 // Returns the set of all IDs that are the given root ID itself or any transitive descendant.
 function getDescendantIds(rootId) {
@@ -1520,8 +1540,10 @@ let SPIRAL_HITS = []; // [{ id, x, y, r }]
 function renderSpiral() {
   const canvas = document.getElementById('spiral-canvas');
   const wrapper = document.getElementById('timeline-wrapper');
-  const W = wrapper.clientWidth  || 800;
-  const H = wrapper.clientHeight || 500;
+  // Use getBoundingClientRect for dimensions — clientWidth can be 0 before layout completes
+  const rect = canvas.getBoundingClientRect();
+  const W = (wrapper.clientWidth  || rect.width  || 800);
+  const H = (wrapper.clientHeight || rect.height || 500);
   canvas.width  = W;
   canvas.height = H;
   const ctx = canvas.getContext('2d');
@@ -2239,22 +2261,37 @@ function confirmDelete(id) {
   };
 }
 
-function exportCSV() {
+function exportRecords(format) {
   if (!STATE.records.length) { showToast('No records to export', 'warning'); return; }
-  const csv = Papa.unparse(STATE.records.map(r => {
+  const rows = STATE.records.map(r => {
     const row = {};
     FIELDS.forEach(f => { row[f] = r[f] ?? ''; });
     return row;
-  }), { columns: FIELDS });
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'timeline-export.csv';
+  });
+  let content, mime, ext;
+  if (format === 'tsv') {
+    // Tab-separated — pastes cleanly into Google Sheets
+    const header = FIELDS.join('\t');
+    const body   = rows.map(row => FIELDS.map(f => String(row[f] ?? '').replace(/\t/g, ' ')).join('\t')).join('\n');
+    content = header + '\n' + body;
+    mime    = 'text/tab-separated-values;charset=utf-8;';
+    ext     = 'tsv';
+  } else {
+    content = Papa.unparse(rows, { columns: FIELDS });
+    mime    = 'text/csv;charset=utf-8;';
+    ext     = 'csv';
+  }
+  const blob = new Blob([content], { type: mime });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `timeline-export.${ext}`;
   a.click();
   URL.revokeObjectURL(url);
-  showToast(`Exported ${STATE.records.length} records`, 'success');
+  showToast(`Exported ${STATE.records.length} records as ${ext.toUpperCase()}`, 'success');
 }
+
+function exportCSV() { exportRecords('csv'); }
 
 function importCSV(file) {
   if (!file) return;
@@ -2418,7 +2455,9 @@ function setupFilters() {
     document.getElementById('search-input').value = '';
     document.getElementById('category-filter').value = '';
     document.getElementById('tag-filter').value = '';
+    document.getElementById('depth-filter-select').value = 'all';
     STATE.filterText = STATE.filterCategory = STATE.filterTag = '';
+    STATE.depthFilter = 'all';
     applyFilters(); renderView();
   });
   const fromEl = document.getElementById('date-from-input');
@@ -2440,6 +2479,13 @@ function setupFilters() {
     fromEl.value = toEl.value = STATE.dateFrom = STATE.dateTo = '';
     localStorage.removeItem('timeline_date_from');
     localStorage.removeItem('timeline_date_to');
+    applyFilters(); renderView();
+  });
+
+  const depthSel = document.getElementById('depth-filter-select');
+  depthSel.value = STATE.depthFilter;
+  depthSel.addEventListener('change', () => {
+    STATE.depthFilter = depthSel.value;
     applyFilters(); renderView();
   });
 }
@@ -2869,8 +2915,10 @@ function setupSpiralView() {
   canvas.addEventListener('wheel', e => {
     e.preventDefault();
     const rect    = canvas.getBoundingClientRect();
-    const px      = e.clientX - rect.left;   // pointer in canvas space
-    const py      = e.clientY - rect.top;
+    const scaleX  = canvas.width  / rect.width;
+    const scaleY  = canvas.height / rect.height;
+    const px      = (e.clientX - rect.left) * scaleX;
+    const py      = (e.clientY - rect.top)  * scaleY;
     const oldZoom = STATE.spiralZoom;
     const delta   = e.deltaY > 0 ? 0.15 : -0.15;
     const newZoom = Math.max(0.3, Math.min(10, oldZoom + delta));
@@ -2887,8 +2935,13 @@ function setupSpiralView() {
 
   // Click — find hit target and select event
   canvas.addEventListener('click', e => {
-    const rect = canvas.getBoundingClientRect();
-    const id = spiralHitTest(e.clientX - rect.left, e.clientY - rect.top);
+    const rect  = canvas.getBoundingClientRect();
+    const scaleX = canvas.width  / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const id = spiralHitTest(
+      (e.clientX - rect.left) * scaleX,
+      (e.clientY - rect.top)  * scaleY
+    );
     if (id) selectEvent(id, { x: e.clientX - rect.left, y: e.clientY - rect.top, axisY: e.clientY - rect.top });
     else { hidePopover(); }
   });
@@ -2896,8 +2949,13 @@ function setupSpiralView() {
   // Hover — show popover on hit target
   let _spiralHoverTimer = null;
   canvas.addEventListener('mousemove', e => {
-    const rect = canvas.getBoundingClientRect();
-    const id = spiralHitTest(e.clientX - rect.left, e.clientY - rect.top);
+    const rect  = canvas.getBoundingClientRect();
+    const scaleX = canvas.width  / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const id = spiralHitTest(
+      (e.clientX - rect.left) * scaleX,
+      (e.clientY - rect.top)  * scaleY
+    );
     canvas.style.cursor = id ? 'pointer' : 'default';
     clearTimeout(_spiralHoverTimer);
     if (id) {
@@ -2943,7 +3001,32 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('sync-btn').addEventListener('click', syncFromSheet);
   document.getElementById('push-btn').addEventListener('click', pushToSheet);
 
-  document.getElementById('export-btn').addEventListener('click', exportCSV);
+  // Export dropdown
+  const exportBtn  = document.getElementById('export-btn');
+  const exportMenu = document.getElementById('export-menu');
+  exportBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    exportMenu.classList.toggle('hidden');
+  });
+  document.getElementById('export-csv-btn').addEventListener('click', () => {
+    exportMenu.classList.add('hidden');
+    exportRecords('csv');
+  });
+  document.getElementById('export-tsv-btn').addEventListener('click', () => {
+    exportMenu.classList.add('hidden');
+    exportRecords('tsv');
+  });
+  // Close export menu when clicking anywhere else
+  document.addEventListener('click', () => exportMenu.classList.add('hidden'));
+
+  // Hide / show controls bar
+  const ctrlBar     = document.querySelector('.zoom-controls');
+  const hideCtrlBtn = document.getElementById('hide-controls-btn');
+  hideCtrlBtn.addEventListener('click', () => {
+    const hidden = ctrlBar.classList.toggle('controls-hidden');
+    hideCtrlBtn.title   = hidden ? 'Show controls' : 'Hide controls';
+    hideCtrlBtn.textContent = hidden ? '⊞' : '⊟';
+  });
   document.getElementById('import-input').addEventListener('change', e => { importCSV(e.target.files[0]); e.target.value = ''; });
   document.getElementById('empty-import-input').addEventListener('change', e => { importCSV(e.target.files[0]); e.target.value = ''; });
 

@@ -152,6 +152,39 @@ body { display: flex; flex-direction: column; }
 .ctrl-label { font-size: 11px; color: var(--text-400); white-space: nowrap; }
 .date-range-input { min-width: 0; width: 118px; padding: 3px 6px; font-size: 12px; font-variant-numeric: tabular-nums; }
 
+/* ── Controls collapse ── */
+.zoom-controls.controls-hidden > *:not(#hide-controls-btn) { display: none; }
+.zoom-controls.controls-hidden { gap: 0; padding: 4px 6px; }
+
+/* ── Export dropdown menu ── */
+.export-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--bg-800);
+  border: 1px solid var(--bg-600);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  z-index: 200;
+  min-width: 200px;
+  overflow: hidden;
+}
+.export-menu.hidden { display: none; }
+.export-menu-item {
+  display: block;
+  width: 100%;
+  padding: 8px 14px;
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--text-200);
+  font-size: 13px;
+  cursor: pointer;
+}
+.export-menu-item:hover { background: var(--bg-700); }
+/* The export button + menu need a relative container */
+.export-wrap { position: relative; }
+
 /* ── Timeline Wrapper ── */
 .timeline-wrapper {
   flex: 1;

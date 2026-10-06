@@ -8,31 +8,45 @@
 
 ## Up next (priority order)
 
-### Fix 'slice' view
-~~Was meant to let user view a slice of the timeline, AI misinterpreted it.~~ Done — see Completed.
-
-### Next up
-- Schema button removal + favicon (quick cleanup)
-- Make app responsive (future Sean problem)
+- Glubb data audit: the Fate of Empires timeline has abstract concepts as objective events with dates (wrong) — needs a rewrite
+- Add the media/propaganda timeline data (see Default Timeline to Add section)
 
 ---
 
 ## Backlog
 
-- Fix 'slice' — was meant to let user view a slice of the timeline, AI misinterpreted it
-- Screensaver mode: display event name first, then date, then description and tags
-- Export: let user pick CSV or spreadsheet format; user should be able to edit their sheet manually and re-import
-- 'rows' and 'layout' buttons aren't working
-- Add a favicon
-- Remove or repurpose the 'Schema' button — unclear why it's in the toolbar
-- Make app responsive for smaller screens (future, future problem)
-- Fractal circle view? Scroll in/out infinitely from year 0 to current day
-- Heatmap for tag connections (schizochartmaxxing)
-- Screensaver froze previously — investigate if still broken after row wrapping fix
+- make app responsive, currently only works for large screen (this is a future, future, future sean problem, still have to get the app to work before aesthetics)
+- Instead of a timeLINE, what about a fractal circle? where you can scroll in infinitely, like start at year '0' and scroll out to current day
+- Don't forget the heat map for schizochartmaxxing (tag connection heatmap)
+- maybe make a way to invert the spiral timeline? which makes more intuitive sense? outward events happening inward making you the person/timeline you are today - or past events happening outward reaching out in a fractal spiral infinitely 'prime mover' vs 'unmoved mover' - maybe add a toggle?
+- also, for some reason, the AI took 'Sir John Glubbs the Fate of Empires' literally, and took abstract concepts like 'the age of decadence' as objective physical events with dates (which is wrong) - needs a data audit/rewrite
+
+---
+
+## Default Timeline to Add (Media / Propaganda history)
+
+- Gutenberg Printing Press
+- 'Propaganda' 1622 - Pope Gregory XV - 'Sacra Congretio de Propaganda Fide'
+- 1770 Pamphleteers America
+- 1830 chartist movement - penny press - northern star press
+- 1853 Crimean War Vs John Thadeus Delane (The Times London) Vs Horace Greely (NY Tribune)
+- WT Stead Writes 'Govern by Journalism' 1886
+- Alfred Milner + WT Stead + Cecil Rhodes Roundtable Groups Origins - 1891
+- 1897-1905 (Milners Kindergarten)
+- 1909 Roundtable Group Vs Carrol Quigley
+- 1919 (Chatham House - RIIA = Royal Institute for International Affairs)
+- 1921 CFR
+- 1923 Edward Bernays 'Crystalizing Public Opinion' 1928 'Propaganda'
+- Opium Wars - Sassoons - British East India Co
+- Enclosure Movement
+- Treaty of Westphalia
+- War of 1812 / Battle of Waterloo
+- Bank of England
 
 ---
 
 ## Completed
+
 - Hierarchical drill-down: click "🔍 Drill in" on any event with children (detail panel or popover) → timeline/spiral filters to that event + all descendants. Breadcrumb bar shows the drill path with clickable crumbs to navigate up. "⬆ Up" goes one level, "✕ All events" clears. "under ParentName" in the detail panel is a clickable link to drill into the parent. Escape also clears drill. Drill resets on timeline switch.
 - Layout / Rows controls now work: Layout (Wrap rows / Single strip) and Rows (Auto / 2–8) selects were never wired to event listeners or initialized from persisted state — both now respond immediately and persist across reloads. Rows select is disabled when in Single strip mode.
 - Slice view fixed: grain select (All / Decade / Century) + ‹ › buttons now navigate time windows derived from actual record year range. Chip bar appears below controls showing all windows; click any chip to jump. Switching to "All time" clears the date range.
@@ -43,6 +57,10 @@
 - Favicon added (⏳ emoji SVG data URI, no image file needed).
 - "How to use" fully rewritten to cover drill-down, spiral, slice, layout/rows, staged slideshow, and all current fields.
 - Spiral click reliability fixed: minimum hit radius raised to 14px so small/low-importance events are always clickable.
+- Export format picker: 💾 Export button now opens a dropdown with CSV (.csv) and TSV (tab-separated, pastes directly into Google Sheets without an import wizard). Old single-click CSV still works as before; just pick from the menu.
+- Hide/Show Controls toggle: ⊟ button at the left of the controls bar collapses the entire row to a single button (⊞ to restore). Frees up screen real estate when you want more canvas.
+- Depth filter: Depth select in controls bar (All levels / Root only / Root+1 / Root+2) hides child events beyond the chosen level. "Root only" fixes the busy screen problem — shows just the top-level events, drill down to see children. Clear filters resets depth too.
+- Spiral click fix (for real this time): canvas CSS size (100%×100%) was mismatched with the canvas pixel buffer size, so `getBoundingClientRect()` coords didn't map to the same space as SPIRAL_HITS. All click/hover/wheel handlers now apply `scaleX = canvas.width / rect.width` and `scaleY = canvas.height / rect.height` to correct the mismatch.
 - UI: Add/Edit event modal now has Parent event (dropdown of other events), People (`@handle`s), and Location
 - Schema: added `parent_id` for unlimited-depth sub-events (Roman Empire → Punic Wars → Battle of Zama)
 - Schema: added `people` field for `@handle` linking to People tab
@@ -59,53 +77,25 @@
 - Timeline: fixed row wrapping — duration bars for multi-row events now draw continuous segments across every row they span (start row → full-width intermediate rows → end row)
 - Timeline: added end-year label at the right edge of each row so the wrap reads as a continuous chronological flow
 - `end date` is not mandatory (only `start date` is required)
+- rows and layout buttons weren't working — fixed
+- add a favicon — done
+- why is there a schema button there — removed
+- screensaver mode should display the name of the event first, then the date, then the details and other tags — done
+- there should be a way in the schema to link people to events using tags `@tony_blair` — done (`people` field, `@handle` linking)
+- 'end date' shouldn't be mandatory — fixed
+- you should be able to create subevents / father-child events — done (`parent_id` column, unlimited depth)
+- user should then be able to click on a 'main event' and see just the timeline of that and it's subevents — done (drill-down)
+- fix 'slice' — done
+- update the how to, so the user knows how to use it — done
+- make the spiral zoom in relative to where the pointer is — done
+- Spiral layout doesn't allow you to click on some events — fixed (minimum hit radius)
 
-Default Timeline to Add :
-- Gutenberg Printing Press
-- 'Propaganda' 1622 - Pope Gregory XV - 'Sacra Congretio de Propaganda Fide' 
-- 1770 Pamphleteers America
-- 1830 chartist movement - penny press - northern star press
-- 1853 Crimean War Vs John Thadeus Delane (The Times London) Vs Horace Greely (NY Tribune)
-- WT Stead Writes 'Govern by Journalism' 1886
-- Alfred Milner + WT Stead + Cecil Rhodes Roundtable Groups Origins - 1891
-- 1897-1905 (Milners Kindergarten)
-- 1909 Roundtable Group Vs Carrol Quigley
-- 1919 (Chatham House - RIIA = Royal Institute for International Affairs)
-- 1921 CFR
-- 1923 Edward Bernays 'Crystalizing Public Opinion' 1928 'Propaganda'
-- Opium Wars - Sassoons - British East India Co
-- Enclosure Movement
-- Treaty of Westphalia
-- War of 1812 / Battle of Waterloo
-- Bank of Engerland
-- 
-
-TODO / Future Sean Problems :
-- The screensaver mode/slideshow froze, ran out of tokens, also, future Sean, do one of these at a time, kiro timed out a bunch trying to 'one shot' it
-- ran out of tokens, mid-prompt, again - I left off trying to improve the timeline, so it can go multi level or side scroll 
+# Future Sean Problems : 
 - make app responsive, currently only works for large screen (this is a future, future, future sean problem, still have to get the app to work before aesthetics)
-- events sheet / people sheet don't work yet, I should allow the user to create a timeline, and open that up on their google sheets, top row should be clearly labeled, all mandatory entries should have a mandatory * asterisk or whatever the user should leave empty (like id)
 - rows look wonky, it starts each row back on the left hand side, which is not how timelines should look
-- 'rows' and 'layout' buttons aren't working 
-- add a favicon
-- why is there a schema button there
-- screensaver mode works now, it should display the name of the event first, then the date, then the details and other tags
-- there should be a way in the schema to link people to events using tags '@tony_blair' (intentionally left uncapitalized) or whatever
-- 'export'  should allow the user to download the current timeline they have worked on, so they can 'import' it again whenever they want to use it, it should be spreadsheet or csv (let the user pick what to download as) - they should also be able to edit their own on google sheets by manually filling in the columns
-- 'end date' shouldn't be mandatory (only 'start date') 
 - you should be able to create subevents of the main events like for carthage delende est, you would have the 'Punic Wars' event, and then each 'Battle' could be a subevent, but 'The Punic Wars' would be a subevent of 'The Roman Empire', figure out a way to make that work with link/join those, the schema is gonna need alot of work, because I need to be able to link events, subevents, sub-sub events, people, dates, etc. 
 - add view toggles for each subevent - maybe layers? I'm trying to think of ways to reduce how much stuff needs to be on screen at once, right now, with just the examples, things look very 'busy'
-- user should then be able to click on a 'main event' and see just the timeline of that and it's subevents
-- So, will probably need a way to father-child events, maybe a new column? 
-- fix 'slice' I was trying to allow the user to 'slice' one part of the timeline, but AI misinterpreted that 
-- also, for some reason, the AI took 'Sir John Glubbs the Fate of Empires' literally, and took abstract concepts like 'the age of decadence' as objective physical events with dates (which is wrong) 
-- Instead of a timeLINE, what about a fractal circle? where you can scroll in infinitely, like start at year '0' and scroll out to current day
 - Don't forget the heat map for schizochartmaxxing
 - update the schema, make it visual - maybe have the defeault as a spreadsheet to use as an example - it should be clearly labeled what each row is, which ones to fill in, which ones are mandatory, which to leave empty for the app to fill - I want these overly descriptive so there is no doubt, what to do on the spreadsheet, and if something breaks, I tried, it's your fault
-- update the how to, so the user knows how to use it
 - make the spiral zoom in relative to where the pointer is - so instead of it always zooming back, it can zoom / slice to a certain time, like if I want to zoom in on a specific time period on the spiral, I just have to hover and scroll wheel up - if I want to 
-- maybe make a way to invert the spiral timeline? which makes more intuitive sense? outward events happening inward making you the person/timeline you are today - or past events happening outward reaching out in a fractal spiral infinitely 'prime mover' vs 'unmoved mover' - maybe add a toggle? - I've already got 2 rows of buttons 
-- Add a toggle to get rid of the 2 rows of buttons for more realestate like 'Hide / Show Controls'  
-- Ran out of tokens on kiro/cursor - Future Sean will need to check over the code for any superfluous stuff/leftovers from when it stopped - I need to get the schema and everything sorted before I can make it pretty 
 - Spiral layout doesn't allow you to click on some events
-- The mnemonic memeonic doesn't do the highlighting correctly on the arconyms for anything divided by 2 
