@@ -181,6 +181,29 @@ H.Heli - BeBbC - NO! F. Ne(g) - Nah Mang - Al SiPS - Cark and CaSc - Tiv CroMagn
 H.HeLi - BeBC - NO.FNe - NaMg - AlSiPS - CArK.CaSc - TiV.CrMn -FeCoNi.CuZn - GaGe.AsSe -BrKrRbSr - 
 Y.Zr.Nb -  MoTc - RuRh.PdAg -  CdIn,SnSb -  TeIKXeCs - BaLaCePr - NdPmSm - EuGd.Tb.DyHoEr -TmYbLu - HfTaWReOsIrPtAuHgTlPbBiPoAtRnFrRaAcThPaUNpPuAmCmBkCfEsFmMdNoLrRfDbSgBhHsMtDsRgCnNhFlMcLvTsOg
 
+### Phonetic Sentence Mnemonic (Elements 1–38)
+
+"Hy. Heli, Be.BC, NO! Ef-Neon! Nah-Mang, Al-SIPS, Sark and Kask, Tiv-Kromagnon, Feh-Co-Knee Cousin, Gay-Gey As-See, BroKer Rib Senior."
+
+---
+
+### Segment Breakdown
+
+* **H.HeLi:** *Hy HeLi* (Hydrogen, Helium, Lithium)
+* **BeBC:** *Be. BC.* (Beryllium, Boron, Carbon)
+* **NO.FNe:** *NO! Ef-Neon* (Nitrogen, Oxygen, Fluorine, Neon)
+* **NaMg:** *Nah-Mang* (Sodium, Magnesium)
+* **AlSiPS:** *Al-SIPS* (Aluminum, Silicon, Phosphorus, Sulfur)
+* **CArK:** *Sark* (Chlorine, Argon, Potassium)
+* **CaSc:** *Kask* (Calcium, Scandium)
+* **TiV.CrMn:** *Tiv-Kroman* (Titanium, Vanadium, Chromium, Manganese)
+* **FeCoNi:** *Feh-Co-Knee* (Iron, Cobalt, Nickel)
+* **CuZn:** *Cousin* (Copper, Zinc)
+* **GaGe:** *Gay-Gey* (Gallium, Germanium)
+* **AsSe:** *As-See* (Arsenic, Selenium)
+* **BrKr:** *BroKer* (Bromine, Krypton)
+* **RbSr:** *RibSenior* (Rubidium, Strontium)
+
 ---
 
 **Note**: This is a static website with no backend requirements. All data is loaded from the local JSON file.
