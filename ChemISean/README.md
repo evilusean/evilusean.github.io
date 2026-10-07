@@ -176,6 +176,11 @@ Potential additions:
 - Fix periodic table on small devices to break in half? you need to scroll currently to see it all
 - Add melting temps, because 7/11 was a part time job. 
 
+Attempt at making a mnemonic for periodic table of elements (1-36) :
+H.Heli - BeBbC - NO! F. Ne(g) - Nah Mang - Al SiPS - Cark and CaSc - Tiv CroMagnon - FeConi Cuzn - GaGe AsSey - BroKer RobberSenior
+H.HeLi - BeBC - NO.FNe - NaMg - AlSiPS - CArK.CaSc - TiV.CrMn -FeCoNi.CuZn - GaGe.AsSe -BrKrRbSr - 
+Y.Zr.Nb -  MoTc - RuRh.PdAg -  CdIn,SnSb -  TeIKXeCs - BaLaCePr - NdPmSm - EuGd.Tb.DyHoEr -TmYbLu - HfTaWReOsIrPtAuHgTlPbBiPoAtRnFrRaAcThPaUNpPuAmCmBkCfEsFmMdNoLrRfDbSgBhHsMtDsRgCnNhFlMcLvTsOg
+
 ---
 
 **Note**: This is a static website with no backend requirements. All data is loaded from the local JSON file.
